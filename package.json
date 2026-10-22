@@ -1,0 +1,11 @@
+{
+  "name": "math-curriculum-test-builder",
+  "version": "0.1.0",
+  "description": "Clean-room math test builder organized by the department curriculum (majors → courses → topics). Generates randomized practice tests with answer keys.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "dev": "python3 -m http.server 8731"
+  },
+  "license": "MIT"
+}

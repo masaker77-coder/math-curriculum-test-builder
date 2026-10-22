@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math Worksheet Generator</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --panel:#ffffff; --ink:#1c2230; --muted:#5b6475;
+    --line:#d7dbe3; --accent:#2f5bd0; --accent-soft:#e8eefc; --key:#0a7a4b;
+    --font-ui:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+    --font-math:"Cambria Math","Times New Roman",Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.45}
+
+  /* ---------- Control bar (hidden when printing) ---------- */
+  .toolbar{position:sticky;top:0;z-index:5;background:var(--panel);border-bottom:1px solid var(--line);
+    padding:14px max(16px,env(safe-area-inset-left,0px));box-shadow:0 1px 6px rgba(20,30,60,.06)}
+  .toolbar h1{margin:0 0 10px;font-size:18px;letter-spacing:.2px}
+  .toolbar h1 span{color:var(--accent)}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .field label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
+  select,input[type=number],input[type=text]{font:inherit;padding:7px 9px;border:1px solid var(--line);
+    border-radius:7px;background:#fff;color:var(--ink);min-width:0}
+  select{min-width:200px}
+  input[type=number]{width:90px}
+  .btn{font:inherit;font-weight:600;border:0;border-radius:8px;padding:9px 16px;cursor:pointer}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.ghost{background:var(--accent-soft);color:var(--accent)}
+  .btn:active{transform:translateY(1px)}
+  .toolbar .hint{margin-top:10px;font-size:12px;color:var(--muted)}
+
+  /* ---------- Topic chips ---------- */
+  .topics{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .chip{font-size:12px;padding:5px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer}
+  .chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* ---------- Sheet ---------- */
+  .wrap{max-width:860px;margin:22px auto;padding:0 max(16px,env(safe-area-inset-left,0px))}
+  .sheet{background:#fff;border:1px solid var(--line);border-radius:10px;padding:40px 44px;
+    box-shadow:0 2px 14px rgba(20,30,60,.07)}
+  #out>.sheet + .sheet{margin-top:22px}
+  .sheet-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--ink);
+    padding-bottom:10px;margin-bottom:6px;gap:16px;flex-wrap:wrap}
+  .sheet-head .meta{font-size:12px;color:var(--muted);text-align:right;line-height:1.9}
+  .sheet-head .meta b{color:var(--ink);font-weight:600}
+  .sheet-title{font-size:22px;font-weight:700;margin:0}
+  .sheet-sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .score{border:1.5px solid var(--ink);border-radius:6px;padding:4px 12px;font-size:12px;white-space:nowrap}
+
+  ol.problems{list-style:none;margin:10px 0 0;padding:0;
+    display:grid;grid-template-columns:1fr 1fr;gap:16px 40px}
+  .problemset{counter-reset:q}
+  ol.problems.single{grid-template-columns:1fr}
+  ol.problems li{counter-increment:q;font-family:var(--font-math);font-size:17px;
+    display:flex;gap:10px;align-items:baseline;break-inside:avoid;min-height:42px}
+  ol.problems li::before{content:counter(q) ")";font-family:var(--font-ui);font-size:13px;
+    color:var(--muted);min-width:24px;font-weight:600}
+  .qbody{min-width:0}
+  sup{font-size:.72em}
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 2px}
+  .frac .n{border-bottom:1.3px solid currentColor;padding:0 4px;line-height:1.15}
+  .frac .d{padding:0 4px;line-height:1.15}
+  .mat{display:inline-grid;grid-template-columns:auto auto;gap:1px 12px;vertical-align:middle;
+    text-align:center;padding:2px 7px;margin:0 2px;border-left:2px solid currentColor;border-right:2px solid currentColor}
+
+  /* ---------- Answer key ---------- */
+  .keywrap{margin-top:26px}
+  .key-head{display:flex;align-items:center;gap:10px;border-top:2px dashed var(--line);padding-top:16px;margin-bottom:10px}
+  .key-head h3{margin:0;font-size:14px;letter-spacing:.5px;text-transform:uppercase;color:var(--key)}
+  ol.answers{list-style:none;margin:0;padding:0;display:grid;
+    grid-template-columns:repeat(4,1fr);gap:6px 22px;counter-reset:a;font-size:14px}
+  ol.answers li{counter-increment:a;font-family:var(--font-math)}
+  ol.answers li::before{content:counter(a) ") ";font-family:var(--font-ui);color:var(--muted);font-size:12px}
+  ol.answers b{color:var(--key);font-weight:600}
+
+  @media(max-width:560px){
+    .sheet{padding:24px 20px}
+    ol.problems{grid-template-columns:1fr}
+    ol.answers{grid-template-columns:repeat(2,1fr)}
+    select{min-width:150px}
+  }
+
+  /* ---------- Advanced feature styles ---------- */
+  .chk{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap;cursor:pointer}
+  .chk input{width:16px;height:16px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:2px 18px;margin-top:6px;
+    font-size:14px;color:var(--muted);font-family:var(--font-math)}
+  .opt{min-width:0}
+  .custom-wrap{margin-top:10px;font-size:13px}
+  .custom-wrap summary{cursor:pointer;font-weight:600;color:var(--accent);padding:4px 0}
+  #custom{width:100%;min-height:92px;margin-top:8px;font:inherit;padding:8px;
+    border:1px solid var(--line);border-radius:7px;resize:vertical;color:var(--ink)}
+  /* presentation overlay */
+  .present{position:fixed;inset:0;z-index:50;background:#0e1420;color:#fff;display:none;flex-direction:column}
+  .present.on{display:flex}
+  .present .pnum{padding:16px 24px;font-size:14px;color:#9fb0cc;letter-spacing:.5px}
+  .present .pbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:26px;padding:24px;text-align:center}
+  .present .pq{font-family:var(--font-math);font-size:clamp(28px,6vw,64px);line-height:1.3;max-width:92%}
+  .present .pchoices{display:grid;grid-template-columns:1fr 1fr;gap:12px 44px;
+    font-family:var(--font-math);font-size:clamp(18px,3vw,30px);color:#cdd9ee}
+  .present .pans{font-family:var(--font-math);font-size:clamp(22px,4vw,40px);color:#5fe3a1;min-height:1.3em}
+  .present .pbar{display:flex;gap:10px;justify-content:center;padding:18px;border-top:1px solid #243040;flex-wrap:wrap}
+  .present .pbar .btn{background:#223049;color:#fff}
+  .present .pbar .btn.primary{background:var(--accent)}
+
+  /* ---------- Test builder ---------- */
+  .builder{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;
+    background:var(--accent-soft);padding:12px 14px;border-radius:10px}
+  .builder select{min-width:180px}
+  .sections{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .sections-empty{font-size:13px;color:var(--muted);font-style:italic}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .search-results{display:flex;flex-direction:column;gap:4px;margin-top:10px;max-height:260px;overflow:auto;
+    border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff}
+  button.sr{text-align:left;border:0;background:transparent;border-radius:7px;padding:7px 10px;cursor:pointer;font:inherit}
+  button.sr:hover{background:var(--accent-soft)}
+  button.sr b{font-weight:600}
+  button.sr span{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+  .section-pill{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);
+    border-radius:999px;padding:5px 6px 5px 6px;font-size:12px}
+  .section-pill .pl{font-weight:600;color:var(--ink)}
+  .section-pill .meta2{color:var(--muted)}
+  .section-pill button{border:0;background:#eef1f6;color:var(--muted);border-radius:50%;
+    width:22px;height:22px;cursor:pointer;font-size:13px;line-height:1;padding:0}
+  .section-pill button:hover{background:#dfe4ec;color:var(--ink)}
+  .part-letter{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+    width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:11px}
+  /* parts inside the sheet */
+  .part{margin-top:18px}
+  .part:first-child{margin-top:6px}
+  .part-head{font-size:14px;font-weight:700;color:var(--ink);margin:0;
+    display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;break-after:avoid}
+  .part-head .plet{color:var(--accent)}
+  .part-head .pdet{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+
+  /* ---------- Print ---------- */
+  @media print{
+    body{background:#fff;font-size:13px}
+    .toolbar,.noprint{display:none!important}
+    .wrap{margin:0;padding:0;max-width:none}
+    .sheet{border:0;border-radius:0;box-shadow:none;padding:0}
+    .sheet + .sheet{break-before:page}
+    ol.problems li{font-size:15px}
+    .keywrap{break-before:page}
+    .keywrap.same{break-before:avoid;margin-top:20px}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar noprint">
+  <h1>Math <span>Test Builder</span></h1>
+
+  <!-- Build a part: search OR major → course → topic → options → add -->
+  <div class="builder">
+    <div class="field" style="flex:1 1 240px">
+      <label for="bSearch">Search topics or courses</label>
+      <input type="text" id="bSearch" placeholder="e.g. matrix · STAT 211 · derivative">
+    </div>
+    <div class="field">
+      <label for="bMajor">Major / branch</label>
+      <select id="bMajor"></select>
+    </div>
+    <div class="field">
+      <label for="bCourse">Course</label>
+      <select id="bCourse"></select>
+    </div>
+    <div class="field">
+      <label for="bTopic">Topic</label>
+      <select id="bTopic"></select>
+    </div>
+    <div class="field">
+      <label for="bDiff">Difficulty</label>
+      <select id="bDiff">
+        <option value="1">Easy</option>
+        <option value="2" selected>Medium</option>
+        <option value="3">Hard</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="bCount">Questions</label>
+      <input type="number" id="bCount" min="1" max="40" value="10">
+    </div>
+    <label class="chk"><input type="checkbox" id="bMc"> Multiple choice</label>
+    <button class="btn primary" id="addSection">+ Add to test</button>
+  </div>
+  <div class="search-results" id="searchResults" hidden></div>
+
+  <!-- Parts already added -->
+  <div class="sections" id="sections"></div>
+
+  <!-- Whole-test output options -->
+  <div class="controls" style="margin-top:14px">
+    <div class="field" style="flex:1 1 200px">
+      <label for="title">Test title</label>
+      <input type="text" id="title" placeholder="e.g. Chapter 5 Exam">
+    </div>
+    <div class="field">
+      <label for="spacing">Work space</label>
+      <select id="spacing"><option value="1">Compact</option><option value="2" selected>Normal</option><option value="3">Roomy</option></select>
+    </div>
+    <div class="field">
+      <label for="versions">Versions</label>
+      <input type="number" id="versions" min="1" max="6" value="1">
+    </div>
+    <div class="field">
+      <label for="keyMode">Answer key</label>
+      <select id="keyMode">
+        <option value="separate" selected>Separate page</option>
+        <option value="same">Same page</option>
+        <option value="none">No key</option>
+      </select>
+    </div>
+    <button class="btn ghost" id="toggleKey">Show / hide answers</button>
+    <button class="btn ghost" id="presentBtn">&#9654; Present</button>
+    <button class="btn ghost" id="print">Print / PDF</button>
+  </div>
+
+  <!-- Save / load whole tests -->
+  <div class="controls" style="margin-top:10px">
+    <div class="field">
+      <label for="saved">Saved tests</label>
+      <select id="saved"><option value="">— load a saved test —</option></select>
+    </div>
+    <div class="field">
+      <label for="saveName">Save as</label>
+      <input type="text" id="saveName" placeholder="name">
+    </div>
+    <button class="btn ghost" id="save">Save</button>
+    <button class="btn ghost" id="del">Delete</button>
+    <button class="btn ghost" id="exportBtn" title="Download this test as a file">Export file</button>
+    <button class="btn ghost" id="importBtn" title="Load a test from a file">Import file</button>
+    <input type="file" id="importFile" accept=".json,application/json" hidden>
+  </div>
+
+  <details class="custom-wrap">
+    <summary>Custom questions</summary>
+    <textarea id="custom" placeholder="One question per line. Put the answer after a | symbol:&#10;A train goes 180 km in 3 h. Find its speed. | 60 km/h&#10;Evaluate 2^5 | 32"></textarea>
+    <div class="hint">Format: <b>question | answer</b> &nbsp;·&nbsp; use <b>^</b> for exponents (2^5).</div>
+    <button class="btn ghost" id="addCustom" style="margin-top:8px">+ Add as a part</button>
+  </details>
+
+  <div class="hint">Choose a <b>branch</b>, then a <b>topic</b>, set its difficulty &amp; count, and <b>Add to test</b>. Repeat with other topics or branches to build a multi-part test. <b>Print / PDF</b> &rarr; choose &ldquo;Save as PDF&rdquo; to export.</div>
+</div>
+
+<div class="wrap">
+  <div id="out"></div>
+</div>
+
+<div class="present" id="present"></div>
+
+<script>
+/* ======================================================================
+   Original, clean-room math worksheet generator.
+   Every problem is generated from standard mathematics and its answer is
+   computed in code — no external content is used.
+   ====================================================================== */
+
+const R = (min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const nz = (min,max)=>{let v=0;while(v===0)v=R(min,max);return v;};
+const gcd = (a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+
+/* formatting helpers (return HTML) */
+const sup = p => `<sup>${p}</sup>`;
+function frac(n,d){ return `<span class="frac"><span class="n">${n}</span><span class="d">${d}</span></span>`; }
+const sq = n => `&radic;<span style="border-top:1.2px solid currentColor;padding:0 2px">${n}</span>`;
+function reduceFrac(n,d){ const g=gcd(n,d); n/=g; d/=g; if(d<0){n=-n;d=-d;} return [n,d]; }
+function fracStr(n,d){ [n,d]=reduceFrac(n,d); if(d===1) return `${n}`; return (n<0?'-':'')+''+frac(Math.abs(n),d); }
+// signed term like " + 3x" / " - x" / " - 7"
+function term(coef, varPart){
+  if(coef===0) return '';
+  const sign = coef<0 ? ' &minus; ' : ' + ';
+  let mag = Math.abs(coef);
+  let body = varPart ? ((mag===1?'':mag)+varPart) : ''+mag;
+  return sign+body;
+}
+// leading term (no leading +)
+function lead(coef, varPart){
+  if(coef===0) return '0';
+  const sign = coef<0 ? '&minus;' : '';
+  let mag=Math.abs(coef);
+  return sign + (varPart ? ((mag===1?'':mag)+varPart) : ''+mag);
+}
+// extra helpers for university-level topics
+function factorial(n){ let r=1; for(let i=2;i<=n;i++) r*=i; return r; }
+const sgn = v => v<0 ? '&minus;'+Math.abs(v) : ''+v;   // signed number
+function cplx(re,im){                                   // a + bi, signed
+  const iAbs = Math.abs(im)===1 ? '' : Math.abs(im);
+  return `${sgn(re)}${im<0?' &minus; ':' + '}${iAbs}i`;
+}
+function mat(v){ return `<span class="mat">${v.map(x=>`<span>${x<0?'&minus;'+Math.abs(x):x}</span>`).join('')}</span>`; }
+
+/* exact special-angle values (degrees -> sin, cos, tan) */
+const TRIG = {
+  0:   {s:'0',            c:'1',               t:'0'},
+  30:  {s:frac(1,2),      c:frac(sq(3),2),     t:frac(sq(3),3)},
+  45:  {s:frac(sq(2),2),  c:frac(sq(2),2),     t:'1'},
+  60:  {s:frac(sq(3),2),  c:frac(1,2),         t:sq(3)},
+  90:  {s:'1',            c:'0',               t:'undefined'},
+  120: {s:frac(sq(3),2),  c:'&minus;'+frac(1,2),     t:'&minus;'+sq(3)},
+  135: {s:frac(sq(2),2),  c:'&minus;'+frac(sq(2),2), t:'&minus;1'},
+  150: {s:frac(1,2),      c:'&minus;'+frac(sq(3),2), t:'&minus;'+frac(sq(3),3)},
+  180: {s:'0',            c:'&minus;1',        t:'0'},
+};
+
+/* ============================ GENERATORS ============================ */
+/* each generator: (d) => {q:"<html>", a:"<html>"}  where d = 1..3 */
+
+const G = {
+  /* ---- Pre-Algebra ---- */
+  intAddSub(d){
+    const hi = d===1?12:d===2?25:60;
+    const a=nz(-hi,hi), b=nz(-hi,hi), op=pick(['+','&minus;']);
+    const val = op==='+'? a+b : a-b;
+    const bb = b<0 ? `(${b<0?'&minus;':''}${Math.abs(b)})` : b;
+    return {q:`${a<0?'&minus;'+Math.abs(a):a} ${op} ${bb} =`, a:`<b>${val<0?'&minus;'+Math.abs(val):val}</b>`};
+  },
+  intMulDiv(d){
+    const hi=d===1?9:d===2?12:15;
+    if(Math.random()<0.5){
+      const a=nz(-hi,hi), b=nz(-hi,hi);
+      return {q:`${a<0?'('+'&minus;'+Math.abs(a)+')':a} &times; ${b<0?'('+'&minus;'+Math.abs(b)+')':b} =`,
+              a:`<b>${a*b<0?'&minus;'+Math.abs(a*b):a*b}</b>`};
+    }else{
+      const b=nz(-hi,hi), q=nz(-hi,hi), a=b*q;
+      return {q:`${a<0?'&minus;'+Math.abs(a):a} &divide; ${b<0?'('+'&minus;'+Math.abs(b)+')':b} =`,
+              a:`<b>${q<0?'&minus;'+Math.abs(q):q}</b>`};
+    }
+  },
+  orderOps(d){
+    const a=R(2,9), b=R(2,9), c=R(2,9);
+    if(d===1){ return {q:`${a} + ${b} &times; ${c} =`, a:`<b>${a+b*c}</b>`}; }
+    if(d===2){ const e=R(2,9); return {q:`(${a} + ${b}) &times; ${c} &minus; ${e} =`, a:`<b>${(a+b)*c-e}</b>`}; }
+    const e=R(2,6); return {q:`${a}${sup(2)} &minus; ${b} &times; ${c} + ${e} =`, a:`<b>${a*a-b*c+e}</b>`};
+  },
+  fracAddSub(d){
+    const dens = d===1?[2,3,4,5]:d===2?[2,3,4,5,6,8]:[3,4,6,8,9,12];
+    const b=pick(dens); let c=pick(dens); if(d===1) c=b;
+    const n1=R(1,b-1>0?b-1:1), n2=R(1,c-1>0?c-1:1), op=pick(['+','&minus;']);
+    const den=b*c; let num = op==='+'? n1*c+n2*b : n1*c-n2*b;
+    return {q:`${frac(n1,b)} ${op} ${frac(n2,c)} =`, a:`<b>${fracStr(num,den)}</b>`};
+  },
+  fracMul(d){
+    const hi=d===1?6:d===2?9:12;
+    const n1=R(1,hi),b=R(2,hi),n2=R(1,hi),c=R(2,hi);
+    return {q:`${frac(n1,b)} &times; ${frac(n2,c)} =`, a:`<b>${fracStr(n1*n2,b*c)}</b>`};
+  },
+
+  /* ---- Algebra 1 ---- */
+  oneStep(d){
+    const x=nz(-12,12);
+    const type=pick(['add','mul','div']);
+    if(type==='add'){ const b=nz(-15,15); return {q:`x ${b<0?'&minus; '+Math.abs(b):'+ '+b} = ${x+b}`, a:`<b>x = ${x}</b>`}; }
+    if(type==='mul'){ const a=nz(2,9); return {q:`${a}x = ${a*x}`, a:`<b>x = ${x}</b>`}; }
+    const a=nz(2,9); return {q:`${frac('x',a)} = ${x}`, a:`<b>x = ${a*x}</b>`};
+  },
+  twoStep(d){
+    const x=nz(-10,10), a=nz(2,d===3?12:9), b=nz(-15,15);
+    return {q:`${a}x ${b<0?'&minus; '+Math.abs(b):'+ '+b} = ${a*x+b}`, a:`<b>x = ${x}</b>`};
+  },
+  multiStep(d){
+    // ax + b = cx + e   with integer solution
+    const x=nz(-8,8);
+    let a=nz(2,8), c=nz(-8,8); while(a===c)c=nz(-8,8);
+    const b=nz(-12,12);
+    const e=(a-c)*x+b; // a x + b = c x + e
+    return {q:`${lead(a,'x')} ${term(b,'')} = ${lead(c,'x')} ${term(e,'')}`.replace(/\s+/g,' '),
+            a:`<b>x = ${x}</b>`};
+  },
+  combineLike(d){
+    const a=nz(-8,8),c=nz(-8,8),b=nz(-9,9),e=nz(-9,9);
+    const q=`${lead(a,'x')}${term(b,'')}${term(c,'x')}${term(e,'')}`;
+    const ans=`${lead(a+c,'x')}${term(b+e,'')}`;
+    return {q, a:`<b>${ans}</b>`};
+  },
+  distribute(d){
+    const a=nz(2,d===3?9:6), b=nz(-7,7), c=nz(-9,9);
+    return {q:`${a}(${lead(b,'x')} ${term(c,'')})`, a:`<b>${lead(a*b,'x')}${term(a*c,'')}</b>`};
+  },
+  slope(d){
+    let x1=nz(-8,8),y1=nz(-8,8),x2=nz(-8,8),y2=nz(-8,8);
+    while(x2===x1)x2=nz(-8,8);
+    const [n,dd]=reduceFrac(y2-y1,x2-x1);
+    return {q:`Slope through (${x1}, ${y1}) and (${x2}, ${y2})`,
+            a:`<b>m = ${fracStr(n,dd)}</b>`};
+  },
+
+  /* ---- Algebra 2 ---- */
+  factorQuad(d){
+    const hi=d===1?6:d===2?9:12;
+    const r1=nz(-hi,hi), r2=nz(-hi,hi);
+    const b=-(r1+r2), c=r1*r2;
+    const q=`x${sup(2)}${term(b,'x')}${term(c,'')}`;
+    const f=(r)=> r===0?'x':`(x ${r<0?'+ '+Math.abs(r):'&minus; '+r})`;
+    return {q, a:`<b>${f(r1)}${f(r2)}</b>`};
+  },
+  solveQuad(d){
+    const hi=d===1?6:9;
+    const r1=nz(-hi,hi),r2=nz(-hi,hi);
+    const b=-(r1+r2),c=r1*r2;
+    const roots = r1===r2?`x = ${r1}`:`x = ${Math.min(r1,r2)}, ${Math.max(r1,r2)}`;
+    return {q:`x${sup(2)}${term(b,'x')}${term(c,'')} = 0`, a:`<b>${roots}</b>`};
+  },
+  simplifyRadical(d){
+    const inside=pick(d===1?[2,3,5,6,7]:[2,3,5,6,7,10,11,13,14,15]);
+    const out=R(2,d===3?8:5);
+    const n=out*out*inside;
+    return {q:`&radic;<span style="border-top:1.2px solid currentColor;padding:0 2px">${n}</span> =`,
+            a:`<b>${out}&radic;<span style="border-top:1.2px solid currentColor;padding:0 2px">${inside}</span></b>`};
+  },
+
+  /* ---- Geometry ---- */
+  rectangle(d){
+    const w=R(3,d===3?40:20),h=R(3,d===3?40:20);
+    return {q:`Rectangle ${w} by ${h}. Find area and perimeter.`,
+            a:`<b>A = ${w*h}, P = ${2*(w+h)}</b>`};
+  },
+  triangleArea(d){
+    const b=R(2,d===3?30:16)*2, h=R(2,d===3?30:16);
+    return {q:`Triangle, base ${b}, height ${h}. Find area.`, a:`<b>A = ${b*h/2}</b>`};
+  },
+  circle(d){
+    const r=R(2,d===3?20:12);
+    return {q:`Circle, radius ${r}. Area and circumference (in terms of &pi;).`,
+            a:`<b>A = ${r*r}&pi;, C = ${2*r}&pi;</b>`};
+  },
+  pythagorean(d){
+    const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[7,24,25],[9,12,15],[20,21,29]]);
+    const k=d===3?R(1,3):1; const [a,b,c]=t.map(v=>v*k);
+    if(Math.random()<0.5) return {q:`Right triangle, legs ${a} and ${b}. Find the hypotenuse.`, a:`<b>c = ${c}</b>`};
+    return {q:`Right triangle, hypotenuse ${c}, one leg ${a}. Find the other leg.`, a:`<b>${b}</b>`};
+  },
+
+  /* ---- Calculus ---- */
+  derivative(d){
+    const n = d===1?2:d===2?3:3;
+    const terms=[]; const used=new Set();
+    for(let i=0;i<n;i++){ let p=R(2,d===3?6:4); while(used.has(p))p=R(1,6); used.add(p); terms.push([nz(2,9),p]); }
+    terms.sort((a,b)=>b[1]-a[1]);
+    const qh=terms.map((t,i)=> (i===0?lead(t[0],'x'+sup(t[1])):term(t[0],'x'+sup(t[1])))).join('');
+    const dv=terms.map(t=>[t[0]*t[1], t[1]-1]);
+    const ah=dv.map((t,i)=>{
+      const vp = t[1]===0?'':(t[1]===1?'x':'x'+sup(t[1]));
+      return i===0?lead(t[0],vp):term(t[0],vp);
+    }).join('');
+    return {q:`f(x) = ${qh}&nbsp;&nbsp; f&prime;(x) =`, a:`<b>${ah}</b>`};
+  },
+
+  /* ---- Ratios & proportions (Pre-Algebra) ---- */
+  simplifyRatio(d){
+    const hi=d===1?12:d===2?30:80;
+    const g=R(2,8), a=g*R(2,hi), b=g*R(2,hi);
+    const [n,m]=reduceFrac(a,b);
+    return {q:`Simplify the ratio ${a} : ${b}`, a:`<b>${n} : ${m}</b>`};
+  },
+  proportions(d){
+    const m=R(1,6), n=R(1,6), t1=R(2,d===3?9:6), t2=R(2,d===3?9:6);
+    const a=m*t1, b=n*t1, c=m*t2, x=n*t2;
+    return {q:`Solve the proportion: ${frac(a,b)} = ${frac(c,'x')}`, a:`<b>x = ${x}</b>`};
+  },
+
+  /* ---- Systems of equations (Algebra 1) ---- */
+  systems(d){
+    const x=nz(-6,6), y=nz(-6,6);
+    let a1=nz(1,d===3?6:4), b1=nz(1,d===3?6:4), a2=nz(1,d===3?6:4), b2=nz(1,d===3?6:4);
+    while(a1*b2-a2*b1===0){ a2=nz(1,5); b2=nz(1,5); }
+    const c1=a1*x+b1*y, c2=a2*x+b2*y;
+    const eq=(a,b,c)=>`${lead(a,'x')}${term(b,'y')} = ${c}`;
+    return {q:`${eq(a1,b1,c1)}&nbsp;&nbsp;,&nbsp;&nbsp; ${eq(a2,b2,c2)}`,
+            a:`<b>(${x}, ${y})</b>`};
+  },
+
+  /* ---- Trigonometry ---- */
+  trigValues(d){
+    const easy=[0,30,45,60,90];
+    const angles = d===1?easy:[0,30,45,60,90,120,135,150,180];
+    const ang=pick(angles), fn=pick(['sin','cos','tan']);
+    const key=fn==='sin'?'s':fn==='cos'?'c':'t';
+    return {q:`${fn} ${ang}&deg; =`, a:`<b>${TRIG[ang][key]}</b>`};
+  },
+  trigRatios(d){
+    const t=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[6,8,10],[9,12,15]]);
+    const [opp,adj,hyp]=t, fn=pick(['sin','cos','tan']);
+    let val;
+    if(fn==='sin') val=fracStr(opp,hyp);
+    else if(fn==='cos') val=fracStr(adj,hyp);
+    else val=fracStr(opp,adj);
+    return {q:`Right triangle with &ang;&theta;: opposite = ${opp}, adjacent = ${adj}, hypotenuse = ${hyp}. Find ${fn} &theta;.`,
+            a:`<b>${val}</b>`};
+  },
+  degRad(d){
+    const degs = d===1?[30,45,60,90,180]:[30,45,60,90,120,135,150,210,225,240,270,300,315,330,360];
+    const deg=pick(degs); const [n,m]=reduceFrac(deg,180);
+    const rad = m===1 ? `${n===1?'':n}&pi;` : frac(`${n===1?'':n}&pi;`, m);
+    return {q:`Convert ${deg}&deg; to radians.`, a:`<b>${rad}</b>`};
+  },
+
+  /* ---- Integration (Calculus) ---- */
+  integral(d){
+    const n=d===1?2:3; const used=new Set(); const terms=[];
+    for(let i=0;i<n;i++){ let p=R(1,d===3?5:3); while(used.has(p))p=R(1,6); used.add(p);
+      const k=nz(1,5); terms.push({c:k*(p+1), p, k}); }
+    terms.sort((a,b)=>b.p-a.p);
+    const qh=terms.map((t,i)=> (i===0?lead(t.c,'x'+sup(t.p)):term(t.c,'x'+sup(t.p)))).join('');
+    const ah=terms.map((t,i)=>{ const vp='x'+sup(t.p+1);
+      return i===0?lead(t.k,vp):term(t.k,vp); }).join('');
+    return {q:`&int; (${qh}) dx =`, a:`<b>${ah} + C</b>`};
+  },
+  defIntegral(d){
+    const p=R(1,d===3?3:2), k=nz(1,4), c=k*(p+1);
+    let a=R(0,2), b=R(a+1,4);
+    const F=v=>k*Math.pow(v,p+1);
+    return {q:`&int;<sub>${a}</sub><sup>${b}</sup> ${lead(c,'x'+(p===1?'':sup(p)))} dx =`,
+            a:`<b>${F(b)-F(a)}</b>`};
+  },
+
+  /* ================= EXPANSION PACKS ================= */
+
+  /* ---- Pre-Algebra pack ---- */
+  rounding(d){
+    const place=pick(d===1?[10,100]:[10,100,1000]);
+    const n=R(place,place*90)+R(0,place-1);
+    const r=Math.round(n/place)*place;
+    const name=place===10?'ten':place===100?'hundred':'thousand';
+    return {q:`Round ${n} to the nearest ${name}.`, a:`<b>${r}</b>`};
+  },
+  percentOf(d){
+    const p=pick(d===1?[10,25,50]:d===2?[5,10,20,25,40,50,75]:[5,12,15,18,24,35,60]);
+    const step=100/gcd(p,100);
+    const N=step*R(2,d===3?12:8);
+    return {q:`Find ${p}% of ${N}.`, a:`<b>${p*N/100}</b>`};
+  },
+  fracToDecimal(d){
+    const den=pick(d===1?[2,4,5,10]:[2,4,5,8,10,20,25]);
+    const num=R(1,den-1);
+    return {q:`Write ${frac(num,den)} as a decimal.`, a:`<b>${+(num/den).toFixed(4)}</b>`};
+  },
+  gcfLcm(d){
+    const hi=d===1?12:d===2?24:40;
+    const a=R(2,hi), b=R(2,hi), g=gcd(a,b);
+    if(Math.random()<0.5) return {q:`Find the GCF of ${a} and ${b}.`, a:`<b>${g}</b>`};
+    return {q:`Find the LCM of ${a} and ${b}.`, a:`<b>${a*b/g}</b>`};
+  },
+  powers(d){
+    const base=R(2,d===1?6:9), exp=R(2,d===1?3:d===2?4:5);
+    return {q:`${base}${sup(exp)} =`, a:`<b>${Math.pow(base,exp)}</b>`};
+  },
+  absValue(d){
+    const sgn=v=>v<0?'&minus;'+Math.abs(v):''+v;
+    const a=nz(-25,25), b=nz(-25,25), op=pick(['+','&minus;']);
+    const val = op==='+'? Math.abs(a)+Math.abs(b) : Math.abs(a)-Math.abs(b);
+    return {q:`|${sgn(a)}| ${op} |${sgn(b)}| =`, a:`<b>${val<0?'&minus;'+Math.abs(val):val}</b>`};
+  },
+
+  /* ---- Algebra 1 pack ---- */
+  evalExpr(d){
+    const a=nz(2,9), b=nz(-12,12), x=nz(-8,8);
+    return {q:`Evaluate ${lead(a,'x')}${term(b,'')} for x = ${x}.`, a:`<b>${a*x+b}</b>`};
+  },
+  inequalities(d){
+    const a=nz(2,d===3?9:6), x=nz(-8,8), b=nz(-12,12), op=pick(['&lt;','&gt;','&le;','&ge;']);
+    const c=a*x+b;
+    return {q:`Solve: ${a}x ${b<0?'&minus; '+Math.abs(b):'+ '+b} ${op} ${c}`, a:`<b>x ${op} ${x}</b>`};
+  },
+  exponentRules(d){
+    const a=R(2,8), b=R(2,8);
+    if(Math.random()<0.5) return {q:`Simplify: x${sup(a)} &middot; x${sup(b)}`, a:`<b>x${sup(a+b)}</b>`};
+    const hi=Math.max(a,b)+R(1,4), lo=Math.min(a,b);
+    return {q:`Simplify: ${frac('x'+sup(hi),'x'+sup(lo))}`, a:`<b>x${sup(hi-lo)}</b>`};
+  },
+  midpoint(d){
+    const x1=nz(-12,12), y1=nz(-12,12), x2=nz(-12,12), y2=nz(-12,12);
+    return {q:`Find the midpoint of (${x1}, ${y1}) and (${x2}, ${y2}).`,
+            a:`<b>(${(x1+x2)/2}, ${(y1+y2)/2})</b>`};
+  },
+
+  /* ---- Algebra 2 pack ---- */
+  polyMultiply(d){
+    const a=nz(-9,9), b=nz(-9,9);
+    const fa=a<0?`(x &minus; ${Math.abs(a)})`:`(x + ${a})`;
+    const fb=b<0?`(x &minus; ${Math.abs(b)})`:`(x + ${b})`;
+    return {q:`Expand: ${fa}${fb}`, a:`<b>x${sup(2)}${term(a+b,'x')}${term(a*b,'')}</b>`};
+  },
+  powerOfPower(d){
+    const a=R(2,6), b=R(2,5);
+    return {q:`Simplify: (x${sup(a)})${sup(b)}`, a:`<b>x${sup(a*b)}</b>`};
+  },
+  vertex(d){
+    const h=nz(-6,6), b=-2*h, c=nz(-9,9), k=c-h*h;
+    return {q:`Find the vertex of y = x${sup(2)}${term(b,'x')}${term(c,'')}`, a:`<b>(${h}, ${k})</b>`};
+  },
+  logEval(d){
+    const base=pick([2,3,5,10]), exp=R(2,d===3?5:4);
+    return {q:`Evaluate: log<sub>${base}</sub> ${Math.pow(base,exp)}`, a:`<b>${exp}</b>`};
+  },
+  expEquation(d){
+    const base=pick([2,3,5]), x=R(2,d===3?5:4);
+    return {q:`Solve: ${base}${sup('x')} = ${Math.pow(base,x)}`, a:`<b>x = ${x}</b>`};
+  },
+
+  /* ---- Geometry pack ---- */
+  parallelogram(d){
+    const b=R(3,d===3?40:20), h=R(3,d===3?40:20);
+    return {q:`Parallelogram with base ${b} and height ${h}. Find the area.`, a:`<b>A = ${b*h}</b>`};
+  },
+  trapezoid(d){
+    const b1=R(3,d===3?30:16), b2=R(3,d===3?30:16), h=R(2,d===3?20:12)*2;
+    return {q:`Trapezoid with parallel sides ${b1} and ${b2}, height ${h}. Find the area.`,
+            a:`<b>A = ${(b1+b2)*h/2}</b>`};
+  },
+  volumeBox(d){
+    const l=R(2,d===3?15:10), w=R(2,d===3?15:10), h=R(2,d===3?15:10);
+    return {q:`Rectangular prism ${l} &times; ${w} &times; ${h}. Find the volume.`, a:`<b>V = ${l*w*h}</b>`};
+  },
+  volumeCylinder(d){
+    const r=R(2,d===3?12:8), h=R(2,d===3?15:10);
+    return {q:`Cylinder with radius ${r} and height ${h}. Find the volume (in terms of &pi;).`,
+            a:`<b>V = ${r*r*h}&pi;</b>`};
+  },
+  triangleAngles(d){
+    const a=R(30,100), b=R(20,150-a), c=180-a-b;
+    return {q:`Two angles of a triangle are ${a}&deg; and ${b}&deg;. Find the third angle.`, a:`<b>${c}&deg;</b>`};
+  },
+
+  /* ---- Trigonometry pack ---- */
+  trigValuesRad(d){
+    const base={'&pi;/6':30,'&pi;/4':45,'&pi;/3':60,'&pi;/2':90};
+    const more={'2&pi;/3':120,'3&pi;/4':135,'5&pi;/6':150,'&pi;':180};
+    const choices=d===1?base:Object.assign({},base,more);
+    const rk=pick(Object.keys(choices)), ang=choices[rk];
+    const fn=pick(['sin','cos','tan']), key=fn==='sin'?'s':fn==='cos'?'c':'t';
+    return {q:`${fn} (${rk}) =`, a:`<b>${TRIG[ang][key]}</b>`};
+  },
+  radToDeg(d){
+    const opts=d===1?[['&pi;/6',30],['&pi;/4',45],['&pi;/3',60],['&pi;/2',90],['&pi;',180]]
+      :[['&pi;/6',30],['&pi;/4',45],['&pi;/3',60],['2&pi;/3',120],['3&pi;/4',135],['5&pi;/6',150],['&pi;',180],['3&pi;/2',270],['2&pi;',360]];
+    const [r,deg]=pick(opts);
+    return {q:`Convert ${r} radians to degrees.`, a:`<b>${deg}&deg;</b>`};
+  },
+  referenceAngle(d){
+    const th=pick(d===1?[120,135,150,210,225,240,300,315,330]:[100,110,160,190,200,250,290,310,320,340,135,150,225]);
+    let ref; if(th<90)ref=th; else if(th<180)ref=180-th; else if(th<270)ref=th-180; else ref=360-th;
+    return {q:`Find the reference angle for ${th}&deg;.`, a:`<b>${ref}&deg;</b>`};
+  },
+
+  /* ---- Calculus pack ---- */
+  limitPoly(d){
+    const a=nz(-4,4), c2=nz(1,5), c1=nz(-6,6), c0=nz(-9,9);
+    const poly=`${lead(c2,'x'+sup(2))}${term(c1,'x')}${term(c0,'')}`;
+    return {q:`lim<sub>x&rarr;${a}</sub> (${poly}) =`, a:`<b>${c2*a*a+c1*a+c0}</b>`};
+  },
+  secondDerivative(d){
+    const used=new Set(), terms=[], n=d===1?2:3;
+    for(let i=0;i<n;i++){ let p=R(2,d===3?6:5); while(used.has(p))p=R(2,6); used.add(p); terms.push([nz(2,6),p]); }
+    terms.sort((a,b)=>b[1]-a[1]);
+    const qh=terms.map((t,i)=>(i===0?lead(t[0],'x'+sup(t[1])):term(t[0],'x'+sup(t[1])))).join('');
+    const d2=terms.map(t=>[t[0]*t[1]*(t[1]-1), t[1]-2]);
+    const ah=d2.map((t,i)=>{ const vp=t[1]===0?'':(t[1]===1?'x':'x'+sup(t[1])); return i===0?lead(t[0],vp):term(t[0],vp); }).join('');
+    return {q:`f(x) = ${qh}&nbsp;&nbsp; f&Prime;(x) =`, a:`<b>${ah}</b>`};
+  },
+  tangentSlope(d){
+    const used=new Set(), terms=[];
+    for(let i=0;i<2;i++){ let p=R(1,d===3?4:3); while(used.has(p))p=R(1,4); used.add(p); terms.push([nz(2,6),p]); }
+    terms.sort((a,b)=>b[1]-a[1]);
+    const qh=terms.map((t,i)=>(i===0?lead(t[0],'x'+sup(t[1])):term(t[0],'x'+sup(t[1])))).join('');
+    const a=nz(-3,3);
+    const slope=terms.reduce((s,t)=>s+t[0]*t[1]*Math.pow(a,t[1]-1),0);
+    return {q:`Slope of the tangent to f(x) = ${qh} at x = ${a}.`, a:`<b>${slope}</b>`};
+  },
+  derivTrig(d){
+    const opts=[['sin x','cos x'],['cos x','&minus;sin x'],['tan x','sec<sup>2</sup> x'],
+      [`e${sup('x')}`,`e${sup('x')}`],['ln x', frac(1,'x')]];
+    const [f,df]=pick(opts);
+    return {q:`d/dx [ ${f} ] =`, a:`<b>${df}</b>`};
+  },
+
+  /* ================= EXPANSION PACK 2 ================= */
+
+  /* ---- Pre-Algebra ---- */
+  scientificNotation(d){
+    const s=R(10,99)/10, e=R(2,d===3?8:6);
+    const num=Math.round(R(10,99)*Math.pow(10,e-1));   // integer by construction
+    const sig=num/Math.pow(10,e);                        // 1 <= sig < 10
+    const sigStr=(+sig.toFixed(1)).toString();
+    return {q:`Write ${num} in scientific notation.`, a:`<b>${sigStr} &times; 10${sup(e)}</b>`};
+  },
+  decimalOps(d){
+    const f1=v=>(v/10).toFixed(1);
+    if(Math.random()<0.5){
+      const A=R(10,999), B=R(10,999), op=pick(['+','&minus;']);
+      const r = op==='+'? A+B : A-B;
+      return {q:`${f1(A)} ${op} ${f1(B)} =`, a:`<b>${r<0?'&minus;'+(Math.abs(r)/10).toFixed(1):(r/10).toFixed(1)}</b>`};
+    }
+    const A=R(11,99), k=R(2,9);
+    return {q:`${f1(A)} &times; ${k} =`, a:`<b>${(A*k/10).toFixed(1)}</b>`};
+  },
+  meanMedianMode(d){
+    const n=d===1?5:pick([5,7]);
+    const type=pick(['mean','median','mode']);
+    if(type==='mode'){
+      const mv=R(1,20), list=[mv,mv,mv], used=new Set([mv]);
+      while(list.length<n){ const v=R(1,20); if(!used.has(v)){ used.add(v); list.push(v);} }
+      return {q:`Find the mode: ${shuffled(list).join(', ')}`, a:`<b>${mv}</b>`};
+    }
+    if(type==='mean'){
+      const M=R(5,15), list=[]; let sum=0;
+      for(let i=0;i<n-1;i++){ const v=R(1,2*M); list.push(v); sum+=v; }
+      const last=n*M-sum;
+      if(last>=1 && last<=40){ list.push(last); return {q:`Find the mean: ${shuffled(list).join(', ')}`, a:`<b>${M}</b>`}; }
+    }
+    const list=[]; for(let i=0;i<n;i++) list.push(R(1,30));
+    const sorted=[...list].sort((a,b)=>a-b);
+    return {q:`Find the median: ${list.join(', ')}`, a:`<b>${sorted[(n-1)/2]}</b>`};
+  },
+  probability(d){
+    const r=R(1,9), b=R(1,9), tot=r+b; const [n,m]=reduceFrac(r,tot);
+    return {q:`A bag has ${r} red and ${b} blue marbles. Find P(red).`, a:`<b>${fracStr(n,m)}</b>`};
+  },
+
+  /* ---- Algebra 1 ---- */
+  arithmeticSeq(d){
+    const a1=nz(-9,9), diff=nz(-6,6), k=R(6,d===3?20:12);
+    const terms=[a1,a1+diff,a1+2*diff,a1+3*diff];
+    return {q:`Find the ${k}th term: ${terms.join(', ')}, ...`, a:`<b>${a1+(k-1)*diff}</b>`};
+  },
+  factorGCF(d){
+    const g=R(2,9); let p=nz(2,9), q=nz(-9,9);
+    while(gcd(Math.abs(p),Math.abs(q))!==1) q=nz(-9,9);
+    return {q:`Factor: ${lead(g*p,'x')}${term(g*q,'')}`, a:`<b>${g}(${lead(p,'x')}${term(q,'')})</b>`};
+  },
+
+  /* ---- Algebra 2 ---- */
+  geometricSeq(d){
+    const a1=nz(1,5), r=pick(d===3?[2,3,4]:[2,3]), k=R(4,d===3?7:6);
+    const terms=[a1,a1*r,a1*r*r,a1*r*r*r];
+    return {q:`Find the ${k}th term: ${terms.join(', ')}, ...`, a:`<b>${a1*Math.pow(r,k-1)}</b>`};
+  },
+  iPowers(d){
+    const n=R(2,d===3?40:16), vals=['1','i','&minus;1','&minus;i'];
+    return {q:`Simplify: i${sup(n)}`, a:`<b>${vals[n%4]}</b>`};
+  },
+
+  /* ---- Geometry ---- */
+  polygonAngles(d){
+    const names={3:'triangle',4:'quadrilateral',5:'pentagon',6:'hexagon',7:'heptagon',8:'octagon',9:'nonagon',10:'decagon'};
+    const sides=R(3,d===3?12:8);
+    const nm=names[sides]?` (${names[sides]})`:'';
+    return {q:`Find the sum of the interior angles of a polygon with ${sides} sides${nm}.`, a:`<b>${(sides-2)*180}&deg;</b>`};
+  },
+  distanceFormula(d){
+    const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[20,21,29]]);
+    const x1=nz(-8,8), y1=nz(-8,8), x2=x1+t[0]*pick([1,-1]), y2=y1+t[1]*pick([1,-1]);
+    return {q:`Find the distance between (${x1}, ${y1}) and (${x2}, ${y2}).`, a:`<b>${t[2]}</b>`};
+  },
+
+  /* ---- Calculus ---- */
+  avgRateOfChange(d){
+    const c=nz(1,4), e=nz(-9,9), a=nz(-5,5); let b=nz(-5,5); while(b===a) b=nz(-5,5);
+    const poly=`${lead(c,'x'+sup(2))}${term(e,'')}`;
+    return {q:`Average rate of change of f(x) = ${poly} on [${Math.min(a,b)}, ${Math.max(a,b)}].`, a:`<b>${c*(a+b)}</b>`};
+  },
+
+  /* ================= UNIVERSITY PACK ================= */
+
+  /* ---- Linear Algebra (MATH 242) ---- */
+  matrixAdd(d){
+    const hi=d===3?12:9, A=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)], B=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)];
+    return {q:`${mat(A)} + ${mat(B)} =`, a:`<b>${mat(A.map((x,i)=>x+B[i]))}</b>`};
+  },
+  determinant2(d){
+    const hi=d===3?12:9, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
+    return {q:`det ${mat([a,b,c,e])} =`, a:`<b>${a*e-b*c}</b>`};
+  },
+  matrixMultiply(d){
+    const hi=d===1?5:d===2?7:9;
+    const A=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)], B=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)];
+    const P=[A[0]*B[0]+A[1]*B[2], A[0]*B[1]+A[1]*B[3], A[2]*B[0]+A[3]*B[2], A[2]*B[1]+A[3]*B[3]];
+    return {q:`${mat(A)} ${mat(B)} =`, a:`<b>${mat(P)}</b>`};
+  },
+
+  /* ---- Complex Analysis (MATH 485) ---- */
+  complexAdd(d){
+    const hi=d===3?12:9, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
+    return {q:`(${cplx(a,b)}) + (${cplx(c,e)}) =`, a:`<b>${cplx(a+c,b+e)}</b>`};
+  },
+  complexMultiply(d){
+    const hi=d===1?5:d===2?8:11, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
+    return {q:`(${cplx(a,b)})(${cplx(c,e)}) =`, a:`<b>${cplx(a*c-b*e, a*e+b*c)}</b>`};
+  },
+  complexModulus(d){
+    const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[7,24,25],[9,12,15]]);
+    const re=t[0]*pick([1,-1]), im=t[1]*pick([1,-1]);
+    return {q:`| ${cplx(re,im)} | =`, a:`<b>${t[2]}</b>`};
+  },
+
+  /* ---- Number Theory (MATH 367) ---- */
+  modArithmetic(d){
+    const m=R(2,d===3?20:12), a=R(m+1,m*10);
+    return {q:`${a} mod ${m} =`, a:`<b>${a%m}</b>`};
+  },
+  isPrime(d){
+    const cand=R(2,d===3?120:50);
+    const prime = cand<2?false:(()=>{ for(let i=2;i*i<=cand;i++) if(cand%i===0) return false; return true; })();
+    return {q:`Is ${cand} prime?`, a:`<b>${prime?'Yes':'No'}</b>`};
+  },
+
+  /* ---- Probability (STAT 211) ---- */
+  combinations(d){
+    const n=R(4,d===3?10:7), r=R(1,n-1);
+    return {q:`C(${n}, ${r}) =`, a:`<b>${factorial(n)/(factorial(r)*factorial(n-r))}</b>`};
+  },
+  permutations(d){
+    const n=R(3,d===3?9:6), r=R(1,Math.min(n,4));
+    return {q:`P(${n}, ${r}) =`, a:`<b>${factorial(n)/factorial(n-r)}</b>`};
+  },
+
+  /* ---- Statistics (STAT 302) ---- */
+  zScore(d){
+    const mu=R(10,60), sigma=pick([2,3,4,5]), k=nz(-3,3), x=mu+k*sigma;
+    return {q:`A data set has mean ${mu} and standard deviation ${sigma}. Find the z-score of ${x}.`, a:`<b>${k}</b>`};
+  },
+
+  /* ---- Financial Mathematics (FM 321) ---- */
+  simpleInterest(d){
+    const P=R(1,20)*100, r=R(1,12), t=R(1,8);
+    return {q:`Find the simple interest on $${P} at ${r}% per year for ${t} years.`, a:`<b>$${P*r*t/100}</b>`};
+  },
+  compoundInterest(d){
+    const P=R(1,20)*100, r=R(2,10), t=R(2,d===3?8:5);
+    return {q:`$${P} is invested at ${r}% compounded annually for ${t} years. Find the amount.`, a:`<b>$${(P*Math.pow(1+r/100,t)).toFixed(2)}</b>`};
+  },
+  presentValue(d){
+    const FV=R(5,40)*100, r=R(2,10), t=R(2,d===3?8:5);
+    return {q:`Find the present value of $${FV} due in ${t} years at ${r}% annual interest.`, a:`<b>$${(FV/Math.pow(1+r/100,t)).toFixed(2)}</b>`};
+  }
+};
+
+/* ============================ CURRICULUM ============================ */
+/* human-readable label for every generator topic */
+const TOPIC_LABELS = {
+  intAddSub:'Integer add / subtract', intMulDiv:'Integer multiply / divide', orderOps:'Order of operations',
+  fracAddSub:'Add / subtract fractions', fracMul:'Multiply fractions', simplifyRatio:'Simplify ratios',
+  proportions:'Ratios & proportions', rounding:'Rounding', percentOf:'Percent of a number',
+  fracToDecimal:'Fraction to decimal', gcfLcm:'GCF & LCM', powers:'Exponents', absValue:'Absolute value',
+  scientificNotation:'Scientific notation', decimalOps:'Decimal operations',
+  oneStep:'One-step equations', twoStep:'Two-step equations', multiStep:'Multi-step equations',
+  combineLike:'Combine like terms', distribute:'Distributive property', evalExpr:'Evaluate expressions',
+  inequalities:'Solve inequalities', exponentRules:'Exponent rules', factorGCF:'Factor out the GCF',
+  factorQuad:'Factor quadratics', solveQuad:'Solve quadratics', simplifyRadical:'Simplify radicals',
+  polyMultiply:'Multiply binomials (FOIL)', powerOfPower:'Power of a power', vertex:'Vertex of a parabola',
+  logEval:'Evaluate logarithms', expEquation:'Exponential equations', arithmeticSeq:'Arithmetic sequences',
+  geometricSeq:'Geometric sequences', iPowers:'Powers of i',
+  slope:'Slope from two points', midpoint:'Midpoint', distanceFormula:'Distance formula',
+  rectangle:'Rectangle area & perimeter', triangleArea:'Triangle area', circle:'Circle area & circumference',
+  pythagorean:'Pythagorean theorem', parallelogram:'Parallelogram area', trapezoid:'Trapezoid area',
+  volumeBox:'Volume of a prism', volumeCylinder:'Volume of a cylinder', triangleAngles:'Triangle angle sum',
+  polygonAngles:'Polygon interior angles',
+  trigValues:'Special-angle values', trigRatios:'Right-triangle ratios', degRad:'Degrees to radians',
+  trigValuesRad:'Radian-angle values', radToDeg:'Radians to degrees', referenceAngle:'Reference angles',
+  derivative:'Power-rule derivatives', integral:'Power-rule integrals', defIntegral:'Definite integrals',
+  limitPoly:'Polynomial limits', secondDerivative:'Second derivatives', tangentSlope:'Tangent-line slope',
+  derivTrig:'Derivatives of functions', avgRateOfChange:'Average rate of change',
+  meanMedianMode:'Mean, median, mode', probability:'Probability', zScore:'z-scores',
+  combinations:'Combinations (nCr)', permutations:'Permutations (nPr)',
+  matrixAdd:'Matrix addition', determinant2:'Determinant (2×2)', matrixMultiply:'Matrix multiplication (2×2)',
+  complexAdd:'Add complex numbers', complexMultiply:'Multiply complex numbers', complexModulus:'Modulus of a complex number',
+  modArithmetic:'Modular arithmetic', isPrime:'Prime numbers',
+  simpleInterest:'Simple interest', compoundInterest:'Compound interest', presentValue:'Present value',
+};
+/* majors -> courses (code, title, topics). Empty topics = no auto-generated problems yet. */
+const CURRICULUM = [
+  { major:'Foundation (Shared)', courses:[
+    { code:'MATH 130', title:'Fundamentals of Mathematics', topics:['intAddSub','intMulDiv','orderOps','fracAddSub','fracMul','fracToDecimal','decimalOps','rounding','percentOf','powers','absValue','gcfLcm','scientificNotation','simplifyRatio','proportions'] },
+    { code:'(prep)', title:'Algebra (preparatory)', topics:['oneStep','twoStep','multiStep','combineLike','distribute','evalExpr','inequalities','exponentRules','factorGCF','factorQuad','solveQuad','simplifyRadical','polyMultiply','powerOfPower','vertex','logEval','expEquation','arithmeticSeq','geometricSeq','iPowers'] },
+    { code:'(prep)', title:'Geometry (preparatory)', topics:['rectangle','triangleArea','circle','pythagorean','parallelogram','trapezoid','volumeBox','volumeCylinder','triangleAngles','polygonAngles','distanceFormula','midpoint','slope'] },
+    { code:'(prep)', title:'Trigonometry (preparatory)', topics:['trigValues','trigRatios','degRad','trigValuesRad','radToDeg','referenceAngle'] },
+    { code:'MATH 140', title:'Calculus', topics:['derivative','integral','defIntegral','limitPoly','tangentSlope','secondDerivative','avgRateOfChange','derivTrig'] },
+    { code:'STAT 101', title:'Statistics', topics:['meanMedianMode','probability','zScore'] },
+    { code:'CS 130', title:'Computer skills', topics:[] },
+    { code:'PHYS 101', title:'General Physics', topics:[] },
+  ]},
+  { major:'Mathematics', courses:[
+    { code:'MATH 212', title:'Introduction to Integral Calculus', topics:['integral','defIntegral'] },
+    { code:'MATH 231', title:'Differential and Integral Calculus', topics:['derivative','secondDerivative','tangentSlope'] },
+    { code:'MATH 233', title:'Foundations of Mathematics', topics:[] },
+    { code:'MATH 242', title:'Linear Algebra', topics:['matrixAdd','matrixMultiply','determinant2','systems'] },
+    { code:'MATH 353', title:'Numerical Analysis', topics:[] },
+    { code:'MATH 333', title:'Ordinary Differential Equations', topics:[] },
+    { code:'MATH 315', title:'Partial Differential Equations', topics:[] },
+    { code:'MATH 335', title:'Vector Analysis', topics:[] },
+    { code:'MATH 383', title:'Real Analysis', topics:[] },
+    { code:'MATH 473', title:'Topology', topics:[] },
+    { code:'MATH 475', title:'Differential Geometry', topics:[] },
+    { code:'MATH 343', title:'Group Theory', topics:[] },
+    { code:'MATH 444', title:'Rings and Fields', topics:[] },
+    { code:'MATH 485', title:'Complex Analysis', topics:['complexAdd','complexMultiply','complexModulus','iPowers'] },
+    { code:'MATH 367', title:'Number Theory', topics:['gcfLcm','modArithmetic','isPrime'] },
+    { code:'MATH 468', title:'Graph Theory', topics:[] },
+    { code:'MATH 417', title:'Special Functions', topics:[] },
+    { code:'MATH 432', title:'Functional Analysis', topics:[] },
+  ]},
+  { major:'Statistics', courses:[
+    { code:'STAT 211', title:'Probability Theory 1', topics:['probability','combinations','permutations'] },
+    { code:'STAT 312', title:'Probability Theory 2', topics:[] },
+    { code:'STAT 302', title:'Statistical Methods', topics:['meanMedianMode','zScore'] },
+    { code:'STAT 303', title:'Regression Analysis', topics:['slope'] },
+    { code:'STAT 321', title:'Statistical Inference', topics:[] },
+    { code:'STAT 361', title:'Operations Research 1', topics:[] },
+    { code:'STAT 413', title:'Stochastic Processes', topics:[] },
+    { code:'STAT 405', title:'Design & Analysis of Experiments', topics:[] },
+    { code:'STAT 451', title:'Sampling Theory', topics:[] },
+  ]},
+  { major:'Financial Mathematics', courses:[
+    { code:'FM 321', title:'Elementary and Financial Mathematics', topics:['simpleInterest','compoundInterest','presentValue','percentOf'] },
+    { code:'FM 371', title:'Economic and Financial Mathematics', topics:[] },
+    { code:'FM 372', title:'Quantitative Finance', topics:[] },
+    { code:'FM 422', title:'Options, Futures and Derivatives', topics:[] },
+    { code:'FM 423', title:'Computational Financial Mathematics', topics:[] },
+    { code:'FM 471', title:'Derivatives of Financial Mathematics', topics:[] },
+  ]},
+];
+/* flat search index over every topic in the curriculum */
+const INDEX = [];
+CURRICULUM.forEach((m,mi)=>m.courses.forEach((c,ci)=>c.topics.forEach(t=>{
+  INDEX.push({ mi, ci, major:m.major, code:c.code, ctitle:c.title, topic:t, label:TOPIC_LABELS[t]||t });
+})));
+function courseAt(mi,ci){ return CURRICULUM[mi] && CURRICULUM[mi].courses[ci]; }
+
+/* ============================ UI WIRING (Test Builder) ============================ */
+const el = id => document.getElementById(id);
+const DIFF_NAME = ['', 'Easy', 'Medium', 'Hard'];
+let test  = { sections: [] };   // each: {course, topic, label, count, diff, mc, custom?, items:[...]}
+let state = { sheets: [], showKey: false };
+const SPACE = {1:30, 2:46, 3:72};
+const LONG = ['rectangle','triangleArea','circle','pythagorean','slope','derivative',
+              'systems','proportions','integral','defIntegral','trigRatios',
+              'rounding','percentOf','fracToDecimal','gcfLcm','evalExpr','inequalities','midpoint',
+              'polyMultiply','vertex','parallelogram','trapezoid','volumeBox','volumeCylinder',
+              'triangleAngles','radToDeg','referenceAngle','limitPoly','secondDerivative','tangentSlope',
+              'scientificNotation','meanMedianMode','probability','arithmeticSeq','geometricSeq',
+              'polygonAngles','distanceFormula','avgRateOfChange'];
+function shuffled(arr){ const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a; }
+const strip = h => String(h).replace(/<\/?b>/g,'');
+
+function buildChoices(correctHtml, gen, d){
+  const correct = strip(correctHtml);
+  const seen = new Set([correct]); const distract=[];
+  for(let t=0; t<50 && distract.length<3; t++){
+    const o = strip(gen(d).a);
+    if(!seen.has(o)){ seen.add(o); distract.push(o); }
+  }
+  const opts = [{html:correct, correct:true}, ...distract.map(x=>({html:x, correct:false}))];
+  return shuffled(opts);
+}
+function fmtCustom(s){ return s.replace(/\^(-?\d+)/g, (m,p)=>sup(p)); }
+function parseCustom(){
+  const raw=(el('custom').value||'').trim(); if(!raw) return [];
+  return raw.split('\n').map(l=>l.trim()).filter(Boolean).map(line=>{
+    const i=line.indexOf('|');
+    const q=fmtCustom((i<0?line:line.slice(0,i)).trim());
+    const a=i<0 ? '<b>&mdash;</b>' : `<b>${fmtCustom(line.slice(i+1).trim())}</b>`;
+    return {q, a, custom:true};
+  });
+}
+/* generate the items for one section */
+function genItems(topic, count, d, mc){
+  const gen=G[topic]; const items=[];
+  for(let i=0;i<count;i++){ const it=gen(d); if(mc) it.choices=buildChoices(it.a, gen, d); items.push(it); }
+  return items;
+}
+
+/* --- Major / course / topic selectors --- */
+function courseOptLabel(c){ return (c.code&&c.code!=='(prep)'?c.code+' · ':'')+c.title+(c.topics.length?'':' — (empty)'); }
+function buildMajorSelect(){
+  const s=el('bMajor'); s.innerHTML='';
+  CURRICULUM.forEach((m,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=m.major; s.appendChild(o); });
+}
+function buildCourseSelect(){
+  const s=el('bCourse'); s.innerHTML=''; const mi=+el('bMajor').value;
+  CURRICULUM[mi].courses.forEach((c,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=courseOptLabel(c); s.appendChild(o); });
+}
+function buildTopicSelect(){
+  const s=el('bTopic'); s.innerHTML=''; const c=courseAt(+el('bMajor').value,+el('bCourse').value);
+  if(!c||!c.topics.length){
+    const o=document.createElement('option'); o.value=''; o.textContent='— no auto-generated topics yet —'; s.appendChild(o);
+    el('addSection').disabled=true; return;
+  }
+  el('addSection').disabled=false;
+  c.topics.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=TOPIC_LABELS[t]||t; s.appendChild(o); });
+}
+
+/* --- Search by topic / course code / course title / major --- */
+function runSearch(){
+  const q=(el('bSearch').value||'').trim().toLowerCase(); const box=el('searchResults');
+  if(!q){ box.hidden=true; box.innerHTML=''; return; }
+  const hits=INDEX.filter(x=> x.label.toLowerCase().includes(q) || x.code.toLowerCase().includes(q)
+    || x.ctitle.toLowerCase().includes(q) || x.major.toLowerCase().includes(q)).slice(0,24);
+  box.hidden=false;
+  box.innerHTML = hits.length ? hits.map(h=>
+    `<button class="sr" data-mi="${h.mi}" data-ci="${h.ci}" data-t="${h.topic}"><b>${h.label}</b><span>${h.code&&h.code!=='(prep)'?h.code+' · ':''}${h.ctitle} · ${h.major}</span></button>`).join('')
+    : '<div class="sections-empty">No matching topics. (Theory-only courses have no auto-generated problems.)</div>';
+  box.querySelectorAll('button.sr').forEach(b=>b.onclick=()=>{
+    el('bMajor').value=b.dataset.mi; buildCourseSelect();
+    el('bCourse').value=b.dataset.ci; buildTopicSelect();
+    el('bTopic').value=b.dataset.t;
+    el('bSearch').value=''; box.hidden=true; box.innerHTML='';
+  });
+}
+
+/* --- Section (part) management --- */
+function addSection(){
+  const mi=+el('bMajor').value, ci=+el('bCourse').value; const c=courseAt(mi,ci); const topic=el('bTopic').value;
+  if(!c||!topic) return;
+  const d=parseInt(el('bDiff').value)||2;
+  const count=Math.max(1,Math.min(40, parseInt(el('bCount').value)||10));
+  const mc=el('bMc').checked;
+  test.sections.push({ major:CURRICULUM[mi].major, code:c.code, title:c.title, topic,
+    label:TOPIC_LABELS[topic]||topic, count, diff:d, mc, items:genItems(topic,count,d,mc) });
+  buildVersions(); renderSections(); render();
+}
+function addCustomPart(){
+  const items=parseCustom();
+  if(!items.length){ const d=el('custom').closest('details'); if(d) d.open=true; el('custom').focus(); return; }
+  test.sections.push({custom:true, label:'Custom questions', count:items.length, items});
+  buildVersions(); renderSections(); render();
+}
+function removeSection(i){ test.sections.splice(i,1); buildVersions(); renderSections(); render(); }
+function regenSection(i){
+  const s=test.sections[i]; if(s.custom) return;
+  s.items=genItems(s.topic, s.count, s.diff, s.mc);
+  buildVersions(); render();
+}
+function moveSection(i,dir){
+  const j=i+dir; if(j<0||j>=test.sections.length) return;
+  [test.sections[i],test.sections[j]]=[test.sections[j],test.sections[i]];
+  buildVersions(); renderSections(); render();
+}
+function dupSection(i){
+  const s=test.sections[i];
+  const copy = s.custom ? {...s, items:s.items.slice()} : {...s, items:genItems(s.topic,s.count,s.diff,s.mc)};
+  test.sections.splice(i+1,0,copy); buildVersions(); renderSections(); render();
+}
+function renderSections(){
+  const box=el('sections');
+  if(!test.sections.length){
+    box.innerHTML='<div class="sections-empty">No parts yet — pick a branch and topic above, then “Add to test”.</div>'; return;
+  }
+  const last=test.sections.length-1;
+  box.innerHTML=test.sections.map((s,i)=>{
+    const L=String.fromCharCode(65+i);
+    const meta = s.custom ? 'Custom · '+s.count+' Q'
+      : `${s.code&&s.code!=='(prep)'?s.code+' · ':''}${s.title} · ${s.count} Q · ${DIFF_NAME[s.diff]}${s.mc?' · MC':''}`;
+    return `<span class="section-pill">
+      <span class="part-letter">${L}</span>
+      <span class="pl">${s.label}</span>
+      <span class="meta2">${meta}</span>
+      <button data-u="${i}" title="Move up"${i===0?' disabled':''}>&#8593;</button>
+      <button data-dn="${i}" title="Move down"${i===last?' disabled':''}>&#8595;</button>
+      <button data-dup="${i}" title="Duplicate this part">&#10697;</button>
+      ${s.custom?'':`<button data-r="${i}" title="Regenerate this part">&#8635;</button>`}
+      <button data-x="${i}" title="Remove this part">&times;</button>
+    </span>`;
+  }).join('');
+  box.querySelectorAll('button[data-x]').forEach(b=>b.onclick=()=>removeSection(+b.dataset.x));
+  box.querySelectorAll('button[data-r]').forEach(b=>b.onclick=()=>regenSection(+b.dataset.r));
+  box.querySelectorAll('button[data-u]').forEach(b=>b.onclick=()=>moveSection(+b.dataset.u,-1));
+  box.querySelectorAll('button[data-dn]').forEach(b=>b.onclick=()=>moveSection(+b.dataset.dn,1));
+  box.querySelectorAll('button[data-dup]').forEach(b=>b.onclick=()=>dupSection(+b.dataset.dup));
+}
+
+/* --- Build versions (scramble questions within each part) --- */
+function buildVersions(){
+  const nV=Math.max(1,Math.min(6, parseInt(el('versions').value)||1));
+  state.sheets=[];
+  for(let v=0;v<nV;v++){
+    state.sheets.push(test.sections.map(s=>({ ...s, items: v===0 ? s.items : shuffled(s.items) })));
+  }
+}
+
+/* --- Render the test --- */
+function partCourseName(p){ return p.custom ? 'Custom' : (p.code&&p.code!=='(prep)'?p.code+' — ':'')+p.title; }
+function sheetHTML(parts, vLabel){
+  const keyMode=el('keyMode').value;
+  const today=new Date().toLocaleDateString();
+  const sp=SPACE[parseInt(el('spacing').value)||2];
+  const total=parts.reduce((n,p)=>n+p.items.length,0);
+  const title=(el('title').value||'').trim() || 'Math Test';
+  const multiPart=parts.length>1;
+
+  const partsHtml=parts.map((p,pi)=>{
+    const long=p.custom?false:LONG.includes(p.topic);
+    const L=String.fromCharCode(65+pi);
+    const det=p.custom?'Custom':`${partCourseName(p)}${p.diff?' · '+DIFF_NAME[p.diff]:''}`;
+    const head=multiPart ? `<div class="part-head"><span class="plet">Part ${L}.</span> ${p.label}
+      <span class="pdet">${det}</span></div>` : '';
+    const lis=p.items.map(it=>{
+      const ch = it.choices ? `<div class="choices">${it.choices.map((c,i)=>
+        `<span class="opt">(${String.fromCharCode(65+i)}) ${c.html}</span>`).join('')}</div>` : '';
+      return `<li style="min-height:${sp}px"><span class="qbody">${it.q}${ch}</span></li>`;
+    }).join('');
+    return `<div class="part">${head}<ol class="problems ${long?'single':''}">${lis}</ol></div>`;
+  }).join('');
+
+  const flat=[]; parts.forEach(p=>p.items.forEach(it=>flat.push(it)));
+  const ans=flat.map(it=>{
+    if(it.choices){ const idx=it.choices.findIndex(c=>c.correct);
+      return `<li><b>${String.fromCharCode(65+idx)}</b></li>`; }
+    return `<li>${it.a}</li>`;
+  }).join('');
+
+  const sub = multiPart
+    ? `${parts.length} parts &nbsp;·&nbsp; ${total} questions`
+    : (parts[0] ? `${partCourseName(parts[0])} &nbsp;·&nbsp; ${parts[0].label} &nbsp;·&nbsp; ${total} questions` : '0 questions');
+
+  return `<div class="sheet">
+    <div class="sheet-head">
+      <div>
+        <h2 class="sheet-title">${title}</h2>
+        <div class="sheet-sub">${sub}${vLabel?' &nbsp;·&nbsp; '+vLabel:''}</div>
+      </div>
+      <div class="meta">
+        <div><b>Name</b> _______________</div>
+        <div><b>Date</b> ${today} &nbsp; <b>Period</b> ___</div>
+        <div class="score">Score: ____ / ${total}</div>
+      </div>
+    </div>
+    <div class="problemset">${partsHtml}</div>
+    ${(keyMode==='none'||!flat.length) ? '' : `<div class="keywrap ${keyMode==='same'?'same':''}" ${state.showKey?'':'hidden'}>
+      <div class="key-head"><h3>Answer Key${vLabel?' &mdash; '+vLabel:''}</h3></div>
+      <ol class="answers">${ans}</ol>
+    </div>`}
+  </div>`;
+}
+function render(){
+  if(!test.sections.length){
+    el('out').innerHTML='<div class="sheet"><div class="sheet-sub" style="text-align:center;padding:48px 0">Your test is empty. Add a topic above to begin building.</div></div>';
+    return;
+  }
+  const multi=state.sheets.length>1;
+  el('out').innerHTML=state.sheets.map((parts,v)=>
+    sheetHTML(parts, multi?`Version ${String.fromCharCode(65+v)}`:'')).join('');
+}
+
+/* ---------------- Presentation mode (whole test, flattened) ---------------- */
+let pIdx=0, pShow=false, pItems=[];
+function flatItems(){ const f=[]; (state.sheets[0]||[]).forEach(p=>p.items.forEach(it=>f.push(it))); return f; }
+function openPresent(){
+  pItems=flatItems(); if(!pItems.length) return;
+  pIdx=0; pShow=false; el('present').classList.add('on'); drawPresent();
+}
+function closePresent(){ el('present').classList.remove('on'); }
+function drawPresent(){
+  const it=pItems[pIdx];
+  const ch = it.choices ? `<div class="pchoices">${it.choices.map((c,i)=>
+    `<span>(${String.fromCharCode(65+i)}) ${c.html}</span>`).join('')}</div>` : '';
+  const ansTxt = it.choices
+    ? String.fromCharCode(65+it.choices.findIndex(c=>c.correct)) : strip(it.a);
+  el('present').innerHTML=`
+    <div class="pnum">Question ${pIdx+1} / ${pItems.length}</div>
+    <div class="pbody">
+      <div class="pq">${it.q}</div>${ch}
+      <div class="pans">${pShow?ansTxt:''}</div>
+    </div>
+    <div class="pbar">
+      <button class="btn" id="pPrev">&lsaquo; Prev</button>
+      <button class="btn primary" id="pReveal">${pShow?'Hide':'Show'} answer</button>
+      <button class="btn" id="pNext">Next &rsaquo;</button>
+      <button class="btn" id="pClose">Close (Esc)</button>
+    </div>`;
+  el('pPrev').onclick=()=>{ if(pIdx>0){pIdx--;pShow=false;drawPresent();} };
+  el('pNext').onclick=()=>{ if(pIdx<pItems.length-1){pIdx++;pShow=false;drawPresent();} };
+  el('pReveal').onclick=()=>{ pShow=!pShow; drawPresent(); };
+  el('pClose').onclick=closePresent;
+}
+document.addEventListener('keydown',e=>{
+  if(!el('present').classList.contains('on')) return;
+  if(e.key==='ArrowLeft') el('pPrev')&&el('pPrev').click();
+  else if(e.key==='ArrowRight') el('pNext')&&el('pNext').click();
+  else if(e.key===' '){ e.preventDefault(); el('pReveal')&&el('pReveal').click(); }
+  else if(e.key==='Escape') closePresent();
+});
+
+/* ---------------- Save / load whole tests (localStorage) ---------------- */
+const LS='mwg_tests_v1';
+function loadStore(){ try{ return JSON.parse(localStorage.getItem(LS)||'{}'); }catch(e){ return {}; } }
+function saveStore(o){ try{ localStorage.setItem(LS, JSON.stringify(o)); }catch(e){} }
+function refreshSaved(){
+  const o=loadStore(); const names=Object.keys(o).sort();
+  el('saved').innerHTML='<option value="">— load a saved test —</option>'+
+    names.map(k=>`<option value="${k.replace(/"/g,'&quot;')}">${k}</option>`).join('');
+}
+function doSave(){
+  const name=(el('saveName').value||'').trim(); if(!name){ el('saveName').focus(); return; }
+  const o=loadStore();
+  o[name]={ sections:test.sections, title:el('title').value, spacing:el('spacing').value,
+    versions:el('versions').value, keyMode:el('keyMode').value,
+    custom:el('custom').value, showKey:state.showKey };
+  saveStore(o); refreshSaved(); el('saved').value=name; el('saveName').value='';
+}
+function doLoad(name){
+  const s=loadStore()[name]; if(!s) return;
+  test.sections=s.sections||[];
+  el('title').value=s.title||''; el('spacing').value=s.spacing||'2';
+  el('versions').value=s.versions||'1'; el('keyMode').value=s.keyMode||'separate';
+  el('custom').value=s.custom||''; state.showKey=!!s.showKey;
+  buildVersions(); renderSections(); render();
+}
+function doDelete(){
+  const name=el('saved').value; if(!name) return;
+  const o=loadStore(); delete o[name]; saveStore(o); refreshSaved();
+}
+function testPayload(){
+  return { sections:test.sections, title:el('title').value, spacing:el('spacing').value,
+    versions:el('versions').value, keyMode:el('keyMode').value, custom:el('custom').value };
+}
+function applyPayload(s){
+  test.sections=s.sections||[];
+  el('title').value=s.title||''; el('spacing').value=s.spacing||'2';
+  el('versions').value=s.versions||'1'; el('keyMode').value=s.keyMode||'separate';
+  el('custom').value=s.custom||''; state.showKey=false;
+  buildVersions(); renderSections(); render();
+}
+function exportTest(){
+  const blob=new Blob([JSON.stringify(testPayload(),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=((el('title').value||'math-test').trim().replace(/\s+/g,'-')||'math-test')+'.json';
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+function importTest(file){
+  const reader=new FileReader();
+  reader.onload=e=>{ try{ applyPayload(JSON.parse(e.target.result)); }
+    catch(err){ el('sections').insertAdjacentHTML('beforeend','<div class="sections-empty" style="color:#c0392b">Could not read that file.</div>'); } };
+  reader.readAsText(file);
+}
+
+/* ---------------- Bindings ---------------- */
+el('bMajor').onchange=()=>{ buildCourseSelect(); buildTopicSelect(); };
+el('bCourse').onchange=buildTopicSelect;
+el('bSearch').oninput=runSearch;
+el('addSection').onclick=addSection;
+el('addCustom').onclick=addCustomPart;
+el('print').onclick=()=>window.print();
+el('toggleKey').onclick=()=>{ state.showKey=!state.showKey; render(); };
+el('versions').onchange=()=>{ buildVersions(); render(); };
+el('spacing').onchange=render;
+el('keyMode').onchange=render;
+el('title').oninput=render;
+el('presentBtn').onclick=openPresent;
+el('save').onclick=doSave;
+el('del').onclick=doDelete;
+el('saved').onchange=e=>{ if(e.target.value) doLoad(e.target.value); };
+el('exportBtn').onclick=exportTest;
+el('importBtn').onclick=()=>el('importFile').click();
+el('importFile').onchange=e=>{ if(e.target.files[0]){ importTest(e.target.files[0]); e.target.value=''; } };
+
+buildMajorSelect(); buildCourseSelect(); buildTopicSelect(); refreshSaved();
+addSection();   // start with one part so the page shows a sample test
+</script>
+</body>
+</html>

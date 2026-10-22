@@ -1,0 +1,534 @@
+import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, cplx, mat, TRIG, shuffled } from './helpers.js';
+
+/* ============================ GENERATORS ============================ */
+/* each generator: (d) => {q:"<html>", a:"<html>"}  where d = 1..3 */
+
+export const G = {
+  /* ---- Pre-Algebra ---- */
+  intAddSub(d){
+    const hi = d===1?12:d===2?25:60;
+    const a=nz(-hi,hi), b=nz(-hi,hi), op=pick(['+','&minus;']);
+    const val = op==='+'? a+b : a-b;
+    const bb = b<0 ? `(${b<0?'&minus;':''}${Math.abs(b)})` : b;
+    return {q:`${a<0?'&minus;'+Math.abs(a):a} ${op} ${bb} =`, a:`<b>${val<0?'&minus;'+Math.abs(val):val}</b>`};
+  },
+  intMulDiv(d){
+    const hi=d===1?9:d===2?12:15;
+    if(Math.random()<0.5){
+      const a=nz(-hi,hi), b=nz(-hi,hi);
+      return {q:`${a<0?'('+'&minus;'+Math.abs(a)+')':a} &times; ${b<0?'('+'&minus;'+Math.abs(b)+')':b} =`,
+              a:`<b>${a*b<0?'&minus;'+Math.abs(a*b):a*b}</b>`};
+    }else{
+      const b=nz(-hi,hi), q=nz(-hi,hi), a=b*q;
+      return {q:`${a<0?'&minus;'+Math.abs(a):a} &divide; ${b<0?'('+'&minus;'+Math.abs(b)+')':b} =`,
+              a:`<b>${q<0?'&minus;'+Math.abs(q):q}</b>`};
+    }
+  },
+  orderOps(d){
+    const a=R(2,9), b=R(2,9), c=R(2,9);
+    if(d===1){ return {q:`${a} + ${b} &times; ${c} =`, a:`<b>${a+b*c}</b>`}; }
+    if(d===2){ const e=R(2,9); return {q:`(${a} + ${b}) &times; ${c} &minus; ${e} =`, a:`<b>${(a+b)*c-e}</b>`}; }
+    const e=R(2,6); return {q:`${a}${sup(2)} &minus; ${b} &times; ${c} + ${e} =`, a:`<b>${a*a-b*c+e}</b>`};
+  },
+  fracAddSub(d){
+    const dens = d===1?[2,3,4,5]:d===2?[2,3,4,5,6,8]:[3,4,6,8,9,12];
+    const b=pick(dens); let c=pick(dens); if(d===1) c=b;
+    const n1=R(1,b-1>0?b-1:1), n2=R(1,c-1>0?c-1:1), op=pick(['+','&minus;']);
+    const den=b*c; let num = op==='+'? n1*c+n2*b : n1*c-n2*b;
+    return {q:`${frac(n1,b)} ${op} ${frac(n2,c)} =`, a:`<b>${fracStr(num,den)}</b>`};
+  },
+  fracMul(d){
+    const hi=d===1?6:d===2?9:12;
+    const n1=R(1,hi),b=R(2,hi),n2=R(1,hi),c=R(2,hi);
+    return {q:`${frac(n1,b)} &times; ${frac(n2,c)} =`, a:`<b>${fracStr(n1*n2,b*c)}</b>`};
+  },
+
+  /* ---- Algebra 1 ---- */
+  oneStep(d){
+    const x=nz(-12,12);
+    const type=pick(['add','mul','div']);
+    if(type==='add'){ const b=nz(-15,15); return {q:`x ${b<0?'&minus; '+Math.abs(b):'+ '+b} = ${x+b}`, a:`<b>x = ${x}</b>`}; }
+    if(type==='mul'){ const a=nz(2,9); return {q:`${a}x = ${a*x}`, a:`<b>x = ${x}</b>`}; }
+    const a=nz(2,9); return {q:`${frac('x',a)} = ${x}`, a:`<b>x = ${a*x}</b>`};
+  },
+  twoStep(d){
+    const x=nz(-10,10), a=nz(2,d===3?12:9), b=nz(-15,15);
+    return {q:`${a}x ${b<0?'&minus; '+Math.abs(b):'+ '+b} = ${a*x+b}`, a:`<b>x = ${x}</b>`};
+  },
+  multiStep(d){
+    // ax + b = cx + e   with integer solution
+    const x=nz(-8,8);
+    let a=nz(2,8), c=nz(-8,8); while(a===c)c=nz(-8,8);
+    const b=nz(-12,12);
+    const e=(a-c)*x+b; // a x + b = c x + e
+    return {q:`${lead(a,'x')} ${term(b,'')} = ${lead(c,'x')} ${term(e,'')}`.replace(/\s+/g,' '),
+            a:`<b>x = ${x}</b>`};
+  },
+  combineLike(d){
+    const a=nz(-8,8),c=nz(-8,8),b=nz(-9,9),e=nz(-9,9);
+    const q=`${lead(a,'x')}${term(b,'')}${term(c,'x')}${term(e,'')}`;
+    const ans=`${lead(a+c,'x')}${term(b+e,'')}`;
+    return {q, a:`<b>${ans}</b>`};
+  },
+  distribute(d){
+    const a=nz(2,d===3?9:6), b=nz(-7,7), c=nz(-9,9);
+    return {q:`${a}(${lead(b,'x')} ${term(c,'')})`, a:`<b>${lead(a*b,'x')}${term(a*c,'')}</b>`};
+  },
+  slope(d){
+    let x1=nz(-8,8),y1=nz(-8,8),x2=nz(-8,8),y2=nz(-8,8);
+    while(x2===x1)x2=nz(-8,8);
+    const [n,dd]=reduceFrac(y2-y1,x2-x1);
+    return {q:`Slope through (${x1}, ${y1}) and (${x2}, ${y2})`,
+            a:`<b>m = ${fracStr(n,dd)}</b>`};
+  },
+
+  /* ---- Algebra 2 ---- */
+  factorQuad(d){
+    const hi=d===1?6:d===2?9:12;
+    const r1=nz(-hi,hi), r2=nz(-hi,hi);
+    const b=-(r1+r2), c=r1*r2;
+    const q=`x${sup(2)}${term(b,'x')}${term(c,'')}`;
+    const f=(r)=> r===0?'x':`(x ${r<0?'+ '+Math.abs(r):'&minus; '+r})`;
+    return {q, a:`<b>${f(r1)}${f(r2)}</b>`};
+  },
+  solveQuad(d){
+    const hi=d===1?6:9;
+    const r1=nz(-hi,hi),r2=nz(-hi,hi);
+    const b=-(r1+r2),c=r1*r2;
+    const roots = r1===r2?`x = ${r1}`:`x = ${Math.min(r1,r2)}, ${Math.max(r1,r2)}`;
+    return {q:`x${sup(2)}${term(b,'x')}${term(c,'')} = 0`, a:`<b>${roots}</b>`};
+  },
+  simplifyRadical(d){
+    const inside=pick(d===1?[2,3,5,6,7]:[2,3,5,6,7,10,11,13,14,15]);
+    const out=R(2,d===3?8:5);
+    const n=out*out*inside;
+    return {q:`&radic;<span style="border-top:1.2px solid currentColor;padding:0 2px">${n}</span> =`,
+            a:`<b>${out}&radic;<span style="border-top:1.2px solid currentColor;padding:0 2px">${inside}</span></b>`};
+  },
+
+  /* ---- Geometry ---- */
+  rectangle(d){
+    const w=R(3,d===3?40:20),h=R(3,d===3?40:20);
+    return {q:`Rectangle ${w} by ${h}. Find area and perimeter.`,
+            a:`<b>A = ${w*h}, P = ${2*(w+h)}</b>`};
+  },
+  triangleArea(d){
+    const b=R(2,d===3?30:16)*2, h=R(2,d===3?30:16);
+    return {q:`Triangle, base ${b}, height ${h}. Find area.`, a:`<b>A = ${b*h/2}</b>`};
+  },
+  circle(d){
+    const r=R(2,d===3?20:12);
+    return {q:`Circle, radius ${r}. Area and circumference (in terms of &pi;).`,
+            a:`<b>A = ${r*r}&pi;, C = ${2*r}&pi;</b>`};
+  },
+  pythagorean(d){
+    const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[7,24,25],[9,12,15],[20,21,29]]);
+    const k=d===3?R(1,3):1; const [a,b,c]=t.map(v=>v*k);
+    if(Math.random()<0.5) return {q:`Right triangle, legs ${a} and ${b}. Find the hypotenuse.`, a:`<b>c = ${c}</b>`};
+    return {q:`Right triangle, hypotenuse ${c}, one leg ${a}. Find the other leg.`, a:`<b>${b}</b>`};
+  },
+
+  /* ---- Calculus ---- */
+  derivative(d){
+    const n = d===1?2:d===2?3:3;
+    const terms=[]; const used=new Set();
+    for(let i=0;i<n;i++){ let p=R(2,d===3?6:4); while(used.has(p))p=R(1,6); used.add(p); terms.push([nz(2,9),p]); }
+    terms.sort((a,b)=>b[1]-a[1]);
+    const qh=terms.map((t,i)=> (i===0?lead(t[0],'x'+sup(t[1])):term(t[0],'x'+sup(t[1])))).join('');
+    const dv=terms.map(t=>[t[0]*t[1], t[1]-1]);
+    const ah=dv.map((t,i)=>{
+      const vp = t[1]===0?'':(t[1]===1?'x':'x'+sup(t[1]));
+      return i===0?lead(t[0],vp):term(t[0],vp);
+    }).join('');
+    return {q:`f(x) = ${qh}&nbsp;&nbsp; f&prime;(x) =`, a:`<b>${ah}</b>`};
+  },
+
+  /* ---- Ratios & proportions (Pre-Algebra) ---- */
+  simplifyRatio(d){
+    const hi=d===1?12:d===2?30:80;
+    const g=R(2,8), a=g*R(2,hi), b=g*R(2,hi);
+    const [n,m]=reduceFrac(a,b);
+    return {q:`Simplify the ratio ${a} : ${b}`, a:`<b>${n} : ${m}</b>`};
+  },
+  proportions(d){
+    const m=R(1,6), n=R(1,6), t1=R(2,d===3?9:6), t2=R(2,d===3?9:6);
+    const a=m*t1, b=n*t1, c=m*t2, x=n*t2;
+    return {q:`Solve the proportion: ${frac(a,b)} = ${frac(c,'x')}`, a:`<b>x = ${x}</b>`};
+  },
+
+  /* ---- Systems of equations (Algebra 1) ---- */
+  systems(d){
+    const x=nz(-6,6), y=nz(-6,6);
+    let a1=nz(1,d===3?6:4), b1=nz(1,d===3?6:4), a2=nz(1,d===3?6:4), b2=nz(1,d===3?6:4);
+    while(a1*b2-a2*b1===0){ a2=nz(1,5); b2=nz(1,5); }
+    const c1=a1*x+b1*y, c2=a2*x+b2*y;
+    const eq=(a,b,c)=>`${lead(a,'x')}${term(b,'y')} = ${c}`;
+    return {q:`${eq(a1,b1,c1)}&nbsp;&nbsp;,&nbsp;&nbsp; ${eq(a2,b2,c2)}`,
+            a:`<b>(${x}, ${y})</b>`};
+  },
+
+  /* ---- Trigonometry ---- */
+  trigValues(d){
+    const easy=[0,30,45,60,90];
+    const angles = d===1?easy:[0,30,45,60,90,120,135,150,180];
+    const ang=pick(angles), fn=pick(['sin','cos','tan']);
+    const key=fn==='sin'?'s':fn==='cos'?'c':'t';
+    return {q:`${fn} ${ang}&deg; =`, a:`<b>${TRIG[ang][key]}</b>`};
+  },
+  trigRatios(d){
+    const t=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[6,8,10],[9,12,15]]);
+    const [opp,adj,hyp]=t, fn=pick(['sin','cos','tan']);
+    let val;
+    if(fn==='sin') val=fracStr(opp,hyp);
+    else if(fn==='cos') val=fracStr(adj,hyp);
+    else val=fracStr(opp,adj);
+    return {q:`Right triangle with &ang;&theta;: opposite = ${opp}, adjacent = ${adj}, hypotenuse = ${hyp}. Find ${fn} &theta;.`,
+            a:`<b>${val}</b>`};
+  },
+  degRad(d){
+    const degs = d===1?[30,45,60,90,180]:[30,45,60,90,120,135,150,210,225,240,270,300,315,330,360];
+    const deg=pick(degs); const [n,m]=reduceFrac(deg,180);
+    const rad = m===1 ? `${n===1?'':n}&pi;` : frac(`${n===1?'':n}&pi;`, m);
+    return {q:`Convert ${deg}&deg; to radians.`, a:`<b>${rad}</b>`};
+  },
+
+  /* ---- Integration (Calculus) ---- */
+  integral(d){
+    const n=d===1?2:3; const used=new Set(); const terms=[];
+    for(let i=0;i<n;i++){ let p=R(1,d===3?5:3); while(used.has(p))p=R(1,6); used.add(p);
+      const k=nz(1,5); terms.push({c:k*(p+1), p, k}); }
+    terms.sort((a,b)=>b.p-a.p);
+    const qh=terms.map((t,i)=> (i===0?lead(t.c,'x'+sup(t.p)):term(t.c,'x'+sup(t.p)))).join('');
+    const ah=terms.map((t,i)=>{ const vp='x'+sup(t.p+1);
+      return i===0?lead(t.k,vp):term(t.k,vp); }).join('');
+    return {q:`&int; (${qh}) dx =`, a:`<b>${ah} + C</b>`};
+  },
+  defIntegral(d){
+    const p=R(1,d===3?3:2), k=nz(1,4), c=k*(p+1);
+    let a=R(0,2), b=R(a+1,4);
+    const F=v=>k*Math.pow(v,p+1);
+    return {q:`&int;<sub>${a}</sub><sup>${b}</sup> ${lead(c,'x'+(p===1?'':sup(p)))} dx =`,
+            a:`<b>${F(b)-F(a)}</b>`};
+  },
+
+  /* ================= EXPANSION PACKS ================= */
+
+  /* ---- Pre-Algebra pack ---- */
+  rounding(d){
+    const place=pick(d===1?[10,100]:[10,100,1000]);
+    const n=R(place,place*90)+R(0,place-1);
+    const r=Math.round(n/place)*place;
+    const name=place===10?'ten':place===100?'hundred':'thousand';
+    return {q:`Round ${n} to the nearest ${name}.`, a:`<b>${r}</b>`};
+  },
+  percentOf(d){
+    const p=pick(d===1?[10,25,50]:d===2?[5,10,20,25,40,50,75]:[5,12,15,18,24,35,60]);
+    const step=100/gcd(p,100);
+    const N=step*R(2,d===3?12:8);
+    return {q:`Find ${p}% of ${N}.`, a:`<b>${p*N/100}</b>`};
+  },
+  fracToDecimal(d){
+    const den=pick(d===1?[2,4,5,10]:[2,4,5,8,10,20,25]);
+    const num=R(1,den-1);
+    return {q:`Write ${frac(num,den)} as a decimal.`, a:`<b>${+(num/den).toFixed(4)}</b>`};
+  },
+  gcfLcm(d){
+    const hi=d===1?12:d===2?24:40;
+    const a=R(2,hi), b=R(2,hi), g=gcd(a,b);
+    if(Math.random()<0.5) return {q:`Find the GCF of ${a} and ${b}.`, a:`<b>${g}</b>`};
+    return {q:`Find the LCM of ${a} and ${b}.`, a:`<b>${a*b/g}</b>`};
+  },
+  powers(d){
+    const base=R(2,d===1?6:9), exp=R(2,d===1?3:d===2?4:5);
+    return {q:`${base}${sup(exp)} =`, a:`<b>${Math.pow(base,exp)}</b>`};
+  },
+  absValue(d){
+    const sgn=v=>v<0?'&minus;'+Math.abs(v):''+v;
+    const a=nz(-25,25), b=nz(-25,25), op=pick(['+','&minus;']);
+    const val = op==='+'? Math.abs(a)+Math.abs(b) : Math.abs(a)-Math.abs(b);
+    return {q:`|${sgn(a)}| ${op} |${sgn(b)}| =`, a:`<b>${val<0?'&minus;'+Math.abs(val):val}</b>`};
+  },
+
+  /* ---- Algebra 1 pack ---- */
+  evalExpr(d){
+    const a=nz(2,9), b=nz(-12,12), x=nz(-8,8);
+    return {q:`Evaluate ${lead(a,'x')}${term(b,'')} for x = ${x}.`, a:`<b>${a*x+b}</b>`};
+  },
+  inequalities(d){
+    const a=nz(2,d===3?9:6), x=nz(-8,8), b=nz(-12,12), op=pick(['&lt;','&gt;','&le;','&ge;']);
+    const c=a*x+b;
+    return {q:`Solve: ${a}x ${b<0?'&minus; '+Math.abs(b):'+ '+b} ${op} ${c}`, a:`<b>x ${op} ${x}</b>`};
+  },
+  exponentRules(d){
+    const a=R(2,8), b=R(2,8);
+    if(Math.random()<0.5) return {q:`Simplify: x${sup(a)} &middot; x${sup(b)}`, a:`<b>x${sup(a+b)}</b>`};
+    const hi=Math.max(a,b)+R(1,4), lo=Math.min(a,b);
+    return {q:`Simplify: ${frac('x'+sup(hi),'x'+sup(lo))}`, a:`<b>x${sup(hi-lo)}</b>`};
+  },
+  midpoint(d){
+    const x1=nz(-12,12), y1=nz(-12,12), x2=nz(-12,12), y2=nz(-12,12);
+    return {q:`Find the midpoint of (${x1}, ${y1}) and (${x2}, ${y2}).`,
+            a:`<b>(${(x1+x2)/2}, ${(y1+y2)/2})</b>`};
+  },
+
+  /* ---- Algebra 2 pack ---- */
+  polyMultiply(d){
+    const a=nz(-9,9), b=nz(-9,9);
+    const fa=a<0?`(x &minus; ${Math.abs(a)})`:`(x + ${a})`;
+    const fb=b<0?`(x &minus; ${Math.abs(b)})`:`(x + ${b})`;
+    return {q:`Expand: ${fa}${fb}`, a:`<b>x${sup(2)}${term(a+b,'x')}${term(a*b,'')}</b>`};
+  },
+  powerOfPower(d){
+    const a=R(2,6), b=R(2,5);
+    return {q:`Simplify: (x${sup(a)})${sup(b)}`, a:`<b>x${sup(a*b)}</b>`};
+  },
+  vertex(d){
+    const h=nz(-6,6), b=-2*h, c=nz(-9,9), k=c-h*h;
+    return {q:`Find the vertex of y = x${sup(2)}${term(b,'x')}${term(c,'')}`, a:`<b>(${h}, ${k})</b>`};
+  },
+  logEval(d){
+    const base=pick([2,3,5,10]), exp=R(2,d===3?5:4);
+    return {q:`Evaluate: log<sub>${base}</sub> ${Math.pow(base,exp)}`, a:`<b>${exp}</b>`};
+  },
+  expEquation(d){
+    const base=pick([2,3,5]), x=R(2,d===3?5:4);
+    return {q:`Solve: ${base}${sup('x')} = ${Math.pow(base,x)}`, a:`<b>x = ${x}</b>`};
+  },
+
+  /* ---- Geometry pack ---- */
+  parallelogram(d){
+    const b=R(3,d===3?40:20), h=R(3,d===3?40:20);
+    return {q:`Parallelogram with base ${b} and height ${h}. Find the area.`, a:`<b>A = ${b*h}</b>`};
+  },
+  trapezoid(d){
+    const b1=R(3,d===3?30:16), b2=R(3,d===3?30:16), h=R(2,d===3?20:12)*2;
+    return {q:`Trapezoid with parallel sides ${b1} and ${b2}, height ${h}. Find the area.`,
+            a:`<b>A = ${(b1+b2)*h/2}</b>`};
+  },
+  volumeBox(d){
+    const l=R(2,d===3?15:10), w=R(2,d===3?15:10), h=R(2,d===3?15:10);
+    return {q:`Rectangular prism ${l} &times; ${w} &times; ${h}. Find the volume.`, a:`<b>V = ${l*w*h}</b>`};
+  },
+  volumeCylinder(d){
+    const r=R(2,d===3?12:8), h=R(2,d===3?15:10);
+    return {q:`Cylinder with radius ${r} and height ${h}. Find the volume (in terms of &pi;).`,
+            a:`<b>V = ${r*r*h}&pi;</b>`};
+  },
+  triangleAngles(d){
+    const a=R(30,100), b=R(20,150-a), c=180-a-b;
+    return {q:`Two angles of a triangle are ${a}&deg; and ${b}&deg;. Find the third angle.`, a:`<b>${c}&deg;</b>`};
+  },
+
+  /* ---- Trigonometry pack ---- */
+  trigValuesRad(d){
+    const base={'&pi;/6':30,'&pi;/4':45,'&pi;/3':60,'&pi;/2':90};
+    const more={'2&pi;/3':120,'3&pi;/4':135,'5&pi;/6':150,'&pi;':180};
+    const choices=d===1?base:Object.assign({},base,more);
+    const rk=pick(Object.keys(choices)), ang=choices[rk];
+    const fn=pick(['sin','cos','tan']), key=fn==='sin'?'s':fn==='cos'?'c':'t';
+    return {q:`${fn} (${rk}) =`, a:`<b>${TRIG[ang][key]}</b>`};
+  },
+  radToDeg(d){
+    const opts=d===1?[['&pi;/6',30],['&pi;/4',45],['&pi;/3',60],['&pi;/2',90],['&pi;',180]]
+      :[['&pi;/6',30],['&pi;/4',45],['&pi;/3',60],['2&pi;/3',120],['3&pi;/4',135],['5&pi;/6',150],['&pi;',180],['3&pi;/2',270],['2&pi;',360]];
+    const [r,deg]=pick(opts);
+    return {q:`Convert ${r} radians to degrees.`, a:`<b>${deg}&deg;</b>`};
+  },
+  referenceAngle(d){
+    const th=pick(d===1?[120,135,150,210,225,240,300,315,330]:[100,110,160,190,200,250,290,310,320,340,135,150,225]);
+    let ref; if(th<90)ref=th; else if(th<180)ref=180-th; else if(th<270)ref=th-180; else ref=360-th;
+    return {q:`Find the reference angle for ${th}&deg;.`, a:`<b>${ref}&deg;</b>`};
+  },
+
+  /* ---- Calculus pack ---- */
+  limitPoly(d){
+    const a=nz(-4,4), c2=nz(1,5), c1=nz(-6,6), c0=nz(-9,9);
+    const poly=`${lead(c2,'x'+sup(2))}${term(c1,'x')}${term(c0,'')}`;
+    return {q:`lim<sub>x&rarr;${a}</sub> (${poly}) =`, a:`<b>${c2*a*a+c1*a+c0}</b>`};
+  },
+  secondDerivative(d){
+    const used=new Set(), terms=[], n=d===1?2:3;
+    for(let i=0;i<n;i++){ let p=R(2,d===3?6:5); while(used.has(p))p=R(2,6); used.add(p); terms.push([nz(2,6),p]); }
+    terms.sort((a,b)=>b[1]-a[1]);
+    const qh=terms.map((t,i)=>(i===0?lead(t[0],'x'+sup(t[1])):term(t[0],'x'+sup(t[1])))).join('');
+    const d2=terms.map(t=>[t[0]*t[1]*(t[1]-1), t[1]-2]);
+    const ah=d2.map((t,i)=>{ const vp=t[1]===0?'':(t[1]===1?'x':'x'+sup(t[1])); return i===0?lead(t[0],vp):term(t[0],vp); }).join('');
+    return {q:`f(x) = ${qh}&nbsp;&nbsp; f&Prime;(x) =`, a:`<b>${ah}</b>`};
+  },
+  tangentSlope(d){
+    const used=new Set(), terms=[];
+    for(let i=0;i<2;i++){ let p=R(1,d===3?4:3); while(used.has(p))p=R(1,4); used.add(p); terms.push([nz(2,6),p]); }
+    terms.sort((a,b)=>b[1]-a[1]);
+    const qh=terms.map((t,i)=>(i===0?lead(t[0],'x'+sup(t[1])):term(t[0],'x'+sup(t[1])))).join('');
+    const a=nz(-3,3);
+    const slope=terms.reduce((s,t)=>s+t[0]*t[1]*Math.pow(a,t[1]-1),0);
+    return {q:`Slope of the tangent to f(x) = ${qh} at x = ${a}.`, a:`<b>${slope}</b>`};
+  },
+  derivTrig(d){
+    const opts=[['sin x','cos x'],['cos x','&minus;sin x'],['tan x','sec<sup>2</sup> x'],
+      [`e${sup('x')}`,`e${sup('x')}`],['ln x', frac(1,'x')]];
+    const [f,df]=pick(opts);
+    return {q:`d/dx [ ${f} ] =`, a:`<b>${df}</b>`};
+  },
+
+  /* ================= EXPANSION PACK 2 ================= */
+
+  /* ---- Pre-Algebra ---- */
+  scientificNotation(d){
+    const s=R(10,99)/10, e=R(2,d===3?8:6);
+    const num=Math.round(R(10,99)*Math.pow(10,e-1));   // integer by construction
+    const sig=num/Math.pow(10,e);                        // 1 <= sig < 10
+    const sigStr=(+sig.toFixed(1)).toString();
+    return {q:`Write ${num} in scientific notation.`, a:`<b>${sigStr} &times; 10${sup(e)}</b>`};
+  },
+  decimalOps(d){
+    const f1=v=>(v/10).toFixed(1);
+    if(Math.random()<0.5){
+      const A=R(10,999), B=R(10,999), op=pick(['+','&minus;']);
+      const r = op==='+'? A+B : A-B;
+      return {q:`${f1(A)} ${op} ${f1(B)} =`, a:`<b>${r<0?'&minus;'+(Math.abs(r)/10).toFixed(1):(r/10).toFixed(1)}</b>`};
+    }
+    const A=R(11,99), k=R(2,9);
+    return {q:`${f1(A)} &times; ${k} =`, a:`<b>${(A*k/10).toFixed(1)}</b>`};
+  },
+  meanMedianMode(d){
+    const n=d===1?5:pick([5,7]);
+    const type=pick(['mean','median','mode']);
+    if(type==='mode'){
+      const mv=R(1,20), list=[mv,mv,mv], used=new Set([mv]);
+      while(list.length<n){ const v=R(1,20); if(!used.has(v)){ used.add(v); list.push(v);} }
+      return {q:`Find the mode: ${shuffled(list).join(', ')}`, a:`<b>${mv}</b>`};
+    }
+    if(type==='mean'){
+      const M=R(5,15), list=[]; let sum=0;
+      for(let i=0;i<n-1;i++){ const v=R(1,2*M); list.push(v); sum+=v; }
+      const last=n*M-sum;
+      if(last>=1 && last<=40){ list.push(last); return {q:`Find the mean: ${shuffled(list).join(', ')}`, a:`<b>${M}</b>`}; }
+    }
+    const list=[]; for(let i=0;i<n;i++) list.push(R(1,30));
+    const sorted=[...list].sort((a,b)=>a-b);
+    return {q:`Find the median: ${list.join(', ')}`, a:`<b>${sorted[(n-1)/2]}</b>`};
+  },
+  probability(d){
+    const r=R(1,9), b=R(1,9), tot=r+b; const [n,m]=reduceFrac(r,tot);
+    return {q:`A bag has ${r} red and ${b} blue marbles. Find P(red).`, a:`<b>${fracStr(n,m)}</b>`};
+  },
+
+  /* ---- Algebra 1 ---- */
+  arithmeticSeq(d){
+    const a1=nz(-9,9), diff=nz(-6,6), k=R(6,d===3?20:12);
+    const terms=[a1,a1+diff,a1+2*diff,a1+3*diff];
+    return {q:`Find the ${k}th term: ${terms.join(', ')}, ...`, a:`<b>${a1+(k-1)*diff}</b>`};
+  },
+  factorGCF(d){
+    const g=R(2,9); let p=nz(2,9), q=nz(-9,9);
+    while(gcd(Math.abs(p),Math.abs(q))!==1) q=nz(-9,9);
+    return {q:`Factor: ${lead(g*p,'x')}${term(g*q,'')}`, a:`<b>${g}(${lead(p,'x')}${term(q,'')})</b>`};
+  },
+
+  /* ---- Algebra 2 ---- */
+  geometricSeq(d){
+    const a1=nz(1,5), r=pick(d===3?[2,3,4]:[2,3]), k=R(4,d===3?7:6);
+    const terms=[a1,a1*r,a1*r*r,a1*r*r*r];
+    return {q:`Find the ${k}th term: ${terms.join(', ')}, ...`, a:`<b>${a1*Math.pow(r,k-1)}</b>`};
+  },
+  iPowers(d){
+    const n=R(2,d===3?40:16), vals=['1','i','&minus;1','&minus;i'];
+    return {q:`Simplify: i${sup(n)}`, a:`<b>${vals[n%4]}</b>`};
+  },
+
+  /* ---- Geometry ---- */
+  polygonAngles(d){
+    const names={3:'triangle',4:'quadrilateral',5:'pentagon',6:'hexagon',7:'heptagon',8:'octagon',9:'nonagon',10:'decagon'};
+    const sides=R(3,d===3?12:8);
+    const nm=names[sides]?` (${names[sides]})`:'';
+    return {q:`Find the sum of the interior angles of a polygon with ${sides} sides${nm}.`, a:`<b>${(sides-2)*180}&deg;</b>`};
+  },
+  distanceFormula(d){
+    const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[20,21,29]]);
+    const x1=nz(-8,8), y1=nz(-8,8), x2=x1+t[0]*pick([1,-1]), y2=y1+t[1]*pick([1,-1]);
+    return {q:`Find the distance between (${x1}, ${y1}) and (${x2}, ${y2}).`, a:`<b>${t[2]}</b>`};
+  },
+
+  /* ---- Calculus ---- */
+  avgRateOfChange(d){
+    const c=nz(1,4), e=nz(-9,9), a=nz(-5,5); let b=nz(-5,5); while(b===a) b=nz(-5,5);
+    const poly=`${lead(c,'x'+sup(2))}${term(e,'')}`;
+    return {q:`Average rate of change of f(x) = ${poly} on [${Math.min(a,b)}, ${Math.max(a,b)}].`, a:`<b>${c*(a+b)}</b>`};
+  },
+
+  /* ================= UNIVERSITY PACK ================= */
+
+  /* ---- Linear Algebra (MATH 242) ---- */
+  matrixAdd(d){
+    const hi=d===3?12:9, A=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)], B=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)];
+    return {q:`${mat(A)} + ${mat(B)} =`, a:`<b>${mat(A.map((x,i)=>x+B[i]))}</b>`};
+  },
+  determinant2(d){
+    const hi=d===3?12:9, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
+    return {q:`det ${mat([a,b,c,e])} =`, a:`<b>${a*e-b*c}</b>`};
+  },
+  matrixMultiply(d){
+    const hi=d===1?5:d===2?7:9;
+    const A=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)], B=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)];
+    const P=[A[0]*B[0]+A[1]*B[2], A[0]*B[1]+A[1]*B[3], A[2]*B[0]+A[3]*B[2], A[2]*B[1]+A[3]*B[3]];
+    return {q:`${mat(A)} ${mat(B)} =`, a:`<b>${mat(P)}</b>`};
+  },
+
+  /* ---- Complex Analysis (MATH 485) ---- */
+  complexAdd(d){
+    const hi=d===3?12:9, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
+    return {q:`(${cplx(a,b)}) + (${cplx(c,e)}) =`, a:`<b>${cplx(a+c,b+e)}</b>`};
+  },
+  complexMultiply(d){
+    const hi=d===1?5:d===2?8:11, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
+    return {q:`(${cplx(a,b)})(${cplx(c,e)}) =`, a:`<b>${cplx(a*c-b*e, a*e+b*c)}</b>`};
+  },
+  complexModulus(d){
+    const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[7,24,25],[9,12,15]]);
+    const re=t[0]*pick([1,-1]), im=t[1]*pick([1,-1]);
+    return {q:`| ${cplx(re,im)} | =`, a:`<b>${t[2]}</b>`};
+  },
+
+  /* ---- Number Theory (MATH 367) ---- */
+  modArithmetic(d){
+    const m=R(2,d===3?20:12), a=R(m+1,m*10);
+    return {q:`${a} mod ${m} =`, a:`<b>${a%m}</b>`};
+  },
+  isPrime(d){
+    const cand=R(2,d===3?120:50);
+    const prime = cand<2?false:(()=>{ for(let i=2;i*i<=cand;i++) if(cand%i===0) return false; return true; })();
+    return {q:`Is ${cand} prime?`, a:`<b>${prime?'Yes':'No'}</b>`};
+  },
+
+  /* ---- Probability (STAT 211) ---- */
+  combinations(d){
+    const n=R(4,d===3?10:7), r=R(1,n-1);
+    return {q:`C(${n}, ${r}) =`, a:`<b>${factorial(n)/(factorial(r)*factorial(n-r))}</b>`};
+  },
+  permutations(d){
+    const n=R(3,d===3?9:6), r=R(1,Math.min(n,4));
+    return {q:`P(${n}, ${r}) =`, a:`<b>${factorial(n)/factorial(n-r)}</b>`};
+  },
+
+  /* ---- Statistics (STAT 302) ---- */
+  zScore(d){
+    const mu=R(10,60), sigma=pick([2,3,4,5]), k=nz(-3,3), x=mu+k*sigma;
+    return {q:`A data set has mean ${mu} and standard deviation ${sigma}. Find the z-score of ${x}.`, a:`<b>${k}</b>`};
+  },
+
+  /* ---- Financial Mathematics (FM 321) ---- */
+  simpleInterest(d){
+    const P=R(1,20)*100, r=R(1,12), t=R(1,8);
+    return {q:`Find the simple interest on $${P} at ${r}% per year for ${t} years.`, a:`<b>$${P*r*t/100}</b>`};
+  },
+  compoundInterest(d){
+    const P=R(1,20)*100, r=R(2,10), t=R(2,d===3?8:5);
+    return {q:`$${P} is invested at ${r}% compounded annually for ${t} years. Find the amount.`, a:`<b>$${(P*Math.pow(1+r/100,t)).toFixed(2)}</b>`};
+  },
+  presentValue(d){
+    const FV=R(5,40)*100, r=R(2,10), t=R(2,d===3?8:5);
+    return {q:`Find the present value of $${FV} due in ${t} years at ${r}% annual interest.`, a:`<b>$${(FV/Math.pow(1+r/100,t)).toFixed(2)}</b>`};
+  }
+};
+

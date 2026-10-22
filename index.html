@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math Curriculum Test Builder</title>
+<link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+
+
+<div class="toolbar noprint">
+  <h1>Math <span>Test Builder</span></h1>
+
+  <!-- Build a part: search OR major → course → topic → options → add -->
+  <div class="builder">
+    <div class="field" style="flex:1 1 240px">
+      <label for="bSearch">Search topics or courses</label>
+      <input type="text" id="bSearch" placeholder="e.g. matrix · STAT 211 · derivative">
+    </div>
+    <div class="field">
+      <label for="bMajor">Major / branch</label>
+      <select id="bMajor"></select>
+    </div>
+    <div class="field">
+      <label for="bCourse">Course</label>
+      <select id="bCourse"></select>
+    </div>
+    <div class="field">
+      <label for="bTopic">Topic</label>
+      <select id="bTopic"></select>
+    </div>
+    <div class="field">
+      <label for="bDiff">Difficulty</label>
+      <select id="bDiff">
+        <option value="1">Easy</option>
+        <option value="2" selected>Medium</option>
+        <option value="3">Hard</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="bCount">Questions</label>
+      <input type="number" id="bCount" min="1" max="40" value="10">
+    </div>
+    <label class="chk"><input type="checkbox" id="bMc"> Multiple choice</label>
+    <button class="btn primary" id="addSection">+ Add to test</button>
+  </div>
+  <div class="search-results" id="searchResults" hidden></div>
+
+  <!-- Parts already added -->
+  <div class="sections" id="sections"></div>
+
+  <!-- Whole-test output options -->
+  <div class="controls" style="margin-top:14px">
+    <div class="field" style="flex:1 1 200px">
+      <label for="title">Test title</label>
+      <input type="text" id="title" placeholder="e.g. Chapter 5 Exam">
+    </div>
+    <div class="field">
+      <label for="spacing">Work space</label>
+      <select id="spacing"><option value="1">Compact</option><option value="2" selected>Normal</option><option value="3">Roomy</option></select>
+    </div>
+    <div class="field">
+      <label for="versions">Versions</label>
+      <input type="number" id="versions" min="1" max="6" value="1">
+    </div>
+    <div class="field">
+      <label for="keyMode">Answer key</label>
+      <select id="keyMode">
+        <option value="separate" selected>Separate page</option>
+        <option value="same">Same page</option>
+        <option value="none">No key</option>
+      </select>
+    </div>
+    <button class="btn ghost" id="toggleKey">Show / hide answers</button>
+    <button class="btn ghost" id="presentBtn">&#9654; Present</button>
+    <button class="btn ghost" id="print">Print / PDF</button>
+  </div>
+
+  <!-- Save / load whole tests -->
+  <div class="controls" style="margin-top:10px">
+    <div class="field">
+      <label for="saved">Saved tests</label>
+      <select id="saved"><option value="">— load a saved test —</option></select>
+    </div>
+    <div class="field">
+      <label for="saveName">Save as</label>
+      <input type="text" id="saveName" placeholder="name">
+    </div>
+    <button class="btn ghost" id="save">Save</button>
+    <button class="btn ghost" id="del">Delete</button>
+    <button class="btn ghost" id="exportBtn" title="Download this test as a file">Export file</button>
+    <button class="btn ghost" id="importBtn" title="Load a test from a file">Import file</button>
+    <input type="file" id="importFile" accept=".json,application/json" hidden>
+  </div>
+
+  <details class="custom-wrap">
+    <summary>Custom questions</summary>
+    <textarea id="custom" placeholder="One question per line. Put the answer after a | symbol:&#10;A train goes 180 km in 3 h. Find its speed. | 60 km/h&#10;Evaluate 2^5 | 32"></textarea>
+    <div class="hint">Format: <b>question | answer</b> &nbsp;·&nbsp; use <b>^</b> for exponents (2^5).</div>
+    <button class="btn ghost" id="addCustom" style="margin-top:8px">+ Add as a part</button>
+  </details>
+
+  <div class="hint">Choose a <b>branch</b>, then a <b>topic</b>, set its difficulty &amp; count, and <b>Add to test</b>. Repeat with other topics or branches to build a multi-part test. <b>Print / PDF</b> &rarr; choose &ldquo;Save as PDF&rdquo; to export.</div>
+</div>
+
+<div class="wrap">
+  <div id="out"></div>
+</div>
+
+<div class="present" id="present"></div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
