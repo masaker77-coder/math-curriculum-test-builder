@@ -14,7 +14,9 @@ const LONG = ['rectangle','triangleArea','circle','pythagorean','slope','derivat
               'polyMultiply','vertex','parallelogram','trapezoid','volumeBox','volumeCylinder',
               'triangleAngles','radToDeg','referenceAngle','limitPoly','secondDerivative','tangentSlope',
               'scientificNotation','meanMedianMode','probability','arithmeticSeq','geometricSeq',
-              'polygonAngles','distanceFormula','avgRateOfChange'];
+              'polygonAngles','distanceFormula','avgRateOfChange',
+              'determinant3','transpose','newtonSqrt','linearInterp','completeGraphEdges','degreeSum',
+              'setUnion'];
 
 function buildChoices(correctHtml, gen, d){
   const correct = strip(correctHtml);

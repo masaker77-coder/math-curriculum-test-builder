@@ -31,7 +31,7 @@ export function cplx(re,im){                                   // a + bi, signed
   const iAbs = Math.abs(im)===1 ? '' : Math.abs(im);
   return `${sgn(re)}${im<0?' &minus; ':' + '}${iAbs}i`;
 }
-export function mat(v){ return `<span class="mat">${v.map(x=>`<span>${x<0?'&minus;'+Math.abs(x):x}</span>`).join('')}</span>`; }
+export function mat(v, cols=2){ return `<span class="mat"${cols===2?'':` style="grid-template-columns:repeat(${cols},auto)"`}>${v.map(x=>`<span>${x<0?'&minus;'+Math.abs(x):x}</span>`).join('')}</span>`; }
 
 /* exact special-angle values (degrees -> sin, cos, tan) */
 export const TRIG = {

@@ -1,4 +1,4 @@
-import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, cplx, mat, TRIG, shuffled } from './helpers.js';
+import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, sgn, cplx, mat, TRIG, shuffled } from './helpers.js';
 
 /* ============================ GENERATORS ============================ */
 /* each generator: (d) => {q:"<html>", a:"<html>"}  where d = 1..3 */
@@ -474,6 +474,26 @@ export const G = {
     const P=[A[0]*B[0]+A[1]*B[2], A[0]*B[1]+A[1]*B[3], A[2]*B[0]+A[3]*B[2], A[2]*B[1]+A[3]*B[3]];
     return {q:`${mat(A)} ${mat(B)} =`, a:`<b>${mat(P)}</b>`};
   },
+  determinant3(d){
+    const hi=d===1?3:d===2?5:7, v=Array.from({length:9},()=>R(-hi,hi));
+    const det=v[0]*(v[4]*v[8]-v[5]*v[7]) - v[1]*(v[3]*v[8]-v[5]*v[6]) + v[2]*(v[3]*v[7]-v[4]*v[6]);
+    return {q:`det ${mat(v,3)} =`, a:`<b>${sgn(det)}</b>`};
+  },
+  transpose(d){
+    const [r,c]=d===1?pick([[2,3],[3,2]]):d===2?pick([[2,3],[3,2],[3,3]]):pick([[3,4],[4,3],[2,4]]);
+    const A=Array.from({length:r*c},()=>R(-9,9));
+    const T=[]; for(let j=0;j<c;j++) for(let i=0;i<r;i++) T.push(A[i*c+j]);
+    return {q:`${mat(A,c)}${sup('T')} =`, a:`<b>${mat(T,r)}</b>`};
+  },
+  scalarMultiply(d){
+    const n=d===3?3:2, hi=d===1?6:9, k=nz(d===1?2:-6,6), A=Array.from({length:n*n},()=>R(-hi,hi));
+    return {q:`${k<0?'(&minus;'+Math.abs(k)+')':k} &middot; ${mat(A,n)} =`, a:`<b>${mat(A.map(x=>k*x),n)}</b>`};
+  },
+  trace(d){
+    const n=d===1?2:d===2?3:pick([3,4]), hi=d===3?20:9, A=Array.from({length:n*n},()=>R(-hi,hi));
+    let t=0; for(let i=0;i<n;i++) t+=A[i*n+i];
+    return {q:`tr ${mat(A,n)} =`, a:`<b>${sgn(t)}</b>`};
+  },
 
   /* ---- Complex Analysis (MATH 485) ---- */
   complexAdd(d){
@@ -489,6 +509,10 @@ export const G = {
     const re=t[0]*pick([1,-1]), im=t[1]*pick([1,-1]);
     return {q:`| ${cplx(re,im)} | =`, a:`<b>${t[2]}</b>`};
   },
+  complexConjugate(d){
+    const hi=d===1?9:d===2?20:50, a=nz(-hi,hi), b=nz(-hi,hi);
+    return {q:`If z = ${cplx(a,b)}, then <span style="text-decoration:overline">z</span> =`, a:`<b>${cplx(a,-b)}</b>`};
+  },
 
   /* ---- Number Theory (MATH 367) ---- */
   modArithmetic(d){
@@ -499,6 +523,78 @@ export const G = {
     const cand=R(2,d===3?120:50);
     const prime = cand<2?false:(()=>{ for(let i=2;i*i<=cand;i++) if(cand%i===0) return false; return true; })();
     return {q:`Is ${cand} prime?`, a:`<b>${prime?'Yes':'No'}</b>`};
+  },
+  eulerPhi(d){
+    const n=R(2,d===1?30:d===2?100:500);
+    let phi=n, m=n;
+    for(let p=2;p*p<=m;p++) if(m%p===0){ while(m%p===0) m/=p; phi-=phi/p; }
+    if(m>1) phi-=phi/m;
+    return {q:`&phi;(${n}) =`, a:`<b>${phi}</b>`};
+  },
+  modPow(d){
+    const m=R(d===1?3:5,d===1?12:d===2?30:100), a=R(2,d===1?9:30), b=R(d===1?2:5,d===1?6:d===2?20:200);
+    let r=1, base=a%m, e=b;
+    while(e>0){ if(e&1) r=r*base%m; base=base*base%m; e>>=1; }
+    return {q:`${a}${sup(b)} mod ${m} =`, a:`<b>${r%m}</b>`};
+  },
+
+  /* ---- Numerical Analysis (MATH 353) ---- */
+  newtonSqrt(d){
+    // x1 = (x0 + N/x0)/2 = (x0^2 + N)/(2 x0); N = x0(2k - x0) keeps x1 = k an integer
+    const x0=R(2,d===1?5:d===2?9:15), k=R(Math.floor(x0/2)+1, x0+(d===1?2:5)), N=x0*(2*k-x0);
+    return {q:`Approximate &radic;${N} with one Newton step on f(x) = x${sup(2)} &minus; ${N}, starting from x<sub>0</sub> = ${x0}. x<sub>1</sub> =`,
+            a:`<b>${k}</b>`};
+  },
+  linearInterp(d){
+    const x0=R(-5,10), h=d===1?pick([2,4]):d===2?pick([2,3,4,5]):pick([4,5,6,8,10]);
+    const m=nz(d===1?1:-6,6), y0=R(-20,20), t=R(1,h-1), x=x0+t;
+    return {q:`Linearly interpolate through (${x0}, ${y0}) and (${x0+h}, ${y0+m*h}) to estimate y at x = ${x}.`,
+            a:`<b>${sgn(y0+m*t)}</b>`};
+  },
+
+  /* ---- Graph Theory (MATH 468) ---- */
+  completeGraphEdges(d){
+    const n=R(3,d===1?8:d===2?20:60);
+    return {q:`How many edges does the complete graph K<sub>${n}</sub> have?`, a:`<b>${n*(n-1)/2}</b>`};
+  },
+  degreeSum(d){
+    // build an actual simple graph so the degree sequence is realizable
+    const n=R(4,d===1?5:d===2?7:9), deg=new Array(n).fill(0);
+    let e=0;
+    for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) if(Math.random()<0.45){ deg[i]++; deg[j]++; e++; }
+    if(e===0){ deg[0]++; deg[1]++; e=1; }
+    return {q:`A simple graph has vertex degrees ${deg.sort((a,b)=>b-a).join(', ')}. Find the sum of the degrees and the number of edges.`,
+            a:`<b>sum = ${2*e}, edges = ${e}</b>`};
+  },
+
+  /* ---- Group Theory (MATH 343) ---- */
+  elementOrder(d){
+    const n=R(4,d===1?12:d===2?30:60), a=R(1,n-1);
+    return {q:`Order of ${a} in (&#8484;<sub>${n}</sub>, +) =`, a:`<b>${n/gcd(a,n)}</b>`};
+  },
+
+  /* ---- Rings & Fields (MATH 444) ---- */
+  isUnit(d){
+    const n=R(4,d===1?12:d===2?30:60), a=R(2,n-1), g=gcd(a,n);
+    let inv=0; if(g===1) for(let x=1;x<n;x++) if(a*x%n===1){ inv=x; break; }
+    return {q:`Is ${a} a unit in &#8484;<sub>${n}</sub>?`,
+            a:`<b>${g===1?`Yes (inverse ${inv})`:`No (gcd = ${g})`}</b>`};
+  },
+
+  /* ---- Special Functions (MATH 417) ---- */
+  gammaFunction(d){
+    const n=R(1,d===1?5:d===2?8:12);
+    return {q:`&Gamma;(${n}) =`, a:`<b>${factorial(n-1)}</b>`};
+  },
+
+  /* ---- Foundations (MATH 233) ---- */
+  setUnion(d){
+    const hi=d===1?15:d===2?40:120, c=R(0,Math.floor(hi/3)), a=c+R(1,hi), b=c+R(1,hi);
+    return {q:`If |A| = ${a}, |B| = ${b} and |A &cap; B| = ${c}, then |A &cup; B| =`, a:`<b>${a+b-c}</b>`};
+  },
+  powerSetSize(d){
+    const n=R(d===1?1:3,d===1?4:d===2?7:10), A='abcdefghij'.slice(0,n).split('');
+    return {q:`If A = {${A.join(', ')}}, then |&#119979;(A)| =`, a:`<b>${2**n}</b>`};
   },
 
   /* ---- Probability (STAT 211) ---- */
