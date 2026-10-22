@@ -56,21 +56,21 @@ test('every generator returns {q,a} strings across all difficulties', () => {
 });
 
 /* ================= Mathematics track invariants ================= */
-test('MATH 242 — determinant (2×2) = ad − bc', () => {
+test('MATH 244 — determinant (2×2) = ad − bc', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.determinant2(d), v = nums(o.q);
     assert.equal(val(o.a), v[0] * v[3] - v[1] * v[2]);
   });
 });
 
-test('MATH 242 — matrix addition is componentwise', () => {
+test('MATH 244 — matrix addition is componentwise', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.matrixAdd(d), q = nums(o.q), a = nums(o.a);
     for (let k = 0; k < 4; k++) assert.equal(a[k], q[k] + q[k + 4]);
   });
 });
 
-test('MATH 242 — matrix multiplication (2×2) is correct', () => {
+test('MATH 244 — matrix multiplication (2×2) is correct', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.matrixMultiply(d), q = nums(o.q), a = nums(o.a);
     const A = q.slice(0, 4), B = q.slice(4, 8);
@@ -120,21 +120,21 @@ test('MATH 367 — prime test is correct', () => {
   });
 });
 
-test('STAT 211 — combinations C(n,r) = n!/(r!(n−r)!)', () => {
+test('STAT 212 — combinations C(n,r) = n!/(r!(n−r)!)', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.combinations(d), m = o.q.match(/C\((\d+), (\d+)\)/);
     assert.equal(val(o.a), fact(+m[1]) / (fact(+m[2]) * fact(+m[1] - +m[2])));
   });
 });
 
-test('STAT 211 — permutations P(n,r) = n!/(n−r)!', () => {
+test('STAT 212 — permutations P(n,r) = n!/(n−r)!', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.permutations(d), m = o.q.match(/P\((\d+), (\d+)\)/);
     assert.equal(val(o.a), fact(+m[1]) / fact(+m[1] - +m[2]));
   });
 });
 
-test('MATH 242 — determinant (3×3) by cofactor expansion', () => {
+test('MATH 244 — determinant (3×3) by cofactor expansion', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.determinant3(d), v = nums(o.q);
     assert.equal(v.length, 9);
@@ -143,7 +143,7 @@ test('MATH 242 — determinant (3×3) by cofactor expansion', () => {
   });
 });
 
-test('MATH 242 — transpose swaps rows and columns', () => {
+test('MATH 244 — transpose swaps rows and columns', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.transpose(d), A = nums(o.q), T = nums(o.a);
     const c = cols(o.q), r = A.length / c;
@@ -152,7 +152,7 @@ test('MATH 242 — transpose swaps rows and columns', () => {
   });
 });
 
-test('MATH 242 — scalar multiplication is entrywise', () => {
+test('MATH 244 — scalar multiplication is entrywise', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.scalarMultiply(d), k = +plain(o.q).match(/^\(?(-?\d+)/)[1];
     const A = nums(o.q), B = nums(o.a);
@@ -161,7 +161,7 @@ test('MATH 242 — scalar multiplication is entrywise', () => {
   });
 });
 
-test('MATH 242 — trace is the sum of the diagonal', () => {
+test('MATH 244 — trace is the sum of the diagonal', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.trace(d), A = nums(o.q), n = cols(o.q);
     assert.equal(A.length, n * n);
@@ -229,7 +229,7 @@ test('MATH 468 — handshake lemma: degree sum = 2·edges', () => {
   });
 });
 
-test('MATH 343 — order of a in (ℤ_n, +) is the least k with k·a ≡ 0', () => {
+test('MATH 344 — order of a in (ℤ_n, +) is the least k with k·a ≡ 0', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.elementOrder(d), m = plain(o.q).match(/Order of (\d+) in \(&#8484;(\d+)/);
     const a = +m[1], n = +m[2];
@@ -256,7 +256,7 @@ test('MATH 417 — Γ(n) = (n−1)!', () => {
   });
 });
 
-test('MATH 233 — inclusion–exclusion |A∪B| = |A| + |B| − |A∩B|', () => {
+test('MATH 234 — inclusion–exclusion |A∪B| = |A| + |B| − |A∩B|', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.setUnion(d), m = plain(o.q).match(/\|A\| = (\d+), \|B\| = (\d+) and \|A &cap; B\| = (\d+)/);
     const [a, b, c] = m.slice(1).map(Number);
@@ -265,7 +265,7 @@ test('MATH 233 — inclusion–exclusion |A∪B| = |A| + |B| − |A∩B|', () =>
   });
 });
 
-test('MATH 233 — a set with n elements has 2^n subsets', () => {
+test('MATH 234 — a set with n elements has 2^n subsets', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.powerSetSize(d), n = plain(o.q).match(/\{(.*)\}/)[1].split(', ').length;
     let subsets = 0; for (let mask = 0; mask < (1 << n); mask++) subsets++;
@@ -281,7 +281,7 @@ test('MATH 140 — polynomial limit equals substitution', () => {
   });
 });
 
-test('MATH 231 — tangent-line slope equals numeric derivative', () => {
+test('MATH 232 — tangent-line slope equals numeric derivative', () => {
   const h = 1e-4;
   for (const d of DIFFS) times(200, () => {
     const o = G.tangentSlope(d);
@@ -293,7 +293,7 @@ test('MATH 231 — tangent-line slope equals numeric derivative', () => {
 });
 
 /* ================= Financial Mathematics ================= */
-test('FM 321 — simple interest = P·r·t/100', () => {
+test('MATH 321 — simple interest = P·r·t/100', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.simpleInterest(d), m = plain(o.q).match(/on \$(\d+) at (\d+)% per year for (\d+)/);
     assert.equal(val(o.a), +m[1] * +m[2] * +m[3] / 100);
@@ -347,7 +347,7 @@ test('MATH 212 — ∫₀^{ln k} m·eˣ dx = m(k − 1)', () => {
   });
 });
 
-test('MATH 231 — chain / product rule values match a numeric derivative', () => {
+test('MATH 232 — chain / product rule values match a numeric derivative', () => {
   const h = 1e-5;
   for (const d of DIFFS) times(200, () => {
     let o = G.derivChainAt(d), t = plain(o.q).replace(/\s/g, '');
@@ -364,7 +364,7 @@ test('MATH 231 — chain / product rule values match a numeric derivative', () =
   });
 });
 
-test('MATH 231 — critical points satisfy f′(x) = 0', () => {
+test('MATH 232 — critical points satisfy f′(x) = 0', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.criticalPoints(d), t = plain(o.q).replace(/\s/g, '');
     const b = coefOf(t.match(/=(.*)\.$/)[1], 'x');
@@ -374,7 +374,7 @@ test('MATH 231 — critical points satisfy f′(x) = 0', () => {
   });
 });
 
-test('MATH 233 — set operations', () => {
+test('MATH 234 — set operations', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.setOps(d), q = plain(o.q);
     const [, A, B] = q.match(/A = \{([^}]*)\}, B = \{([^}]*)\}/).map(s => s.split(', ').map(Number));
@@ -386,7 +386,7 @@ test('MATH 233 — set operations', () => {
   });
 });
 
-test('MATH 233 — |A×B| and counting functions (brute force)', () => {
+test('MATH 234 — |A×B| and counting functions (brute force)', () => {
   for (const d of DIFFS) times(100, () => {
     let o = G.cartesianSize(d);
     assert.equal(val(o.a), ints(plain(o.q).replace(/\. Find.*/, '')).reduce((p, x) => p * x, 1));
@@ -401,7 +401,7 @@ test('MATH 233 — |A×B| and counting functions (brute force)', () => {
   });
 });
 
-test('MATH 233 — logical statements', () => {
+test('MATH 234 — logical statements', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.logicEval(d), m = o.q.match(/p = ([TF]), q = ([TF]), r = ([TF]), evaluate (.*)\.$/);
     const js = m[4].replace(/&and;/g, '&&').replace(/&or;/g, '||').replace(/&not;/g, '!');
@@ -410,7 +410,7 @@ test('MATH 233 — logical statements', () => {
   });
 });
 
-test('MATH 242 — A · A⁻¹ = I', () => {
+test('MATH 244 — A · A⁻¹ = I', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.inverse2(d), A = nums(o.q), B = nums(o.a);
     const P = [A[0]*B[0]+A[1]*B[2], A[0]*B[1]+A[1]*B[3], A[2]*B[0]+A[3]*B[2], A[2]*B[1]+A[3]*B[3]];
@@ -418,7 +418,7 @@ test('MATH 242 — A · A⁻¹ = I', () => {
   });
 });
 
-test('MATH 242 — matrix–vector product', () => {
+test('MATH 244 — matrix–vector product', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.matVec(d), q = nums(o.q), n = q.length === 6 ? 2 : 3, A = q.slice(0, n * n), v = q.slice(n * n), P = nums(o.a);
     assert.equal(v.length, n);
@@ -426,14 +426,14 @@ test('MATH 242 — matrix–vector product', () => {
   });
 });
 
-test('MATH 242/335 — dot product', () => {
+test('MATH 244/335 — dot product', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.dotProduct(d), [u, v] = vecs(o.q);
     assert.equal(val(o.a), u.reduce((s, x, i) => s + x * v[i], 0));
   });
 });
 
-test('MATH 242 — eigenvalues match trace and determinant', () => {
+test('MATH 244 — eigenvalues match trace and determinant', () => {
   for (const d of DIFFS) times(300, () => {
     const o = G.eigenvalues2(d), [a, b, c, e] = nums(o.q), a2 = plain(o.a);
     const ls = ints(a2.split('=')[1]), [l1, l2] = /double/.test(a2) ? [ls[0], ls[0]] : ls;
@@ -597,7 +597,7 @@ test('MATH 475 — curvature and arc length', () => {
   });
 });
 
-test('MATH 343 — generators, permutation order, group orders, index', () => {
+test('MATH 344 — generators, permutation order, group orders, index', () => {
   for (const d of DIFFS) times(200, () => {
     let o = G.groupGenerators(d), n = +o.q.match(/<sub>(\d+)<\/sub>/)[1];
     assert.equal(val(o.a), phi(n));
@@ -723,4 +723,87 @@ test('MATH 432 — vector norms, diagonal operator norm, L² inner product', () 
       const c = m[1] === '' ? 1 : m[1] === '-' ? -1 : +m[1]; return x => c * x ** (m[2] ? (m[3] ? +m[3] : 1) : 0); };
     close(fval(o.a), simpson(x => mono(f1)(x) * mono(f2)(x), 0, 1), 1e-6);
   });
+});
+
+/* ================= Study-plan pack ================= */
+const fracs = html => [...String(html).matchAll(/<span class="frac"><span class="n">(\d+)<\/span><span class="d">(\d+)<\/span><\/span>/g)].map(m => +m[1] / +m[2]);
+
+test('STAT 212/312 — binomial probabilities', () => {
+  for (const d of DIFFS) times(200, () => {
+    const o = G.binomialProb(d), [n] = ints(plain(o.q)), k = +plain(o.q).match(/X = (\d+)/)[1], p = fracs(o.q)[0];
+    assert.ok(k >= 0 && k <= n);
+    close(fval(o.a), fact(n) / (fact(k) * fact(n - k)) * p ** k * (1 - p) ** (n - k));
+  });
+});
+
+test('STAT 312 — expected value and variance of a discrete distribution', () => {
+  for (const d of DIFFS) times(200, () => {
+    for (const name of ['expectedValue', 'varianceDiscrete']) {
+      const o = G[name](d), xs = plain(o.q).match(/values (.*?) with/)[1].split(', ').map(Number), ps = fracs(o.q);
+      assert.equal(xs.length, ps.length); close(ps.reduce((a, b) => a + b, 0), 1);
+      const E = xs.reduce((s, x, i) => s + x * ps[i], 0), V = xs.reduce((s, x, i) => s + (x - E) ** 2 * ps[i], 0);
+      close(fval(o.a), name === 'expectedValue' ? E : V);
+    }
+  });
+});
+
+test('STAT 361 — LP optimum equals the best feasible integer point', () => {
+  for (const d of DIFFS) times(200, () => {
+    const o = G.lpCornerPoint(d), [a, b, c, p, q] = ints(plain(o.q));
+    let best = -Infinity;
+    for (let x = 0; x <= p; x++) for (let y = 0; y <= q; y++) if (x + y <= c) best = Math.max(best, a * x + b * y);
+    assert.equal(val(o.a), best);
+  });
+});
+
+test('MATH 371 — effective rate and annuity future value', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.effectiveRate(d); const r = ints(plain(o.q))[0];
+    const m = { 'semi-annually': 2, quarterly: 4, monthly: 12 }[o.q.match(/compounded (\w+(?:-\w+)?)/)[1]];
+    close(val(o.a), (Math.exp(m * Math.log1p(r / 100 / m)) - 1) * 100, 1e-4);
+    o = G.annuityFV(d); const [P, n, ri] = ints(plain(o.q));
+    let fv = 0; for (let k = 1; k <= n; k++) fv = fv * (1 + ri / 100) + P;   // year-by-year accumulation
+    close(val(o.a), fv, 0.006);
+  });
+});
+
+test('MATH 342 — improved Euler (Heun) step', () => {
+  for (const d of DIFFS) times(200, () => {
+    const o = G.improvedEuler(d), t = plain(o.q).replace(/\s/g, '');
+    const m = t.match(/h=([\d.]+)ony&prime;=(.*),y\((\d+)\)=(-?\d+)\.Findy\(([\d.]+)\)/);
+    const h = +m[1], a = coefOf(m[2], 'x'), b = coefOf(m[2], 'y'), x0 = +m[3], y0 = +m[4], f = (x, y) => a * x + b * y;
+    const pred = y0 + h * f(x0, y0);
+    assert.equal(x0 + h, +m[5]);
+    close(val(o.a), y0 + h * (f(x0, y0) + f(x0 + h, pred)) / 2);
+  });
+});
+
+test('MATH 416 — separable Fredholm equation: u(x) = kx satisfies the equation', () => {
+  for (const d of DIFFS) times(200, () => {
+    const o = G.fredholmSeparable(d), m = plain(o.q).match(/u\(x\) = (\d*)x ([+-]) (\d*)&int;/);
+    const c = m[1] ? +m[1] : 1, l = (m[2] === '-' ? -1 : 1) * (m[3] ? +m[3] : 1);
+    const ans = o.a.replace(/u\(x\) = /, '').replace(/x<\/b>$/, '</b>');
+    const k = /frac/.test(ans) ? fval(ans) : /&minus;<\/b>$/.test(ans) ? -1 : /<b><\/b>/.test(ans) ? 1 : val(ans);
+    for (const x of [0.3, 1, 2]) close(k * x, c * x + l * x * simpson(t => t * k * t, 0, 1), 1e-6);
+  });
+});
+
+test('MATH 442 — FTCS heat step and five-point Laplace average', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.ftcsHeatStep(d); const r = +plain(o.q).match(/r = ([\d.]+)/)[1];
+    const [a, b, c] = [...plain(o.q).split(':')[1].matchAll(/= (\d+)/g)].map(m => +m[1]);
+    close(val(o.a), (1 - 2 * r) * b + r * (a + c));
+    o = G.laplaceFivePoint(d); const v = ints(plain(o.q).split('are')[1]);
+    close(val(o.a), v.reduce((s, x) => s + x, 0) / 4);
+  });
+});
+
+test('curriculum — plan levels in order, every listed topic has a generator and a label', async () => {
+  const { TOPIC_LABELS } = await import('../src/curriculum.js');
+  assert.deepEqual(CURRICULUM.map(l => l.level),
+    ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5', 'Level 6', 'Level 7', 'Level 8', 'Electives']);
+  for (const l of CURRICULUM) for (const c of l.courses) for (const t of c.topics) {
+    assert.equal(typeof G[t], 'function', `${c.code}: missing generator ${t}`);
+    assert.ok(TOPIC_LABELS[t], `${c.code}: missing label ${t}`);
+  }
 });

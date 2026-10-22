@@ -36,6 +36,10 @@ export const TOPIC_LABELS = {
   elementOrder:'Order of an element in ℤ_n', isUnit:'Units modulo n',
   gammaFunction:'Gamma function Γ(n)',
   setUnion:'Inclusion–exclusion |A∪B|', powerSetSize:'Size of a power set',
+  binomialProb:'Binomial probabilities', expectedValue:'Expected value E(X)', varianceDiscrete:'Variance Var(X)',
+  lpCornerPoint:'Linear programming (corner points)', effectiveRate:'Effective annual rate', annuityFV:'Future value of an annuity',
+  improvedEuler:'Improved Euler (Heun) method', fredholmSeparable:'Fredholm equations (separable kernel)',
+  ftcsHeatStep:'Explicit (FTCS) heat scheme', laplaceFivePoint:'Five-point Laplace scheme',
   riemannSum:'Riemann sums', avgValue:'Average value of a function', defIntegralExp:'Definite integrals of eˣ',
   derivChainAt:'Chain rule at a point', derivProductAt:'Product rule at a point', criticalPoints:'Critical points',
   setOps:'Set operations', cartesianSize:'Cartesian product size', logicEval:'Evaluate logical statements', functionCount:'Counting functions',
@@ -56,62 +60,71 @@ export const TOPIC_LABELS = {
   vectorNorms:'Vector norms (1, 2, ∞)', operatorNormDiag:'Operator norm (diagonal)', l2InnerProduct:'L² inner product',
   simpleInterest:'Simple interest', compoundInterest:'Compound interest', presentValue:'Present value',
 };
-/* majors -> courses (code, title, topics). Empty topics = no auto-generated problems yet. */
+/* Mathematics study plan (Shaqra University, BSc Mathematics, 130 credit hours):
+   level -> courses (code, title, topics), Level 1..8 in plan order, then the electives.
+   Only MATH/STAT courses are listed; empty topics = no auto-generated problems (e.g. graduation projects). */
 export const CURRICULUM = [
-  { major:'Foundation (Shared)', courses:[
-    { code:'MATH 130', title:'Fundamentals of Mathematics', topics:['intAddSub','intMulDiv','orderOps','fracAddSub','fracMul','fracToDecimal','decimalOps','rounding','percentOf','powers','absValue','gcfLcm','scientificNotation','simplifyRatio','proportions'] },
-    { code:'(prep)', title:'Algebra (preparatory)', topics:['oneStep','twoStep','multiStep','combineLike','distribute','evalExpr','inequalities','exponentRules','factorGCF','factorQuad','solveQuad','simplifyRadical','polyMultiply','powerOfPower','vertex','logEval','expEquation','arithmeticSeq','geometricSeq','iPowers'] },
-    { code:'(prep)', title:'Geometry (preparatory)', topics:['rectangle','triangleArea','circle','pythagorean','parallelogram','trapezoid','volumeBox','volumeCylinder','triangleAngles','polygonAngles','distanceFormula','midpoint','slope'] },
-    { code:'(prep)', title:'Trigonometry (preparatory)', topics:['trigValues','trigRatios','degRad','trigValuesRad','radToDeg','referenceAngle'] },
-    { code:'MATH 140', title:'Calculus', topics:['derivative','integral','defIntegral','limitPoly','tangentSlope','secondDerivative','avgRateOfChange','derivTrig'] },
-    { code:'STAT 101', title:'Statistics', topics:['meanMedianMode','probability','zScore'] },
-    { code:'CS 130', title:'Computer skills', topics:[] },
-    { code:'PHYS 101', title:'General Physics', topics:[] },
+  { level:'Level 1', courses:[
+    { code:'MATH 130', title:'Introduction to Mathematics', topics:['intAddSub','intMulDiv','orderOps','fracAddSub','fracMul','fracToDecimal','decimalOps','rounding','percentOf','powers','absValue','gcfLcm','scientificNotation','simplifyRatio','proportions',
+      'oneStep','twoStep','multiStep','combineLike','distribute','evalExpr','inequalities','exponentRules','factorGCF','factorQuad','solveQuad','simplifyRadical','polyMultiply','powerOfPower','vertex','logEval','expEquation','arithmeticSeq','geometricSeq','iPowers'] },
   ]},
-  { major:'Mathematics', courses:[
-    { code:'MATH 212', title:'Introduction to Integral Calculus', topics:['integral','defIntegral','riemannSum','avgValue','defIntegralExp'] },
-    { code:'MATH 231', title:'Differential and Integral Calculus', topics:['derivative','secondDerivative','tangentSlope','derivChainAt','derivProductAt','criticalPoints','limitPoly','avgRateOfChange','derivTrig'] },
-    { code:'MATH 233', title:'Foundations of Mathematics', topics:['setUnion','powerSetSize','setOps','cartesianSize','logicEval','functionCount'] },
-    { code:'MATH 242', title:'Linear Algebra', topics:['matrixAdd','matrixMultiply','determinant2','systems','determinant3','transpose','scalarMultiply','trace','inverse2','matVec','dotProduct','eigenvalues2'] },
-    { code:'MATH 353', title:'Numerical Analysis', topics:['newtonSqrt','linearInterp','bisectionStep','trapezoidRule','eulerStep','absoluteError'] },
+  { level:'Level 2', courses:[
+    { code:'STAT 101', title:'Principles of Statistics and Probability (1)', topics:['meanMedianMode','probability','zScore','combinations','permutations'] },
+    { code:'MATH 140', title:'Introduction to Mathematics', topics:['rectangle','triangleArea','circle','pythagorean','parallelogram','trapezoid','volumeBox','volumeCylinder','triangleAngles','polygonAngles','distanceFormula','midpoint','slope',
+      'trigValues','trigRatios','degRad','trigValuesRad','radToDeg','referenceAngle',
+      'derivative','integral','defIntegral','limitPoly','tangentSlope','secondDerivative','avgRateOfChange','derivTrig'] },
+  ]},
+  { level:'Level 3', courses:[
+    { code:'MATH 212', title:'Integral Calculus', topics:['integral','defIntegral','riemannSum','avgValue','defIntegralExp'] },
+    { code:'MATH 234', title:'Foundations of Mathematics', topics:['setUnion','powerSetSize','setOps','cartesianSize','logicEval','functionCount'] },
+  ]},
+  { level:'Level 4', courses:[
+    { code:'STAT 212', title:'Probability Theory (1)', topics:['probability','combinations','permutations','binomialProb'] },
+    { code:'MATH 232', title:'Differential and Integral Calculus', topics:['derivative','secondDerivative','tangentSlope','derivChainAt','derivProductAt','criticalPoints','limitPoly','avgRateOfChange','derivTrig'] },
+    { code:'MATH 244', title:'Linear Algebra', topics:['matrixAdd','matrixMultiply','determinant2','systems','determinant3','transpose','scalarMultiply','trace','inverse2','matVec','dotProduct','eigenvalues2'] },
+  ]},
+  { level:'Level 5', courses:[
+    { code:'STAT 302', title:'Statistical Methods', topics:['meanMedianMode','zScore'] },
+    { code:'MATH 321', title:'Principles of Financial Mathematics', topics:['simpleInterest','compoundInterest','presentValue','percentOf'] },
     { code:'MATH 333', title:'Ordinary Differential Equations', topics:['charRoots','expGrowth','ivpPolynomial','eulerStep'] },
+    { code:'MATH 353', title:'Numerical Analysis', topics:['newtonSqrt','linearInterp','bisectionStep','trapezoidRule','eulerStep','absoluteError'] },
+  ]},
+  { level:'Level 6', courses:[
+    { code:'STAT 312', title:'Probability Theory (2)', topics:['binomialProb','expectedValue','varianceDiscrete'] },
     { code:'MATH 315', title:'Partial Differential Equations', topics:['pdeClassify','waveSpeed','laplacianPoly','heatSeparation'] },
+    { code:'STAT 361', title:'Operations Research (1)', topics:['lpCornerPoint','systems'] },
+    { code:'MATH 371', title:'Economic and Financial Mathematics', topics:['effectiveRate','annuityFV','compoundInterest','presentValue'] },
+  ]},
+  { level:'Level 7', courses:[
     { code:'MATH 335', title:'Vector Analysis', topics:['dotProduct','crossProduct','vectorMagnitude','divergence','gradientAt'] },
+    { code:'MATH 344', title:'Group Theory', topics:['elementOrder','groupGenerators','permutationOrder','groupOrder','lagrangeIndex'] },
     { code:'MATH 383', title:'Real Analysis', topics:['seqLimit','geometricSeries','telescopingSum','epsilonN'] },
+    { code:'MATH 488', title:'Graduation Project (1)', topics:[] },
+  ]},
+  { level:'Level 8', courses:[
     { code:'MATH 473', title:'Topology', topics:['eulerCharacteristic','surfaceGenus','topologyOpenSets'] },
     { code:'MATH 475', title:'Differential Geometry', topics:['circleCurvature','parabolaCurvature','helixArcLength','helixCurvature'] },
-    { code:'MATH 343', title:'Group Theory', topics:['elementOrder','groupGenerators','permutationOrder','groupOrder','lagrangeIndex'] },
-    { code:'MATH 444', title:'Rings and Fields', topics:['isUnit','modInverse','zeroDivisors','polyEvalModP','fieldCheck'] },
-    { code:'MATH 485', title:'Complex Analysis', topics:['complexAdd','complexMultiply','complexModulus','iPowers','complexConjugate','complexDivide','complexSquare','complexArgument'] },
+    { code:'MATH 499', title:'Graduation Project (2)', topics:[] },
+  ]},
+  { level:'Electives', courses:[
+    { code:'MATH 318', title:'History of Mathematics', topics:[] },
+    { code:'MATH 319', title:'Mathematics in Our Life', topics:['percentOf','simpleInterest','compoundInterest','proportions','rounding','scientificNotation','rectangle','circle','volumeBox'] },
+    { code:'MATH 331', title:'Applied Real Analysis', topics:['seqLimit','geometricSeries','telescopingSum','epsilonN'] },
+    { code:'MATH 342', title:'Computational Methods for ODEs', topics:['eulerStep','improvedEuler'] },
     { code:'MATH 367', title:'Number Theory', topics:['gcfLcm','modArithmetic','isPrime','eulerPhi','modPow','divisorCount','divisorSum','linearCongruence','crt','primeFactorization'] },
-    { code:'MATH 468', title:'Graph Theory', topics:['completeGraphEdges','degreeSum','treeEdges','bipartiteEdges','eulerCircuit','chromaticNumber'] },
+    { code:'MATH 416', title:'Integral Equations', topics:['fredholmSeparable','defIntegral','defIntegralExp'] },
     { code:'MATH 417', title:'Special Functions', topics:['gammaFunction','gammaHalf','betaFunction','legendreP','chebyshevT'] },
     { code:'MATH 432', title:'Functional Analysis', topics:['vectorNorms','operatorNormDiag','l2InnerProduct'] },
-  ]},
-  { major:'Statistics', courses:[
-    { code:'STAT 211', title:'Probability Theory 1', topics:['probability','combinations','permutations'] },
-    { code:'STAT 312', title:'Probability Theory 2', topics:[] },
-    { code:'STAT 302', title:'Statistical Methods', topics:['meanMedianMode','zScore'] },
-    { code:'STAT 303', title:'Regression Analysis', topics:['slope'] },
-    { code:'STAT 321', title:'Statistical Inference', topics:[] },
-    { code:'STAT 361', title:'Operations Research 1', topics:[] },
-    { code:'STAT 413', title:'Stochastic Processes', topics:[] },
-    { code:'STAT 405', title:'Design & Analysis of Experiments', topics:[] },
-    { code:'STAT 451', title:'Sampling Theory', topics:[] },
-  ]},
-  { major:'Financial Mathematics', courses:[
-    { code:'FM 321', title:'Elementary and Financial Mathematics', topics:['simpleInterest','compoundInterest','presentValue','percentOf'] },
-    { code:'FM 371', title:'Economic and Financial Mathematics', topics:[] },
-    { code:'FM 372', title:'Quantitative Finance', topics:[] },
-    { code:'FM 422', title:'Options, Futures and Derivatives', topics:[] },
-    { code:'FM 423', title:'Computational Financial Mathematics', topics:[] },
-    { code:'FM 471', title:'Derivatives of Financial Mathematics', topics:[] },
+    { code:'MATH 442', title:'Computational Methods for PDEs', topics:['ftcsHeatStep','laplaceFivePoint','pdeClassify'] },
+    { code:'MATH 444', title:'Rings and Fields', topics:['isUnit','modInverse','zeroDivisors','polyEvalModP','fieldCheck'] },
+    { code:'MATH 468', title:'Graph Theory', topics:['completeGraphEdges','degreeSum','treeEdges','bipartiteEdges','eulerCircuit','chromaticNumber'] },
+    { code:'MATH 485', title:'Complex Analysis', topics:['complexAdd','complexMultiply','complexModulus','iPowers','complexConjugate','complexDivide','complexSquare','complexArgument'] },
   ]},
 ];
 /* flat search index over every topic in the curriculum */
 export const INDEX = [];
-CURRICULUM.forEach((m,mi)=>m.courses.forEach((c,ci)=>c.topics.forEach(t=>{
-  INDEX.push({ mi, ci, major:m.major, code:c.code, ctitle:c.title, topic:t, label:TOPIC_LABELS[t]||t });
+CURRICULUM.forEach((l,li)=>l.courses.forEach((c,ci)=>c.topics.forEach(t=>{
+  INDEX.push({ li, ci, level:l.level, code:c.code, ctitle:c.title, topic:t, label:TOPIC_LABELS[t]||t });
 })));
-export function courseAt(mi,ci){ return CURRICULUM[mi] && CURRICULUM[mi].courses[ci]; }
+export function courseAt(li,ci){ return CURRICULUM[li] && CURRICULUM[li].courses[ci]; }
 

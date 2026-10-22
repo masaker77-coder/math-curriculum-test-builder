@@ -1,6 +1,14 @@
 import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, sgn, cplx, mat, TRIG, shuffled,
          lcm, totient, powMod, isPrimeN, vec } from './helpers.js';
 
+/* a small discrete distribution: distinct values xs with probabilities cs[i]/D (all cs[i] ≥ 1) */
+function discreteDist(d){
+  const n=d===1?2:d===2?3:4, D=pick(d===1?[4,5]:[5,8,10]), xs=[];
+  while(xs.length<n){ const x=R(-5,9); if(!xs.includes(x)) xs.push(x); }
+  const cs=new Array(n).fill(1); for(let k=n;k<D;k++) cs[R(0,n-1)]++;
+  return [xs.sort((a,b)=>a-b), cs, D];
+}
+
 /* ============================ GENERATORS ============================ */
 /* each generator: (d) => {q:"<html>", a:"<html>"}  where d = 1..3 */
 
@@ -460,7 +468,7 @@ export const G = {
 
   /* ================= UNIVERSITY PACK ================= */
 
-  /* ---- Linear Algebra (MATH 242) ---- */
+  /* ---- Linear Algebra (MATH 244) ---- */
   matrixAdd(d){
     const hi=d===3?12:9, A=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)], B=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)];
     return {q:`${mat(A)} + ${mat(B)} =`, a:`<b>${mat(A.map((x,i)=>x+B[i]))}</b>`};
@@ -563,7 +571,7 @@ export const G = {
             a:`<b>sum = ${2*e}, edges = ${e}</b>`};
   },
 
-  /* ---- Group Theory (MATH 343) ---- */
+  /* ---- Group Theory (MATH 344) ---- */
   elementOrder(d){
     const n=R(4,d===1?12:d===2?30:60), a=R(1,n-1);
     return {q:`Order of ${a} in (&#8484;<sub>${n}</sub>, +) =`, a:`<b>${n/gcd(a,n)}</b>`};
@@ -583,7 +591,7 @@ export const G = {
     return {q:`&Gamma;(${n}) =`, a:`<b>${factorial(n-1)}</b>`};
   },
 
-  /* ---- Foundations (MATH 233) ---- */
+  /* ---- Foundations (MATH 234) ---- */
   setUnion(d){
     const hi=d===1?15:d===2?40:120, c=R(0,Math.floor(hi/3)), a=c+R(1,hi), b=c+R(1,hi);
     return {q:`If |A| = ${a}, |B| = ${b} and |A &cap; B| = ${c}, then |A &cup; B| =`, a:`<b>${a+b-c}</b>`};
@@ -610,7 +618,7 @@ export const G = {
     return {q:`&int;<sub>0</sub><sup>ln ${k}</sup> ${m>1?m:''}e${sup('x')} dx =`, a:`<b>${m*(k-1)}</b>`};
   },
 
-  /* ---- Differential & Integral Calculus (MATH 231) ---- */
+  /* ---- Differential & Integral Calculus (MATH 232) ---- */
   derivChainAt(d){
     const n=R(2,d===1?2:d===2?3:4), a=nz(-3,3), b=nz(-5,5), x0=R(-2,2);
     return {q:`f(x) = (${lead(a,'x')}${term(b,'')})${sup(n)}. Find f&prime;(${x0}).`, a:`<b>${sgn(n*a*(a*x0+b)**(n-1))}</b>`};
@@ -625,7 +633,7 @@ export const G = {
     return {q:`Find the critical points of f(x) = x${sup(3)}${term(-3*k*k,'x')}${term(c,'')}.`, a:`<b>x = &minus;${k}, ${k}</b>`};
   },
 
-  /* ---- Foundations (MATH 233) ---- */
+  /* ---- Foundations (MATH 234) ---- */
   setOps(d){
     const U=d===1?6:d===2?8:10;
     const rnd=()=>{ const s=[]; for(let i=1;i<=U;i++) if(Math.random()<0.5) s.push(i); return s.length?s:[R(1,U)]; };
@@ -658,7 +666,7 @@ export const G = {
             a:`<b>${inj?factorial(n)/factorial(n-m):n**m}</b>`};
   },
 
-  /* ---- Linear Algebra (MATH 242) ---- */
+  /* ---- Linear Algebra (MATH 244) ---- */
   inverse2(d){
     const k=nz(-4,4), m=R(d===1?0:-3,3); let A=[1+k*m,k,m,1];          // det = 1 by construction
     if(Math.random()<0.5) A=[A[3],A[2],A[1],A[0]];
@@ -828,7 +836,7 @@ export const G = {
     return {q:`Find the curvature of the helix r(t) = (${r} cos t, ${r} sin t, ${c}t).`, a:`<b>&kappa; = ${fracStr(r,r*r+c*c)}</b>`};
   },
 
-  /* ---- Group Theory (MATH 343) ---- */
+  /* ---- Group Theory (MATH 344) ---- */
   groupGenerators(d){
     const n=R(2,d===1?20:d===2?60:200);
     return {q:`How many generators does the cyclic group &#8484;<sub>${n}</sub> have?`, a:`<b>${totient(n)}</b>`};
@@ -982,7 +990,72 @@ export const G = {
     return {q:`In L${sup(2)}[0, 1], compute &lang;${mono(a,m)}, ${mono(b,n)}&rang;.`, a:`<b>${fracStr(a*b,m+n+1)}</b>`};
   },
 
-  /* ---- Probability (STAT 211) ---- */
+  /* ================= STUDY-PLAN PACK (Shaqra University, Mathematics) ================= */
+
+  /* ---- Probability Theory 2 (STAT 312) ---- */
+  binomialProb(d){
+    const n=R(2,d===1?4:d===2?6:8), k=R(0,n), [a,b]=pick(d===1?[[1,2]]:[[1,2],[1,3],[2,3],[1,4],[3,4]]);
+    let C=1; for(let i=1;i<=k;i++) C=C*(n-k+i)/i;
+    return {q:`X ~ Bin(${n}, ${frac(a,b)}). Find P(X = ${k}).`, a:`<b>${fracStr(C*a**k*(b-a)**(n-k), b**n)}</b>`};
+  },
+  expectedValue(d){
+    const [xs,cs,D]=discreteDist(d), E=xs.reduce((s,x,i)=>s+x*cs[i],0);
+    return {q:`X takes the values ${xs.map(sgn).join(', ')} with probabilities ${cs.map(c=>fracStr(c,D)).join(', ')}. Find E(X).`, a:`<b>${fracStr(E,D)}</b>`};
+  },
+  varianceDiscrete(d){
+    const [xs,cs,D]=discreteDist(d), E=xs.reduce((s,x,i)=>s+x*cs[i],0), E2=xs.reduce((s,x,i)=>s+x*x*cs[i],0);
+    return {q:`X takes the values ${xs.map(sgn).join(', ')} with probabilities ${cs.map(c=>fracStr(c,D)).join(', ')}. Find Var(X).`,
+            a:`<b>${fracStr(E2*D-E*E, D*D)}</b>`};                                   // Var = E[X²] − E[X]²
+  },
+
+  /* ---- Operations Research 1 (STAT 361) ---- */
+  lpCornerPoint(d){
+    // feasible region: x + y ≤ c, x ≤ p, y ≤ q, x, y ≥ 0  with p, q < c < p + q
+    const p=R(2,d===1?6:12), q=R(2,d===1?6:12), c=R(Math.max(p,q)+1,p+q-1), a=R(1,d===1?5:9), b=R(1,d===1?5:9);
+    const V=[[0,0],[p,0],[p,c-p],[c-q,q],[0,q]], best=Math.max(...V.map(([x,y])=>a*x+b*y));
+    return {q:`Maximize Z = ${a}x + ${b}y subject to x + y &le; ${c}, x &le; ${p}, y &le; ${q}, x, y &ge; 0.`, a:`<b>max Z = ${best}</b>`};
+  },
+
+  /* ---- Economic and Financial Mathematics (MATH 371) ---- */
+  effectiveRate(d){
+    const r=R(2,d===1?12:24), m=pick(d===1?[2,4]:[2,4,12]), name={2:'semi-annually',4:'quarterly',12:'monthly'}[m];
+    return {q:`Find the effective annual rate of ${r}% compounded ${name}.`, a:`<b>${+(((1+r/100/m)**m-1)*100).toFixed(4)}%</b>`};
+  },
+  annuityFV(d){
+    const P=R(1,20)*100, r=R(2,d===1?6:10), n=R(2,d===1?5:15), i=r/100;
+    return {q:`$${P} is deposited at the end of each year for ${n} years at ${r}% compounded annually. Find the future value.`,
+            a:`<b>$${(P*((1+i)**n-1)/i).toFixed(2)}</b>`};
+  },
+
+  /* ---- Computational Methods for ODEs (MATH 342) ---- */
+  improvedEuler(d){
+    const a=nz(-3,3), b=nz(-2,2), h=pick(d===1?[1]:[0.5,0.25]), x0=R(0,2), y0=R(-3,5), f=(x,y)=>a*x+b*y;
+    const k1=f(x0,y0), k2=f(x0+h,y0+h*k1);                       // h is a power of 2: exact in floating point
+    return {q:`Use one step of the improved Euler (Heun) method with h = ${h} on y&prime; = ${lead(a,'x')}${term(b,'y')}, y(${x0}) = ${y0}. Find y(${x0+h}).`,
+            a:`<b>${sgn(y0+h/2*(k1+k2))}</b>`};
+  },
+
+  /* ---- Integral Equations (MATH 416) ---- */
+  fredholmSeparable(d){
+    // u(x) = c·x + λ∫₀¹ x t u(t) dt  ⇒  u(x) = kx with k = c + λk/3  ⇒  k = 3c / (3 − λ)
+    const c=R(1,d===1?3:6); let l=nz(-6,6); while(l===3) l=nz(-6,6);
+    const k=fracStr(3*c,3-l);
+    return {q:`Solve u(x) = ${c===1?'':c}x ${l<0?'&minus;':'+'} ${Math.abs(l)===1?'':Math.abs(l)}&int;<sub>0</sub><sup>1</sup> xt u(t) dt.`,
+            a:`<b>u(x) = ${k==='1'?'':k==='&minus;1'?'&minus;':k}x</b>`};
+  },
+
+  /* ---- Computational Methods for PDEs (MATH 442) ---- */
+  ftcsHeatStep(d){
+    const r=pick(d===1?[0.5]:[0.25,0.5]), hi=d===3?60:20, a=R(0,hi), b=R(0,hi), c=R(0,hi);
+    return {q:`Explicit (FTCS) scheme for u<sub>t</sub> = u<sub>xx</sub> with r = ${r}: u<sub>i&minus;1</sub> = ${a}, u<sub>i</sub> = ${b}, u<sub>i+1</sub> = ${c}. Find u<sub>i</sub> at the next time step.`,
+            a:`<b>${sgn(b+r*(c-2*b+a))}</b>`};
+  },
+  laplaceFivePoint(d){
+    const hi=d===3?100:30, v=[R(0,hi),R(0,hi),R(0,hi),R(0,hi)];
+    return {q:`Five-point scheme for Laplace's equation: the neighbours of P are ${v.join(', ')}. Estimate u(P).`, a:`<b>${v.reduce((s,x)=>s+x,0)/4}</b>`};
+  },
+
+  /* ---- Probability (STAT 212) ---- */
   combinations(d){
     const n=R(4,d===3?10:7), r=R(1,n-1);
     return {q:`C(${n}, ${r}) =`, a:`<b>${factorial(n)/(factorial(r)*factorial(n-r))}</b>`};
@@ -992,13 +1065,13 @@ export const G = {
     return {q:`P(${n}, ${r}) =`, a:`<b>${factorial(n)/factorial(n-r)}</b>`};
   },
 
-  /* ---- Statistics (STAT 302) ---- */
+  /* ---- Statistical Methods (STAT 302) ---- */
   zScore(d){
     const mu=R(10,60), sigma=pick([2,3,4,5]), k=nz(-3,3), x=mu+k*sigma;
     return {q:`A data set has mean ${mu} and standard deviation ${sigma}. Find the z-score of ${x}.`, a:`<b>${k}</b>`};
   },
 
-  /* ---- Financial Mathematics (FM 321) ---- */
+  /* ---- Principles of Financial Mathematics (MATH 321) ---- */
   simpleInterest(d){
     const P=R(1,20)*100, r=R(1,12), t=R(1,8);
     return {q:`Find the simple interest on $${P} at ${r}% per year for ${t} years.`, a:`<b>$${P*r*t/100}</b>`};

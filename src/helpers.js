@@ -8,7 +8,7 @@ export const sup = p => `<sup>${p}</sup>`;
 export function frac(n,d){ return `<span class="frac"><span class="n">${n}</span><span class="d">${d}</span></span>`; }
 export const sq = n => `&radic;<span style="border-top:1.2px solid currentColor;padding:0 2px">${n}</span>`;
 export function reduceFrac(n,d){ const g=gcd(n,d); n/=g; d/=g; if(d<0){n=-n;d=-d;} return [n,d]; }
-export function fracStr(n,d){ [n,d]=reduceFrac(n,d); if(d===1) return `${n}`; return (n<0?'-':'')+''+frac(Math.abs(n),d); }
+export function fracStr(n,d){ [n,d]=reduceFrac(n,d); if(d===1) return n<0?'&minus;'+Math.abs(n):`${n}`; return (n<0?'&minus;':'')+frac(Math.abs(n),d); }
 // signed term like " + 3x" / " - x" / " - 7"
 export function term(coef, varPart){
   if(coef===0) return '';
