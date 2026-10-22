@@ -48,3 +48,10 @@ export const TRIG = {
 
 export function shuffled(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 export const strip = h => String(h).replace(/<\/?b>/g, "");
+
+// number-theory / vector helpers for the Mathematics track
+export const lcm = (a,b)=>Math.abs(a*b)/gcd(a,b);
+export function totient(n){ let phi=n, m=n; for(let p=2;p*p<=m;p++) if(m%p===0){ while(m%p===0) m/=p; phi-=phi/p; } if(m>1) phi-=phi/m; return phi; }
+export function powMod(a,b,m){ let r=1, base=a%m; while(b>0){ if(b&1) r=r*base%m; base=base*base%m; b>>=1; } return r%m; }
+export function isPrimeN(n){ if(n<2) return false; for(let i=2;i*i<=n;i++) if(n%i===0) return false; return true; }
+export const vec = v => `&lang;${v.map(sgn).join(', ')}&rang;`;            // <a, b, c>

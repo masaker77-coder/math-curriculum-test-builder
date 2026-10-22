@@ -16,7 +16,14 @@ const LONG = ['rectangle','triangleArea','circle','pythagorean','slope','derivat
               'scientificNotation','meanMedianMode','probability','arithmeticSeq','geometricSeq',
               'polygonAngles','distanceFormula','avgRateOfChange',
               'determinant3','transpose','newtonSqrt','linearInterp','completeGraphEdges','degreeSum',
-              'setUnion'];
+              'setUnion','riemannSum','avgValue','derivChainAt','derivProductAt','criticalPoints','setOps','cartesianSize',
+              'logicEval','functionCount','eigenvalues2','bisectionStep','trapezoidRule','eulerStep','absoluteError',
+              'charRoots','expGrowth','ivpPolynomial','pdeClassify','waveSpeed','laplacianPoly','heatSeparation',
+              'divergence','gradientAt','geometricSeries','epsilonN','eulerCharacteristic','surfaceGenus','topologyOpenSets',
+              'circleCurvature','parabolaCurvature','helixArcLength','helixCurvature','groupGenerators','permutationOrder',
+              'groupOrder','lagrangeIndex','modInverse','zeroDivisors','polyEvalModP','complexArgument','linearCongruence',
+              'crt','primeFactorization','treeEdges','bipartiteEdges','eulerCircuit','chromaticNumber','vectorNorms',
+              'operatorNormDiag','l2InnerProduct','matVec'];
 
 function buildChoices(correctHtml, gen, d){
   const correct = strip(correctHtml);
