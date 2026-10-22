@@ -14,7 +14,18 @@ const LONG = ['rectangle','triangleArea','circle','pythagorean','slope','derivat
               'polyMultiply','vertex','parallelogram','trapezoid','volumeBox','volumeCylinder',
               'triangleAngles','radToDeg','referenceAngle','limitPoly','secondDerivative','tangentSlope',
               'scientificNotation','meanMedianMode','probability','arithmeticSeq','geometricSeq',
-              'polygonAngles','distanceFormula','avgRateOfChange'];
+              'polygonAngles','distanceFormula','avgRateOfChange',
+              'determinant3','transpose','newtonSqrt','linearInterp','completeGraphEdges','degreeSum',
+              'setUnion','riemannSum','avgValue','derivChainAt','derivProductAt','criticalPoints','setOps','cartesianSize',
+              'logicEval','functionCount','eigenvalues2','bisectionStep','trapezoidRule','eulerStep','absoluteError',
+              'charRoots','expGrowth','ivpPolynomial','pdeClassify','waveSpeed','laplacianPoly','heatSeparation',
+              'divergence','gradientAt','geometricSeries','epsilonN','eulerCharacteristic','surfaceGenus','topologyOpenSets',
+              'circleCurvature','parabolaCurvature','helixArcLength','helixCurvature','groupGenerators','permutationOrder',
+              'groupOrder','lagrangeIndex','modInverse','zeroDivisors','polyEvalModP','complexArgument','linearCongruence',
+              'crt','primeFactorization','treeEdges','bipartiteEdges','eulerCircuit','chromaticNumber','vectorNorms',
+              'operatorNormDiag','l2InnerProduct','matVec',
+              'binomialProb','expectedValue','varianceDiscrete','lpCornerPoint','effectiveRate','annuityFV',
+              'improvedEuler','fredholmSeparable','ftcsHeatStep','laplaceFivePoint'];
 
 function buildChoices(correctHtml, gen, d){
   const correct = strip(correctHtml);
@@ -43,18 +54,18 @@ function genItems(topic, count, d, mc){
   return items;
 }
 
-/* --- Major / course / topic selectors --- */
-function courseOptLabel(c){ return (c.code&&c.code!=='(prep)'?c.code+' · ':'')+c.title+(c.topics.length?'':' — (empty)'); }
-function buildMajorSelect(){
-  const s=el('bMajor'); s.innerHTML='';
-  CURRICULUM.forEach((m,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=m.major; s.appendChild(o); });
+/* --- Level / course / topic selectors --- */
+function courseOptLabel(c){ return c.code+' · '+c.title+(c.topics.length?'':' — (empty)'); }
+function buildLevelSelect(){
+  const s=el('bLevel'); s.innerHTML='';
+  CURRICULUM.forEach((l,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=l.level; s.appendChild(o); });
 }
 function buildCourseSelect(){
-  const s=el('bCourse'); s.innerHTML=''; const mi=+el('bMajor').value;
-  CURRICULUM[mi].courses.forEach((c,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=courseOptLabel(c); s.appendChild(o); });
+  const s=el('bCourse'); s.innerHTML=''; const li=+el('bLevel').value;
+  CURRICULUM[li].courses.forEach((c,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=courseOptLabel(c); s.appendChild(o); });
 }
 function buildTopicSelect(){
-  const s=el('bTopic'); s.innerHTML=''; const c=courseAt(+el('bMajor').value,+el('bCourse').value);
+  const s=el('bTopic'); s.innerHTML=''; const c=courseAt(+el('bLevel').value,+el('bCourse').value);
   if(!c||!c.topics.length){
     const o=document.createElement('option'); o.value=''; o.textContent='— no auto-generated topics yet —'; s.appendChild(o);
     el('addSection').disabled=true; return;
@@ -63,18 +74,18 @@ function buildTopicSelect(){
   c.topics.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=TOPIC_LABELS[t]||t; s.appendChild(o); });
 }
 
-/* --- Search by topic / course code / course title / major --- */
+/* --- Search by topic / course code / course title / level --- */
 function runSearch(){
   const q=(el('bSearch').value||'').trim().toLowerCase(); const box=el('searchResults');
   if(!q){ box.hidden=true; box.innerHTML=''; return; }
   const hits=INDEX.filter(x=> x.label.toLowerCase().includes(q) || x.code.toLowerCase().includes(q)
-    || x.ctitle.toLowerCase().includes(q) || x.major.toLowerCase().includes(q)).slice(0,24);
+    || x.ctitle.toLowerCase().includes(q) || x.level.toLowerCase().includes(q)).slice(0,24);
   box.hidden=false;
   box.innerHTML = hits.length ? hits.map(h=>
-    `<button class="sr" data-mi="${h.mi}" data-ci="${h.ci}" data-t="${h.topic}"><b>${h.label}</b><span>${h.code&&h.code!=='(prep)'?h.code+' · ':''}${h.ctitle} · ${h.major}</span></button>`).join('')
+    `<button class="sr" data-li="${h.li}" data-ci="${h.ci}" data-t="${h.topic}"><b>${h.label}</b><span>${h.code} · ${h.ctitle} · ${h.level}</span></button>`).join('')
     : '<div class="sections-empty">No matching topics. (Theory-only courses have no auto-generated problems.)</div>';
   box.querySelectorAll('button.sr').forEach(b=>b.onclick=()=>{
-    el('bMajor').value=b.dataset.mi; buildCourseSelect();
+    el('bLevel').value=b.dataset.li; buildCourseSelect();
     el('bCourse').value=b.dataset.ci; buildTopicSelect();
     el('bTopic').value=b.dataset.t;
     el('bSearch').value=''; box.hidden=true; box.innerHTML='';
@@ -83,12 +94,12 @@ function runSearch(){
 
 /* --- Section (part) management --- */
 function addSection(){
-  const mi=+el('bMajor').value, ci=+el('bCourse').value; const c=courseAt(mi,ci); const topic=el('bTopic').value;
+  const li=+el('bLevel').value, ci=+el('bCourse').value; const c=courseAt(li,ci); const topic=el('bTopic').value;
   if(!c||!topic) return;
   const d=parseInt(el('bDiff').value)||2;
   const count=Math.max(1,Math.min(40, parseInt(el('bCount').value)||10));
   const mc=el('bMc').checked;
-  test.sections.push({ major:CURRICULUM[mi].major, code:c.code, title:c.title, topic,
+  test.sections.push({ level:CURRICULUM[li].level, code:c.code, title:c.title, topic,
     label:TOPIC_LABELS[topic]||topic, count, diff:d, mc, items:genItems(topic,count,d,mc) });
   buildVersions(); renderSections(); render();
 }
@@ -117,7 +128,7 @@ function dupSection(i){
 function renderSections(){
   const box=el('sections');
   if(!test.sections.length){
-    box.innerHTML='<div class="sections-empty">No parts yet — pick a branch and topic above, then “Add to test”.</div>'; return;
+    box.innerHTML='<div class="sections-empty">No parts yet — pick a level, course and topic above, then “Add to test”.</div>'; return;
   }
   const last=test.sections.length-1;
   box.innerHTML=test.sections.map((s,i)=>{
@@ -310,7 +321,7 @@ function importTest(file){
 
 /* ---------------- Init (call after DOM is ready) ---------------- */
 export function init(){
-el('bMajor').onchange=()=>{ buildCourseSelect(); buildTopicSelect(); };
+el('bLevel').onchange=()=>{ buildCourseSelect(); buildTopicSelect(); };
 el('bCourse').onchange=buildTopicSelect;
 el('bSearch').oninput=runSearch;
 el('addSection').onclick=addSection;
@@ -329,6 +340,6 @@ el('exportBtn').onclick=exportTest;
 el('importBtn').onclick=()=>el('importFile').click();
 el('importFile').onchange=e=>{ if(e.target.files[0]){ importTest(e.target.files[0]); e.target.value=''; } };
 
-buildMajorSelect(); buildCourseSelect(); buildTopicSelect(); refreshSaved();
+buildLevelSelect(); buildCourseSelect(); buildTopicSelect(); refreshSaved();
 addSection();   // start with one part so the page shows a sample test
 }

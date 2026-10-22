@@ -8,7 +8,7 @@ export const sup = p => `<sup>${p}</sup>`;
 export function frac(n,d){ return `<span class="frac"><span class="n">${n}</span><span class="d">${d}</span></span>`; }
 export const sq = n => `&radic;<span style="border-top:1.2px solid currentColor;padding:0 2px">${n}</span>`;
 export function reduceFrac(n,d){ const g=gcd(n,d); n/=g; d/=g; if(d<0){n=-n;d=-d;} return [n,d]; }
-export function fracStr(n,d){ [n,d]=reduceFrac(n,d); if(d===1) return `${n}`; return (n<0?'-':'')+''+frac(Math.abs(n),d); }
+export function fracStr(n,d){ [n,d]=reduceFrac(n,d); if(d===1) return n<0?'&minus;'+Math.abs(n):`${n}`; return (n<0?'&minus;':'')+frac(Math.abs(n),d); }
 // signed term like " + 3x" / " - x" / " - 7"
 export function term(coef, varPart){
   if(coef===0) return '';
@@ -31,7 +31,7 @@ export function cplx(re,im){                                   // a + bi, signed
   const iAbs = Math.abs(im)===1 ? '' : Math.abs(im);
   return `${sgn(re)}${im<0?' &minus; ':' + '}${iAbs}i`;
 }
-export function mat(v){ return `<span class="mat">${v.map(x=>`<span>${x<0?'&minus;'+Math.abs(x):x}</span>`).join('')}</span>`; }
+export function mat(v, cols=2){ return `<span class="mat"${cols===2?'':` style="grid-template-columns:repeat(${cols},auto)"`}>${v.map(x=>`<span>${x<0?'&minus;'+Math.abs(x):x}</span>`).join('')}</span>`; }
 
 /* exact special-angle values (degrees -> sin, cos, tan) */
 export const TRIG = {
@@ -48,3 +48,10 @@ export const TRIG = {
 
 export function shuffled(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 export const strip = h => String(h).replace(/<\/?b>/g, "");
+
+// number-theory / vector helpers for the Mathematics track
+export const lcm = (a,b)=>Math.abs(a*b)/gcd(a,b);
+export function totient(n){ let phi=n, m=n; for(let p=2;p*p<=m;p++) if(m%p===0){ while(m%p===0) m/=p; phi-=phi/p; } if(m>1) phi-=phi/m; return phi; }
+export function powMod(a,b,m){ let r=1, base=a%m; while(b>0){ if(b&1) r=r*base%m; base=base*base%m; b>>=1; } return r%m; }
+export function isPrimeN(n){ if(n<2) return false; for(let i=2;i*i<=n;i++) if(n%i===0) return false; return true; }
+export const vec = v => `&lang;${v.map(sgn).join(', ')}&rang;`;            // <a, b, c>
