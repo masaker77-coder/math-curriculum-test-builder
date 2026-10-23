@@ -204,6 +204,7 @@
   .trow select{min-width:0;padding:4px 6px}
   .trow.on{background:var(--accent-soft)}
   .exam-only[hidden]{display:none}
+  .search-results[hidden]{display:none}
   .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
   .total-marks{font-size:18px;padding:5px 0}
   .xq{margin-top:16px;break-inside:avoid}
@@ -222,9 +223,24 @@
   table.stbl.full{font-size:11px}
   table.stbl.full td, table.stbl.full th{padding:2px 5px}
 
+  /* ---------- Two-column screen: settings on one side, the test always visible on the other ---------- */
+  @media screen and (min-width:900px){
+    body{display:grid;grid-template-columns:minmax(380px,38%) 1fr;height:100vh;overflow:hidden}
+    .toolbar{position:static;height:100vh;overflow:auto;border-bottom:0;border-inline-end:1px solid var(--line);box-shadow:none}
+    .wrap{height:100vh;overflow:auto;margin:0;max-width:none;padding:22px 26px}
+    #out{max-width:860px;margin:0 auto}
+    .toolbar .field{flex:1 1 150px}
+    .toolbar select, .builder select, .toolbar input[type=text]{min-width:0;width:100%}
+    .toolbar .controls, .toolbar .builder{gap:10px}
+    .trow{grid-template-columns:22px 1fr 58px 118px}
+    .trow input[type=number]{width:54px}
+    .sections{max-height:30vh;overflow:auto}
+  }
+
   /* ---------- Print ---------- */
   @media print{
-    body{background:#fff;font-size:13px}
+    body{background:#fff;font-size:13px;display:block;height:auto;overflow:visible}
+    .wrap{height:auto;overflow:visible}
     .toolbar,.noprint{display:none!important}
     .wrap{margin:0;padding:0;max-width:none}
     .sheet{border:0;border-radius:0;box-shadow:none;padding:0}
