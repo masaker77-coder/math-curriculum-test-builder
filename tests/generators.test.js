@@ -393,7 +393,7 @@ test('MATH 232 — critical points satisfy f′(x) = 0', () => {
 test('MATH 234 — set operations', () => {
   for (const d of DIFFS) times(200, () => {
     const o = G.setOps(d), q = plain(o.q);
-    const [, A, B] = q.match(/A = \{([^}]*)\}, B = \{([^}]*)\}/).map(s => s.split(', ').map(Number));
+    const [, A, B] = q.match(/A = \{([^}]*)\}; B = \{([^}]*)\}/).map(s => s.split(', ').map(Number));
     const op = o.q.match(/Find A (&cup;|&cap;|&minus;) B/)[1];
     const want = op === '&cup;' ? [...new Set([...A, ...B])].sort((x, y) => x - y)
       : op === '&cap;' ? A.filter(x => B.includes(x)) : A.filter(x => !B.includes(x));
@@ -478,12 +478,12 @@ test('MATH 353 — trapezoidal rule', () => {
 
 test("MATH 353/333 — Euler's method", () => {
   for (const d of DIFFS) times(200, () => {
-    const o = G.eulerStep(d), t = plain(o.q).replace(/\s/g, '');
-    const m = t.match(/h=([\d.]+)\((\d)step.*y&prime;=(.*),y\((\d+)\)=(-?\d+)\.Findy\(([\d.]+)\)/);
-    const h = +m[1], steps = +m[2], rhs = m[3];
-    let x = +m[4], y = +m[5]; const a = coefOf(rhs, 'x'), b = coefOf(rhs, 'y');
+    const o = G.eulerStep(d), t = plain(enOnly(o.q)).replace(/\s/g, '');
+    const m = t.match(/h=([\d.]+)\((\d)steps?\)tofindy\(([\d.]+)\):y&prime;=(.*);y\((\d+)\)=(-?\d+)/);
+    const h = +m[1], steps = +m[2], rhs = m[4];
+    let x = +m[5], y = +m[6]; const a = coefOf(rhs, 'x'), b = coefOf(rhs, 'y');
     for (let i = 0; i < steps; i++) { y = y + h * (a * x + b * y); x += h; }
-    assert.equal(x, +m[6]); close(val(o.a), y);
+    assert.equal(x, +m[3]); close(val(o.a), y);
   });
 });
 
@@ -508,9 +508,9 @@ test('MATH 333 — exponential growth and polynomial IVPs', () => {
     let o = G.expGrowth(d); const [y0, T, t] = ints(plain(o.q).replace(/y\(0\)/, ''));
     close(val(o.a), y0 * Math.exp(Math.log(2) / T * t), 1e-6);
     o = G.ivpPolynomial(d);
-    const m = plain(o.q).replace(/\s/g, '').match(/y&prime;=(-?\d*)(x(?:\^(\d+))?)?,y\(0\)=(-?\d+)\.Findy\((-?\d+)\)/);
-    const k = m[1] === '' ? 1 : m[1] === '-' ? -1 : +m[1], p = m[2] ? (m[3] ? +m[3] : 1) : 0, x1 = +m[5];
-    close(val(o.a), +m[4] + simpson(x => k * x ** p, 0, x1), 1e-6);
+    const [, X1, K, X, P, Y0] = plain(enOnly(o.q)).replace(/\s/g, '').match(/findy\((-?\d+)\):y&prime;=(-?\d*)(x(?:\^(\d+))?)?;y\(0\)=(-?\d+)/);
+    const k = K === '' ? 1 : K === '-' ? -1 : +K, p = X ? (P ? +P : 1) : 0, x1 = +X1;
+    close(val(o.a), +Y0 + simpson(x => k * x ** p, 0, x1), 1e-6);
   });
 });
 
@@ -679,7 +679,7 @@ test('MATH 367 — τ, σ, congruences, CRT, factorization', () => {
     assert.equal(val(o.a), s);
     o = G.linearCongruence(d); const [a, b, m] = ints(plain(o.q)), x = ints(plain(o.a))[0];
     assert.equal((a * x) % m, b); assert.ok(x >= 0 && x < m);
-    o = G.crt(d); const [r1, m1, r2, m2] = ints(plain(o.q).split('with')[1]);
+    o = G.crt(d); const [r1, m1, r2, m2] = ints(E(o.q).split(':')[1]);
     let y = 0; while (!(y % m1 === r1 && y % m2 === r2)) y++;
     assert.equal(val(o.a), y);
     o = G.primeFactorization(d); n = ints(plain(o.q))[0];
@@ -765,7 +765,7 @@ test('STAT 312 — expected value and variance of a discrete distribution', () =
 
 test('STAT 361 — LP optimum equals the best feasible integer point', () => {
   for (const d of DIFFS) times(200, () => {
-    const o = G.lpCornerPoint(d), [a, b, c, p, q] = ints(plain(o.q));
+    const o = G.lpCornerPoint(d), [a, b, c, p, q] = ints(E(o.q));
     let best = -Infinity;
     for (let x = 0; x <= p; x++) for (let y = 0; y <= q; y++) if (x + y <= c) best = Math.max(best, a * x + b * y);
     assert.equal(val(o.a), best);
@@ -785,11 +785,11 @@ test('MATH 371 — effective rate and annuity future value', () => {
 
 test('MATH 342 — improved Euler (Heun) step', () => {
   for (const d of DIFFS) times(200, () => {
-    const o = G.improvedEuler(d), t = plain(o.q).replace(/\s/g, '');
-    const m = t.match(/h=([\d.]+)ony&prime;=(.*),y\((\d+)\)=(-?\d+)\.Findy\(([\d.]+)\)/);
-    const h = +m[1], a = coefOf(m[2], 'x'), b = coefOf(m[2], 'y'), x0 = +m[3], y0 = +m[4], f = (x, y) => a * x + b * y;
+    const o = G.improvedEuler(d), t = plain(enOnly(o.q)).replace(/\s/g, '');
+    const m = t.match(/h=([\d.]+)tofindy\(([\d.]+)\):y&prime;=(.*);y\((\d+)\)=(-?\d+)/);
+    const h = +m[1], a = coefOf(m[3], 'x'), b = coefOf(m[3], 'y'), x0 = +m[4], y0 = +m[5], f = (x, y) => a * x + b * y;
     const pred = y0 + h * f(x0, y0);
-    assert.equal(x0 + h, +m[5]);
+    assert.equal(x0 + h, +m[2]);
     close(val(o.a), y0 + h * (f(x0, y0) + f(x0 + h, pred)) / 2);
   });
 });
@@ -817,7 +817,7 @@ test('curriculum — plan levels in order, every listed topic has a generator an
 
 /* ================= Worked solutions: MATH 130, STAT 302, MATH 442 ================= */
 import { T_TABLE, T_ALPHAS, Z_ROW, F_TABLE_05, normPdf, tPdf, fPdf } from '../src/viz.js';
-const E = html => plain(enOnly(html)).replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();          // English text only
+const E = html => plain(enOnly(String(html).replace(/<br>/g, ' '))).replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();          // English text only
 const lin = (s, v) => coefOf(s.replace(/\s/g, ''), v);
 const constOf = s => +(s.replace(/\s/g, '').match(/([+-]\d+)$/) || [0, 0])[1];
 // tail areas from the densities, used to check the printed tables once; the other tests then use the tables
@@ -864,7 +864,7 @@ test('MATH 130 — linear equations, inequalities, 2×2 systems', () => {
     const cmp = (u, w, s) => s === '&lt;' ? u < w : s === '&gt;' ? u > w : s === '&le;' ? u <= w : u >= w;
     for (let t = k - 3; t <= k + 3; t += 0.5) assert.equal(cmp(a * t + b, c, op), cmp(t, k, ans[1]), `${q} at ${t}`);
     o = G.linearSystem2(d);
-    const eqs = E(o.q).replace('Solve the system: ', '').split(' and ').map(s => s.trim().split(' = '));
+    const eqs = E(o.q).replace('Solve the system: ', '').split('; ').map(s => s.trim().split(' = '));
     const [X, Y] = ints(plain(o.a).split('=')[1]);
     for (const [L2, R2] of eqs) assert.equal(lin(L2, 'x') * X + lin(L2, 'y') * Y, +R2.replace(/\s/g, ''));
   });
@@ -921,17 +921,17 @@ test('STAT 302 — hypothesis tests for a mean (z, z with s, t) and a proportion
   const dec = (stat, crit, tail) => tail === '≠' ? Math.abs(stat) > crit : tail === '>' ? stat > crit : stat < -crit;
   for (const d of DIFFS) times(60, () => {
     for (const t of ['testMeanZ', 'testMeanS', 'testMeanT']) {
-      const o = G[t](d), raw = enOnly(o.q), q = E(o.q), { n, xb, sd } = parseSample(q);
-      const mu0 = +q.match(/μ = (\d+(?:\.\d+)?) against/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1];
-      const tail = raw.includes('&ne;') ? '≠' : raw.match(/H₁: μ (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
+      const o = G[t](d), q = E(o.q), { n, xb, sd } = parseSample(q);
+      const mu0 = +q.match(/H₀: μ = (\d+(?:\.\d+)?)/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1];
+      const tail = q.includes('&ne;') ? '≠' : q.match(/H₁: μ (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
       const stat = (xb - mu0) / (sd / Math.sqrt(n)), a = tail === '≠' ? alpha / 2 : alpha;
       const crit = t === 'testMeanT' ? tQ(a, n - 1) : zQ(a);
       close(+plain(o.a).match(/[zt] = ([-\d.]+)/)[1], stat, 0.002);
       assert.equal(/Do not reject/.test(E(o.a)), !dec(stat, crit, tail));
     }
-    const o = G.testProportion(d), raw = enOnly(o.q), q = E(o.q);
-    const p0 = +q.match(/p = (\d+(?:\.\d+)?) against/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1], x = +q.match(/given (\d+) successes/)[1], n = +q.match(/n = (\d+) trials/)[1];
-    const tail = raw.includes('&ne;') ? '≠' : raw.match(/H₁: p (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
+    const o = G.testProportion(d), q = E(o.q);
+    const p0 = +q.match(/H₀: p = (\d+(?:\.\d+)?)/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1], x = +q.match(/there are (\d+) successes/)[1], n = +q.match(/n = (\d+) trials/)[1];
+    const tail = q.includes('&ne;') ? '≠' : q.match(/H₁: p (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
     const stat = (x / n - p0) / Math.sqrt(p0 * (1 - p0) / n);
     close(+plain(o.a).match(/z = ([-\d.]+)/)[1], stat, 0.002);
     assert.equal(/Do not reject/.test(E(o.a)), !dec(stat, zQ(tail === '≠' ? alpha / 2 : alpha), tail));
@@ -971,21 +971,21 @@ test('MATH 442 — finite-difference derivatives uₓ, uₜ, uₓₓ, uₜₜ', 
 
 test('MATH 442 — FDM for ODEs in uₓ, uₜ, uₓₓ, uₜₜ', () => {
   for (const d of DIFFS) times(200, () => {
-    let o = G.fdmOdeUx(d), q = E(o.q), m = q.match(/ux = (\d+)x(?:\^(\d+))?, u\(0\) = (\d+).*h = (\d+(?:\.\d+)?)/);
+    let o = G.fdmOdeUx(d), q = E(o.q), m = q.match(/h = (\d+(?:\.\d+)?);.*ux = (\d+)x(?:\^(\d+))?; u\(0\) = (\d+)/); m = [m[0], m[2], m[3], m[4], m[1]];
     let c = +m[1], p = m[2] ? +m[2] : 1, u0 = +m[3], h = +m[4], u = u0;
     for (let x = 0; x < 1 - 1e-9; x += h) u += h * c * x ** p;
     checkFdm(o, u0 + simpson(x => c * x ** p, 0, 1), u);
 
-    o = G.fdmOdeUt(d); q = E(o.q); m = q.match(/ut = -(\d*)u, u\(0\) = (\d+).*Δt = (\d+(?:\.\d+)?), and find u\((\d+(?:\.\d+)?)\)/);
+    o = G.fdmOdeUt(d); q = E(o.q); m = q.match(/Δt = (\d+(?:\.\d+)?), and find u\((\d+(?:\.\d+)?)\).*ut = -(\d*)u; u\(0\) = (\d+)/); m = [m[0], m[3], m[4], m[1], m[2]];
     const k = m[1] ? +m[1] : 1, a0 = +m[2], dt = +m[3], T = +m[4]; u = a0;
     for (let t = 0; t < T - 1e-9; t += dt) u -= dt * k * u;
     checkFdm(o, a0 * Math.exp(-k * T), u);
 
-    o = G.fdmOdeUxx(d); q = E(o.q); m = q.match(/u\((\d)\) = (-?\d+) by central differences with h = (\d+(?:\.\d+)?)\. Find u\((\d+(?:\.\d+)?)\)/);
+    o = G.fdmOdeUxx(d); q = E(o.q); m = q.match(/h = (\d+(?:\.\d+)?) and find u\((\d+(?:\.\d+)?)\).*u\((\d)\) = (-?\d+)$/); m = [m[0], m[3], m[4], m[1], m[2]];
     const L = +m[1], uL = +m[2], hh = +m[3], x1 = +m[4], A = (uL - L ** 4) / L;   // exact u = x⁴ + A x
     checkFdm(o, x1 ** 4 + A * x1, (uL - hh * hh * 12 * x1 * x1) / 2);
 
-    o = G.fdmOdeUtt(d); q = E(o.q); m = q.match(/u\(0\) = (\d+), ut\(0\) = (\d+).*Δt = (\d+(?:\.\d+)?)\. Find u\((\d+(?:\.\d+)?)\)/);
+    o = G.fdmOdeUtt(d); q = E(o.q); m = q.match(/Δt = (\d+(?:\.\d+)?), and find u\((\d+(?:\.\d+)?)\).*u\(0\) = (\d+); ut\(0\) = (\d+)/); m = [m[0], m[3], m[4], m[1], m[2]];
     const a = +m[1], b = +m[2], kk = +m[3], T2 = +m[4], f = t => 6 * t;
     const u1 = a + kk * b + kk * kk / 2 * f(0), u2 = 2 * u1 - a + kk * kk * f(kk);
     checkFdm(o, T2 ** 3 + b * T2 + a, u2);
@@ -994,7 +994,7 @@ test('MATH 442 — FDM for ODEs in uₓ, uₜ, uₓₓ, uₜₜ', () => {
 
 test('MATH 442 — FDM for uₜ + c uₓ = 0 and the heat / wave equations', () => {
   for (const d of DIFFS) times(200, () => {
-    let o = G.fdmAdvection(d), q = E(o.q), m = q.match(/ut \+ (\d*)ux = 0.*h = (\d+(?:\.\d+)?), k = (\d+(?:\.\d+)?) to find u\((\d+(?:\.\d+)?),/);
+    let o = G.fdmAdvection(d), q = E(o.q), m = q.match(/h = (\d+(?:\.\d+)?), k = (\d+(?:\.\d+)?) to find u\((\d+(?:\.\d+)?),.*ut \+ (\d*)ux = 0/); m = [m[0], m[4], m[1], m[2], m[3]];
     const c = m[1] ? +m[1] : 1, h = +m[2], k = +m[3], x = +m[4], r = c * k / h;
     assert.ok(r <= 1, 'CFL');
     checkFdm(o, (x - c * k) ** 2, x * x - r * (x * x - (x - h) ** 2));
@@ -1012,4 +1012,23 @@ test('MATH 442 — scheme classification and stability', () => {
     if (implicitTerms === 1) { assert.match(a, /^Explicit \(FTCS\)/); assert.equal(/unstable/.test(a), r > 0.5); }
     else { assert.match(a, /^Implicit/); assert.match(a, /unconditionally stable/); }
   });
+});
+
+test('exam layout — items are split into N questions with parts, in order, none lost', async () => {
+  const { groupItems } = await import('../src/helpers.js');
+  for (let T = 1; T <= 25; T++) for (let n = 1; n <= 8; n++) {
+    const items = [...Array(T).keys()], g = groupItems(items, n);
+    assert.equal(g.length, Math.min(n, T));
+    assert.deepEqual(g.flat(), items);
+    const sizes = g.map(x => x.length);
+    assert.ok(Math.max(...sizes) - Math.min(...sizes) <= 1);
+  }
+});
+
+test('full statistical tables: computed F points match the printed F table; Φ is accurate', async () => {
+  const { fQuantile05, Phi, F_TABLE_05 } = await import('../src/viz.js');
+  for (const d2 of Object.keys(F_TABLE_05).map(Number)) F_TABLE_05[d2].forEach((c, i) =>
+    assert.ok(Math.abs(fQuantile05(i + 1, d2) - c) < 0.0051, `F(${i + 1}, ${d2})`));
+  for (const z of [0, 0.5, 1, 1.645, 1.96, 2.576, 3.4]) close(Phi(z), 0.5 + simpson(normPdf, 0, z, 4000), 1e-9);
+  close(Phi(-1.96), 1 - Phi(1.96), 1e-12);
 });

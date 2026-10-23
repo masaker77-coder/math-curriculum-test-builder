@@ -55,3 +55,12 @@ export function totient(n){ let phi=n, m=n; for(let p=2;p*p<=m;p++) if(m%p===0){
 export function powMod(a,b,m){ let r=1, base=a%m; while(b>0){ if(b&1) r=r*base%m; base=base*base%m; b>>=1; } return r%m; }
 export function isPrimeN(n){ if(n<2) return false; for(let i=2;i*i<=n;i++) if(n%i===0) return false; return true; }
 export const vec = v => `&lang;${v.map(sgn).join(', ')}&rang;`;            // <a, b, c>
+
+/* split a test's items into n questions in order; when there are more items than questions the extra ones
+   become parts (a), (b), … — earlier questions take one more part when it does not divide evenly */
+export function groupItems(flat, n){
+  n=Math.max(1,Math.min(n, flat.length));
+  const base=Math.floor(flat.length/n), extra=flat.length%n, out=[]; let k=0;
+  for(let i=0;i<n;i++){ const size=base+(i<extra?1:0); out.push(flat.slice(k,k+size)); k+=size; }
+  return out;
+}
