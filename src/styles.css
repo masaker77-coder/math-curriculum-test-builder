@@ -198,13 +198,17 @@
   .mode{font:inherit;font-weight:600;border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;padding:7px 16px;cursor:pointer}
   .mode.on{background:var(--accent);color:#fff}
   .topic-list{flex:1 1 100%;background:#fff;border:1px solid var(--line);border-radius:8px;max-height:260px;overflow:auto}
-  .trow{display:grid;grid-template-columns:24px 1fr 70px 150px;gap:8px;align-items:center;padding:5px 10px;border-bottom:1px solid #eef1f6;font-size:13px}
+  .trow{display:grid;grid-template-columns:24px 1fr 64px 64px;gap:8px;align-items:center;padding:5px 10px;border-bottom:1px solid #eef1f6;font-size:13px}
   .trow.head{position:sticky;top:0;background:#f6f8fc;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;z-index:1}
   .trow input[type=number]{width:64px;padding:4px 6px}
   .trow select{min-width:0;padding:4px 6px}
   .trow.on{background:var(--accent-soft)}
   .exam-only[hidden]{display:none}
   .search-results[hidden]{display:none}
+  .choices, .pchoices{direction:ltr;text-align:left}
+  .choices .opt{unicode-bidi:isolate}
+  body.pdf-export .sheet{box-shadow:none;border:0;border-radius:0}
+  body.pdf-export #out>.sheet + .sheet{margin-top:0}
   .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
   .total-marks{font-size:18px;padding:5px 0}
   .xq{margin-top:16px;break-inside:avoid}
@@ -214,6 +218,9 @@
   ol.xparts>li{display:flex;gap:8px;font-family:var(--font-math);font-size:16.5px;align-items:baseline}
   ol.xparts .pl{font-family:var(--font-ui);font-size:13px;font-weight:700;color:var(--muted);min-width:26px}
   ol.xparts .pm{font-family:var(--font-ui);font-size:11px;color:var(--muted);white-space:nowrap;margin-inline-start:auto}
+  ol.problems.labeled li::before{content:none}
+  ol.problems .ql{font-family:var(--font-ui);font-size:13px;font-weight:700;color:var(--muted);min-width:44px;white-space:nowrap}
+  ol.xparts .pl{min-width:44px;white-space:nowrap}
   ol.answers.labeled{grid-template-columns:repeat(3,1fr)}
   ol.answers.labeled li::before{content:none}
   ol.answers .kl, ol.sols .kl{font-family:var(--font-ui);font-weight:700;color:var(--muted);font-size:12px;margin-inline-end:6px}
@@ -232,12 +239,13 @@
     .toolbar .field{flex:1 1 150px}
     .toolbar select, .builder select, .toolbar input[type=text]{min-width:0;width:100%}
     .toolbar .controls, .toolbar .builder{gap:10px}
-    .trow{grid-template-columns:22px 1fr 58px 118px}
+    .trow{grid-template-columns:22px 1fr 58px 58px}
     .trow input[type=number]{width:54px}
     .sections{max-height:30vh;overflow:auto}
   }
 
   /* ---------- Print ---------- */
+  @page{size:A4;margin:14mm 12mm}
   @media print{
     body{background:#fff;font-size:13px;display:block;height:auto;overflow:visible}
     .wrap{height:auto;overflow:visible}

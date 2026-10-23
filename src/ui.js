@@ -89,6 +89,10 @@ function parseCustom(){
   });
 }
 /* generate the items for one section */
+/* a topic's items: its essay questions first, then its multiple-choice ones */
+const nEss = s => s.nEssay ?? (s.mc ? 0 : s.count);
+const nMc  = s => s.nMc ?? (s.mc ? s.count : 0);
+const sectionItems = s => [...genItems(s.topic, nEss(s), s.diff, false), ...genItems(s.topic, nMc(s), s.diff, true)];
 function genItems(topic, count, d, mc){
   const gen=G[topic]; const items=[];
   for(let i=0;i<count;i++){ const it=gen(d); if(mc) it.choices=buildChoices(it.a, gen, d); items.push(it); }
@@ -117,21 +121,21 @@ function buildTopicList(keep){
   const prev = keep ? readTopicRows() : {};
   if(!c||!c.topics.length){ box.innerHTML=`<div class="sections-empty" style="padding:10px">${T('noTopics')}</div>`; el('addSection').disabled=true; return; }
   el('addSection').disabled=false;
-  box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T('count')}</span><span>${T('type')}</span></div>`+
-    c.topics.map(t=>{ const p=prev[t]||{on:false,count:defaultCount(),type:'essay'};
+  box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T('essay')}</span><span>${T('mcShort')}</span></div>`+
+    c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:0};
       return `<div class="trow${p.on?' on':''}" data-t="${t}"><input type="checkbox" class="tchk"${p.on?' checked':''}><span>${topicLabel(t)}</span>
-        <input type="number" class="tcount" min="1" max="40" value="${p.count}">
-        <select class="ttype"><option value="essay"${p.type==='essay'?' selected':''}>${T('essay')}</option><option value="mc"${p.type==='mc'?' selected':''}>${T('mcType')}</option></select></div>`; }).join('');
+        <input type="number" class="tess" min="0" max="40" value="${p.essay}" title="${T('essay')}">
+        <input type="number" class="tmc" min="0" max="40" value="${p.mc}" title="${T('mcType')}"></div>`; }).join('');
   box.querySelectorAll('.tchk').forEach(ch=>ch.onchange=()=>ch.closest('.trow').classList.toggle('on',ch.checked));
   el('tAll').onchange=e=>box.querySelectorAll('.tchk').forEach(ch=>{ ch.checked=e.target.checked; ch.closest('.trow').classList.toggle('on',ch.checked); });
 }
 function readTopicRows(){
   const out={};
   el('topicList').querySelectorAll('.trow[data-t]').forEach(r=>{ out[r.dataset.t]={ on:r.querySelector('.tchk').checked,
-    count:Math.max(1,Math.min(40,parseInt(r.querySelector('.tcount').value)||1)), type:r.querySelector('.ttype').value }; });
+    essay:Math.max(0,Math.min(40,parseInt(r.querySelector('.tess').value)||0)), mc:Math.max(0,Math.min(40,parseInt(r.querySelector('.tmc').value)||0)) }; });
   return out;
 }
-function checkedTopics(){ return Object.entries(readTopicRows()).filter(([,v])=>v.on).map(([t,v])=>({topic:t, ...v})); }
+function checkedTopics(){ return Object.entries(readTopicRows()).filter(([,v])=>v.on&&v.essay+v.mc>0).map(([t,v])=>({topic:t, ...v})); }
 
 /* --- Search by topic / course code / course title / level (English or Arabic) --- */
 function runSearch(){
@@ -153,16 +157,17 @@ function runSearch(){
 }
 
 /* --- Sections (topics in the test) --- */
-function sectionFor(topic, count, mc){
+function sectionFor(topic, nEssay, nMcq){
   const {li,c}=selectedCourse(), d=parseInt(el('bDiff').value)||2;
   return { level:CURRICULUM[li].level, code:c.code, title:c.title, titleAr:c.ar, topic,
-    label:TOPIC_LABELS[topic]||topic, count, diff:d, mc, items:genItems(topic,count,d,mc) };
+    label:TOPIC_LABELS[topic]||topic, count:nEssay+nMcq, nEssay, nMc:nMcq, diff:d,
+    items:[...genItems(topic,nEssay,d,false), ...genItems(topic,nMcq,d,true)] };
 }
 function addSelected(replace){
   const picks=checkedTopics();
   if(!picks.length){ el('sections').innerHTML=`<div class="sections-empty" style="color:#c0392b">${T('tickTopic')}</div>`; setTimeout(renderSections,1800); return false; }
   if(replace) test.sections=[];
-  picks.forEach(p=>test.sections.push(sectionFor(p.topic, p.count, p.type==='mc')));
+  picks.forEach(p=>test.sections.push(sectionFor(p.topic, p.essay, p.mc)));
   el('topicList').querySelectorAll('.tchk').forEach(ch=>{ ch.checked=false; ch.closest('.trow').classList.remove('on'); });
   buildVersions(); renderSections(); render(); return true;
 }
@@ -170,13 +175,13 @@ function addSelected(replace){
 function autoPick(n){
   const {c}=selectedCourse(); if(!c||!c.topics.length) return;
   const pool=shuffled(c.topics);
-  for(let i=0;i<n;i++) test.sections.push(sectionFor(pool[i%pool.length], 1, false));
+  for(let i=0;i<n;i++) test.sections.push(sectionFor(pool[i%pool.length], 1, 0));
 }
 /* fewer items than the preset number of questions: add items to the chosen topics in turn until it is reached */
 function topUp(n){
   const gen=test.sections.filter(x=>!x.custom); if(!gen.length) return;
   let total=test.sections.reduce((k,x)=>k+x.items.length,0), i=0;
-  while(total<n){ const sec=gen[i++%gen.length]; sec.items.push(...genItems(sec.topic,1,sec.diff,sec.mc)); sec.count++; total++; }
+  while(total<n){ const sec=gen[i++%gen.length]; sec.items.push(...genItems(sec.topic,1,sec.diff,false)); sec.nEssay=nEss(sec)+1; sec.nMc=nMc(sec); sec.count++; total++; }
 }
 function setMode(mode){
   state.mode=mode; const m=MODES[mode];
@@ -199,7 +204,7 @@ function addCustomPart(){
 function removeSection(i){ test.sections.splice(i,1); buildVersions(); renderSections(); render(); }
 function regenSection(i){
   const s=test.sections[i]; if(s.custom) return;
-  s.items=genItems(s.topic, s.count, s.diff, s.mc);
+  s.items=sectionItems(s);
   buildVersions(); render();
 }
 function moveSection(i,dir){
@@ -209,7 +214,7 @@ function moveSection(i,dir){
 }
 function dupSection(i){
   const s=test.sections[i];
-  const copy = s.custom ? {...s, items:s.items.slice()} : {...s, items:genItems(s.topic,s.count,s.diff,s.mc)};
+  const copy = s.custom ? {...s, items:s.items.slice()} : {...s, items:sectionItems(s)};
   test.sections.splice(i+1,0,copy); buildVersions(); renderSections(); render();
 }
 const partLabel = s => s.custom ? T('customPart') : topicLabel(s.topic);
@@ -223,7 +228,7 @@ function renderSections(){
   box.innerHTML=test.sections.map((s,i)=>{
     const L=String.fromCharCode(65+i);
     const meta = s.custom ? `${T('customShort')} · ${s.count}`
-      : `${partCourse(s)} · ${s.count} · ${T(DIFF_KEY[s.diff])} · ${s.mc?T('mcType'):T('essay')}`;
+      : `${partCourse(s)} · ${T(DIFF_KEY[s.diff])} · ${T('essay')} ${nEss(s)} · ${T('mcShort')} ${nMc(s)}`;
     return `<span class="section-pill">
       <span class="part-letter">${L}</span>
       <span class="pl">${partLabel(s)}</span>
@@ -294,25 +299,25 @@ function practiceHTML(parts, vLabel){
   const total=parts.reduce((n,p)=>n+p.items.length,0);
   const title=(el('title').value||'').trim() || T('mathTest');
   const multiPart=parts.length>1;
+  const entries=[];
   const partsHtml=parts.map((p,pi)=>{
     const long=p.custom?false:LONG.includes(p.topic);
-    const L=String.fromCharCode(65+pi);
-    const det=p.custom?T('customShort'):`${partCourse(p)}${p.diff?' · '+T(DIFF_KEY[p.diff]):''}`;
-    const head=multiPart ? `<div class="part-head"><span class="plet">${T('part')} ${L}.</span> ${partLabel(p)}
-      <span class="pdet">${det}</span></div>` : '';
-    const lis=p.items.map(it=>`<li style="min-height:${sp}px"><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span></li>`).join('');
-    return `<div class="part">${head}<ol class="problems ${long?'single':''}">${lis}</ol></div>`;
+    const lis=p.items.map((it,ii)=>{ const lbl=qLabel(pi, p.items.length>1?ii:-1); entries.push({it, label:lbl});
+      return `<li style="min-height:${sp}px"><span class="ql">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span></li>`; }).join('');
+    return `<div class="part"><ol class="problems labeled ${long?'single':''}">${lis}</ol></div>`;
   }).join('');
-  const entries=[]; parts.forEach(p=>p.items.forEach(it=>entries.push({it})));
   const sub = multiPart
-    ? `${parts.length} ${T('parts')} &nbsp;·&nbsp; ${total} ${T('qs')}`
+    ? `${parts.length} ${T('qs')}`
     : (parts[0] ? `${partCourse(parts[0])} &nbsp;·&nbsp; ${partLabel(parts[0])} &nbsp;·&nbsp; ${total} ${T('qs')}` : `0 ${T('qs')}`);
   return `<div class="sheet">${headerHTML(title, sub, total, vLabel)}
-    <div class="problemset">${partsHtml}</div>${keyHTML(entries, vLabel, false)}</div>`;
+    <div class="problemset">${partsHtml}</div>${keyHTML(entries, vLabel, true)}</div>`;
 }
 
 /* --- homework / midterm / final: N questions, each split into parts when there are more items --- */
-const partLetter = i => state.lang==='ar' ? 'أبجدهوزحطيكلمنسعفصقرشت'[i] || i+1 : String.fromCharCode(97+i);
+/* question labels: Q1, Q1: A, Q1: B … (Arabic: س1، س1: أ …) */
+const AR_LETTERS='أبجدهوزحطيكلمنسعفصقرشتثخذضظغ';
+const partLetter = i => state.lang==='ar' ? AR_LETTERS[i] || i+1 : String.fromCharCode(65+i);
+const qLabel = (q, part) => `${state.lang==='ar'?'س':'Q'}${q+1}${part>=0?': '+partLetter(part):''}`;
 function examHTML(parts, vLabel){
   const sp=SPACE[parseInt(el('spacing').value)||2], m=MODES[state.mode];
   const flat=[]; parts.forEach(p=>p.items.forEach(it=>flat.push(it)));
@@ -323,11 +328,11 @@ function examHTML(parts, vLabel){
   const qs=groups.map((g,qi)=>{
     const pm=fmtMarks(marks/g.length);
     const lis=g.map((it,pi)=>{
-      const lbl = g.length>1 ? `(${partLetter(pi)})` : '';
-      entries.push({it, label:`${qi+1}${lbl}`});
-      return `<li style="min-height:${sp}px">${lbl?`<span class="pl">${lbl}</span>`:''}<span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span>${g.length>1?`<span class="pm">(${pm})</span>`:''}</li>`;
+      const lbl = qLabel(qi, g.length>1 ? pi : -1);
+      entries.push({it, label:lbl});
+      return `<li style="min-height:${sp}px"><span class="pl">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span>${g.length>1?`<span class="pm">(${pm})</span>`:''}</li>`;
     }).join('');
-    return `<div class="xq"><div class="xq-head"><span>${T('question')} ${qi+1}</span><span class="mk">(${fmtMarks(marks)} ${T('marksW')})</span></div><ol class="xparts">${lis}</ol></div>`;
+    return `<div class="xq"><div class="xq-head"><span>${qLabel(qi,-1)}</span><span class="mk">(${fmtMarks(marks)} ${T('marksW')})</span></div><ol class="xparts">${lis}</ol></div>`;
   }).join('');
   const sub=`${groups.length} ${T('qs')} &nbsp;·&nbsp; ${T('total')}: ${total} ${T('marksW')}`;
   return `<div class="sheet">${headerHTML(title, sub, total, vLabel)}<div class="exam">${qs}</div>${keyHTML(entries, vLabel, true)}</div>`;
@@ -397,6 +402,62 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Escape') closePresent();
 });
 
+/* ---------------- Print / PDF ----------------
+   Inside claude.ai the page runs in a frame that cannot open the print dialog, so it builds a PDF instead and
+   offers it through the `downloads` capability; opened on its own, the browser's print dialog is used.
+   The PDF library draws text itself and garbles right-to-left text, so with Arabic on the page the
+   download is a print-ready HTML file that opens the browser's print dialog (Save as PDF keeps Arabic right). */
+const PDF_LIB='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+let pdfLib=null;
+function loadPdfLib(){
+  return pdfLib ||= new Promise((res,rej)=>{
+    if(window.html2pdf) return res(window.html2pdf);
+    const sc=document.createElement('script'); sc.src=PDF_LIB;
+    sc.onload=()=>res(window.html2pdf); sc.onerror=()=>{ pdfLib=null; rej(new Error('pdf library did not load')); };
+    document.head.appendChild(sc);
+  });
+}
+async function saveFile(filename, data){
+  let dl=null; try{ dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null; }catch(e){ dl=null; }
+  if(dl){ await dl.save({filename, data}); return; }
+  const blob = data instanceof Blob ? data : new Blob([data], {type: filename.endsWith('.html') ? 'text/html' : 'application/octet-stream'});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+const fileBase = () => (((el('title').value||'').trim() || (document.querySelector('.sheet-title')||{}).textContent || 'math-test')
+  .replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,'-').slice(0,80) || 'math-test');
+function printableHTML(){
+  const css=[...document.styleSheets].map(ss=>{ try{ return [...ss.cssRules].map(r=>r.cssText).join('\n'); }catch(e){ return ''; } }).join('\n');
+  const root=document.documentElement;
+  return `<!doctype html><html lang="${root.lang}" dir="${root.dir}" data-lang="${state.lang}"><head><meta charset="utf-8"><title>${fileBase()}</title>`+
+    `<style>${css}</style><style>body{display:block!important;height:auto!important;overflow:visible!important}.wrap{height:auto!important;overflow:visible!important}</style></head>`+
+    `<body><div class="wrap">${el('out').innerHTML}</div><script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>`;
+}
+function flashNote(msg){ el('sections').insertAdjacentHTML('afterbegin',`<div class="sections-empty note" style="color:#c0392b">${msg}</div>`); setTimeout(renderSections,6000); }
+async function exportPDF(){
+  const btn=el('pdfBtn'), label=btn.textContent; btn.disabled=true; btn.textContent=T('makingPdf');
+  if(state.lang!=='en'){
+    try{ await saveFile(fileBase()+'.html', printableHTML()); flashNote(T('printNote')); }
+    catch(e){ if(!(e && e.code==='declined')) flashNote(T('pdfFailed')); }
+    finally{ btn.disabled=false; btn.textContent=label; }
+    return;
+  }
+  try{
+    const h2p=await loadPdfLib();
+    document.body.classList.add('pdf-export');
+    const blob=await h2p().set({ margin:[10,10,12,10], image:{type:'jpeg',quality:0.96},
+      html2canvas:{scale:2, useCORS:true, backgroundColor:'#ffffff'}, jsPDF:{unit:'mm', format:'a4', orientation:'portrait'},
+      pagebreak:{mode:['css','legacy'], before:['.sheet + .sheet','.tables-page','.keywrap:not(.same)'], avoid:['.xq','ol.problems li','ol.sols>li','table','.plot']} })
+      .from(el('out')).outputPdf('blob');
+    document.body.classList.remove('pdf-export');
+    await saveFile(fileBase()+'.pdf', blob);
+  }catch(e){
+    document.body.classList.remove('pdf-export');
+    if(!(e && e.code==='declined')){ try{ await saveFile(fileBase()+'.html', printableHTML()); }catch(_){} flashNote(T('pdfFailed')); }
+  }finally{ btn.disabled=false; btn.textContent=label; }
+}
+const inFrame = () => { try{ return window.self!==window.top; }catch(e){ return true; } };
+
 /* ---------------- Save / load whole tests (localStorage) ---------------- */
 const LS='mwg_tests_v1';
 function loadStore(){ try{ return JSON.parse(localStorage.getItem(LS)||'{}'); }catch(e){ return {}; } }
@@ -457,7 +518,8 @@ el('bSearch').oninput=runSearch;
 el('addSection').onclick=()=>addSelected(false);
 el('clearSections').onclick=()=>{ test.sections=[]; buildVersions(); renderSections(); render(); };
 el('addCustom').onclick=addCustomPart;
-el('print').onclick=()=>window.print();
+el('print').onclick=()=>{ if(inFrame()) exportPDF(); else window.print(); };
+el('pdfBtn').onclick=exportPDF;
 el('toggleKey').onclick=()=>{ state.showKey=!state.showKey; render(); };
 el('versions').onchange=()=>{ buildVersions(); render(); };
 el('nQ').oninput=render;
