@@ -1,6 +1,6 @@
 import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, sgn, cplx, mat, TRIG, shuffled,
          lcm, totient, powMod, isPrimeN, vec } from './helpers.js';
-import { L, Li, M, steps, num, plot, numberLine, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML } from './viz.js';
+import { L, Li, M, align, steps, num, plot, numberLine, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML } from './viz.js';
 
 /* a small discrete distribution: distinct values xs with probabilities cs[i]/D (all cs[i] ≥ 1) */
 function discreteDist(d){
@@ -57,7 +57,7 @@ function testMean(d, kind){
   let k; do{ k=R(-7,7)/2; }while(Math.abs(Math.abs(k)-cv)<0.1);                         // statistic value; never on the boundary
   const xb=+(mu0+k*se).toFixed(2), reject=tail==='two'?Math.abs(k)>cv:tail==='right'?k>cv:k<-cv, H1={two:'&ne;',right:'&gt;',left:'&lt;'}[tail];
   const [en,ar]=sampleText(kind,n,xb,sg), sd=kind==='z'?'&sigma;':'s';
-  return {q:L(`${en} Test H₀: μ = ${mu0} against H₁: μ ${H1} ${mu0} at α = ${alpha}.`, `${ar} اختبر ${M(`H₀: μ = ${mu0}`)} ضد ${M(`H₁: μ ${H1} ${mu0}`)} عند ${M(`α = ${alpha}`)}.`),
+  return {q:L(`${en} Test at α = ${alpha}:`, `${ar} اختبر عند ${M(`α = ${alpha}`)}:`)+'<br>'+align([['H₀: μ','=',mu0],['H₁: μ',H1,mu0]]),
     a:`<b>${sym} = ${num(k,3)}; ${decision(reject)}</b>`,
     s:steps(
       L(`Hypotheses: ${M(`H₀: μ = ${mu0}`)}, ${M(`H₁: μ ${H1} ${mu0}`)} (${tailName(tail).en}); ${CASE[kind].en}`, `الفرضيات: ${M(`H₀: μ = ${mu0}`)}، ${M(`H₁: μ ${H1} ${mu0}`)} (${tailName(tail).ar})؛ ${CASE[kind].ar}`),
@@ -266,7 +266,8 @@ export const G = {
     while(a1*b2-a2*b1===0){ a2=nz(1,5); b2=nz(1,5); }
     const c1=a1*x+b1*y, c2=a2*x+b2*y;
     const eq=(a,b,c)=>`${lead(a,'x')}${term(b,'y')} = ${c}`;
-    return {q:`${eq(a1,b1,c1)}&nbsp;&nbsp;,&nbsp;&nbsp; ${eq(a2,b2,c2)}`,
+    const lhs=(a,b)=>`${lead(a,'x')}${term(b,'y')}`;
+    return {q:L('Solve the system:','حل النظام:')+'<br>'+align([[lhs(a1,b1),'=',c1],[lhs(a2,b2),'=',c2]], true),
             a:`<b>(${x}, ${y})</b>`};
   },
 
@@ -574,7 +575,7 @@ export const G = {
   },
   determinant2(d){
     const hi=d===3?12:9, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
-    return {q:`det ${mat([a,b,c,e])} =`, a:`<b>${a*e-b*c}</b>`,
+    return {q:`det ${mat([a,b,c,e])} =`, a:`<b>${sgn(a*e-b*c)}</b>`,
       s:steps(L(`For ${mat(['a','b','c','d'])}: ${M('det = ad &minus; bc')}`, `للمصفوفة ${mat(['a','b','c','d'])}: ${M('det = ad &minus; bc')}`),
               L(`${M(`(${sgn(a)})(${sgn(e)}) &minus; (${sgn(b)})(${sgn(c)}) = ${sgn(a*e)} &minus; (${sgn(b*c)}) = ${sgn(a*e-b*c)}`)}`, `${M(`(${sgn(a)})(${sgn(e)}) &minus; (${sgn(b)})(${sgn(c)}) = ${sgn(a*e)} &minus; (${sgn(b*c)}) = ${sgn(a*e-b*c)}`)}`))};
   },
@@ -745,7 +746,7 @@ export const G = {
     const res = op==='&cup;' ? [...new Set([...A,...B])].sort((x,y)=>x-y)
               : op==='&cap;' ? A.filter(x=>B.includes(x)) : A.filter(x=>!B.includes(x));
     const S=s=>s.length?`{${s.join(', ')}}`:'&empty;';
-    return {q:`A = ${S(A)}, B = ${S(B)}. Find A ${op} B.`, a:`<b>${S(res)}</b>`};
+    return {q:align([['A','=',S(A)],['B','=',S(B)]])+'<br>'+L(`Find A ${op} B.`, `أوجد ${M(`A ${op} B`)}.`), a:`<b>${S(res)}</b>`};
   },
   cartesianSize(d){
     const a=R(2,d===1?6:12), b=R(2,d===1?6:12);
@@ -814,7 +815,8 @@ export const G = {
   eulerStep(d){
     const a=nz(-3,3), b=nz(-2,2), h=pick(d===1?[1]:d===2?[0.5,1]:[0.25,0.5]), steps=d===3?2:1, x0=R(0,2), y0=R(-3,5);
     let x=x0, y=y0; for(let i=0;i<steps;i++){ y+=h*(a*x+b*y); x+=h; }   // h is a power of 2: exact in floating point
-    return {q:`Use Euler's method with h = ${h} (${steps} step${steps>1?'s':''}) on y&prime; = ${lead(a,'x')}${term(b,'y')}, y(${x0}) = ${y0}. Find y(${x}).`,
+    return {q:L(`Use Euler's method with h = ${h} (${steps} step${steps>1?'s':''}) to find y(${x}):`, `استخدم طريقة أويلر بخطوة ${M('h = '+h)} (${steps>1?'خطوتان':'خطوة واحدة'}) لإيجاد ${M(`y(${x})`)}:`)+'<br>'+
+              align([['y&prime;','=',`${lead(a,'x')}${term(b,'y')}`],[`y(${x0})`,'=',y0]], true),
             a:`<b>${sgn(y)}</b>`};
   },
   absoluteError(d){
@@ -836,7 +838,7 @@ export const G = {
   ivpPolynomial(d){
     const p=R(0,d===1?1:3), c=nz(-4,4), y0=R(-9,9), x1=nz(-3,3), k=c*(p+1);
     const rhs = p===0 ? sgn(k) : lead(k,'x'+(p===1?'':sup(p)));
-    return {q:`Solve y&prime; = ${rhs}, y(0) = ${y0}. Find y(${x1}).`, a:`<b>${sgn(c*x1**(p+1)+y0)}</b>`};
+    return {q:L(`Solve the initial value problem and find y(${x1}):`, `حل مسألة القيمة الابتدائية وأوجد ${M(`y(${x1})`)}:`)+'<br>'+align([['y&prime;','=',rhs],['y(0)','=',y0]], true), a:`<b>${sgn(c*x1**(p+1)+y0)}</b>`};
   },
 
   /* ---- Partial Differential Equations (MATH 315) ---- */
@@ -1023,7 +1025,8 @@ export const G = {
   crt(d){
     const m1=R(3,d===1?5:9); let m2=R(3,d===1?7:13); while(gcd(m1,m2)!==1||m1===m2) m2=R(3,d===1?7:13);
     const x=R(0,m1*m2-1);
-    return {q:`Find the smallest x &ge; 0 with x &equiv; ${x%m1} (mod ${m1}) and x &equiv; ${x%m2} (mod ${m2}).`, a:`<b>x = ${x}</b>`};
+    return {q:L('Find the smallest x &ge; 0 that satisfies:', `أوجد أصغر عدد ${M('x &ge; 0')} يحقق:`)+'<br>'+
+              align([['x','&equiv;',`${x%m1} (mod ${m1})`],['x','&equiv;',`${x%m2} (mod ${m2})`]], true), a:`<b>x = ${x}</b>`};
   },
   primeFactorization(d){
     const ps=shuffled(d===1?[2,3,5]:[2,3,5,7,11,13]).slice(0,d===1?2:R(2,4)).sort((a,b)=>a-b);
@@ -1122,7 +1125,8 @@ export const G = {
     // feasible region: x + y ≤ c, x ≤ p, y ≤ q, x, y ≥ 0  with p, q < c < p + q
     const p=R(2,d===1?6:12), q=R(2,d===1?6:12), c=R(Math.max(p,q)+1,p+q-1), a=R(1,d===1?5:9), b=R(1,d===1?5:9);
     const V=[[0,0],[p,0],[p,c-p],[c-q,q],[0,q]], best=Math.max(...V.map(([x,y])=>a*x+b*y));
-    return {q:`Maximize Z = ${a}x + ${b}y subject to x + y &le; ${c}, x &le; ${p}, y &le; ${q}, x, y &ge; 0.`, a:`<b>max Z = ${best}</b>`};
+    return {q:L(`Maximize Z = ${a}x + ${b}y subject to:`, `أوجد القيمة العظمى لـ ${M(`Z = ${a}x + ${b}y`)} بشرط:`)+'<br>'+
+              align([['x + y','&le;',c],['x','&le;',p],['y','&le;',q],['x, y','&ge;','0']], true), a:`<b>max Z = ${best}</b>`};
   },
 
   /* ---- Economic and Financial Mathematics (MATH 371) ---- */
@@ -1140,7 +1144,8 @@ export const G = {
   improvedEuler(d){
     const a=nz(-3,3), b=nz(-2,2), h=pick(d===1?[1]:[0.5,0.25]), x0=R(0,2), y0=R(-3,5), f=(x,y)=>a*x+b*y;
     const k1=f(x0,y0), k2=f(x0+h,y0+h*k1);                       // h is a power of 2: exact in floating point
-    return {q:`Use one step of the improved Euler (Heun) method with h = ${h} on y&prime; = ${lead(a,'x')}${term(b,'y')}, y(${x0}) = ${y0}. Find y(${x0+h}).`,
+    return {q:L(`Use one step of the improved Euler (Heun) method with h = ${h} to find y(${x0+h}):`, `استخدم خطوة واحدة من طريقة أويلر المحسّنة (هيون) بخطوة ${M('h = '+h)} لإيجاد ${M(`y(${x0+h})`)}:`)+'<br>'+
+              align([['y&prime;','=',`${lead(a,'x')}${term(b,'y')}`],[`y(${x0})`,'=',y0]], true),
             a:`<b>${sgn(y0+h/2*(k1+k2))}</b>`};
   },
 
@@ -1184,7 +1189,8 @@ export const G = {
     while(a1*b2-a2*b1===0){ a2=nz(-hi,hi); b2=nz(-hi,hi); }
     const c1=a1*x+b1*y, c2=a2*x+b2*y, eq=(a,b,c)=>`${lead(a,'x')}${term(b,'y')} = ${sgn(c)}`, D=a2*b1-a1*b2, N=a2*c1-a1*c2;
     const g=plot({x:[x-6,x+6], y:[y-6,y+6], curves:[{f:t=>(c1-a1*t)/b1},{f:t=>(c2-a2*t)/b2, cls:'c2'}], points:[{x, y, label:`(${x}, ${y})`}]});
-    return {q:L(`Solve the system: ${eq(a1,b1,c1)} &nbsp;and&nbsp; ${eq(a2,b2,c2)}`, `حل النظام: ${M(eq(a1,b1,c1))} و ${M(eq(a2,b2,c2))}`), a:`<b>(x, y) = (${sgn(x)}, ${sgn(y)})</b>`,
+    const lhs=(a,b)=>`${lead(a,'x')}${term(b,'y')}`;
+    return {q:L('Solve the system:','حل النظام:')+'<br>'+align([[lhs(a1,b1),'=',sgn(c1)],[lhs(a2,b2),'=',sgn(c2)]], true), a:`<b>(x, y) = (${sgn(x)}, ${sgn(y)})</b>`,
       s:steps(
         L(`Eliminate x: multiply equation (1) by ${sgn(a2)} and equation (2) by ${sgn(a1)}, then subtract.`, `نحذف ${M('x')}: نضرب المعادلة (1) في ${M(sgn(a2))} والمعادلة (2) في ${M(sgn(a1))} ثم نطرح.`),
         L(`${M(`${D===1?'':D===-1?'&minus;':sgn(D)}y = ${sgn(N)}`)} ⇒ ${M(`y = ${sgn(y)}`)}`, `${M(`${D===1?'':D===-1?'&minus;':sgn(D)}y = ${sgn(N)}`)} ⇐ ${M(`y = ${sgn(y)}`)}`),
@@ -1278,8 +1284,8 @@ export const G = {
     const se=Math.sqrt(p0*(1-p0)/n), cv=zCrit(tail==='two'?alpha/2:alpha);
     let x, z; do{ x=Math.round(n*(p0+R(-30,30)/10*se)); z=(x/n-p0)/se; }while(Math.abs(Math.abs(z)-cv)<0.05 || x<=0 || x>=n);
     const reject = tail==='two'?Math.abs(z)>cv : tail==='right'?z>cv : z<-cv, H1={two:'&ne;',right:'&gt;',left:'&lt;'}[tail];
-    return {q:L(`Test H₀: p = ${p0} against H₁: p ${H1} ${p0} at α = ${alpha}, given ${x} successes in n = ${n} trials.`,
-                `اختبر ${M(`H₀: p = ${p0}`)} ضد ${M(`H₁: p ${H1} ${p0}`)} عند ${M(`α = ${alpha}`)} إذا كان عدد النجاحات ${M(x)} في ${M('n = '+n)} محاولة.`),
+    return {q:L(`In n = ${n} trials there are ${x} successes. Test at α = ${alpha}:`,
+                `في ${M('n = '+n)} محاولة كان عدد النجاحات ${M(x)}. اختبر عند ${M(`α = ${alpha}`)}:`)+'<br>'+align([['H₀: p','=',p0],['H₁: p',H1,p0]]),
       a:`<b>z = ${num(z,3)}; ${decision(reject)}</b>`,
       s:steps(
         L(`Hypotheses: ${M(`H₀: p = ${p0}`)}, ${M(`H₁: p ${H1} ${p0}`)} (${tailName(tail).en})`, `الفرضيات: ${M(`H₀: p = ${p0}`)}، ${M(`H₁: p ${H1} ${p0}`)} (${tailName(tail).ar})`),
@@ -1341,8 +1347,9 @@ export const G = {
     for(let i=0;i<n;i++){ const x=i*h, nu=u+h*f(x); rows.push(`${M(`u<sub>${i+1}</sub> = ${num(u)} + ${h}&middot;f(${x}) = ${num(nu)}`)}`); u=nu; }
     const err=Math.abs(ex(1)-u), fx=p===1?`${c}x`:`${c}x${sup(2)}`;
     const g=plot({x:[0,1], y:[0,ex(1)+0.5], curves:[{f:ex}], points:Array.from({length:n+1},(_,i)=>{ let v=u0; for(let j=0;j<i;j++) v+=h*f(j*h); return {x:i*h,y:v,cls:'apx'}; })});
-    return {q:L(`Solve u<sub>x</sub> = ${fx}, u(0) = ${u0} on [0, 1] by the forward difference with h = ${h}. Give the exact value, the approximation of u(1) and the error.`,
-                `حل ${M(`u<sub>x</sub> = ${fx}, u(0) = ${u0}`)} على ${M('[0, 1]')} بالفروق الأمامية بخطوة ${M('h = '+h)}. أوجد القيمة التامة والتقريبية لـ ${M('u(1)')} والخطأ.`),
+    return {q:L(`Solve on [0, 1] by the forward difference with h = ${h}; give the exact value, the approximation of u(1) and the error:`,
+                `حل على ${M('[0, 1]')} بالفروق الأمامية بخطوة ${M('h = '+h)}، وأوجد القيمة التامة والتقريبية لـ ${M('u(1)')} والخطأ:`)+'<br>'+
+              align([['u<sub>x</sub>','=',fx],['u(0)','=',u0]], true),
       a:fdmAnswer(ex(1),u,err),
       s:steps(
         L(`<b>Exact:</b> integrate ⇒ ${M(`u(x) = x${sup(p+1)} + ${u0}`)} ⇒ ${M(`u(1) = ${num(ex(1))}`)}`, `<b>الحل التام:</b> بالتكامل ${M(`u(x) = x${sup(p+1)} + ${u0}`)} ⇐ ${M(`u(1) = ${num(ex(1))}`)}`),
@@ -1356,8 +1363,9 @@ export const G = {
     for(let i=0;i<n;i++){ const nu=u*g1; rows.push(M(`u<sub>${i+1}</sub> = ${num(u)} &times; ${num(g1)} = ${num(nu)}`)); u=nu; }
     const err=Math.abs(ex-u);
     const g=plot({x:[0,T], y:[0,u0*1.1], curves:[{f:t=>u0*Math.exp(-k*t)}], points:[0,1,2].map(i=>({x:i*dt,y:u0*g1**i,cls:'apx'}))});
-    return {q:L(`Solve u<sub>t</sub> = &minus;${k===1?'':k}u, u(0) = ${u0} with the forward difference, Δt = ${dt}, and find u(${num(T)}): exact, approximate and error.`,
-                `حل ${M(`u<sub>t</sub> = &minus;${k===1?'':k}u, u(0) = ${u0}`)} بالفروق الأمامية بخطوة ${M('Δt = '+dt)}، وأوجد ${M(`u(${num(T)})`)}: التام والتقريبي والخطأ.`),
+    return {q:L(`Solve with the forward difference, Δt = ${dt}, and find u(${num(T)}): exact, approximate and error:`,
+                `حل بالفروق الأمامية بخطوة ${M('Δt = '+dt)} وأوجد ${M(`u(${num(T)})`)}: التام والتقريبي والخطأ:`)+'<br>'+
+              align([['u<sub>t</sub>','=',`&minus;${k===1?'':k}u`],['u(0)','=',u0]], true),
       a:fdmAnswer(ex,u,err),
       s:steps(
         L(`<b>Exact:</b> ${M(`u(t) = ${u0}e${sup(`&minus;${k===1?'':k}t`)}`)} ⇒ ${M(`u(${num(T)}) = ${num(ex)}`)}`, `<b>الحل التام:</b> ${M(`u(t) = ${u0}e${sup(`&minus;${k===1?'':k}t`)}`)} ⇐ ${M(`u(${num(T)}) = ${num(ex)}`)}`),
@@ -1369,8 +1377,9 @@ export const G = {
     const Lx=d===1?1:pick([1,2]), c=R(-3,3), h=Lx/2, x1=h, uL=Lx**4+c*Lx;                               // exact u = x⁴ + c x
     const apx=(uL-12*x1*x1*h*h)/2, ex=x1**4+c*x1, err=Math.abs(ex-apx), cx=c===0?'':`${term(c,'x')}`;
     const g=plot({x:[0,Lx], y:[Math.min(0,...[0,x1,Lx].map(t=>t**4+c*t))-0.5, Math.max(...[0,x1,Lx].map(t=>t**4+c*t),apx)+0.5], curves:[{f:t=>t**4+c*t}], points:[{x:0,y:0,cls:'apx'},{x:x1,y:apx,cls:'apx',label:'≈ '+num(apx)},{x:Lx,y:uL,cls:'apx'}]});
-    return {q:L(`Solve u<sub>xx</sub> = 12x${sup(2)}, u(0) = 0, u(${Lx}) = ${uL} by central differences with h = ${num(h)}. Find u(${num(x1)}): exact, approximate and error.`,
-                `حل ${M(`u<sub>xx</sub> = 12x${sup(2)}, u(0) = 0, u(${Lx}) = ${uL}`)} بالفروق المركزية بخطوة ${M('h = '+num(h))}. أوجد ${M(`u(${num(x1)})`)}: التام والتقريبي والخطأ.`),
+    return {q:L(`Solve by central differences with h = ${num(h)} and find u(${num(x1)}): exact, approximate and error:`,
+                `حل بالفروق المركزية بخطوة ${M('h = '+num(h))} وأوجد ${M(`u(${num(x1)})`)}: التام والتقريبي والخطأ:`)+'<br>'+
+              align([['u<sub>xx</sub>','=',`12x${sup(2)}`],['u(0)','=','0'],[`u(${Lx})`,'=',uL]], true),
       a:fdmAnswer(ex,apx,err),
       s:steps(
         L(`<b>Exact:</b> integrate twice ⇒ ${M(`u = x${sup(4)} + Ax + B`)}; the boundary values give ${M(`B = 0, A = ${c}`)} ⇒ ${M(`u(x) = x${sup(4)}${cx}`)}, ${M(`u(${num(x1)}) = ${num(ex)}`)}`,
@@ -1383,8 +1392,9 @@ export const G = {
     const k=pick(d===1?[0.5]:[0.2,0.5,1]), a=R(0,3), b=R(0,3);                                               // u_tt = 6t, exact u = t³ + b t + a
     const u1=a+k*b, u2=2*u1-a+k*k*6*k, ex=(2*k)**3+2*k*b+a, err=Math.abs(ex-u2), T=2*k;
     const g=plot({x:[0,T], y:[Math.min(0,a)-0.2, ex*1.1+0.2], curves:[{f:t=>t**3+b*t+a}], points:[{x:0,y:a,cls:'apx'},{x:k,y:u1,cls:'apx'},{x:T,y:u2,cls:'apx'}]});
-    return {q:L(`Solve u<sub>tt</sub> = 6t, u(0) = ${a}, u<sub>t</sub>(0) = ${b} with central differences, Δt = ${k}. Find u(${num(T)}): exact, approximate and error.`,
-                `حل ${M(`u<sub>tt</sub> = 6t, u(0) = ${a}, u<sub>t</sub>(0) = ${b}`)} بالفروق المركزية بخطوة ${M('Δt = '+k)}. أوجد ${M(`u(${num(T)})`)}: التام والتقريبي والخطأ.`),
+    return {q:L(`Solve with central differences, Δt = ${k}, and find u(${num(T)}): exact, approximate and error:`,
+                `حل بالفروق المركزية بخطوة ${M('Δt = '+k)} وأوجد ${M(`u(${num(T)})`)}: التام والتقريبي والخطأ:`)+'<br>'+
+              align([['u<sub>tt</sub>','=','6t'],['u(0)','=',a],['u<sub>t</sub>(0)','=',b]], true),
       a:fdmAnswer(ex,u2,err),
       s:steps(
         L(`<b>Exact:</b> ${M(`u = t${sup(3)} + ${b}t + ${a}`)} ⇒ ${M(`u(${num(T)}) = ${num(ex)}`)}`, `<b>الحل التام:</b> ${M(`u = t${sup(3)} + ${b}t + ${a}`)} ⇐ ${M(`u(${num(T)}) = ${num(ex)}`)}`),
@@ -1397,8 +1407,9 @@ export const G = {
     const [c,h,k]=pick(d===1?[[1,0.5,0.25]]:[[1,0.5,0.25],[2,0.5,0.125],[1,0.2,0.1],[1,1,0.5]]), xi=pick([1,1.5,2]), r=c*k/h;   // u_t + c u_x = 0, u(x,0) = x²
     const apx=xi*xi-r*(xi*xi-(xi-h)**2), ex=(xi-c*k)**2, err=Math.abs(ex-apx);
     const g=plot({x:[0,xi+1], y:[0,(xi+1)**2], curves:[{f:t=>t*t, cls:'c2'},{f:t=>(t-c*k)**2}], points:[{x:xi,y:apx,cls:'apx',label:'≈ '+num(apx)}]});
-    return {q:L(`u<sub>t</sub> + ${c===1?'':c}u<sub>x</sub> = 0 with u(x, 0) = x${sup(2)}. Use the upwind scheme with h = ${h}, k = ${k} to find u(${xi}, ${k}): exact, approximate and error.`,
-                `${M(`u<sub>t</sub> + ${c===1?'':c}u<sub>x</sub> = 0`)} مع ${M(`u(x, 0) = x${sup(2)}`)}. استخدم مخطط الاتجاه المعاكس بخطوتين ${M(`h = ${h}, k = ${k}`)} لإيجاد ${M(`u(${xi}, ${k})`)}: التام والتقريبي والخطأ.`),
+    return {q:L(`Use the upwind scheme with h = ${h}, k = ${k} to find u(${xi}, ${k}): exact, approximate and error:`,
+                `استخدم مخطط الاتجاه المعاكس بخطوتين ${M(`h = ${h}, k = ${k}`)} لإيجاد ${M(`u(${xi}, ${k})`)}: التام والتقريبي والخطأ:`)+'<br>'+
+              align([[`u<sub>t</sub> + ${c===1?'':c}u<sub>x</sub>`,'=','0'],['u(x, 0)','=',`x${sup(2)}`]], true),
       a:fdmAnswer(ex,apx,err),
       s:steps(
         L(`<b>Exact:</b> the profile moves right with speed ${c}: ${M(`u(x, t) = (x &minus; ${c===1?'':c}t)${sup(2)}`)} ⇒ ${M(`u(${xi}, ${k}) = (${xi} &minus; ${num(c*k)})${sup(2)} = ${num(ex)}`)}`,
@@ -1420,8 +1431,9 @@ export const G = {
     const err=Math.abs(ex-apx);
     const g=plot({x:[0,1], y:[0,1.1], curves:[{f:t=>Math.sin(Math.PI*t), cls:'c2'},{f:t=>(wave?Math.cos(Math.PI*k):Math.exp(-(Math.PI**2)*k))*Math.sin(Math.PI*t)}], points:[{x:xi,y:apx,cls:'apx',label:'≈ '+num(apx)}]});
     const nm=wave?L('wave equation','معادلة الموجة'):L('heat equation','معادلة الحرارة');
-    return {q:L(`The ${wave?'wave':'heat'} equation ${eqn}, 0 &lt; x &lt; 1, u(x, 0) = sin(&pi;x), u(0, t) = u(1, t) = 0. With h = ${h}, k = ${num(k,6)} take one time step and find u(${xi}, ${num(k,6)}): exact, approximate and error.`,
-                `${wave?'معادلة الموجة':'معادلة الحرارة'} ${M(eqn)}، ${M('0 &lt; x &lt; 1')}، ${M('u(x, 0) = sin(&pi;x)')}، ${M('u(0, t) = u(1, t) = 0')}. بخطوتين ${M(`h = ${h}, k = ${num(k,6)}`)} نفّذ خطوة زمنية واحدة وأوجد ${M(`u(${xi}, ${num(k,6)})`)}: التام والتقريبي والخطأ.`),
+    const rows=[[wave?'u<sub>tt</sub>':'u<sub>t</sub>','=','u<sub>xx</sub>,&nbsp; 0 &lt; x &lt; 1'],['u(x, 0)','=','sin(&pi;x)'],...(wave?[['u<sub>t</sub>(x, 0)','=','0']]:[]),['u(0, t)','=','u(1, t) = 0']];
+    return {q:L(`The ${wave?'wave':'heat'} equation below. With h = ${h}, k = ${num(k,6)} take one time step and find u(${xi}, ${num(k,6)}): exact, approximate and error:`,
+                `${wave?'معادلة الموجة':'معادلة الحرارة'} التالية. بخطوتين ${M(`h = ${h}, k = ${num(k,6)}`)} نفّذ خطوة زمنية واحدة وأوجد ${M(`u(${xi}, ${num(k,6)})`)}: التام والتقريبي والخطأ:`)+'<br>'+align(rows, true),
       a:fdmAnswer(ex,apx,err),
       s:steps(
         L(`<b>Exact</b> (separation of variables): ${M(exf)} ⇒ ${M(`u(${xi}, ${num(k,6)}) = ${num(ex)}`)}`, `<b>الحل التام</b> (فصل المتغيرات) لـ${nm}: ${M(exf)} ⇐ ${M(`u(${xi}, ${num(k,6)}) = ${num(ex)}`)}`),

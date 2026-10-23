@@ -9,6 +9,17 @@ export const M = s => `<bdi dir="ltr">${s}</bdi>`;
 /* inline variant for short labels inside an answer: in English + عربي mode it reads “exact / التام” on one line */
 export const Li = (en, ar) => `<span class="i18n in"><span lang="en" dir="ltr">${en}</span><span lang="ar" dir="rtl">${ar}</span></span>`;
 
+/* stacked, aligned math: rows are [left, relation, right] (aligned on the relation) or a plain string.
+   brace=true draws a left brace, as for a system of equations. A hidden "; " between rows keeps copied text readable. */
+export function align(rows, brace=false){
+  const cells = rows.map((r,i)=>{
+    const sep = i<rows.length-1 ? '<span class="sep">; </span>' : '';
+    return Array.isArray(r) ? `<span class="l">${r[0]}</span><span class="r"> ${r[1]} </span><span class="v">${r[2]}${sep}</span>`
+                            : `<span class="w">${r}${sep}</span>`;
+  }).join('');
+  return `<span class="eqs${brace?' brace':''}" dir="ltr" style="--rows:${rows.length}">${cells}</span>`;
+}
+
 /* numbered list of worked-solution steps; each step is HTML (usually built with L) */
 export const steps = (...items) => `<ol class="steps">${items.filter(Boolean).map(s=>`<li>${s}</li>`).join('')}</ol>`;
 
@@ -79,6 +90,34 @@ function lnGamma(z){                                                    // Lancz
 export const tPdf = (t,v) => Math.exp(lnGamma((v+1)/2)-lnGamma(v/2))/Math.sqrt(v*Math.PI)*(1+t*t/v)**(-(v+1)/2);
 export const fPdf = (x,a,b) => x<=0?0:Math.exp(lnGamma((a+b)/2)-lnGamma(a/2)-lnGamma(b/2)+(a/2)*Math.log(a/b)+(a/2-1)*Math.log(x)-((a+b)/2)*Math.log(1+a*x/b));
 
+/* standard normal CDF Φ(z) (W. J. Cody-quality erf via a continued Taylor series, |error| < 1e-12 for |z| ≤ 6) */
+export function Phi(z){
+  const x=Math.abs(z)/Math.SQRT2; let erf;
+  if(x<3){ let sum=x, term=x; for(let n=1;n<200;n++){ term*=-x*x/n; const add=term/(2*n+1); sum+=add; if(Math.abs(add)<1e-17) break; } erf=2/Math.sqrt(Math.PI)*sum; }
+  else { let f=0; for(let n=60;n>=1;n--) f=n/2/(x+f); erf=1-Math.exp(-x*x)/Math.sqrt(Math.PI)/(x+f); }
+  return z>=0 ? 0.5+erf/2 : 0.5-erf/2;
+}
+/* regularized incomplete beta I_x(a, b) (Numerical Recipes continued fraction) */
+function betacf(a,b,x){
+  let qab=a+b, qap=a+1, qam=a-1, c=1, d=1-qab*x/qap; if(Math.abs(d)<1e-300) d=1e-300; d=1/d; let h=d;
+  for(let m=1;m<=300;m++){ const m2=2*m;
+    let aa=m*(b-m)*x/((qam+m2)*(a+m2)); d=1+aa*d; if(Math.abs(d)<1e-300) d=1e-300; c=1+aa/c; if(Math.abs(c)<1e-300) c=1e-300; d=1/d; h*=d*c;
+    aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2)); d=1+aa*d; if(Math.abs(d)<1e-300) d=1e-300; c=1+aa/c; if(Math.abs(c)<1e-300) c=1e-300; d=1/d; const del=d*c; h*=del;
+    if(Math.abs(del-1)<1e-15) break; }
+  return h;
+}
+export function betaI(x,a,b){
+  if(x<=0) return 0; if(x>=1) return 1;
+  const bt=Math.exp(lnGamma(a+b)-lnGamma(a)-lnGamma(b)+a*Math.log(x)+b*Math.log(1-x));
+  return x<(a+1)/(a+b+2) ? bt*betacf(a,b,x)/a : 1-bt*betacf(b,a,1-x)/b;
+}
+/* upper 5% point of F(d1, d2) */
+export function fQuantile05(d1,d2){
+  const upper=x=>1-betaI(d1*x/(d1*x+d2), d1/2, d2/2); let lo=0, hi=1000;
+  for(let i=0;i<100;i++){ const m=(lo+hi)/2; if(upper(m)>0.05) lo=m; else hi=m; }
+  return (lo+hi)/2;
+}
+
 /* t table: upper-tail areas (columns) × degrees of freedom 1..30 (the z row is df = ∞) */
 export const T_ALPHAS = [0.10, 0.05, 0.025, 0.01, 0.005];
 export const T_TABLE = {
@@ -92,6 +131,7 @@ export const T_TABLE = {
   22:[1.321,1.717,2.074,2.508,2.819], 23:[1.319,1.714,2.069,2.500,2.807], 24:[1.318,1.711,2.064,2.492,2.797],
   25:[1.316,1.708,2.060,2.485,2.787], 26:[1.315,1.706,2.056,2.479,2.779], 27:[1.314,1.703,2.052,2.473,2.771],
   28:[1.313,1.701,2.048,2.467,2.763], 29:[1.311,1.699,2.045,2.462,2.756], 30:[1.310,1.697,2.042,2.457,2.750],
+  40:[1.303,1.684,2.021,2.423,2.704], 60:[1.296,1.671,2.000,2.390,2.660], 120:[1.289,1.658,1.980,2.358,2.617],
 };
 export const Z_ROW = [1.282, 1.645, 1.960, 2.326, 2.576];
 export const zCrit = alpha => Z_ROW[T_ALPHAS.indexOf(alpha)];
@@ -118,7 +158,7 @@ export function zTableHTML(alpha){
 }
 export function tTableHTML(alpha, df){
   const head=T_ALPHAS.map(a=>`<th>${a}</th>`).join(''), rows=[];
-  for(let r=Math.max(1,df-2);r<=Math.min(30,df+2);r++)
+  for(let r=Math.max(1,df-2);r<=Math.min(30,df+2);r++) if(T_TABLE[r])
     rows.push(`<tr><th>${r}</th>${T_TABLE[r].map((v,i)=>`<td${r===df&&T_ALPHAS[i]===alpha?' class="hl"':''}>${fmt3(v)}</td>`).join('')}</tr>`);
   return `<table class="stbl"><caption>${L('t table — upper-tail area α, df = n − 1','جدول t — المساحة في الذيل الأيمن α، درجات الحرية n − 1')}</caption><tr><th>df \\ α</th>${head}</tr>${rows.join('')}</table>`;
 }
@@ -127,6 +167,30 @@ export function fTableHTML(df1, df2){
   for(let r=Math.max(2,df2-2);r<=Math.min(20,df2+2);r++)
     rows.push(`<tr><th>${r}</th>${F_TABLE_05[r].map((v,i)=>`<td${r===df2&&i+1===df1?' class="hl"':''}>${v.toFixed(2)}</td>`).join('')}</tr>`);
   return `<table class="stbl"><caption>${L('F table, α = 0.05 — columns df₁ (between), rows df₂ (within)','جدول F عند α = 0.05 — الأعمدة df₁ (بين المجموعات) والصفوف df₂ (داخل المجموعات)')}</caption><tr><th>df₂ \\ df₁</th>${head}</tr>${rows.join('')}</table>`;
+}
+
+/* ---- full tables for the printable "Statistical tables" page ---- */
+export function zFullHTML(){
+  const cols=[...Array(10).keys()], rows=[];
+  for(let r=0;r<=34;r++){ const z0=r/10;
+    rows.push(`<tr><th>${z0.toFixed(1)}</th>${cols.map(c=>`<td>${Phi(z0+c/100).toFixed(4)}</td>`).join('')}</tr>`); }
+  return `<table class="stbl full"><caption>${L('Standard normal table: Φ(z) = P(Z ≤ z), z ≥ 0 (use Φ(−z) = 1 − Φ(z))','جدول التوزيع الطبيعي المعياري: Φ(z) = P(Z ≤ z) لقيم z ≥ 0 (استخدم Φ(−z) = 1 − Φ(z))')}</caption>
+    <tr><th>z</th>${cols.map(c=>`<th>.0${c}</th>`).join('')}</tr>${rows.join('')}</table>
+    <table class="stbl"><caption>${L('Critical values z<sub>α</sub> (upper-tail area α)','القيم الحرجة z<sub>α</sub> (المساحة في الذيل الأيمن α)')}</caption>
+    <tr><th>α</th>${T_ALPHAS.map(a=>`<th>${a}</th>`).join('')}</tr><tr><th>z<sub>α</sub></th>${Z_ROW.map(v=>`<td>${v.toFixed(3)}</td>`).join('')}</tr></table>`;
+}
+export function tFullHTML(){
+  const rows=Object.keys(T_TABLE).map(Number).map(r=>`<tr><th>${r}</th>${T_TABLE[r].map(v=>`<td>${v.toFixed(3)}</td>`).join('')}</tr>`);
+  rows.push(`<tr><th>∞</th>${Z_ROW.map(v=>`<td>${v.toFixed(3)}</td>`).join('')}</tr>`);
+  return `<table class="stbl full"><caption>${L('t distribution: critical values t<sub>α, df</sub> (upper-tail area α)','توزيع t: القيم الحرجة t<sub>α, df</sub> (المساحة في الذيل الأيمن α)')}</caption>
+    <tr><th>df \\ α</th>${T_ALPHAS.map(a=>`<th>${a}</th>`).join('')}</tr>${rows.join('')}</table>`;
+}
+export const F_FULL_DF2 = [...Array(30).keys()].map(i=>i+1).concat([40,60,120]);
+export function fFullHTML(){
+  const d1s=[...Array(10).keys()].map(i=>i+1);
+  const rows=F_FULL_DF2.map(d2=>`<tr><th>${d2}</th>${d1s.map(d1=>{ const v=fQuantile05(d1,d2); return `<td>${v>=100?v.toFixed(1):v.toFixed(2)}</td>`; }).join('')}</tr>`);
+  return `<table class="stbl full"><caption>${L('F distribution, α = 0.05: columns df₁ (numerator), rows df₂ (denominator)','توزيع F عند α = 0.05: الأعمدة df₁ (البسط) والصفوف df₂ (المقام)')}</caption>
+    <tr><th>df₂ \\ df₁</th>${d1s.map(c=>`<th>${c}</th>`).join('')}</tr>${rows.join('')}</table>`;
 }
 
 /* bell curve (normal or t) with shaded regions: kind 'ci' shades the middle, 'two'/'right'/'left' shade rejection tails */

@@ -2,7 +2,7 @@
     --bg:#f4f5f7; --panel:#ffffff; --ink:#1c2230; --muted:#5b6475;
     --line:#d7dbe3; --accent:#2f5bd0; --accent-soft:#e8eefc; --key:#0a7a4b;
     --font-ui:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
-    --font-math:"Cambria Math","Times New Roman",Georgia,serif;
+    --font-math:"STIX Two Text","Cambria Math","Times New Roman",Georgia,serif;
   }
   *{box-sizing:border-box}
   html,body{margin:0}
@@ -41,6 +41,8 @@
   .sheet-head .meta{font-size:12px;color:var(--muted);text-align:right;line-height:1.9}
   .sheet-head .meta b{color:var(--ink);font-weight:600}
   .sheet-title{font-size:22px;font-weight:700;margin:0}
+  .sheet-head>div:first-child{flex:1 1 300px;min-width:0}
+  .sheet-head .meta{flex:0 0 auto}
   .sheet-sub{font-size:12px;color:var(--muted);margin-top:2px}
   .score{border:1.5px solid var(--ink);border-radius:6px;padding:4px 12px;font-size:12px;white-space:nowrap}
 
@@ -179,6 +181,47 @@
   table.anova{font-size:13px;margin-top:8px}
   .present .psteps{max-width:min(820px,92%);max-height:38vh;overflow:auto;background:#fff;color:var(--ink);border-radius:10px;padding:10px 16px;text-align:start;font-size:15px}
 
+  /* ---------- Aligned math: systems, constraints, conditions ---------- */
+  .eqs{display:inline-grid;grid-template-columns:auto auto auto;column-gap:.3em;row-gap:.2em;align-items:baseline;
+    vertical-align:middle;margin:.4em 0 .3em;padding:.1em 0 .1em .95em;position:relative;font-family:var(--font-math);direction:ltr}
+  .eqs .l{text-align:right}
+  .eqs .r{text-align:center}
+  .eqs .v{text-align:left}
+  .eqs .w{grid-column:1/-1}
+  .eqs .sep{display:none}
+  .eqs.brace::before{content:"";position:absolute;left:0;top:0;bottom:0;width:.7em;
+    background:no-repeat center/100% 100% url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 100' preserveAspectRatio='none'%3E%3Cpath d='M9 1C4 1 5 6 5 12V40C5 46 3 50 1 50C3 50 5 54 5 60V88C5 94 4 99 9 99' fill='none' stroke='%231c2230' stroke-width='1.6' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E")}
+  .present .eqs.brace::before{filter:invert(1)}
+
+  /* ---------- Assessment modes, topic picker, exam layout ---------- */
+  .modes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .mode{font:inherit;font-weight:600;border:1.5px solid var(--accent);background:#fff;color:var(--accent);border-radius:999px;padding:7px 16px;cursor:pointer}
+  .mode.on{background:var(--accent);color:#fff}
+  .topic-list{flex:1 1 100%;background:#fff;border:1px solid var(--line);border-radius:8px;max-height:260px;overflow:auto}
+  .trow{display:grid;grid-template-columns:24px 1fr 70px 150px;gap:8px;align-items:center;padding:5px 10px;border-bottom:1px solid #eef1f6;font-size:13px}
+  .trow.head{position:sticky;top:0;background:#f6f8fc;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;z-index:1}
+  .trow input[type=number]{width:64px;padding:4px 6px}
+  .trow select{min-width:0;padding:4px 6px}
+  .trow.on{background:var(--accent-soft)}
+  .exam-only[hidden]{display:none}
+  .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
+  .total-marks{font-size:18px;padding:5px 0}
+  .xq{margin-top:16px;break-inside:avoid}
+  .xq-head{display:flex;justify-content:space-between;gap:10px;font-weight:700;font-size:15px;border-bottom:1px solid var(--line);padding-bottom:3px}
+  .xq-head .mk{font-weight:600;color:var(--muted);font-size:13px;white-space:nowrap}
+  ol.xparts{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+  ol.xparts>li{display:flex;gap:8px;font-family:var(--font-math);font-size:16.5px;align-items:baseline}
+  ol.xparts .pl{font-family:var(--font-ui);font-size:13px;font-weight:700;color:var(--muted);min-width:26px}
+  ol.xparts .pm{font-family:var(--font-ui);font-size:11px;color:var(--muted);white-space:nowrap;margin-inline-start:auto}
+  ol.answers.labeled{grid-template-columns:repeat(3,1fr)}
+  ol.answers.labeled li::before{content:none}
+  ol.answers .kl, ol.sols .kl{font-family:var(--font-ui);font-weight:700;color:var(--muted);font-size:12px;margin-inline-end:6px}
+  ol.sols.labeled{list-style:none;padding:0}
+  .tables-page h2{margin:0 0 10px}
+  .tables-page .stbl{margin:0 0 16px}
+  table.stbl.full{font-size:11px}
+  table.stbl.full td, table.stbl.full th{padding:2px 5px}
+
   /* ---------- Print ---------- */
   @media print{
     body{background:#fff;font-size:13px}
@@ -189,6 +232,8 @@
     ol.problems li{font-size:15px}
     .keywrap{break-before:page}
     .keywrap.same{break-before:avoid;margin-top:20px}
+    .tables-page{break-before:page}
+    .xq{break-inside:avoid}
     .plot{background:none}
     ol.sols>li{break-inside:avoid}
   }

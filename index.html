@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Math Curriculum Test Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <link rel="stylesheet" href="src/styles.css">
 </head>
 <body>
@@ -18,7 +20,15 @@
     </div>
   </div>
 
-  <!-- Build a part: search OR level → course → topic → options → add -->
+  <!-- What to make: practice sheet, homework, midterm or final -->
+  <div class="modes">
+    <button class="mode" data-mode="practice" data-i18n="modePractice">Practice sheet</button>
+    <button class="mode" data-mode="hw" data-i18n="modeHw">Create homework</button>
+    <button class="mode" data-mode="mid" data-i18n="modeMid">Create midterm exam</button>
+    <button class="mode" data-mode="final" data-i18n="modeFinal">Create final exam</button>
+  </div>
+
+  <!-- Pick a course, then tick one or more topics (count + type for each) -->
   <div class="builder">
     <div class="field" style="flex:1 1 240px">
       <label for="bSearch" data-i18n="search">Search topics or courses</label>
@@ -28,13 +38,9 @@
       <label for="bLevel" data-i18n="level">Level</label>
       <select id="bLevel"></select>
     </div>
-    <div class="field">
+    <div class="field" style="flex:1 1 260px">
       <label for="bCourse" data-i18n="course">Course</label>
       <select id="bCourse"></select>
-    </div>
-    <div class="field">
-      <label for="bTopic" data-i18n="topic">Topic</label>
-      <select id="bTopic"></select>
     </div>
     <div class="field">
       <label for="bDiff" data-i18n="difficulty">Difficulty</label>
@@ -44,17 +50,31 @@
         <option value="3" data-i18n="hard">Hard</option>
       </select>
     </div>
-    <div class="field">
-      <label for="bCount" data-i18n="questions">Questions</label>
-      <input type="number" id="bCount" min="1" max="40" value="10">
-    </div>
-    <label class="chk"><input type="checkbox" id="bMc"> <span data-i18n="mc">Multiple choice</span></label>
-    <button class="btn primary" id="addSection" data-i18n="add">+ Add to test</button>
+    <div class="topic-list" id="topicList"></div>
+    <button class="btn primary" id="addSection" data-i18n="addSel">+ Add selected topics</button>
+    <button class="btn ghost" id="clearSections" data-i18n="clearAll">Clear test</button>
   </div>
   <div class="search-results" id="searchResults" hidden></div>
 
-  <!-- Parts already added -->
+  <!-- Topics already in the test -->
   <div class="sections" id="sections"></div>
+
+  <!-- Exam structure (homework / midterm / final) -->
+  <div class="controls exam-only" style="margin-top:12px">
+    <div class="field">
+      <label for="nQ" data-i18n="nQ">Number of questions</label>
+      <input type="number" id="nQ" min="1" max="30" value="5">
+    </div>
+    <div class="field">
+      <label for="marks" data-i18n="marksPerQ">Marks per question</label>
+      <input type="number" id="marks" min="0" step="0.1" value="2">
+    </div>
+    <div class="field">
+      <span class="lbl" data-i18n="total">Total</span>
+      <b id="totalMarks" class="total-marks">—</b>
+    </div>
+    <div class="hint" data-i18n="partsHint">If there are more items than questions, each question is split into parts (a), (b), …</div>
+  </div>
 
   <!-- Whole-test output options -->
   <div class="controls" style="margin-top:14px">
@@ -85,6 +105,7 @@
         <option value="steps" data-i18n="solSteps">Answers + steps &amp; graphs</option>
       </select>
     </div>
+    <label class="chk"><input type="checkbox" id="fullTables" checked> <span data-i18n="fullTables">Add full statistical tables page (z, t, F) when needed</span></label>
     <button class="btn ghost" id="toggleKey" data-i18n="toggleKey">Show / hide answers</button>
     <button class="btn ghost" id="presentBtn" data-i18n="present">&#9654; Present</button>
     <button class="btn ghost" id="print" data-i18n="print">Print / PDF</button>

@@ -121,6 +121,11 @@ export const TOPIC_LABELS_AR = {
   fdSecondX:'الفروق المحدودة للمشتقة الثانية uₓₓ', fdSecondT:'الفروق المحدودة للمشتقة الثانية uₜₜ', fdmOdeUx:'حل معادلة عادية في uₓ', fdmOdeUt:'حل معادلة عادية في uₜ',
   fdmOdeUxx:'حل معادلة عادية في uₓₓ', fdmOdeUtt:'حل معادلة عادية في uₜₜ', fdmAdvection:'حل معادلة جزئية في uₜ و uₓ', fdmFamous:'معادلة جزئية مشهورة (الحرارة / الموجة)',
 };
+/* statistical tables a topic's questions are read from (for the optional full-tables page) */
+export const TOPIC_TABLES = {
+  ciMeanZ:['z'], ciMeanS:['z'], ciMeanT:['t'], ciProportion:['z'], sampleSizeMean:['z'], sampleSizeProp:['z'],
+  testMeanZ:['z'], testMeanS:['z'], testMeanT:['t'], testProportion:['z'], anovaTable:['f'],
+};
 /* Mathematics study plan (Shaqra University, BSc Mathematics, 130 credit hours):
    level -> courses (code, title, topics), Level 1..8 in plan order, then the electives.
    Only MATH/STAT courses are listed; empty topics = no auto-generated problems (e.g. graduation projects). */
