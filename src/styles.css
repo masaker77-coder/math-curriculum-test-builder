@@ -131,6 +131,54 @@
   .part-head .plet{color:var(--accent)}
   .part-head .pdet{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
 
+  /* ---------- Language: English / عربي / both ---------- */
+  .topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+  .topbar h1{margin:0}
+  .langf select{min-width:150px}
+  html[data-lang="en"] .i18n>[lang="ar"], html[data-lang="ar"] .i18n>[lang="en"]{display:none}
+  .i18n>[lang="en"] .i18n>[lang="ar"], .i18n>[lang="ar"] .i18n>[lang="en"]{display:none}   /* nested text follows its parent */
+  html[data-lang="both"] .i18n>[lang="ar"]{display:block;color:var(--muted);font-size:.93em;margin-top:2px;text-align:right}
+  html[data-lang="both"] .i18n.in>[lang="ar"]{display:inline;color:inherit;font-size:inherit;margin:0}
+  html[data-lang="both"] .i18n.in>[lang="en"]::after{content:" / "}
+  html[data-lang="ar"] body{font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",var(--font-ui)}
+  [dir="rtl"] .sheet-head .meta{text-align:left}
+  bdi{unicode-bidi:isolate}
+
+  /* ---------- Worked solutions, graphs, tables ---------- */
+  .sol-head{margin-top:18px}
+  ol.sols{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:14px;font-size:14px}
+  ol.sols>li{break-inside:avoid;border-top:1px solid var(--line);padding-top:8px}
+  .solq{font-family:var(--font-math);font-size:15px}
+  .sola{margin:4px 0;color:var(--key)}
+  .sola b{font-weight:600}
+  ol.steps{margin:6px 0 0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;font-family:var(--font-math)}
+  .plot{display:block;max-width:100%;height:auto;margin:8px 0 2px;background:#fbfcfe;border:1px solid var(--line);border-radius:6px}
+  .plot .ax{stroke:#8a93a5;stroke-width:1}
+  .plot .tk{stroke:#8a93a5}
+  .plot .tl{font:9px var(--font-ui);fill:#6b7385}
+  .plot .lb{font:10px var(--font-ui);fill:var(--ink)}
+  .plot .c1{fill:none;stroke:var(--accent);stroke-width:2}
+  .plot .c2{fill:none;stroke:#e07a2e;stroke-width:1.8;stroke-dasharray:5 3}
+  .plot .sec{stroke:#0a7a4b;stroke-width:1.8}
+  .plot .vl{stroke:#c0392b;stroke-width:1.2;stroke-dasharray:4 3}
+  .plot .pt{fill:var(--ink)}
+  .plot .apx{fill:#e07a2e;stroke:#fff;stroke-width:1}
+  .plot .stat{fill:#0a7a4b;stroke:#fff;stroke-width:1}
+  .plot .shade{fill:var(--accent);opacity:.18}
+  .plot .rej{fill:#c0392b;opacity:.28}
+  .plot .ray{stroke:var(--accent);stroke-width:4}
+  .plot .rayhead{fill:var(--accent)}
+  .plot .dot-open{fill:#fff;stroke:var(--accent);stroke-width:2.5}
+  .plot .dot-closed{fill:var(--accent);stroke:var(--accent);stroke-width:2.5}
+  .plot.nl{background:none;border:0}
+  table.stbl, table.anova{border-collapse:collapse;margin:6px 0;font:12px var(--font-ui);direction:ltr}
+  table.stbl caption{caption-side:top;text-align:start;font-size:11px;color:var(--muted);padding-bottom:3px}
+  table.stbl th, table.stbl td, table.anova th, table.anova td{border:1px solid var(--line);padding:3px 7px;text-align:center}
+  table.stbl th, table.anova th{background:#f1f3f8;font-weight:600}
+  table.stbl td.hl{background:#ffe08a;font-weight:700}
+  table.anova{font-size:13px;margin-top:8px}
+  .present .psteps{max-width:min(820px,92%);max-height:38vh;overflow:auto;background:#fff;color:var(--ink);border-radius:10px;padding:10px 16px;text-align:start;font-size:15px}
+
   /* ---------- Print ---------- */
   @media print{
     body{background:#fff;font-size:13px}
@@ -141,4 +189,6 @@
     ol.problems li{font-size:15px}
     .keywrap{break-before:page}
     .keywrap.same{break-before:avoid;margin-top:20px}
+    .plot{background:none}
+    ol.sols>li{break-inside:avoid}
   }

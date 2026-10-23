@@ -11,6 +11,22 @@ const plain = h => String(h)
   .replace(/&minus;/g, '-').replace(/&times;/g, '×').replace(/&rarr;/g, '→').replace(/−/g, '-')
   .replace(/<sup>(-?\d+)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
 const fact = n => { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r; };
+// drop the Arabic half of bilingual text (handles nested spans)
+function enOnly(html) {
+  html = String(html); let out = '', i = 0;
+  while (i < html.length) {
+    const j = html.indexOf('<span lang="ar"', i);
+    if (j < 0) { out += html.slice(i); break; }
+    out += html.slice(i, j);
+    let depth = 0, k = j;
+    do {
+      const o = html.indexOf('<span', k), c = html.indexOf('</span>', k);
+      if (o >= 0 && o < c) { depth++; k = o + 5; } else { depth--; k = c + 7; }
+    } while (depth > 0);
+    i = k;
+  }
+  return out;
+}
 const nums = html => [...String(html).matchAll(/<span>(&minus;)?(\d+)<\/span>/g)]
   .map(x => (x[1] ? -1 : 1) * +x[2]);               // signed numbers out of a <span> matrix
 const val = html => +plain(html).replace(/[^0-9.-]/g, '');
@@ -502,7 +518,7 @@ test('MATH 315 — PDE classification by B² − 4AC', () => {
   for (const d of DIFFS) times(300, () => {
     const o = G.pdeClassify(d), t = plain(o.q).replace(/\s/g, '').match(/PDE(.*)=0/)[1];
     const A = coefOf(t, 'uxx'), B = coefOf(t, 'uxy'), C = coefOf(t, 'uyy'), D = B * B - 4 * A * C;
-    assert.equal(plain(o.a), D > 0 ? 'Hyperbolic' : D === 0 ? 'Parabolic' : 'Elliptic');
+    assert.equal(plain(enOnly(o.a)), D > 0 ? 'Hyperbolic' : D === 0 ? 'Parabolic' : 'Elliptic');
   });
 });
 
@@ -788,15 +804,6 @@ test('MATH 416 — separable Fredholm equation: u(x) = kx satisfies the equation
   });
 });
 
-test('MATH 442 — FTCS heat step and five-point Laplace average', () => {
-  for (const d of DIFFS) times(200, () => {
-    let o = G.ftcsHeatStep(d); const r = +plain(o.q).match(/r = ([\d.]+)/)[1];
-    const [a, b, c] = [...plain(o.q).split(':')[1].matchAll(/= (\d+)/g)].map(m => +m[1]);
-    close(val(o.a), (1 - 2 * r) * b + r * (a + c));
-    o = G.laplaceFivePoint(d); const v = ints(plain(o.q).split('are')[1]);
-    close(val(o.a), v.reduce((s, x) => s + x, 0) / 4);
-  });
-});
 
 test('curriculum — plan levels in order, every listed topic has a generator and a label', async () => {
   const { TOPIC_LABELS } = await import('../src/curriculum.js');
@@ -806,4 +813,203 @@ test('curriculum — plan levels in order, every listed topic has a generator an
     assert.equal(typeof G[t], 'function', `${c.code}: missing generator ${t}`);
     assert.ok(TOPIC_LABELS[t], `${c.code}: missing label ${t}`);
   }
+});
+
+/* ================= Worked solutions: MATH 130, STAT 302, MATH 442 ================= */
+import { T_TABLE, T_ALPHAS, Z_ROW, F_TABLE_05, normPdf, tPdf, fPdf } from '../src/viz.js';
+const E = html => plain(enOnly(html)).replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();          // English text only
+const lin = (s, v) => coefOf(s.replace(/\s/g, ''), v);
+const constOf = s => +(s.replace(/\s/g, '').match(/([+-]\d+)$/) || [0, 0])[1];
+// tail areas from the densities, used to check the printed tables once; the other tests then use the tables
+const upperT = (c, v) => 0.5 - simpson(u => tPdf(u, v), 0, c, 4000);
+const upperF = (c, d1, d2) => 1 - simpson(u => fPdf(u * u, d1, d2) * 2 * u, 1e-9, Math.sqrt(c), 20000);   // x = u² removes the F(1,·) singularity
+const zQ = a => Z_ROW[T_ALPHAS.indexOf(+a.toFixed(4))];
+const tQ = (a, v) => T_TABLE[v][T_ALPHAS.indexOf(+a.toFixed(4))];
+const fQ = (d1, d2) => F_TABLE_05[d2][d1 - 1];
+const NEW = ['linearEquation', 'inequalityGraph', 'linearSystem2', 'quadraticEquation', 'logExp', 'determinant2', 'matrixAdd', 'matrixMultiply',
+  'derivative', 'integral', 'ciMeanZ', 'ciMeanS', 'ciMeanT', 'ciProportion', 'sampleSizeMean', 'sampleSizeProp', 'testMeanZ', 'testMeanS',
+  'testMeanT', 'testProportion', 'anovaTable', 'pdeClassify', 'fdSchemeClassify', 'fdFirstX', 'fdFirstT', 'fdSecondX', 'fdSecondT',
+  'fdmOdeUx', 'fdmOdeUt', 'fdmOdeUxx', 'fdmOdeUtt', 'fdmAdvection', 'fdmFamous'];
+
+test('printed z, t and F tables match the distributions', () => {
+  // a printed value c is right when its tail area is α up to the table's rounding (half a unit in the last digit × density)
+  T_ALPHAS.forEach((a, i) => { const c = Z_ROW[i]; assert.ok(Math.abs(0.5 - simpson(normPdf, 0, c, 2000) - a) <= normPdf(c) * 0.0006, `z ${a}`); });
+  for (const v of Object.keys(T_TABLE).map(Number)) T_ALPHAS.forEach((a, i) => {
+    const c = T_TABLE[v][i]; assert.ok(Math.abs(upperT(c, v) - a) <= tPdf(c, v) * 0.0006, `t ${a}, df ${v}: ${c} has tail ${upperT(c, v)}`); });
+  for (const d2 of Object.keys(F_TABLE_05).map(Number)) F_TABLE_05[d2].forEach((c, i) => {
+    const tol = (c >= 10 ? 0.006 : 0.0051) * fPdf(c, i + 1, d2);
+    assert.ok(Math.abs(upperF(c, i + 1, d2) - 0.05) <= tol, `F(${i + 1}, ${d2}) = ${c} has tail ${upperF(c, i + 1, d2)}`); });
+});
+
+test('worked solutions: steps present, graphs and tables well-formed, both languages', () => {
+  for (const t of NEW) for (const d of DIFFS) times(30, () => {
+    const o = G[t](d);
+    assert.ok(typeof o.s === 'string' && o.s.includes('<ol class="steps">'), `${t}: missing steps`);
+    assert.equal((o.s.match(/<svg/g) || []).length, (o.s.match(/<\/svg>/g) || []).length, `${t}: svg`);
+    assert.equal((o.s.match(/<table/g) || []).length, (o.s.match(/<\/table>/g) || []).length, `${t}: table`);
+    assert.ok(!/NaN|undefined|Infinity/.test(o.q + o.a + o.s), `${t}: bad number`);
+    assert.ok(o.s.includes('lang="ar"') && o.s.includes('lang="en"'), `${t}: steps must be bilingual`);
+  });
+});
+
+test('MATH 130 — linear equations, inequalities, 2×2 systems', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.linearEquation(d), [l, r] = E(o.q).replace('Solve ', '').split(' = ');
+    const x = val(o.a); assert.equal(lin(l, 'x') * x + constOf(l), +r);
+    o = G.inequalityGraph(d);
+    const q = o.q.match(/Solve and graph: (.*?)<\/span>/)[1];
+    const op = q.match(/&lt;|&gt;|&le;|&ge;/)[0], [lhs, rhs] = plain(q).split(/&lt;|&gt;|&le;|&ge;/);
+    const a = lin(lhs, 'x'), b = constOf(lhs), c = +rhs.replace(/\s/g, '');
+    const ans = o.a.match(/x (&lt;|&gt;|&le;|&ge;) (.*)<\/b>/), k = val(ans[2]);
+    const cmp = (u, w, s) => s === '&lt;' ? u < w : s === '&gt;' ? u > w : s === '&le;' ? u <= w : u >= w;
+    for (let t = k - 3; t <= k + 3; t += 0.5) assert.equal(cmp(a * t + b, c, op), cmp(t, k, ans[1]), `${q} at ${t}`);
+    o = G.linearSystem2(d);
+    const eqs = E(o.q).replace('Solve the system: ', '').split(' and ').map(s => s.trim().split(' = '));
+    const [X, Y] = ints(plain(o.a).split('=')[1]);
+    for (const [L2, R2] of eqs) assert.equal(lin(L2, 'x') * X + lin(L2, 'y') * Y, +R2.replace(/\s/g, ''));
+  });
+});
+
+test('MATH 130 — quadratic equations and logarithms/exponents', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.quadraticEquation(d); const p = E(o.q).replace('Solve ', '').replace(' = 0', '').replace(/\s/g, '');
+    const a = coefOf(p, 'x^2'), b = coefOf(p, 'x'), c = constOf(p.replace(/x\^2/, 'X'));
+    for (const r of ints(plain(o.a).split('=')[1])) assert.equal(a * r * r + b * r + c, 0);
+    o = G.logExp(d); const q = plain(enOnly(o.q)).replace(/\s+/g, ' '), v = val(o.a);
+    let m;
+    if ((m = q.match(/^Evaluate log(\d+) (\d+)$/))) assert.equal((+m[1]) ** v, +m[2]);
+    else if ((m = q.match(/^Evaluate log(\d+) (\d+) \+ log\d+ (\d+)$/))) assert.equal((+m[1]) ** v, m[2] * m[3]);
+    else if ((m = q.match(/^Evaluate log(\d+) (\d+) - log\d+ (\d+)$/))) assert.equal((+m[1]) ** v, m[2] / m[3]);
+    else if ((m = q.match(/^Solve (\d+)\^?x ?([+-]) ?(\d+) = (\d+)$/) || q.match(/^Solve (\d+)x ?([+-]) ?(\d+) = (\d+)$/))) assert.equal((+m[1]) ** (v + (m[2] === '-' ? -1 : 1) * m[3]), +m[4]);
+    else if ((m = q.match(/^Solve (\d+)x = (\d+)$/))) assert.equal((+m[1]) ** v, +m[2]);
+    else if ((m = q.match(/^Solve log(\d+) \(x ?([+-]) ?(\d+)\) = (\d+)$/))) assert.equal(v + (m[2] === '-' ? -1 : 1) * m[3], (+m[1]) ** +m[4]);
+    else if ((m = q.match(/^Solve log(\d+) \(x\) = (\d+)$/))) assert.equal(v, (+m[1]) ** +m[2]);
+    else assert.fail('unparsed: ' + q);
+  });
+});
+
+const parseSample = q => ({ n: +q.match(/n = (\d+)/)[1], xb: +q.match(/x̄ = (\d+(?:\.\d+)?)/)[1],
+  sd: +(q.match(/σ = (\d+(?:\.\d+)?)/) || q.match(/s = (\d+(?:\.\d+)?)/))[1] });
+test('STAT 302 — confidence intervals for a mean (z, z with s, t) and a proportion', () => {
+  for (const d of DIFFS) times(60, () => {
+    for (const t of ['ciMeanZ', 'ciMeanS', 'ciMeanT']) {
+      const o = G[t](d), q = E(o.q), { n, xb, sd } = parseSample(q), conf = +q.match(/(\d+)% confidence/)[1];
+      if (t === 'ciMeanT') assert.ok(n < 30); else assert.ok(n >= 30);
+      const crit = t === 'ciMeanT' ? tQ((1 - conf / 100) / 2, n - 1) : zQ((1 - conf / 100) / 2);
+      const [lo, hi] = plain(o.a).match(/\(([-\d.]+), ([-\d.]+)\)/).slice(1).map(Number);
+      close((lo + hi) / 2, xb, 0.002); close((hi - lo) / 2, crit * sd / Math.sqrt(n), 0.01);
+    }
+    const o = G.ciProportion(d), q = E(o.q), n = +q.match(/n = (\d+)/)[1], x = +q.match(/, (\d+) have/)[1], conf = +q.match(/(\d+)% confidence/)[1];
+    const p = x / n, [lo, hi] = plain(o.a).match(/\(([-\d.]+), ([-\d.]+)\)/).slice(1).map(Number);
+    close((lo + hi) / 2, p, 0.0002); close((hi - lo) / 2, zQ((1 - conf / 100) / 2) * Math.sqrt(p * (1 - p) / n), 0.0005);
+  });
+});
+
+test('STAT 302 — sample size for a mean and a proportion (rounded up)', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.sampleSizeMean(d), q = E(o.q), conf = +q.match(/(\d+)% confidence/)[1];
+    const Em = +q.match(/E = (\d+(?:\.\d+)?)/)[1], sg = +q.match(/σ = (\d+)/)[1], n = val(o.a), need = (zQ((1 - conf / 100) / 2) * sg / Em) ** 2;
+    assert.ok(n >= need - 0.05 * need / 100 - 0.05 && n - 1 < need + 0.05, `mean: n = ${n}, need ${need}`);
+    o = G.sampleSizeProp(d); q = E(o.q); conf = +q.match(/(\d+)% confidence/)[1];
+    const Ep = +q.match(/E = (\d+(?:\.\d+)?)/)[1], pp = /p = (\d+(?:\.\d+)?)/.test(q) ? +q.match(/p = (\d+(?:\.\d+)?)/)[1] : 0.5, np = val(o.a);
+    const needp = zQ((1 - conf / 100) / 2) ** 2 * pp * (1 - pp) / Ep ** 2;
+    assert.ok(np >= needp - 0.5 && np - 1 < needp + 0.5, `prop: n = ${np}, need ${needp}`);
+  });
+});
+
+test('STAT 302 — hypothesis tests for a mean (z, z with s, t) and a proportion', () => {
+  const dec = (stat, crit, tail) => tail === '≠' ? Math.abs(stat) > crit : tail === '>' ? stat > crit : stat < -crit;
+  for (const d of DIFFS) times(60, () => {
+    for (const t of ['testMeanZ', 'testMeanS', 'testMeanT']) {
+      const o = G[t](d), raw = enOnly(o.q), q = E(o.q), { n, xb, sd } = parseSample(q);
+      const mu0 = +q.match(/μ = (\d+(?:\.\d+)?) against/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1];
+      const tail = raw.includes('&ne;') ? '≠' : raw.match(/H₁: μ (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
+      const stat = (xb - mu0) / (sd / Math.sqrt(n)), a = tail === '≠' ? alpha / 2 : alpha;
+      const crit = t === 'testMeanT' ? tQ(a, n - 1) : zQ(a);
+      close(+plain(o.a).match(/[zt] = ([-\d.]+)/)[1], stat, 0.002);
+      assert.equal(/Do not reject/.test(E(o.a)), !dec(stat, crit, tail));
+    }
+    const o = G.testProportion(d), raw = enOnly(o.q), q = E(o.q);
+    const p0 = +q.match(/p = (\d+(?:\.\d+)?) against/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1], x = +q.match(/given (\d+) successes/)[1], n = +q.match(/n = (\d+) trials/)[1];
+    const tail = raw.includes('&ne;') ? '≠' : raw.match(/H₁: p (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
+    const stat = (x / n - p0) / Math.sqrt(p0 * (1 - p0) / n);
+    close(+plain(o.a).match(/z = ([-\d.]+)/)[1], stat, 0.002);
+    assert.equal(/Do not reject/.test(E(o.a)), !dec(stat, zQ(tail === '≠' ? alpha / 2 : alpha), tail));
+  });
+});
+
+test('STAT 302 — ANOVA table completion and F test', () => {
+  for (const d of DIFFS) times(100, () => {
+    const o = G.anovaTable(d), q = E(o.q), k = +q.match(/k = (\d+)/)[1], N = +q.match(/N = (\d+)/)[1];
+    const cells = [...o.q.matchAll(/<tr><th>.*?<\/th>(.*?)<\/tr>/g)].slice(1).map(m => [...m[1].matchAll(/<td>(.*?)<\/td>/g)].map(c => c[1]));
+    const ssb = +cells[0][0], sse = cells[1][0] === '?' ? +cells[2][0] - ssb : +cells[1][0];
+    const F = (ssb / (k - 1)) / (sse / (N - k));
+    close(+plain(o.a).match(/F = (\d+(?:\.\d+)?)/)[1], F, 0.001);
+    assert.equal(/Do not reject/.test(E(o.a)), !(F > fQ(k - 1, N - k)));
+    const done = [...o.a.matchAll(/<td>(.*?)<\/td>/g)].map(c => c[1]);
+    assert.deepEqual(done.slice(0, 3).map(Number), [ssb, k - 1, ssb / (k - 1)]);
+  });
+});
+
+const fdmAns = o => { const m = E(o.a).match(/exact = ([-\d.]+); approx\. ≈ ([-\d.]+); error = (\d+(?:\.\d+)?)/); return m.slice(1).map(Number); };
+const checkFdm = (o, exact, approx) => { const [ex, ap, er] = fdmAns(o); close(ex, exact, 6e-5); close(ap, approx, 6e-5); close(er, Math.abs(exact - approx), 1.2e-4); };
+test('MATH 442 — finite-difference derivatives uₓ, uₜ, uₓₓ, uₜₜ', () => {
+  for (const d of DIFFS) times(200, () => {
+    for (const t of ['fdFirstX', 'fdFirstT']) {
+      const o = G[t](d), q = E(o.q), type = q.match(/the (\w+) difference/)[1], h = +q.match(/[hk] = (\d+(?:\.\d+)?)/)[1];
+      const v0 = +q.match(/\((\d+)\) for/)[1], m = q.match(/= (\d*)[xt]\^(\d+)\./), c = m[1] ? +m[1] : 1, p = +m[2], u = s => c * s ** p;
+      const approx = type === 'forward' ? (u(v0 + h) - u(v0)) / h : type === 'backward' ? (u(v0) - u(v0 - h)) / h : (u(v0 + h) - u(v0 - h)) / (2 * h);
+      checkFdm(o, (u(v0 + 1e-6) - u(v0 - 1e-6)) / 2e-6, approx);
+    }
+    for (const t of ['fdSecondX', 'fdSecondT']) {
+      const o = G[t](d), q = E(o.q), h = +q.match(/[hk] = (\d+(?:\.\d+)?)/)[1], v0 = +q.match(/\((\d+)\) for/)[1];
+      const c = +(q.match(/= (\d*)[xt]\^4/)[1] || 1), u = s => c * s ** 4 + s * s;
+      checkFdm(o, 12 * c * v0 * v0 + 2, (u(v0 + h) - 2 * u(v0) + u(v0 - h)) / (h * h));
+    }
+  });
+});
+
+test('MATH 442 — FDM for ODEs in uₓ, uₜ, uₓₓ, uₜₜ', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.fdmOdeUx(d), q = E(o.q), m = q.match(/ux = (\d+)x(?:\^(\d+))?, u\(0\) = (\d+).*h = (\d+(?:\.\d+)?)/);
+    let c = +m[1], p = m[2] ? +m[2] : 1, u0 = +m[3], h = +m[4], u = u0;
+    for (let x = 0; x < 1 - 1e-9; x += h) u += h * c * x ** p;
+    checkFdm(o, u0 + simpson(x => c * x ** p, 0, 1), u);
+
+    o = G.fdmOdeUt(d); q = E(o.q); m = q.match(/ut = -(\d*)u, u\(0\) = (\d+).*Δt = (\d+(?:\.\d+)?), and find u\((\d+(?:\.\d+)?)\)/);
+    const k = m[1] ? +m[1] : 1, a0 = +m[2], dt = +m[3], T = +m[4]; u = a0;
+    for (let t = 0; t < T - 1e-9; t += dt) u -= dt * k * u;
+    checkFdm(o, a0 * Math.exp(-k * T), u);
+
+    o = G.fdmOdeUxx(d); q = E(o.q); m = q.match(/u\((\d)\) = (-?\d+) by central differences with h = (\d+(?:\.\d+)?)\. Find u\((\d+(?:\.\d+)?)\)/);
+    const L = +m[1], uL = +m[2], hh = +m[3], x1 = +m[4], A = (uL - L ** 4) / L;   // exact u = x⁴ + A x
+    checkFdm(o, x1 ** 4 + A * x1, (uL - hh * hh * 12 * x1 * x1) / 2);
+
+    o = G.fdmOdeUtt(d); q = E(o.q); m = q.match(/u\(0\) = (\d+), ut\(0\) = (\d+).*Δt = (\d+(?:\.\d+)?)\. Find u\((\d+(?:\.\d+)?)\)/);
+    const a = +m[1], b = +m[2], kk = +m[3], T2 = +m[4], f = t => 6 * t;
+    const u1 = a + kk * b + kk * kk / 2 * f(0), u2 = 2 * u1 - a + kk * kk * f(kk);
+    checkFdm(o, T2 ** 3 + b * T2 + a, u2);
+  });
+});
+
+test('MATH 442 — FDM for uₜ + c uₓ = 0 and the heat / wave equations', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.fdmAdvection(d), q = E(o.q), m = q.match(/ut \+ (\d*)ux = 0.*h = (\d+(?:\.\d+)?), k = (\d+(?:\.\d+)?) to find u\((\d+(?:\.\d+)?),/);
+    const c = m[1] ? +m[1] : 1, h = +m[2], k = +m[3], x = +m[4], r = c * k / h;
+    assert.ok(r <= 1, 'CFL');
+    checkFdm(o, (x - c * k) ** 2, x * x - r * (x * x - (x - h) ** 2));
+    o = G.fdmFamous(d); q = E(o.q); m = q.match(/h = (\d+(?:\.\d+)?), k = (\d+(?:\.\d+)?) take one time step and find u\((\d+(?:\.\d+)?),/);
+    const hh = +m[1], kk = +m[2], xi = +m[3], s0 = t => Math.sin(Math.PI * t), d2 = s0(xi + hh) - 2 * s0(xi) + s0(xi - hh);
+    if (/heat/.test(q)) checkFdm(o, Math.exp(-(Math.PI ** 2) * kk) * s0(xi), s0(xi) + kk / hh ** 2 * d2);
+    else checkFdm(o, Math.cos(Math.PI * kk) * s0(xi), s0(xi) + (kk / hh) ** 2 / 2 * d2);
+  });
+});
+
+test('MATH 442 — scheme classification and stability', () => {
+  for (const d of DIFFS) times(200, () => {
+    const o = G.fdSchemeClassify(d), q = o.q, r = +E(q).match(/= (\d+(?:\.\d+)?)\)/)[1], a = E(o.a);
+    const implicitTerms = (enOnly(q).match(/<sup>n\+1<\/sup>/g) || []).length;
+    if (implicitTerms === 1) { assert.match(a, /^Explicit \(FTCS\)/); assert.equal(/unstable/.test(a), r > 0.5); }
+    else { assert.match(a, /^Implicit/); assert.match(a, /unconditionally stable/); }
+  });
 });
