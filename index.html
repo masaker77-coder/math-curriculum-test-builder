@@ -10,40 +10,46 @@
 
 
 <div class="toolbar noprint">
-  <h1>Math <span>Test Builder</span></h1>
+  <div class="topbar">
+    <h1 data-i18n="appTitle">Math Test Builder</h1>
+    <div class="field langf">
+      <label for="lang" data-i18n="language">Language</label>
+      <select id="lang"><option value="en">English</option><option value="ar">عربي</option><option value="both">English + عربي</option></select>
+    </div>
+  </div>
 
   <!-- Build a part: search OR level → course → topic → options → add -->
   <div class="builder">
     <div class="field" style="flex:1 1 240px">
-      <label for="bSearch">Search topics or courses</label>
-      <input type="text" id="bSearch" placeholder="e.g. matrix · MATH 244 · derivative">
+      <label for="bSearch" data-i18n="search">Search topics or courses</label>
+      <input type="text" id="bSearch" data-i18n-ph="searchPh" placeholder="e.g. matrix · MATH 244 · derivative">
     </div>
     <div class="field">
-      <label for="bLevel">Level</label>
+      <label for="bLevel" data-i18n="level">Level</label>
       <select id="bLevel"></select>
     </div>
     <div class="field">
-      <label for="bCourse">Course</label>
+      <label for="bCourse" data-i18n="course">Course</label>
       <select id="bCourse"></select>
     </div>
     <div class="field">
-      <label for="bTopic">Topic</label>
+      <label for="bTopic" data-i18n="topic">Topic</label>
       <select id="bTopic"></select>
     </div>
     <div class="field">
-      <label for="bDiff">Difficulty</label>
+      <label for="bDiff" data-i18n="difficulty">Difficulty</label>
       <select id="bDiff">
-        <option value="1">Easy</option>
-        <option value="2" selected>Medium</option>
-        <option value="3">Hard</option>
+        <option value="1" data-i18n="easy">Easy</option>
+        <option value="2" selected data-i18n="medium">Medium</option>
+        <option value="3" data-i18n="hard">Hard</option>
       </select>
     </div>
     <div class="field">
-      <label for="bCount">Questions</label>
+      <label for="bCount" data-i18n="questions">Questions</label>
       <input type="number" id="bCount" min="1" max="40" value="10">
     </div>
-    <label class="chk"><input type="checkbox" id="bMc"> Multiple choice</label>
-    <button class="btn primary" id="addSection">+ Add to test</button>
+    <label class="chk"><input type="checkbox" id="bMc"> <span data-i18n="mc">Multiple choice</span></label>
+    <button class="btn primary" id="addSection" data-i18n="add">+ Add to test</button>
   </div>
   <div class="search-results" id="searchResults" hidden></div>
 
@@ -53,55 +59,62 @@
   <!-- Whole-test output options -->
   <div class="controls" style="margin-top:14px">
     <div class="field" style="flex:1 1 200px">
-      <label for="title">Test title</label>
-      <input type="text" id="title" placeholder="e.g. Chapter 5 Exam">
+      <label for="title" data-i18n="testTitle">Test title</label>
+      <input type="text" id="title" data-i18n-ph="testTitlePh" placeholder="e.g. Chapter 5 Exam">
     </div>
     <div class="field">
-      <label for="spacing">Work space</label>
-      <select id="spacing"><option value="1">Compact</option><option value="2" selected>Normal</option><option value="3">Roomy</option></select>
+      <label for="spacing" data-i18n="workSpace">Work space</label>
+      <select id="spacing"><option value="1" data-i18n="compact">Compact</option><option value="2" selected data-i18n="normal">Normal</option><option value="3" data-i18n="roomy">Roomy</option></select>
     </div>
     <div class="field">
-      <label for="versions">Versions</label>
+      <label for="versions" data-i18n="versions">Versions</label>
       <input type="number" id="versions" min="1" max="6" value="1">
     </div>
     <div class="field">
-      <label for="keyMode">Answer key</label>
+      <label for="keyMode" data-i18n="answerKey">Answer key</label>
       <select id="keyMode">
-        <option value="separate" selected>Separate page</option>
-        <option value="same">Same page</option>
-        <option value="none">No key</option>
+        <option value="separate" selected data-i18n="keySeparate">Separate page</option>
+        <option value="same" data-i18n="keySame">Same page</option>
+        <option value="none" data-i18n="keyNone">No key</option>
       </select>
     </div>
-    <button class="btn ghost" id="toggleKey">Show / hide answers</button>
-    <button class="btn ghost" id="presentBtn">&#9654; Present</button>
-    <button class="btn ghost" id="print">Print / PDF</button>
+    <div class="field">
+      <label for="solMode" data-i18n="solutions">Solutions</label>
+      <select id="solMode">
+        <option value="answers" selected data-i18n="solAnswers">Answers only</option>
+        <option value="steps" data-i18n="solSteps">Answers + steps &amp; graphs</option>
+      </select>
+    </div>
+    <button class="btn ghost" id="toggleKey" data-i18n="toggleKey">Show / hide answers</button>
+    <button class="btn ghost" id="presentBtn" data-i18n="present">&#9654; Present</button>
+    <button class="btn ghost" id="print" data-i18n="print">Print / PDF</button>
   </div>
 
   <!-- Save / load whole tests -->
   <div class="controls" style="margin-top:10px">
     <div class="field">
-      <label for="saved">Saved tests</label>
+      <label for="saved" data-i18n="saved">Saved tests</label>
       <select id="saved"><option value="">— load a saved test —</option></select>
     </div>
     <div class="field">
-      <label for="saveName">Save as</label>
-      <input type="text" id="saveName" placeholder="name">
+      <label for="saveName" data-i18n="saveAs">Save as</label>
+      <input type="text" id="saveName" data-i18n-ph="namePh" placeholder="name">
     </div>
-    <button class="btn ghost" id="save">Save</button>
-    <button class="btn ghost" id="del">Delete</button>
-    <button class="btn ghost" id="exportBtn" title="Download this test as a file">Export file</button>
-    <button class="btn ghost" id="importBtn" title="Load a test from a file">Import file</button>
+    <button class="btn ghost" id="save" data-i18n="save">Save</button>
+    <button class="btn ghost" id="del" data-i18n="del">Delete</button>
+    <button class="btn ghost" id="exportBtn" data-i18n="exportFile">Export file</button>
+    <button class="btn ghost" id="importBtn" data-i18n="importFile">Import file</button>
     <input type="file" id="importFile" accept=".json,application/json" hidden>
   </div>
 
   <details class="custom-wrap">
-    <summary>Custom questions</summary>
+    <summary data-i18n="custom">Custom questions</summary>
     <textarea id="custom" placeholder="One question per line. Put the answer after a | symbol:&#10;A train goes 180 km in 3 h. Find its speed. | 60 km/h&#10;Evaluate 2^5 | 32"></textarea>
-    <div class="hint">Format: <b>question | answer</b> &nbsp;·&nbsp; use <b>^</b> for exponents (2^5).</div>
-    <button class="btn ghost" id="addCustom" style="margin-top:8px">+ Add as a part</button>
+    <div class="hint" data-i18n="customHint">Format: question | answer · use ^ for exponents (2^5).</div>
+    <button class="btn ghost" id="addCustom" style="margin-top:8px" data-i18n="addCustom">+ Add as a part</button>
   </details>
 
-  <div class="hint">Choose a <b>level</b> and <b>course</b>, then a <b>topic</b>, set its difficulty &amp; count, and <b>Add to test</b>. Repeat with other topics or courses to build a multi-part test. <b>Print / PDF</b> &rarr; choose &ldquo;Save as PDF&rdquo; to export.</div>
+  <div class="hint" data-i18n="hint">Choose a level and course, then a topic, set its difficulty &amp; count, and Add to test.</div>
 </div>
 
 <div class="wrap">
