@@ -1,6 +1,6 @@
 import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, sgn, cplx, mat, TRIG, shuffled,
          lcm, totient, powMod, isPrimeN, vec } from './helpers.js';
-import { L, Li, M, align, steps, num, plot, numberLine, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML } from './viz.js';
+import { L, Li, M, align, steps, num, plot, numberLine, intervalLine, aug, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML } from './viz.js';
 
 /* a small discrete distribution: distinct values xs with probabilities cs[i]/D (all cs[i] ≥ 1) */
 function discreteDist(d){
@@ -98,6 +98,19 @@ function fdSecond(d, v){
       L(`<b>Formula:</b> ${M(`u<sub>${v}${v}</sub> &asymp; (u(${v}+${st}) &minus; 2u(${v}) + u(${v}&minus;${st}))/${st}${sup(2)}`)}`, `<b>القانون:</b> ${M(`u<sub>${v}${v}</sub> &asymp; (u(${v}+${st}) &minus; 2u(${v}) + u(${v}&minus;${st}))/${st}${sup(2)}`)}`),
       L(`<b>Approximate:</b> ${M(`(${num(u(v0+h))} &minus; 2(${num(u(v0))}) + ${num(u(v0-h))})/${num(h*h)} = ${num(apx)}`)}`, `<b>الحل التقريبي:</b> ${M(`(${num(u(v0+h))} &minus; 2(${num(u(v0))}) + ${num(u(v0-h))})/${num(h*h)} = ${num(apx)}`)}`),
       L(`<b>Error:</b> ${M(`|${num(ex)} &minus; ${num(apx)}| = ${num(err)}`)} (= 2·${c}·${st}${sup(2)}, it shrinks like ${st}${sup(2)})`, `<b>الخطأ:</b> ${M(`|${num(ex)} &minus; ${num(apx)}| = ${num(err)}`)} (يتناقص بمعدل ${M(st+sup(2))})`)+g)};
+}
+
+/* exact fractions [p, q] for Gauss–Jordan steps, and small linear-algebra helpers */
+const rN=([p,q])=>{ if(q<0){ p=-p; q=-q; } const g=gcd(p,q); return [p/g+0, q/g]; };
+const rMul=(a,b)=>rN([a[0]*b[0], a[1]*b[1]]), rDiv=(a,b)=>rN([a[0]*b[1], a[1]*b[0]]), rSub=(a,b)=>rN([a[0]*b[1]-b[0]*a[1], a[1]*b[1]]);
+function detN(A){
+  if(A.length===2) return A[0][0]*A[1][1]-A[0][1]*A[1][0];
+  return A[0][0]*(A[1][1]*A[2][2]-A[1][2]*A[2][1]) - A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0]) + A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+}
+/* "3x − y + 2z" from coefficients, skipping zero terms */
+function linN(cs, vars){
+  const t=cs.map((c,j)=>[c,vars[j]]).filter(([c])=>c!==0);
+  return t.length ? t.map(([c,v],i)=>i===0?lead(c,v):term(c,v)).join('') : '0';
 }
 
 /* ============================ GENERATORS ============================ */
@@ -612,11 +625,16 @@ export const G = {
   /* ---- Complex Analysis (MATH 485) ---- */
   complexAdd(d){
     const hi=d===3?12:9, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
-    return {q:`(${cplx(a,b)}) + (${cplx(c,e)}) =`, a:`<b>${cplx(a+c,b+e)}</b>`};
+    return {q:`(${cplx(a,b)}) + (${cplx(c,e)}) =`, a:`<b>${cplx(a+c,b+e)}</b>`,
+      s:steps(L('Add the real parts and the imaginary parts separately.', 'نجمع الأجزاء الحقيقية معاً والأجزاء التخيلية معاً.'),
+              M(`(${sgn(a)} + ${sgn(c)}) + (${sgn(b)} + ${sgn(e)})i = ${cplx(a+c,b+e)}`))};
   },
   complexMultiply(d){
     const hi=d===1?5:d===2?8:11, a=nz(-hi,hi),b=nz(-hi,hi),c=nz(-hi,hi),e=nz(-hi,hi);
-    return {q:`(${cplx(a,b)})(${cplx(c,e)}) =`, a:`<b>${cplx(a*c-b*e, a*e+b*c)}</b>`};
+    return {q:`(${cplx(a,b)})(${cplx(c,e)}) =`, a:`<b>${cplx(a*c-b*e, a*e+b*c)}</b>`,
+      s:steps(L(`Expand (FOIL) and use ${M('i'+sup(2)+' = &minus;1')}.`, `نفك الأقواس ونستخدم ${M('i'+sup(2)+' = &minus;1')}.`),
+              M(`(${sgn(a)})(${sgn(c)}) + (${sgn(a)})(${sgn(e)})i + (${sgn(b)})(${sgn(c)})i + (${sgn(b)})(${sgn(e)})i${sup(2)}`),
+              M(`= ${sgn(a*c)} ${b*e<=0?'+':'&minus;'} ${Math.abs(b*e)} + (${sgn(a*e)} + ${sgn(b*c)})i = ${cplx(a*c-b*e, a*e+b*c)}`))};
   },
   complexModulus(d){
     const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[7,24,25],[9,12,15]]);
@@ -777,7 +795,10 @@ export const G = {
     if(Math.random()<0.5) A=[A[3],A[2],A[1],A[0]];
     if(d>1 && Math.random()<0.5) A=[A[1],A[0],A[3],A[2]];                // column swap: det = -1
     const det=A[0]*A[3]-A[1]*A[2];                                        // ±1, so 1/det = det
-    return {q:`${mat(A)}${sup('&minus;1')} =`, a:`<b>${mat([A[3]*det,-A[1]*det,-A[2]*det,A[0]*det])}</b>`};
+    return {q:`${mat(A)}${sup('&minus;1')} =`, a:`<b>${mat([A[3]*det,-A[1]*det,-A[2]*det,A[0]*det])}</b>`,
+      s:steps(L(`${M(`det = (${sgn(A[0])})(${sgn(A[3])}) &minus; (${sgn(A[1])})(${sgn(A[2])}) = ${det}`)} ≠ 0, so the inverse exists.`, `${M(`det = (${sgn(A[0])})(${sgn(A[3])}) &minus; (${sgn(A[1])})(${sgn(A[2])}) = ${det}`)} ≠ 0 إذن المعكوس موجود.`),
+              L(`Swap the diagonal, negate the other two, divide by det: ${M('(1/'+det+')')} ${mat([A[3],-A[1],-A[2],A[0]])} = ${mat([A[3]*det,-A[1]*det,-A[2]*det,A[0]*det])}`,
+                `نبدّل عنصري القطر الرئيسي ونغيّر إشارة الآخرين ثم نقسم على المحدد: ${M('(1/'+det+')')} ${mat([A[3],-A[1],-A[2],A[0]])} = ${mat([A[3]*det,-A[1]*det,-A[2]*det,A[0]*det])}`))};
   },
   matVec(d){
     const n=d===1?2:3, hi=d===3?9:5, A=Array.from({length:n*n},()=>R(-hi,hi)), v=Array.from({length:n},()=>R(-hi,hi));
@@ -1440,6 +1461,161 @@ export const G = {
         L(`<b>Grid values</b> at t = 0: ${M(`u(${num(xi-h)}) = ${num(ul)}, u(${xi}) = ${num(uc)}, u(${num(xi+h)}) = ${num(ur)}`)} (note ${M(`sin(&pi;/4) = ${num(S)}`)})`, `<b>قيم الشبكة</b> عند ${M('t = 0')}: ${M(`u(${num(xi-h)}) = ${num(ul)}, u(${xi}) = ${num(uc)}, u(${num(xi+h)}) = ${num(ur)}`)}`),
         L(`<b>Approximate</b> (${M(st)}): ${M(sch)} = ${M(num(apx))}`, `<b>الحل التقريبي</b> (${M(st)}): ${M(sch)} = ${M(num(apx))}`),
         L(`<b>Error:</b> ${M(`|${num(ex)} &minus; ${num(apx)}| = ${num(err)}`)}`, `<b>الخطأ:</b> ${M(`|${num(ex)} &minus; ${num(apx)}| = ${num(err)}`)}`)+g)};
+  },
+
+  /* ================= QM 102 — Principles of Quantitative Methods (2), Business Administration ================= */
+  numberSets(d){
+    const pool=[
+      ['7',['N','Z','Q','R']], ['&minus;3',['Z','Q','R']], ['0',['Z','Q','R']], [frac(2,5),['Q','R']], ['0.75',['Q','R']],
+      ['&minus;'+frac(7,3),['Q','R']], [sq(2),['I','R']], ['&pi;',['I','R']], [sq(9),['N','Z','Q','R']],
+      ['&minus;'+sq(16),['Z','Q','R']], [sq(5),['I','R']], ['0.<span style="text-decoration:overline">3</span>',['Q','R']],
+    ];
+    const [h,sets]=pick(d===1?pool.slice(0,6):pool), NAME={N:'ℕ',Z:'ℤ',Q:'ℚ',I:'ℚ′',R:'ℝ'};
+    const why = sets.includes('I') ? L('It cannot be written as a fraction p/q of integers (non-terminating, non-repeating decimal) ⇒ irrational ℚ′.', `لا يمكن كتابته على صورة كسر ${M('p/q')} لعددين صحيحين (عشري غير منتهٍ وغير دوري) ⇐ غير نسبي ${M('ℚ′')}.`)
+            : sets.includes('Z') ? L('It is a whole number (after simplifying) ⇒ an integer, hence also rational and real.', 'هو عدد صحيح (بعد التبسيط) ⇐ صحيح، وبالتالي نسبي وحقيقي.')
+            : L('It can be written as a fraction p/q of integers (terminating or repeating decimal) ⇒ rational.', `يمكن كتابته على صورة ${M('p/q')} (عشري منتهٍ أو دوري) ⇐ نسبي.`);
+    return {q:L(`To which sets does ${h} belong? (ℕ natural, ℤ integers, ℚ rational, ℚ′ irrational, ℝ real)`,
+                `إلى أي المجموعات ينتمي العدد ${M(h)}؟ (${M('ℕ')} طبيعية، ${M('ℤ')} صحيحة، ${M('ℚ')} نسبية، ${M('ℚ′')} غير نسبية، ${M('ℝ')} حقيقية)`),
+      a:`<b>${sets.map(x=>NAME[x]).join(', ')}</b>`,
+      s:steps(why, L(`ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ and ℚ′ ⊂ ℝ; every number here is real.`, `${M('ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ')} و ${M('ℚ′ ⊂ ℝ')}؛ كل الأعداد هنا حقيقية.`))};
+  },
+  intervalNotation(d){
+    const a=R(-9,5), b=a+R(1,8); const t=pick(d===1?['between','ge','lt']:['between','ge','le','gt','lt']);
+    const lc=pick([true,false]), rc=pick([true,false]);
+    const H={lt:'&lt;',le:'&le;',gt:'&gt;',ge:'&ge;'};
+    const ineq = t==='between' ? `${sgn(a)} ${lc?'&le;':'&lt;'} x ${rc?'&le;':'&lt;'} ${sgn(b)}` : `x ${H[t]} ${sgn(a)}`;
+    const iv = t==='between' ? `${lc?'[':'('}${sgn(a)}, ${sgn(b)}${rc?']':')'}`
+             : t==='ge' ? `[${sgn(a)}, &infin;)` : t==='gt' ? `(${sgn(a)}, &infin;)` : t==='le' ? `(&minus;&infin;, ${sgn(a)}]` : `(&minus;&infin;, ${sgn(a)})`;
+    return {q:L(`Write in interval notation: ${ineq}`, `اكتب باستخدام الفترات: ${M(ineq)}`), a:`<b>${iv}</b>`,
+      s:steps(L('Square bracket [ ] = endpoint included (≤, ≥); parenthesis ( ) = not included (&lt;, &gt;); ∞ always takes a parenthesis.',
+                `القوس المربع ${M('[ ]')} يعني أن الطرف داخل الفترة (${M('≤, ≥')})، والقوس الدائري ${M('( )')} يعني أنه خارجها (${M('&lt;, &gt;')})؛ واللانهاية دائماً بقوس دائري.`),
+              L(`${M(ineq)} ⇒ ${M(iv)}`, `${M(ineq)} ⇐ ${M(iv)}`)+
+              (t==='between' ? intervalLine(a,b,lc&&rc,false) : numberLine(a, t==='lt'?'<':t==='le'?'<=':t==='gt'?'>':'>=')))};
+  },
+  breakEven(d){
+    const x=R(d===1?50:100, d===1?400:2000), m=R(2,d===1?10:40), v=R(5,60), p=v+m, F=m*x;
+    const C=t=>F+v*t, Rv=t=>p*t;
+    const g=plot({x:[0,2*x], y:[0,Rv(2*x)], curves:[{f:Rv},{f:C,cls:'c2'}], points:[{x, y:Rv(x), label:`(${x}, ${Rv(x)})`}]});
+    return {q:L(`A company has fixed costs of ${F} SAR. Each unit costs ${v} SAR to produce and sells for ${p} SAR. Find the break-even quantity.`,
+                `شركة تكاليفها الثابتة ${M(F)} ريال، وتكلفة إنتاج الوحدة ${M(v)} ريال، وسعر بيعها ${M(p)} ريال. أوجد كمية التعادل.`),
+      a:`<b>x = ${x}</b>`,
+      s:steps(L(`Cost ${M(`C(x) = ${F} + ${v}x`)}, revenue ${M(`R(x) = ${p}x`)}.`, `التكلفة ${M(`C(x) = ${F} + ${v}x`)}، والإيراد ${M(`R(x) = ${p}x`)}.`),
+              L(`Break-even: ${M(`R(x) = C(x) ⇒ ${p}x = ${F} + ${v}x ⇒ ${m}x = ${F}`)}`, `نقطة التعادل: ${M(`R(x) = C(x) ⇒ ${p}x = ${F} + ${v}x ⇒ ${m}x = ${F}`)}`),
+              L(`${M(`x = ${F} / ${m} = ${x}`)} units (revenue = cost = ${Rv(x)} SAR).`, `${M(`x = ${F} / ${m} = ${x}`)} وحدة (الإيراد = التكلفة = ${M(Rv(x))} ريال).`)+g)};
+  },
+  absEquation(d){
+    const a=pick(d===1?[1]:[1,2]), c=a*R(1,6), x1=R(-6,6), b=c-a*x1, x2=x1-2*c/a, lo=Math.min(x1,x2), hi=Math.max(x1,x2);
+    const inner=`${lead(a,'x')}${term(b,'')}`;
+    const g=plot({x:[lo-3,hi+3], y:[-1,c+4], curves:[{f:t=>Math.abs(a*t+b)},{f:()=>c,cls:'c2'}], points:[{x:lo,y:c,label:`x = ${lo}`},{x:hi,y:c,label:`x = ${hi}`}]});
+    return {q:L(`Solve |${inner}| = ${c}`, `حل المعادلة ${M(`|${inner}| = ${c}`)}`), a:`<b>x = ${sgn(lo)}, ${sgn(hi)}</b>`,
+      s:steps(L(`${M(`|u| = c`)} (c &gt; 0) means ${M('u = c')} or ${M('u = &minus;c')}.`, `${M('|u| = c')} حيث ${M('c &gt; 0')} تعني ${M('u = c')} أو ${M('u = &minus;c')}.`),
+              M(`${inner} = ${c} ⇒ x = ${sgn((c-b)/a)}`), M(`${inner} = &minus;${c} ⇒ x = ${sgn((-c-b)/a)}`),
+              L(`Graph: y = |${inner}| meets y = ${c} at both solutions.`, `بيانياً: ${M(`y = |${inner}|`)} يقطع ${M(`y = ${c}`)} عند الحلين.`)+g)};
+  },
+  absInequality(d){
+    const a=d===1?1:pick([1,2]), outside=Math.random()<0.5, closed=Math.random()<0.5;
+    let b=R(-6,6), c=R(1,6); if(a===2 && (b+c)%2) c++;                     // keeps the endpoints (b ± c)/a whole numbers
+    const lo=(b-c)/a, hi=(b+c)/a, inner=`${lead(a,'x')}${term(-b,'')}`;
+    const op = outside ? (closed?'&ge;':'&gt;') : (closed?'&le;':'&lt;');
+    const ans = outside ? `(&minus;&infin;, ${sgn(lo)}${closed?']':')'} &cup; ${closed?'[':'('}${sgn(hi)}, &infin;)` : `${closed?'[':'('}${sgn(lo)}, ${sgn(hi)}${closed?']':')'}`;
+    return {q:L(`Solve and graph: |${inner}| ${op} ${c}`, `حل المتباينة ومثّل الحل: ${M(`|${inner}| ${op} ${c}`)}`), a:`<b>${ans}</b>`,
+      s:steps(outside ? L(`${M(`|u| ${op} c`)} means ${M(`u ${closed?'&le;':'&lt;'} &minus;c`)} or ${M(`u ${op} c`)}.`, `${M(`|u| ${op} c`)} تعني ${M(`u ${closed?'&le;':'&lt;'} &minus;c`)} أو ${M(`u ${op} c`)}.`)
+                      : L(`${M(`|u| ${op} c`)} means ${M(`&minus;c ${op} u ${op} c`)}.`, `${M(`|u| ${op} c`)} تعني ${M(`&minus;c ${op} u ${op} c`)}.`),
+              outside ? M(`${inner} ${closed?'&le;':'&lt;'} &minus;${c} ⇒ x ${closed?'&le;':'&lt;'} ${sgn(lo)}; &nbsp; ${inner} ${op} ${c} ⇒ x ${op} ${sgn(hi)}`)
+                      : M(`&minus;${c} ${op} ${inner} ${op} ${c} ⇒ ${sgn(lo)} ${op} x ${op} ${sgn(hi)}`),
+              L(`Interval notation: ${M(ans)}`, `بالفترات: ${M(ans)}`)+intervalLine(lo,hi,closed,outside))};
+  },
+  functionDomain(d){
+    const t=pick(d===1?['poly','sqrtR','rat1']:['poly','sqrtR','sqrtL','rat1','rat2']), a=nz(-6,6), b=R(1,6);
+    let f, dom, why;
+    if(t==='poly'){ f=`${lead(a,'x'+sup(2))}${term(b,'x')}${term(R(-9,9),'')}`; dom='(&minus;&infin;, &infin;)';
+      why=L('A polynomial is defined for every real x.', 'كثيرة الحدود معرّفة لكل عدد حقيقي x.'); }
+    else if(t==='sqrtR'){ f=`&radic;(x${term(-a,'')})`; dom=`[${sgn(a)}, &infin;)`;
+      why=L(`The radicand must be ≥ 0: ${M(`x${term(-a,'')} &ge; 0 ⇒ x &ge; ${sgn(a)}`)}`, `ما تحت الجذر ≥ 0: ${M(`x${term(-a,'')} &ge; 0 ⇒ x &ge; ${sgn(a)}`)}`); }
+    else if(t==='sqrtL'){ f=`&radic;(${sgn(a)} &minus; x)`; dom=`(&minus;&infin;, ${sgn(a)}]`;
+      why=L(`The radicand must be ≥ 0: ${M(`${sgn(a)} &minus; x &ge; 0 ⇒ x &le; ${sgn(a)}`)}`, `ما تحت الجذر ≥ 0: ${M(`${sgn(a)} &minus; x &ge; 0 ⇒ x &le; ${sgn(a)}`)}`); }
+    else if(t==='rat1'){ f=frac(`x${term(b,'')}`, `x${term(-a,'')}`); dom=`(&minus;&infin;, ${sgn(a)}) &cup; (${sgn(a)}, &infin;)`;
+      why=L(`The denominator cannot be 0: ${M(`x &ne; ${sgn(a)}`)}`, `المقام لا يساوي صفراً: ${M(`x &ne; ${sgn(a)}`)}`); }
+    else { const k=Math.abs(a); f=frac(`x${term(b,'')}`, `x${sup(2)} &minus; ${k*k}`); dom=`(&minus;&infin;, &minus;${k}) &cup; (&minus;${k}, ${k}) &cup; (${k}, &infin;)`;
+      why=L(`${M(`x${sup(2)} &minus; ${k*k} = 0 ⇒ x = &plusmn;${k}`)} must be excluded.`, `نستبعد ${M(`x = &plusmn;${k}`)} لأن ${M(`x${sup(2)} &minus; ${k*k} = 0`)} عندهما.`); }
+    return {q:L(`Find the domain of f(x) = ${f}`, `أوجد مجال الدالة ${M(`f(x) = ${f}`)}`), a:`<b>${dom}</b>`,
+      s:steps(why, L(`Domain: ${M(dom)}`, `المجال: ${M(dom)}`))};
+  },
+  funcOps(d){
+    const a=nz(-5,5), b=R(-6,6), c=R(-5,5), k=R(-3,3), op=pick(d===1?['sum','prod']:['sum','prod','fog','gof']);
+    const f=t=>a*t+b, g=t=>t*t+c, fs=`${lead(a,'x')}${term(b,'')}`, gs=`x${sup(2)}${term(c,'')}`;
+    const V={sum:f(k)+g(k), prod:f(k)*g(k), fog:f(g(k)), gof:g(f(k))}[op];
+    const N={sum:`(f + g)(${k})`, prod:`(f &middot; g)(${k})`, fog:`(f &#8728; g)(${k})`, gof:`(g &#8728; f)(${k})`}[op];
+    const work = op==='sum' ? `f(${k}) + g(${k}) = ${sgn(f(k))} + ${sgn(g(k))} = ${sgn(V)}`
+               : op==='prod' ? `f(${k}) &middot; g(${k}) = (${sgn(f(k))})(${sgn(g(k))}) = ${sgn(V)}`
+               : op==='fog' ? `g(${k}) = ${sgn(g(k))} ⇒ f(${sgn(g(k))}) = ${sgn(V)}` : `f(${k}) = ${sgn(f(k))} ⇒ g(${sgn(f(k))}) = ${sgn(V)}`;
+    return {q:L('Given:','إذا كان:')+'<br>'+align([['f(x)','=',fs],['g(x)','=',gs]])+'<br>'+L(`Find ${N}.`, `أوجد ${M(N)}.`), a:`<b>${sgn(V)}</b>`,
+      s:steps(L(`${M(N)}: ${op==='fog'||op==='gof'?'evaluate the inner function first.':'evaluate each function at the point.'}`, `${M(N)}: ${op==='fog'||op==='gof'?'نحسب الدالة الداخلية أولاً.':'نحسب قيمة كل دالة عند النقطة.'}`), M(work))};
+  },
+  evenOdd(d){
+    const kind=pick(['even','odd','neither']), coefs={};
+    const powsE=[0,2,4], powsO=[1,3,5];
+    if(kind==='even') shuffled(powsE).slice(0,2).forEach(p=>coefs[p]=nz(-6,6));
+    else if(kind==='odd') shuffled(powsO).slice(0,2).forEach(p=>coefs[p]=nz(-6,6));
+    else { coefs[pick(powsE.slice(1))]=nz(-6,6); coefs[pick(powsO)]=nz(-6,6); }
+    const ps=Object.keys(coefs).map(Number).sort((x,y)=>y-x);
+    const mono=p=>p===0?'':p===1?'x':'x'+sup(p);
+    const poly=ps.map((p,i)=>i===0?lead(coefs[p],mono(p)):term(coefs[p],mono(p))).join('');
+    const neg=ps.map((p,i)=>{ const c=p%2?-coefs[p]:coefs[p]; return i===0?lead(c,mono(p)):term(c,mono(p)); }).join('');
+    const name={even:Li('Even','زوجية'), odd:Li('Odd','فردية'), neither:Li('Neither','ليست زوجية ولا فردية')}[kind];
+    return {q:L(`Is f(x) = ${poly} even, odd, or neither?`, `هل الدالة ${M(`f(x) = ${poly}`)} زوجية أم فردية أم غير ذلك؟`), a:`<b>${name}</b>`,
+      s:steps(L(`Compute ${M('f(&minus;x)')}: ${M(`f(&minus;x) = ${neg}`)}`, `نحسب ${M('f(&minus;x)')}: ${M(`f(&minus;x) = ${neg}`)}`),
+              kind==='even' ? L(`${M('f(&minus;x) = f(x)')} ⇒ even (symmetric about the y-axis).`, `${M('f(&minus;x) = f(x)')} ⇐ زوجية (متماثلة حول محور y).`)
+            : kind==='odd' ? L(`${M('f(&minus;x) = &minus;f(x)')} ⇒ odd (symmetric about the origin).`, `${M('f(&minus;x) = &minus;f(x)')} ⇐ فردية (متماثلة حول نقطة الأصل).`)
+            : L(`${M('f(&minus;x)')} is neither f(x) nor −f(x) ⇒ neither.`, `${M('f(&minus;x)')} لا تساوي ${M('f(x)')} ولا ${M('&minus;f(x)')} ⇐ ليست زوجية ولا فردية.`))};
+  },
+  inverseFunction(d){
+    const a=nz(2,6)*(d===1?1:pick([1,-1])), b=nz(-9,9), fs=`${lead(a,'x')}${term(b,'')}`;
+    const inv=frac(`x${term(-b,'')}`, a<0?`&minus;${Math.abs(a)}`:a);
+    return {q:L(`Find the inverse of f(x) = ${fs}`, `أوجد معكوس الدالة ${M(`f(x) = ${fs}`)}`), a:`<b>f${sup('&minus;1')}(x) = ${inv}</b>`,
+      s:steps(L(`Write ${M(`y = ${fs}`)} and swap x and y: ${M(`x = ${lead(a,'y')}${term(b,'')}`)}`, `نكتب ${M(`y = ${fs}`)} ونبدّل x و y: ${M(`x = ${lead(a,'y')}${term(b,'')}`)}`),
+              L(`Solve for y: ${M(`y = ${inv}`)}`, `نحل بالنسبة لـ y: ${M(`y = ${inv}`)}`),
+              L(`Check: ${M(`f(f${sup('&minus;1')}(x)) = x`)}.`, `تحقق: ${M(`f(f${sup('&minus;1')}(x)) = x`)}.`))};
+  },
+  gaussJordan(d){
+    const n=d===3?3:2, X=Array.from({length:n},()=>R(-5,5));
+    let A; do{ A=Array.from({length:n},()=>Array.from({length:n},()=>R(-4,4))); }while(Math.abs(detN(A))<1);
+    const B=A.map(r=>r.reduce((s,v,j)=>s+v*X[j],0));
+    // exact Gauss–Jordan on fractions, recording each row operation
+    let Mx=A.map((r,i)=>[...r,B[i]].map(v=>[v,1])); const ops=[];
+    const show=()=>aug(Mx.map(r=>r.map(([p,q])=>fracStr(p,q))));
+    const rn=i=>`R<sub>${i+1}</sub>`, fq=([p,q])=>fracStr(p,q);
+    for(let c=0;c<n;c++){
+      let r=c; while(Mx[r][c][0]===0) r++;
+      if(r!==c){ [Mx[r],Mx[c]]=[Mx[c],Mx[r]]; ops.push(M(`${rn(c)} &harr; ${rn(r)}`)+show()); }
+      const [pp,pq]=Mx[c][c];
+      if(!(pp===pq)){ Mx[c]=Mx[c].map(([p,q])=>rDiv([p,q],[pp,pq])); ops.push(M(`${rn(c)} &rarr; ${rn(c)} &divide; ${fq([pp,pq])}`)+show()); }
+      for(let i=0;i<n;i++){ if(i===c||Mx[i][c][0]===0) continue; const m=Mx[i][c];
+        Mx[i]=Mx[i].map((v,j)=>rSub(v, rMul(m, Mx[c][j]))); ops.push(M(`${rn(i)} &rarr; ${rn(i)} &minus; (${fq(m)})${rn(c)}`)+show()); }
+    }
+    const vars=['x','y','z'].slice(0,n), eqs=A.map((r,i)=>[linN(r,vars),'=',sgn(B[i])]);
+    return {q:L('Solve by Gauss–Jordan elimination:','حل بطريقة جاوس–جوردان:')+'<br>'+align(eqs, true),
+      a:`<b>(${vars.join(', ')}) = (${X.map(sgn).join(', ')})</b>`,
+      s:steps(L('Write the augmented matrix [A | b]:','نكتب المصفوفة الموسّعة [A | b]:')+aug(A.map((r,i)=>[...r,B[i]].map(sgn))), ...ops,
+              L(`Reduced form gives ${M(vars.map((v,i)=>`${v} = ${sgn(X[i])}`).join(', '))}.`, `الصورة المختزلة تعطي ${M(vars.map((v,i)=>`${v} = ${sgn(X[i])}`).join('، '))}.`))};
+  },
+  matrixSubtract(d){
+    const hi=d===3?12:9, A=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)], B=[nz(-hi,hi),nz(-hi,hi),nz(-hi,hi),nz(-hi,hi)];
+    return {q:`${mat(A)} &minus; ${mat(B)} =`, a:`<b>${mat(A.map((x,i)=>x-B[i]))}</b>`,
+      s:steps(L('Subtract corresponding entries.', 'نطرح العناصر المتناظرة.'), M(A.map((x,i)=>`${sgn(x)} &minus; (${sgn(B[i])}) = ${sgn(x-B[i])}`).join('; ')))};
+  },
+  inverseSolve(d){
+    const k=nz(-4,4), m=R(-3,3); let A=[1+k*m,k,m,1];                    // det = 1 by construction
+    if(Math.random()<0.5) A=[A[3],A[2],A[1],A[0]];
+    if(d>1 && Math.random()<0.5) A=[A[1],A[0],A[3],A[2]];
+    const det=A[0]*A[3]-A[1]*A[2], I=[A[3]*det,-A[1]*det,-A[2]*det,A[0]*det], x=R(-6,6), y=R(-6,6);
+    const b1=A[0]*x+A[1]*y, b2=A[2]*x+A[3]*y;
+    return {q:L('Solve using the inverse matrix:','حل باستخدام معكوس المصفوفة:')+'<br>'+align([[linN([A[0],A[1]],['x','y']),'=',sgn(b1)],[linN([A[2],A[3]],['x','y']),'=',sgn(b2)]], true),
+      a:`<b>(x, y) = (${sgn(x)}, ${sgn(y)})</b>`,
+      s:steps(L(`Matrix form ${M('AX = B')} with A = ${mat(A)}, B = ${mat([b1,b2],1)}.`, `بالصورة ${M('AX = B')} حيث A = ${mat(A)}، B = ${mat([b1,b2],1)}.`),
+              L(`${M(`det A = (${sgn(A[0])})(${sgn(A[3])}) &minus; (${sgn(A[1])})(${sgn(A[2])}) = ${det}`)}`, `${M(`det A = (${sgn(A[0])})(${sgn(A[3])}) &minus; (${sgn(A[1])})(${sgn(A[2])}) = ${det}`)}`),
+              L(`${M('A'+sup('&minus;1')+' = (1/det)')} ${mat([A[3],-A[1],-A[2],A[0]])} = ${mat(I)}`, `${M('A'+sup('&minus;1')+' = (1/det)')} ${mat([A[3],-A[1],-A[2],A[0]])} = ${mat(I)}`),
+              L(`${M('X = A'+sup('&minus;1')+'B')} = ${mat([x,y],1)}`, `${M('X = A'+sup('&minus;1')+'B')} = ${mat([x,y],1)}`))};
   },
 
   /* ---- Probability (STAT 212) ---- */

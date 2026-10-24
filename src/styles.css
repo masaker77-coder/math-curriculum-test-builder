@@ -62,6 +62,8 @@
   .mat{display:inline-grid;grid-template-columns:auto auto;gap:1px 12px;vertical-align:middle;
     text-align:center;padding:2px 7px;margin:0 2px;border-left:2px solid currentColor;border-right:2px solid currentColor}
 
+  .mat.aug .ab{border-left:1.5px solid currentColor;padding-left:8px}
+
   /* ---------- Answer key ---------- */
   .keywrap{margin-top:26px}
   .key-head{display:flex;align-items:center;gap:10px;border-top:2px dashed var(--line);padding-top:16px;margin-bottom:10px}
@@ -145,6 +147,7 @@
   html[data-lang="ar"] body{font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",var(--font-ui)}
   [dir="rtl"] .sheet-head .meta{text-align:left}
   bdi{unicode-bidi:isolate}
+  .mat, .plot, table.stbl, table.anova{direction:ltr;unicode-bidi:isolate}   /* math layout never mirrors in Arabic */
 
   /* ---------- Worked solutions, graphs, tables ---------- */
   .sol-head{margin-top:18px}
@@ -153,6 +156,7 @@
   .solq{font-family:var(--font-math);font-size:15px}
   .sola{margin:4px 0;color:var(--key)}
   .sola b{font-weight:600}
+  html[dir="rtl"] .sola, html[dir="rtl"] .solq{text-align:right}
   ol.steps{margin:6px 0 0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;font-family:var(--font-math)}
   .plot{display:block;max-width:100%;height:auto;margin:8px 0 2px;background:#fbfcfe;border:1px solid var(--line);border-radius:6px}
   .plot .ax{stroke:#8a93a5;stroke-width:1}

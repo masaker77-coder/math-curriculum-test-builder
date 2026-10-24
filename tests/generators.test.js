@@ -808,7 +808,7 @@ test('MATH 416 — separable Fredholm equation: u(x) = kx satisfies the equation
 test('curriculum — plan levels in order, every listed topic has a generator and a label', async () => {
   const { TOPIC_LABELS } = await import('../src/curriculum.js');
   assert.deepEqual(CURRICULUM.map(l => l.level),
-    ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5', 'Level 6', 'Level 7', 'Level 8', 'Electives']);
+    ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5', 'Level 6', 'Level 7', 'Level 8', 'Electives', 'Business Administration Dept.']);
   for (const l of CURRICULUM) for (const c of l.courses) for (const t of c.topics) {
     assert.equal(typeof G[t], 'function', `${c.code}: missing generator ${t}`);
     assert.ok(TOPIC_LABELS[t], `${c.code}: missing label ${t}`);
@@ -1031,4 +1031,116 @@ test('full statistical tables: computed F points match the printed F table; Φ i
     assert.ok(Math.abs(fQuantile05(i + 1, d2) - c) < 0.0051, `F(${i + 1}, ${d2})`));
   for (const z of [0, 0.5, 1, 1.645, 1.96, 2.576, 3.4]) close(Phi(z), 0.5 + simpson(normPdf, 0, z, 4000), 1e-9);
   close(Phi(-1.96), 1 - Phi(1.96), 1e-12);
+});
+
+/* ================= QM 102 — Principles of Quantitative Methods (2) ================= */
+// membership test for interval notation like "[-3, 5)", "(-∞, 2]", "(-∞, -3] ∪ [1, ∞)"
+function inIntervals(txt, x) {
+  return txt.split('∪').some(part => {
+    const m = part.trim().match(/^([[(])\s*(-?∞|-?\d+(?:\.\d+)?),\s*(-?∞|-?\d+(?:\.\d+)?)\s*([\])])$/);
+    const lo = m[2].includes('∞') ? -Infinity : +m[2], hi = m[3].includes('∞') ? Infinity : +m[3];
+    return (m[1] === '[' ? x >= lo : x > lo) && (m[4] === ']' ? x <= hi : x < hi);
+  });
+}
+const ivText = html => plain(html).replace(/&infin;/g, '∞').replace(/&cup;/g, '∪').trim();
+const QM = ['numberSets', 'intervalNotation', 'breakEven', 'absEquation', 'absInequality', 'functionDomain', 'funcOps', 'evenOdd',
+  'inverseFunction', 'gaussJordan', 'matrixSubtract', 'inverseSolve', 'complexAdd', 'complexMultiply', 'inverse2'];
+
+test('QM 102 — every topic has bilingual worked steps', () => {
+  for (const t of QM) for (const d of DIFFS) times(40, () => {
+    const o = G[t](d);
+    assert.ok(o.s && o.s.includes('<ol class="steps">'), t);
+    assert.ok(!/NaN|undefined|Infinity/.test(o.q + o.a + o.s), t);
+  });
+});
+
+test('QM 102 — number sets follow ℕ ⊂ ℤ ⊂ ℚ ⊂ ℝ, ℚ and ℚ′ disjoint', () => {
+  for (const d of DIFFS) times(200, () => {
+    const sets = plain(G.numberSets(d).a).split(', ');
+    assert.ok(sets.includes('ℝ'));
+    if (sets.includes('ℕ')) assert.ok(sets.includes('ℤ'));
+    if (sets.includes('ℤ')) assert.ok(sets.includes('ℚ'));
+    assert.notEqual(sets.includes('ℚ'), sets.includes('ℚ′'));
+  });
+});
+
+test('QM 102 — interval notation describes the same set as the inequality', () => {
+  for (const d of DIFFS) times(200, () => {
+    const o = G.intervalNotation(d), q = E(o.q).replace('Write in interval notation: ', '');
+    const ops = { '&lt;': (u, v) => u < v, '&le;': (u, v) => u <= v, '&gt;': (u, v) => u > v, '&ge;': (u, v) => u >= v };
+    let pred, m;
+    if ((m = q.match(/^(-?\d+) (&lt;|&le;) x (&lt;|&le;) (-?\d+)$/))) pred = x => ops[m[2]](+m[1], x) && ops[m[3]](x, +m[4]);
+    else { m = q.match(/^x (&lt;|&le;|&gt;|&ge;) (-?\d+)$/); pred = x => ops[m[1]](x, +m[2]); }
+    for (let x = -12; x <= 16; x += 0.5) assert.equal(inIntervals(ivText(o.a), x), pred(x), `${q} at ${x}`);
+  });
+});
+
+test('QM 102 — break-even: revenue equals cost', () => {
+  for (const d of DIFFS) times(200, () => {
+    const o = G.breakEven(d), [F, v, p] = ints(E(o.q)), x = val(o.a);
+    assert.equal(p * x, F + v * x);
+  });
+});
+
+test('QM 102 — absolute-value equations and inequalities', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.absEquation(d), m = E(o.q).match(/\|(.*)\| = (\d+)/);
+    const a = lin(m[1], 'x'), b = constOf(m[1].replace(/\s/g, '')), c = +m[2];
+    for (const x of ints(plain(o.a).split('=')[1])) assert.equal(Math.abs(a * x + b), c);
+    o = G.absInequality(d); m = E(o.q).match(/\|(.*)\| (&lt;|&le;|&gt;|&ge;) (\d+)/);
+    const a2 = lin(m[1], 'x'), b2 = constOf(m[1].replace(/\s/g, '')), c2 = +m[3];
+    const f = { '&lt;': (u) => u < c2, '&le;': (u) => u <= c2, '&gt;': (u) => u > c2, '&ge;': (u) => u >= c2 }[m[2]];
+    for (let x = -15; x <= 15; x += 0.25) assert.equal(inIntervals(ivText(o.a), x), f(Math.abs(a2 * x + b2)), `${m[0]} at ${x}`);
+  });
+});
+
+test('QM 102 — domain of a function', () => {
+  for (const d of DIFFS) times(200, () => {
+    const o = G.functionDomain(d), raw = enOnly(o.q), dom = ivText(o.a);
+    let ok;
+    let m;
+    if ((m = raw.match(/&radic;\(x([^)]*)\)/))) { const s = constOf(plain(m[1]).replace(/\s/g, '') || '+0'); ok = x => x + s >= 0; }
+    else if ((m = raw.match(/&radic;\((-?[^ ]+) &minus; x\)/))) { const a = +plain(m[1]); ok = x => a - x >= 0; }
+    else if ((m = raw.match(/class="d">x<sup>2<\/sup> &minus; (\d+)</))) { const k2 = +m[1]; ok = x => x * x !== k2; }
+    else if ((m = raw.match(/class="d">x([^<]*)</))) { const s = constOf(plain(m[1]).replace(/\s/g, '')); ok = x => x + s !== 0; }
+    else ok = () => true;                                                         // polynomial
+    for (let x = -10; x <= 10; x += 0.5) assert.equal(inIntervals(dom, x), ok(x), `${plain(raw)} at ${x}`);
+  });
+});
+
+test('QM 102 — operations on functions, even/odd, inverse', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.funcOps(d), q = E(o.q);
+    const fs = q.match(/f\(x\) = (.*?);/)[1], gs = q.match(/g\(x\) = (.*?) Find/)[1].trim();
+    const f = x => lin(fs, 'x') * x + constOf(fs.replace(/\s/g, '')), g = x => x * x + constOf(gs.replace(/\s/g, '').replace('x^2', ''));
+    const k = +q.match(/\((-?\d+)\)\.$/)[1], raw = enOnly(o.q);
+    const want = raw.includes('(f + g)') ? f(k) + g(k) : raw.includes('&middot;') ? f(k) * g(k) : raw.includes('(f &#8728; g)') ? f(g(k)) : g(f(k));
+    assert.equal(val(o.a), want + 0);
+
+    o = G.evenOdd(d); const poly = E(o.q).match(/f\(x\) = (.*) even/)[1].replace(/\s/g, '');
+    const P = x => [0, 1, 2, 3, 4, 5].reduce((s, p) => s + (p === 0 ? constOf(poly.replace(/x(\^\d)?/g, 'X')) : coefOf(poly, p === 1 ? 'x' : 'x^' + p)) * x ** p, 0);
+    const even = [1, 2, 3].every(x => P(-x) === P(x)), odd = [1, 2, 3].every(x => P(-x) === -P(x));
+    assert.equal(plain(enOnly(o.a)), even ? 'Even' : odd ? 'Odd' : 'Neither');
+
+    o = G.inverseFunction(d); q = E(o.q).replace('Find the inverse of f(x) = ', '').replace(/\s/g, '');
+    const a = lin(q, 'x'), b = constOf(q);
+    const fr = o.a.match(/<span class="n">(.*?)<\/span><span class="d">(.*?)<\/span>/);
+    const num2 = plain(fr[1]).replace(/\s/g, ''), den = +plain(fr[2]).replace(/\s/g, '');
+    const inv = y => (y + constOf(num2)) / den;
+    for (const x of [-3, 0, 2, 7]) close(inv(a * x + b), x);
+  });
+});
+
+test('QM 102 — Gauss–Jordan and inverse-matrix solutions satisfy the system', () => {
+  for (const d of DIFFS) times(200, () => {
+    for (const t of ['gaussJordan', 'inverseSolve']) {
+      const o = G[t](d), rows = E(o.q).split(':').slice(1).join(':').trim().split('; ');
+      const sol = ints(plain(o.a).split('=')[1]), vars = ['x', 'y', 'z'].slice(0, sol.length);
+      assert.equal(rows.length, sol.length);
+      for (const r of rows) { const [lhs, rhs] = r.split(' = ');
+        assert.equal(vars.reduce((s, v, i) => s + lin(lhs, v) * sol[i], 0), +rhs, `${t}: ${r}`); }
+    }
+    const o = G.matrixSubtract(d), q = nums(o.q), a = nums(o.a);
+    for (let k = 0; k < 4; k++) assert.equal(a[k], q[k] - q[k + 4]);
+  });
 });

@@ -34,18 +34,20 @@ const esc = s => String(s).replace(/&(?![a-z#0-9]+;)/gi,'&amp;');
 /* plot({x:[x0,x1], y:[y0,y1], curves:[{f,cls}], fills:[{f,a,b,cls}], points:[{x,y,label,cls}], vlines:[{x,label,cls}], segs:[{x1,y1,x2,y2,cls}]}) */
 export function plot({x, y, w=320, h=200, curves=[], fills=[], points=[], vlines=[], segs=[], ticks=true}){
   const [x0,x1]=x, [y0,y1]=y, pad=22;
-  const X=v=>pad+(v-x0)/(x1-x0)*(w-2*pad), Y=v=>h-pad-(v-y0)/(y1-y0)*(h-2*pad);
+  // left margin wide enough for the longest y tick label (e.g. 25000)
+  const yw=Math.max(...[y0,y1].map(v=>String(Math.round(Math.abs(v))).length+(v<0?1:0))), padL=Math.max(pad, 6*yw+12);
+  const X=v=>padL+(v-x0)/(x1-x0)*(w-padL-pad), Y=v=>h-pad-(v-y0)/(y1-y0)*(h-2*pad);
   const out=[];
   for(const F of fills){                                                // shaded area under f on [a, b]
     const n=60, pts=[]; for(let i=0;i<=n;i++){ const t=F.a+(F.b-F.a)*i/n; pts.push(`${X(t).toFixed(1)},${Y(Math.min(y1,Math.max(y0,F.f(t)))).toFixed(1)}`); }
     out.push(`<polygon class="${F.cls||'shade'}" points="${X(F.a).toFixed(1)},${Y(Math.max(y0,0)).toFixed(1)} ${pts.join(' ')} ${X(F.b).toFixed(1)},${Y(Math.max(y0,0)).toFixed(1)}"/>`);
   }
   // axes
-  if(y0<=0&&y1>=0) out.push(`<line class="ax" x1="${pad}" x2="${w-pad}" y1="${Y(0)}" y2="${Y(0)}"/>`);
+  if(y0<=0&&y1>=0) out.push(`<line class="ax" x1="${padL}" x2="${w-pad}" y1="${Y(0)}" y2="${Y(0)}"/>`);
   if(x0<=0&&x1>=0) out.push(`<line class="ax" y1="${pad}" y2="${h-pad}" x1="${X(0)}" x2="${X(0)}"/>`);
   if(ticks){
     const step=v=>{ const r=v/8, p=10**Math.floor(Math.log10(r)), m=r/p; return (m<1.5?1:m<3.5?2:m<7.5?5:10)*p; };
-    const sx=step(x1-x0), sy=step(y1-y0), yAx=(y0<=0&&y1>=0)?Y(0):h-pad, xAx=(x0<=0&&x1>=0)?X(0):pad;
+    const sx=step(x1-x0), sy=step(y1-y0), yAx=(y0<=0&&y1>=0)?Y(0):h-pad, xAx=(x0<=0&&x1>=0)?X(0):padL;
     for(let t=Math.ceil(x0/sx)*sx;t<=x1+1e-9;t+=sx) if(Math.abs(t)>1e-9)
       out.push(`<line class="tk" x1="${X(t)}" x2="${X(t)}" y1="${yAx-3}" y2="${yAx+3}"/><text class="tl" x="${X(t)}" y="${yAx+13}" text-anchor="middle">${+t.toFixed(6)}</text>`);
     for(let t=Math.ceil(y0/sy)*sy;t<=y1+1e-9;t+=sy) if(Math.abs(t)>1e-9)
@@ -76,6 +78,24 @@ export function numberLine(k, op){
   out.push(`<polygon class="rayhead" points="${end},${y} ${end+(right?-9:9)},${y-5} ${end+(right?-9:9)},${y+5}"/>`);
   out.push(`<circle class="${op.length>1?'dot-closed':'dot-open'}" cx="${X(k)}" cy="${y}" r="5"/>`);
   return `<svg class="plot nl" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img">${out.join('')}</svg>`;
+}
+
+/* number line for |x − h| < c (segment lo..hi) or |x − h| > c (two outward rays); closed = endpoints included */
+export function intervalLine(lo, hi, closed, outside){
+  const w=320, h=56, a=Math.floor(lo)-3, b=Math.ceil(hi)+3, X=v=>20+(v-a)/(b-a)*(w-40), y=26, out=[];
+  out.push(`<line class="ax" x1="12" x2="${w-12}" y1="${y}" y2="${y}"/>`);
+  for(let t=a;t<=b;t++) out.push(`<line class="tk" x1="${X(t)}" x2="${X(t)}" y1="${y-4}" y2="${y+4}"/><text class="tl" x="${X(t)}" y="${y+18}" text-anchor="middle">${t}</text>`);
+  if(!outside) out.push(`<line class="ray" x1="${X(lo)}" x2="${X(hi)}" y1="${y}" y2="${y}"/>`);
+  else out.push(`<line class="ray" x1="${X(lo)}" x2="12" y1="${y}" y2="${y}"/><polygon class="rayhead" points="12,${y} 21,${y-5} 21,${y+5}"/>`,
+                `<line class="ray" x1="${X(hi)}" x2="${w-12}" y1="${y}" y2="${y}"/><polygon class="rayhead" points="${w-12},${y} ${w-21},${y-5} ${w-21},${y+5}"/>`);
+  for(const v of [lo,hi]) out.push(`<circle class="${closed?'dot-closed':'dot-open'}" cx="${X(v)}" cy="${y}" r="5"/>`);
+  return `<svg class="plot nl" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img">${out.join('')}</svg>`;
+}
+
+/* augmented matrix [A | b]: rows of HTML cells, the last column set off by a bar */
+export function aug(rows){
+  const n=rows[0].length;
+  return `<span class="mat aug" style="grid-template-columns:repeat(${n},auto)">${rows.map(r=>r.map((c,j)=>`<span${j===n-1?' class="ab"':''}>${c}</span>`).join('')).join('')}</span>`;
 }
 
 /* ---- statistics: densities and printed critical-value tables ---- */
