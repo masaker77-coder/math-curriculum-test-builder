@@ -1377,3 +1377,31 @@ test('booklet: every topic has an overview and the cover art is valid SVG', asyn
     assert.ok(svg.startsWith('<svg') && svg.trim().endsWith('</svg>') && !/NaN|undefined/.test(svg), c.code);
   }
 });
+
+test('interactive app: the standalone bundle evaluates and generates questions', async () => {
+  const { bundle } = await import('../src/bundle.js');
+  const fs = await import('node:fs');
+  const names = ['helpers', 'viz', 'proofs', 'intros', 'generators', 'practice'], src = {};
+  for (const n of names) src[n] = fs.readFileSync(new URL(`../src/${n}.js`, import.meta.url), 'utf8');
+  const code = bundle(src, names);
+  assert.ok(!/<\/script/i.test(code));
+  const m = new Function(`${code}\nreturn __m;`)();
+  assert.equal(typeof m.practice.mountPractice, 'function');
+  const o = m.generators.G.simplexMethod(2);
+  assert.ok(o.q && o.a && o.s);
+});
+
+test('proofs of formulas: every course with topics has a proofs topic and every proof renders', async () => {
+  const { PROOFS, COURSE_PROOFS } = await import('../src/proofs.js');
+  for (const c of CURRICULUM.flatMap(m => m.courses).filter(c => c.topics.length)) {
+    const k = 'proofs_' + c.code.replace(/\s+/g, '');
+    assert.ok(c.topics.includes(k) && COURSE_PROOFS[c.code], `${c.code} has no proofs topic`);
+  }
+  for (const [id, P] of Object.entries(PROOFS)) {
+    assert.ok(P.t[0] && P.t[1] && P.g && P.s.length >= 1, id);
+    for (const st of P.s) assert.ok(typeof st === 'string' || (st.length === 2 && st[0] && st[1]), id);
+    for (const st of P.s) if (typeof st !== 'string') for (const s of st) assert.equal((s.match(/`/g) || []).length % 2, 0, `${id}: unbalanced math marks`);
+  }
+  const o = G.proofs_STAT302(2);
+  assert.ok(o.q.includes('Prove') && o.s.includes('<ol class="steps">'));
+});

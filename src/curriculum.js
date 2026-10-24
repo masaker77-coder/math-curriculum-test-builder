@@ -1,5 +1,6 @@
 /* ============================ CURRICULUM ============================ */
 /* human-readable label for every generator topic */
+import { COURSE_PROOFS } from './proofs.js';
 export const TOPIC_LABELS = {
   intAddSub:'Integer add / subtract', intMulDiv:'Integer multiply / divide', orderOps:'Order of operations',
   fracAddSub:'Add / subtract fractions', fracMul:'Multiply fractions', simplifyRatio:'Simplify ratios',
@@ -138,6 +139,7 @@ export const TOPIC_LABELS_AR = {
   fdmOdeUxx:'حل معادلة عادية في uₓₓ', fdmOdeUtt:'حل معادلة عادية في uₜₜ', fdmAdvection:'حل معادلة جزئية في uₜ و uₓ', fdmFamous:'معادلة جزئية مشهورة (الحرارة / الموجة)',
 };
 /* statistical tables a topic's questions are read from (for the optional full-tables page) */
+for(const code in COURSE_PROOFS){ const k='proofs_'+code.replace(/\s+/g,''); TOPIC_LABELS[k]='Proofs of formulas'; TOPIC_LABELS_AR[k]='إثبات القوانين'; }
 export const TOPIC_TABLES = {
   ciMeanZ:['z'], ciMeanS:['z'], ciMeanT:['t'], ciProportion:['z'], sampleSizeMean:['z'], sampleSizeProp:['z'],
   testMeanZ:['z'], testMeanS:['z'], testMeanT:['t'], testProportion:['z'], anovaTable:['f'], bivariateNormal:['z'],
@@ -149,67 +151,67 @@ export const CURRICULUM = [
   { level:'Level 1', ar:'المستوى الأول', courses:[
     { code:'MATH 130', title:'Introduction to Mathematics', ar:'مقدمة في الرياضيات', topics:['linearEquation','oneStep','twoStep','multiStep','combineLike','distribute','evalExpr','inequalityGraph','inequalities','linearSystem2','systems',
       'quadraticEquation','factorQuad','solveQuad','polyMultiply','factorGCF','vertex','simplifyRadical','logExp','logEval','expEquation','powers','exponentRules','powerOfPower',
-      'determinant2','matrixAdd','matrixMultiply','derivative','integral'] },
+      'determinant2','matrixAdd','matrixMultiply','derivative','integral','proofs_MATH130'] },
   ]},
   { level:'Level 2', ar:'المستوى الثاني', courses:[
-    { code:'STAT 101', title:'Principles of Statistics and Probability (1)', ar:'مبادئ الإحصاء والاحتمال (1)', topics:['meanMedianMode','probability','zScore','combinations','permutations'] },
+    { code:'STAT 101', title:'Principles of Statistics and Probability (1)', ar:'مبادئ الإحصاء والاحتمال (1)', topics:['meanMedianMode','probability','zScore','combinations','permutations','proofs_STAT101'] },
     { code:'MATH 140', title:'Introduction to Mathematics', ar:'مقدمة في الرياضيات', topics:['rectangle','triangleArea','circle','pythagorean','parallelogram','trapezoid','volumeBox','volumeCylinder','triangleAngles','polygonAngles','distanceFormula','midpoint','slope',
       'trigValues','trigRatios','degRad','trigValuesRad','radToDeg','referenceAngle',
-      'derivative','integral','defIntegral','limitPoly','tangentSlope','secondDerivative','avgRateOfChange','derivTrig'] },
+      'derivative','integral','defIntegral','limitPoly','tangentSlope','secondDerivative','avgRateOfChange','derivTrig','proofs_MATH140'] },
   ]},
   { level:'Level 3', ar:'المستوى الثالث', courses:[
-    { code:'MATH 212', title:'Integral Calculus', ar:'حساب التكامل', topics:['integral','defIntegral','riemannSum','avgValue','defIntegralExp'] },
-    { code:'MATH 234', title:'Foundations of Mathematics', ar:'أسس الرياضيات', topics:['setUnion','powerSetSize','setOps','cartesianSize','logicEval','functionCount'] },
+    { code:'MATH 212', title:'Integral Calculus', ar:'حساب التكامل', topics:['integral','defIntegral','riemannSum','avgValue','defIntegralExp','proofs_MATH212'] },
+    { code:'MATH 234', title:'Foundations of Mathematics', ar:'أسس الرياضيات', topics:['setUnion','powerSetSize','setOps','cartesianSize','logicEval','functionCount','proofs_MATH234'] },
   ]},
   { level:'Level 4', ar:'المستوى الرابع', courses:[
-    { code:'STAT 212', title:'Probability Theory (1)', ar:'نظرية الاحتمال (1)', topics:['probability','combinations','permutations','binomialProb'] },
-    { code:'MATH 232', title:'Differential and Integral Calculus', ar:'حساب التفاضل والتكامل', topics:['derivative','secondDerivative','tangentSlope','derivChainAt','derivProductAt','criticalPoints','limitPoly','avgRateOfChange','derivTrig'] },
-    { code:'MATH 244', title:'Linear Algebra', ar:'جبر خطي', topics:['matrixAdd','matrixMultiply','determinant2','systems','determinant3','transpose','scalarMultiply','trace','inverse2','matVec','dotProduct','eigenvalues2'] },
+    { code:'STAT 212', title:'Probability Theory (1)', ar:'نظرية الاحتمال (1)', topics:['probability','combinations','permutations','binomialProb','proofs_STAT212'] },
+    { code:'MATH 232', title:'Differential and Integral Calculus', ar:'حساب التفاضل والتكامل', topics:['derivative','secondDerivative','tangentSlope','derivChainAt','derivProductAt','criticalPoints','limitPoly','avgRateOfChange','derivTrig','proofs_MATH232'] },
+    { code:'MATH 244', title:'Linear Algebra', ar:'جبر خطي', topics:['matrixAdd','matrixMultiply','determinant2','systems','determinant3','transpose','scalarMultiply','trace','inverse2','matVec','dotProduct','eigenvalues2','proofs_MATH244'] },
   ]},
   { level:'Level 5', ar:'المستوى الخامس', courses:[
-    { code:'STAT 302', title:'Statistical Methods', ar:'الطرق الإحصائية', topics:['ciMeanZ','ciMeanS','ciMeanT','ciProportion','sampleSizeMean','sampleSizeProp','testMeanZ','testMeanS','testMeanT','testProportion','anovaTable','meanMedianMode','zScore'] },
-    { code:'MATH 321', title:'Principles of Financial Mathematics', ar:'مبادئ الرياضيات المالية', topics:['simpleInterest','compoundInterest','presentValue','percentOf'] },
-    { code:'MATH 333', title:'Ordinary Differential Equations', ar:'المعادلات التفاضلية العادية', topics:['charRoots','expGrowth','ivpPolynomial','eulerStep'] },
-    { code:'MATH 353', title:'Numerical Analysis', ar:'التحليل العددي', topics:['newtonSqrt','linearInterp','bisectionStep','trapezoidRule','eulerStep','absoluteError'] },
+    { code:'STAT 302', title:'Statistical Methods', ar:'الطرق الإحصائية', topics:['ciMeanZ','ciMeanS','ciMeanT','ciProportion','sampleSizeMean','sampleSizeProp','testMeanZ','testMeanS','testMeanT','testProportion','anovaTable','meanMedianMode','zScore','proofs_STAT302'] },
+    { code:'MATH 321', title:'Principles of Financial Mathematics', ar:'مبادئ الرياضيات المالية', topics:['simpleInterest','compoundInterest','presentValue','percentOf','proofs_MATH321'] },
+    { code:'MATH 333', title:'Ordinary Differential Equations', ar:'المعادلات التفاضلية العادية', topics:['charRoots','expGrowth','ivpPolynomial','eulerStep','proofs_MATH333'] },
+    { code:'MATH 353', title:'Numerical Analysis', ar:'التحليل العددي', topics:['newtonSqrt','linearInterp','bisectionStep','trapezoidRule','eulerStep','absoluteError','proofs_MATH353'] },
   ]},
   { level:'Level 6', ar:'المستوى السادس', courses:[
-    { code:'STAT 312', title:'Probability Theory (2)', ar:'نظرية الاحتمال (2)', topics:['jointConstant','jointProb','marginalDist','conditionalProb','jointMoments','correlationCoef','independenceCheck','sumOfRV','bivariateNormal','multinomialProb','expectedValue','varianceDiscrete'] },
-    { code:'MATH 315', title:'Partial Differential Equations', ar:'المعادلات التفاضلية الجزئية', topics:['pdeClassify','waveSpeed','laplacianPoly','heatSeparation'] },
-    { code:'STAT 361', title:'Operations Research (1)', ar:'بحوث العمليات (1)', topics:['lpFormulate','lpGraphical','lpCornerPoint','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian'] },
-    { code:'MATH 371', title:'Economic and Financial Mathematics', ar:'الرياضيات الاقتصادية والمالية', topics:['effectiveRate','annuityFV','compoundInterest','presentValue'] },
+    { code:'STAT 312', title:'Probability Theory (2)', ar:'نظرية الاحتمال (2)', topics:['jointConstant','jointProb','marginalDist','conditionalProb','jointMoments','correlationCoef','independenceCheck','sumOfRV','bivariateNormal','multinomialProb','expectedValue','varianceDiscrete','proofs_STAT312'] },
+    { code:'MATH 315', title:'Partial Differential Equations', ar:'المعادلات التفاضلية الجزئية', topics:['pdeClassify','waveSpeed','laplacianPoly','heatSeparation','proofs_MATH315'] },
+    { code:'STAT 361', title:'Operations Research (1)', ar:'بحوث العمليات (1)', topics:['lpFormulate','lpGraphical','lpCornerPoint','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian','proofs_STAT361'] },
+    { code:'MATH 371', title:'Economic and Financial Mathematics', ar:'الرياضيات الاقتصادية والمالية', topics:['effectiveRate','annuityFV','compoundInterest','presentValue','proofs_MATH371'] },
   ]},
   { level:'Level 7', ar:'المستوى السابع', courses:[
-    { code:'MATH 335', title:'Vector Analysis', ar:'تحليل المتجهات', topics:['dotProduct','crossProduct','vectorMagnitude','divergence','gradientAt'] },
-    { code:'MATH 344', title:'Group Theory', ar:'نظرية الزمر', topics:['elementOrder','groupGenerators','permutationOrder','groupOrder','lagrangeIndex'] },
-    { code:'MATH 383', title:'Real Analysis', ar:'تحليل حقيقي', topics:['seqLimit','geometricSeries','telescopingSum','epsilonN'] },
+    { code:'MATH 335', title:'Vector Analysis', ar:'تحليل المتجهات', topics:['dotProduct','crossProduct','vectorMagnitude','divergence','gradientAt','proofs_MATH335'] },
+    { code:'MATH 344', title:'Group Theory', ar:'نظرية الزمر', topics:['elementOrder','groupGenerators','permutationOrder','groupOrder','lagrangeIndex','proofs_MATH344'] },
+    { code:'MATH 383', title:'Real Analysis', ar:'تحليل حقيقي', topics:['seqLimit','geometricSeries','telescopingSum','epsilonN','proofs_MATH383'] },
     { code:'MATH 488', title:'Graduation Project (1)', ar:'مشروع تخرج (1)', topics:[] },
   ]},
   { level:'Level 8', ar:'المستوى الثامن', courses:[
-    { code:'MATH 473', title:'Topology', ar:'توبولوجي', topics:['eulerCharacteristic','surfaceGenus','topologyOpenSets'] },
-    { code:'MATH 475', title:'Differential Geometry', ar:'الهندسة التفاضلية', topics:['circleCurvature','parabolaCurvature','helixArcLength','helixCurvature'] },
+    { code:'MATH 473', title:'Topology', ar:'توبولوجي', topics:['eulerCharacteristic','surfaceGenus','topologyOpenSets','proofs_MATH473'] },
+    { code:'MATH 475', title:'Differential Geometry', ar:'الهندسة التفاضلية', topics:['circleCurvature','parabolaCurvature','helixArcLength','helixCurvature','proofs_MATH475'] },
     { code:'MATH 499', title:'Graduation Project (2)', ar:'مشروع تخرج (2)', topics:[] },
   ]},
   { level:'Electives', ar:'المقررات الاختيارية', courses:[
     { code:'MATH 318', title:'History of Mathematics', ar:'تاريخ الرياضيات', topics:[] },
     { code:'MATH 319', title:'Mathematics in Our Life', ar:'الرياضيات في حياتنا', topics:['percentOf','simpleInterest','compoundInterest','proportions','rounding','scientificNotation','rectangle','circle','volumeBox',
-      'intAddSub','intMulDiv','orderOps','fracAddSub','fracMul','fracToDecimal','decimalOps','absValue','gcfLcm','simplifyRatio','arithmeticSeq','geometricSeq'] },
-    { code:'MATH 331', title:'Applied Real Analysis', ar:'تحليل حقيقي تطبيقي', topics:['seqLimit','geometricSeries','telescopingSum','epsilonN'] },
-    { code:'MATH 342', title:'Computational Methods for ODEs', ar:'طرق حسابية للمعادلات التفاضلية', topics:['eulerStep','improvedEuler'] },
-    { code:'MATH 367', title:'Number Theory', ar:'نظرية الأعداد', topics:['gcfLcm','modArithmetic','isPrime','eulerPhi','modPow','divisorCount','divisorSum','linearCongruence','crt','primeFactorization'] },
-    { code:'MATH 416', title:'Integral Equations', ar:'المعادلات التكاملية', topics:['fredholmSeparable','defIntegral','defIntegralExp'] },
-    { code:'MATH 417', title:'Special Functions', ar:'دوال خاصة', topics:['gammaFunction','gammaHalf','betaFunction','legendreP','chebyshevT'] },
-    { code:'MATH 432', title:'Functional Analysis', ar:'تحليل دالي', topics:['vectorNorms','operatorNormDiag','l2InnerProduct'] },
-    { code:'MATH 442', title:'Computational Methods for PDEs', ar:'طرق حسابية للمعادلات التفاضلية الجزئية', topics:['pdeClassify','fdSchemeClassify','fdFirstX','fdFirstT','fdSecondX','fdSecondT','fdmOdeUx','fdmOdeUt','fdmOdeUxx','fdmOdeUtt','fdmAdvection','fdmFamous'] },
-    { code:'MATH 444', title:'Rings and Fields', ar:'الحلقات والحقول', topics:['isUnit','modInverse','zeroDivisors','polyEvalModP','fieldCheck'] },
-    { code:'MATH 468', title:'Graph Theory', ar:'نظرية المخططات', topics:['completeGraphEdges','degreeSum','treeEdges','bipartiteEdges','eulerCircuit','chromaticNumber'] },
-    { code:'MATH 485', title:'Complex Analysis', ar:'تحليل مركب', topics:['complexAdd','complexMultiply','complexModulus','iPowers','complexConjugate','complexDivide','complexSquare','complexArgument'] },
+      'intAddSub','intMulDiv','orderOps','fracAddSub','fracMul','fracToDecimal','decimalOps','absValue','gcfLcm','simplifyRatio','arithmeticSeq','geometricSeq','proofs_MATH319'] },
+    { code:'MATH 331', title:'Applied Real Analysis', ar:'تحليل حقيقي تطبيقي', topics:['seqLimit','geometricSeries','telescopingSum','epsilonN','proofs_MATH331'] },
+    { code:'MATH 342', title:'Computational Methods for ODEs', ar:'طرق حسابية للمعادلات التفاضلية', topics:['eulerStep','improvedEuler','proofs_MATH342'] },
+    { code:'MATH 367', title:'Number Theory', ar:'نظرية الأعداد', topics:['gcfLcm','modArithmetic','isPrime','eulerPhi','modPow','divisorCount','divisorSum','linearCongruence','crt','primeFactorization','proofs_MATH367'] },
+    { code:'MATH 416', title:'Integral Equations', ar:'المعادلات التكاملية', topics:['fredholmSeparable','defIntegral','defIntegralExp','proofs_MATH416'] },
+    { code:'MATH 417', title:'Special Functions', ar:'دوال خاصة', topics:['gammaFunction','gammaHalf','betaFunction','legendreP','chebyshevT','proofs_MATH417'] },
+    { code:'MATH 432', title:'Functional Analysis', ar:'تحليل دالي', topics:['vectorNorms','operatorNormDiag','l2InnerProduct','proofs_MATH432'] },
+    { code:'MATH 442', title:'Computational Methods for PDEs', ar:'طرق حسابية للمعادلات التفاضلية الجزئية', topics:['pdeClassify','fdSchemeClassify','fdFirstX','fdFirstT','fdSecondX','fdSecondT','fdmOdeUx','fdmOdeUt','fdmOdeUxx','fdmOdeUtt','fdmAdvection','fdmFamous','proofs_MATH442'] },
+    { code:'MATH 444', title:'Rings and Fields', ar:'الحلقات والحقول', topics:['isUnit','modInverse','zeroDivisors','polyEvalModP','fieldCheck','proofs_MATH444'] },
+    { code:'MATH 468', title:'Graph Theory', ar:'نظرية المخططات', topics:['completeGraphEdges','degreeSum','treeEdges','bipartiteEdges','eulerCircuit','chromaticNumber','proofs_MATH468'] },
+    { code:'MATH 485', title:'Complex Analysis', ar:'تحليل مركب', topics:['complexAdd','complexMultiply','complexModulus','iPowers','complexConjugate','complexDivide','complexSquare','complexArgument','proofs_MATH485'] },
   ]},
   /* service courses taught for other departments */
   { level:'Business Administration Dept.', ar:'قسم إدارة الأعمال', courses:[
     { code:'QM 102', title:'Principles of Quantitative Methods (2)', ar:'مبادئ الأساليب الكمية 2 (102 كمى)', topics:['numberSets','intervalNotation',
       'linearEquation','inequalityGraph','breakEven','absEquation','absInequality','complexAdd','complexMultiply','quadraticEquation','factorQuad',
       'functionDomain','funcOps','evenOdd','inverseFunction','exponentRules','expEquation','logEval','logExp',
-      'linearSystem2','gaussJordan','matrixAdd','matrixSubtract','matrixMultiply','inverse2','inverseSolve'] },
+      'linearSystem2','gaussJordan','matrixAdd','matrixSubtract','matrixMultiply','inverse2','inverseSolve','proofs_QM102'] },
   ]},
 ];
 /* flat search index over every topic in the curriculum */
