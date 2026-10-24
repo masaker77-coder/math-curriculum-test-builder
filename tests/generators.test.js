@@ -1347,3 +1347,14 @@ test('every topic has worked steps (used by worked examples and the booklet)', (
     assert.ok(!/NaN|\[object|undefined(?![^<]*<\/b>)/.test(o.s) || /undefined/.test(o.a), `${name} steps: ${o.s.slice(0, 200)}`);
   });
 });
+
+test('booklet: every topic has an overview and the cover art is valid SVG', async () => {
+  const { INTRO } = await import('../src/intros.js');
+  const { coverArt, familyOf } = await import('../src/cover.js');
+  const topics = [...new Set(CURRICULUM.flatMap(m => m.courses.flatMap(c => c.topics)))];
+  for (const t of topics) { assert.ok(INTRO[t] && INTRO[t][0] && INTRO[t][1], `${t} has no overview`); assert.ok(familyOf(t)); }
+  for (const c of CURRICULUM.flatMap(m => m.courses).filter(c => c.topics.length)) {
+    const svg = coverArt(c.topics);
+    assert.ok(svg.startsWith('<svg') && svg.trim().endsWith('</svg>') && !/NaN|undefined/.test(svg), c.code);
+  }
+});
