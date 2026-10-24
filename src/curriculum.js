@@ -1,6 +1,6 @@
 /* ============================ CURRICULUM ============================ */
 /* human-readable label for every generator topic */
-import { PROOFS, COURSE_PROOFS, proofLabel, proofKey } from './proofs.js';
+import { PROOFS, COURSE_PROOFS, proofLabel, proofKey, withProofs } from './proofs.js';
 export const TOPIC_LABELS = {
   intAddSub:'Integer add / subtract', intMulDiv:'Integer multiply / divide', orderOps:'Order of operations',
   fracAddSub:'Add / subtract fractions', fracMul:'Multiply fractions', simplifyRatio:'Simplify ratios',
@@ -215,8 +215,8 @@ export const CURRICULUM = [
   ]},
 ];
 /* flat search index over every topic in the curriculum */
-// each course ends with the proofs of its formulas, one topic per formula
-CURRICULUM.forEach(l=>l.courses.forEach(c=>(COURSE_PROOFS[c.code]||[]).forEach(id=>c.topics.push(proofKey(id)))));
+// the proofs of each course's formulas, one topic per formula, each placed right after the topic it belongs to
+CURRICULUM.forEach(l=>l.courses.forEach(c=>{ c.topics=withProofs(c.topics, COURSE_PROOFS[c.code]||[]); }));
 export const INDEX = [];
 CURRICULUM.forEach((l,li)=>l.courses.forEach((c,ci)=>c.topics.forEach(t=>{
   INDEX.push({ li, ci, level:l.level, levelAr:l.ar, code:c.code, ctitle:c.title, ctitleAr:c.ar, topic:t, label:TOPIC_LABELS[t]||t, labelAr:TOPIC_LABELS_AR[t]||'' });

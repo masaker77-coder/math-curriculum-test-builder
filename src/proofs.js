@@ -453,3 +453,49 @@ export const COURSE_PROOFS = {
   'MATH 485':['modProduct','zzbar','complexDivPf','deMoivre','iCycle'],
   'QM 102':['breakEvenPt','quadFormula','inverseComposition','inverse2x2','matrixSolve','evenOddRules'],
 };
+
+/* where each proof sits in a course: right after the first of these topics the course has (else at the end) */
+export const PROOF_AFTER = {
+  quadFormula:['quadraticEquation','solveQuad','factorQuad'], rootsSumProduct:['quadraticEquation','solveQuad'], logProduct:['logExp','logEval'],
+  cramer2:['linearSystem2','systems','determinant2'], inverse2x2:['inverse2'], matrixSolve:['inverseSolve','inverse2'], breakEvenPt:['breakEven'],
+  inverseComposition:['inverseFunction'], evenOddRules:['evenOdd'],
+  derivXsq:['derivative'], productRule:['derivProductAt','derivative'], quotientRule:['derivProductAt','derivative'], derivLn:['derivTrig'], derivSin:['derivTrig'],
+  fermatCritical:['criticalPoints'], powerIntegral:['integral'], byParts:['integral','defIntegral','fredholmSeparable'], substitution:['integral'],
+  riemannX:['riemannSum'], avgValueThm:['avgValue'],
+  triangleAreaPf:['triangleArea'], pythagIdentity:['trigValues','trigRatios'], distancePf:['distanceFormula'], polygonSum:['polygonAngles'],
+  powerSetPf:['powerSetSize'], deMorgan:['setOps'], inclExcl:['setUnion'], contrapositive:['logicEval'], sqrt2Irr:['logicEval'],
+  sumDeviations:['meanMedianMode'], varianceShortcut:['meanMedianMode'], combFromPerm:['combinations'], complementRule:['probability'], zStandard:['zScore'],
+  additionRule:['probability'], bayes:['probability'], binomMean:['binomialProb'], varShortcutRV:['varianceDiscrete','binomialProb'], binomSum:['binomialProb'],
+  ciMeanPf:['ciMeanT','ciMeanS','ciMeanZ'], ciPropPf:['ciProportion'], sampleSizeMeanPf:['sampleSizeMean'], sampleSizePropPf:['sampleSizeProp'],
+  testFromCI:['testMeanT','testMeanS','testMeanZ'], testPropFromCI:['testProportion'], anovaSST:['anovaTable'],
+  linearExp:['sumOfRV'], covShortcut:['jointMoments'], varSum:['sumOfRV'], indepCov:['independenceCheck'], rhoBound:['correlationCoef'],
+  simpleAmount:['simpleInterest'], compoundAmount:['compoundInterest'], presentValuePf:['presentValue'], effectiveRatePf:['effectiveRate'],
+  annuityFVPf:['annuityFV'], continuousComp:['compoundInterest'],
+  expSolution:['expGrowth'], doublingTime:['expGrowth'], charEquationPf:['charRoots'], integratingFactor:['ivpPolynomial'],
+  newtonPf:['newtonSqrt'], newtonSqrtPf:['newtonSqrt'], trapezoidPf:['trapezoidRule'], bisectionError:['bisectionStep'], linInterpPf:['linearInterp'],
+  eulerPf:['eulerStep'], heunPf:['improvedEuler'], eulerStability:['improvedEuler','eulerStep'],
+  dAlembert:['waveSpeed'], heatSeparationPf:['heatSeparation'], pdeTypePf:['pdeClassify'],
+  forwardDiff:['fdFirstX'], centralDiff:['fdFirstX'], secondDiff:['fdSecondX'], explicitHeat:['fdmFamous'],
+  lpCorner:['lpCornerPoint','lpGraphical'], hungarianRow:['assignmentHungarian'], balancedTransport:['transportNW'], emvPf:['decisionTree'],
+  dotCos:['dotProduct'], crossPerp:['crossProduct'], divCurl:['divergence'], curlGrad:['gradientAt'],
+  curvCircle:['circleCurvature'], curvGraph:['parabolaCurvature'], helixPf:['helixCurvature'],
+  uniqueIdentity:['elementOrder','isUnit'], uniqueInverse:['elementOrder','modInverse'], lagrangePf:['lagrangeIndex'], orderDivides:['lagrangeIndex'], primeCyclic:['groupGenerators'],
+  infinitePrimes:['isPrime'], euclidGcd:['gcfLcm'], phiPrimePower:['eulerPhi'], tauFormula:['divisorCount'], congruenceUnique:['linearCongruence'],
+  unitGcd:['isUnit'], fieldPrime:['fieldCheck'], fieldNoZeroDiv:['zeroDivisors'],
+  geomSeriesPf:['geometricSeries'], limitOneOverN:['epsilonN'], limitUnique:['seqLimit'], convergentBounded:['seqLimit'], telescopePf:['telescopingSum'],
+  genusChi:['surfaceGenus'], closedUnion:['topologyOpenSets'], discreteCount:['topologyOpenSets'],
+  gammaRec:['gammaFunction'], gammaFact:['gammaFunction'], gammaHalfPf:['gammaHalf'], betaSym:['betaFunction'], chebyRec:['chebyshevT'],
+  cauchySchwarz:['l2InnerProduct'], triangleIneq:['vectorNorms'], normEquiv:['vectorNorms'], diagNorm:['operatorNormDiag'],
+  separableKernel:['fredholmSeparable'], ivpToVolterra:['fredholmSeparable'],
+  handshake:['degreeSum'], oddVertices:['degreeSum'], completeEdgesPf:['completeGraphEdges'], treeEdgesPf:['treeEdges'], bipartiteChi:['chromaticNumber','bipartiteEdges'],
+  modProduct:['complexModulus'], zzbar:['complexConjugate'], complexDivPf:['complexDivide'], deMoivre:['complexArgument','complexSquare'], iCycle:['iPowers'],
+  fracAddPf:['fracAddSub'], arithSumPf:['arithmeticSeq'], geomSumFinite:['geometricSeq'], gcdLcm:['gcfLcm'],
+};
+/* a course's topics with each of its proofs placed after the topic it belongs to */
+export function withProofs(topics, ids){
+  const anchor=id=>(PROOF_AFTER[id]||[]).find(t=>topics.includes(t));
+  const out=[];
+  for(const t of topics){ out.push(t); ids.filter(id=>anchor(id)===t).forEach(id=>out.push(proofKey(id))); }
+  ids.filter(id=>!anchor(id)).forEach(id=>out.push(proofKey(id)));
+  return out;
+}

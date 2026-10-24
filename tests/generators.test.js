@@ -1407,3 +1407,14 @@ test('proofs: every course with topics has its own proof topics (one per formula
   const o = G[proofKey('sampleSizePropPf')](2);
   assert.ok(o.q.includes('Prove') && o.s.includes('<ol class="steps">'));
 });
+
+test('proofs sit right after the topic they belong to', async () => {
+  const { PROOF_AFTER, COURSE_PROOFS, proofKey } = await import('../src/proofs.js');
+  for (const c of CURRICULUM.flatMap(m => m.courses)) for (const id of COURSE_PROOFS[c.code] || []) {
+    assert.ok(PROOF_AFTER[id], `${id} has no place`);
+    const a = PROOF_AFTER[id].find(t => c.topics.includes(t)), i = c.topics.indexOf(proofKey(id));
+    if (!a) continue;
+    const j = c.topics.indexOf(a);
+    assert.ok(i > j && c.topics.slice(j + 1, i).every(t => t.startsWith('proof_')), `${c.code}: ${id} after ${a}`);
+  }
+});
