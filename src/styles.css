@@ -280,7 +280,8 @@
     font-size:13px;color:var(--ink);box-shadow:0 1px 6px rgba(15,23,42,.18);border-radius:2px}
   .bk-page + .bk-page{margin-top:18px}
   .bk-body{height:calc(296mm - 14mm - 15mm);overflow:hidden}
-  .bk-page svg.plot{height:165px;width:auto;max-width:100%}   /* compact graphs so more examples fit on a page */
+  .bk-page svg.plot:not(.nl){height:165px;width:auto;max-width:100%}   /* compact graphs so more examples fit on a page */
+  .bk-page svg.plot.nl{width:100%;max-width:440px;height:auto;display:block;margin:6px auto}
   .bk-run{position:absolute;top:6mm;inset-inline:16mm;font-size:10.5px;color:#3b4a66;border-bottom:1.5px solid #0f2a5c;padding-bottom:3px}
   .bk-foot{position:absolute;bottom:5mm;inset-inline:0;display:flex;justify-content:center}
   .bk-foot{font:700 11px var(--font-ui);color:#fff}
@@ -297,9 +298,9 @@
   html[dir="rtl"] .bk-page .bk-exh::after{background:linear-gradient(270deg,#e0a526,transparent)}
   .bk-page .bk-q{font-size:17px;line-height:1.7;background:#f3f6fb;border-inline-start:4px solid #173f86;border-radius:6px;padding:8px 14px;margin-bottom:8px}
   .bk-page .bk-grid{display:block}
-  .bk-page .has-fig .bk-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
+  .bk-page .has-fig .bk-grid{display:grid;grid-template-columns:minmax(0,1fr) fit-content(44%);gap:14px;align-items:start}
   .bk-page .bk-fig{display:flex;flex-direction:column;gap:8px;align-items:center;padding-top:26px}
-  .bk-page .bk-fig svg.plot{height:175px}
+  .bk-page .bk-fig svg.plot{height:175px;max-width:100%}
   .bk-page .bk-solh{display:inline-block;font-size:13px;font-weight:700;color:#9a6a00;border-bottom:2px solid #e0a526;margin:2px 0 6px;padding-bottom:1px}
   .bk-page ol.steps{list-style:none;counter-reset:st;padding:0;gap:7px;font-size:15.5px}
   .bk-page ol.steps>li{counter-increment:st;position:relative;padding-inline-start:30px;min-height:22px}
