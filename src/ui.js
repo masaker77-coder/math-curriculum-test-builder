@@ -367,7 +367,7 @@ function examHTML(parts, vLabel){
 
 /* --- worked examples / study booklet: every question followed by its worked solution --- */
 const introHTML = t => INTRO[t] ? `<div class="bk-intro"><div class="bk-introh">${T('overview')}</div><div class="bk-introp">${L(INTRO[t][0], INTRO[t][1])}</div></div>` : '';
-const exampleHTML = (it, ii) => `<div class="bk-ex bk-block">
+const exampleHTML = (it, ii) => `<div class="bk-ex bk-block" data-ii="${ii}">
     <div class="bk-exh">${T('example')} ${ii+1}</div>
     <div class="bk-q" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</div>
     ${it.s?`<div class="bk-solh">${T('solution')}</div><div class="bk-steps" dir="${dirFor(it.s)}">${it.s}</div>`:''}
@@ -430,13 +430,36 @@ function paginateBook(){
     pg.innerHTML=`<div class="bk-run">${run}</div><div class="bk-body"></div><div class="bk-foot">${++no}</div>`; sc.insertBefore(pg, before); return pg.querySelector('.bk-body'); };
   sc.querySelectorAll('.bk-index .bk-foot').forEach((f,i)=>f.textContent=2+i);
   const starts=[];
+  const over=body=>body.scrollHeight>body.clientHeight+1;
   sc.querySelectorAll('.bk-flow').forEach(flow=>{
-    let body=newPage(flow); starts.push(no);
+    const pi=+flow.dataset.pi, p=state.sheets[0][pi], sec=test.sections[pi];
+    const canFill=!!(p && !p.custom && G[p.topic] && !isProof(p.topic));
+    const out=[], els=[];                                   // the topic's examples in page order, with their blocks
+    let body=newPage(flow), added=0; starts.push(no);
+    /* room left on a page: try new examples of the same topic that fit in it */
+    const fillGap=bd=>{
+      let misses=0;
+      while(canFill && misses<3 && added<6){
+        const it=G[p.topic](p.diff);
+        if(out.some(x=>x.q===it.q) || p.items.some(x=>x.q===it.q)){ misses++; continue; }
+        const tmp=document.createElement('div'); tmp.innerHTML=exampleHTML(it, 0); const b=tmp.firstElementChild;
+        bd.appendChild(b);
+        if(over(bd)){ bd.removeChild(b); misses++; continue; }
+        out.push(it); els.push(b); added++;
+      }
+    };
     [...flow.children].forEach(b=>{
+      const it = b.dataset.ii!==undefined && p ? p.items[+b.dataset.ii] : null;
       body.appendChild(b);
-      if(body.scrollHeight>body.clientHeight+1 && body.children.length>1){ body.removeChild(b); body=newPage(flow); body.appendChild(b); }
+      if(over(body) && body.children.length>1){ body.removeChild(b); fillGap(body); body=newPage(flow); body.appendChild(b); }
+      if(it){ out.push(it); els.push(b); }
     });
-    if(fillPage(body, +flow.dataset.pi)) grew=true;
+    fillGap(body);
+    if(p && added){                                          // keep the added examples in the test, in page order
+      p.items.splice(0, p.items.length, ...out); grew=true;
+      if(sec && sec.items===p.items){ sec.nEssay=p.items.length; sec.nMc=0; sec.count=p.items.length; }
+    }
+    els.forEach((b,k)=>{ const h=b.querySelector('.bk-exh'); if(h) h.textContent=`${T('example')} ${k+1}`; });
     flow.remove();
   });
   sc.querySelectorAll('.ix-pg').forEach((c,i)=>c.textContent=starts[i]||'');
@@ -459,21 +482,6 @@ function fitIndex(sc){
     cur=next;
   }
   return pages;
-}
-/* a topic's last page has room left: add more worked examples of that topic while they fit (kept in the test) */
-function fillPage(body, pi){
-  const p=state.sheets[0][pi], sec=test.sections[pi]; if(!p||p.custom||!G[p.topic]||isProof(p.topic)) return false;
-  let misses=0, added=false;
-  while(misses<3 && p.items.length<12){
-    const it=G[p.topic](p.diff);
-    if(p.items.some(x=>x.q===it.q)){ misses++; continue; }
-    const tmp=document.createElement('div'); tmp.innerHTML=exampleHTML(it, p.items.length); const b=tmp.firstElementChild;
-    body.appendChild(b);
-    if(body.scrollHeight>body.clientHeight+1){ body.removeChild(b); misses++; continue; }   // too tall: try another, then stop
-    p.items.push(it); added=true;
-  }
-  if(added && sec && sec.items===p.items){ sec.nEssay=p.items.length; sec.nMc=0; sec.count=p.items.length; }
-  return added;
 }
 /* scale the A4 pages down to the width of the preview column (the print layout is unscaled) */
 function fitBook(){
