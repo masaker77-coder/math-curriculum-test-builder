@@ -1338,3 +1338,12 @@ test('STAT 361 — Hungarian method gives the cheapest assignment', () => {
     assert.equal(+E(o.a).match(/= (\d+)/)[1], best);
   });
 });
+
+test('every topic has worked steps (used by worked examples and the booklet)', () => {
+  const topics = [...new Set(CURRICULUM.flatMap(m => m.courses.flatMap(c => c.topics)))];
+  for (const name of topics) for (const d of DIFFS) times(30, () => {
+    const o = G[name](d);
+    assert.ok(o.s && o.s.includes('<ol class="steps">'), `${name} has no steps`);
+    assert.ok(!/NaN|\[object|undefined(?![^<]*<\/b>)/.test(o.s) || /undefined/.test(o.a), `${name} steps: ${o.s.slice(0, 200)}`);
+  });
+});

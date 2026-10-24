@@ -16,7 +16,10 @@ const MODES = {
   hw:    { nQ:5, marks:0.4, title:'titleHw' },      // 5 questions, 2 marks in total
   mid:   { nQ:3, marks:5,   title:'titleMid' },     // 3 questions × 5 marks
   final: { nQ:5, marks:10,  title:'titleFinal' },   // 5 questions × 10 marks
+  examples: { book:true, count:5, title:'titleEx' },   // worked examples: each question followed by its solution
+  booklet:  { book:true, count:3, title:'titleBook' }, // study booklet: 3 worked examples per topic, a topic per page
 };
+const isBook = () => !!MODES[state.mode].book;
 const LONG = ['lpFormulate','lpGraphical','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian','rectangle','triangleArea','circle','pythagorean','slope','derivative',
               'systems','proportions','integral','defIntegral','trigRatios',
               'rounding','percentOf','fracToDecimal','gcfLcm','evalExpr','inequalities','midpoint',
@@ -119,14 +122,16 @@ function selectedCourse(){
   const [li,ci]=(el('bCourse').value||'').split(':').map(Number);
   return { li, ci, c:courseAt(li,ci) };
 }
-const defaultCount = () => 1;
-function buildTopicList(keep){
+const defaultCount = () => MODES[state.mode].count || 1;
+function buildTopicList(keep, resetCounts){
   const box=el('topicList'), {c}=selectedCourse();
   const prev = keep ? readTopicRows() : {};
+  if(resetCounts) for(const t in prev) prev[t]={on:prev[t].on, essay:defaultCount(), mc:isBook()?0:1};
   if(!c||!c.topics.length){ box.innerHTML=`<div class="sections-empty" style="padding:10px">${T('noTopics')}</div>`; el('addSection').disabled=true; return; }
   el('addSection').disabled=false;
-  box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T('essay')}</span><span>${T('mcShort')}</span></div>`+
-    c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:1};
+  box.classList.toggle('book', isBook());
+  box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T(isBook()?'examplesCol':'essay')}</span><span>${T('mcShort')}</span></div>`+
+    c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:isBook()?0:1};
       return `<div class="trow${p.on?' on':''}" data-t="${t}"><input type="checkbox" class="tchk"${p.on?' checked':''}><span>${topicLabel(t)}</span>
         <input type="number" class="tess" min="0" max="40" value="${p.essay}" title="${T('essay')}">
         <input type="number" class="tmc" min="0" max="40" value="${p.mc}" title="${T('mcType')}"></div>`; }).join('');
@@ -139,7 +144,7 @@ function readTopicRows(){
     essay:Math.max(0,Math.min(40,parseInt(r.querySelector('.tess').value)||0)), mc:Math.max(0,Math.min(40,parseInt(r.querySelector('.tmc').value)||0)) }; });
   return out;
 }
-function checkedTopics(){ return Object.entries(readTopicRows()).filter(([,v])=>v.on&&v.essay+v.mc>0).map(([t,v])=>({topic:t, ...v})); }
+function checkedTopics(){ return Object.entries(readTopicRows()).map(([t,v])=>({topic:t, ...v, mc:isBook()?0:v.mc})).filter(v=>v.on&&v.essay+v.mc>0); }
 
 /* --- Search by topic / course code / course title / level (English or Arabic) --- */
 function runSearch(){
@@ -188,10 +193,15 @@ function topUp(n){
   while(total<n){ const sec=gen[i++%gen.length]; sec.items.push(...genItems(sec.topic,1,sec.diff,false)); sec.nEssay=nEss(sec)+1; sec.nMc=nMc(sec); sec.count++; total++; }
 }
 function setMode(mode){
-  state.mode=mode; const m=MODES[mode];
+  const wasBook=isBook(); state.mode=mode; const m=MODES[mode];
   document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode===mode));
-  document.querySelectorAll('.exam-only').forEach(n=>n.hidden = mode==='practice');
-  if(mode!=='practice'){
+  document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !m.nQ);
+  buildTopicList(true, wasBook!==!!m.book);           // entering / leaving the booklet modes resets the counts
+  if(m.book){                                           // the same topics become worked examples (essay only)
+    if(checkedTopics().length) addSelected(true);
+    else test.sections.forEach(s=>{ if(s.custom) return; s.nEssay=m.count; s.nMc=0; s.count=m.count; s.items=sectionItems(s); });
+  }
+  else if(m.nQ){
     el('nQ').value=m.nQ; el('marks').value=m.marks;
     if(checkedTopics().length) addSelected(true);
     else if(!test.sections.length) autoPick(m.nQ);
@@ -342,6 +352,25 @@ function examHTML(parts, vLabel){
   return `<div class="sheet">${headerHTML(title, sub, total, vLabel)}<div class="exam">${qs}</div>${keyHTML(entries, vLabel, true)}</div>`;
 }
 
+/* --- worked examples / study booklet: every question followed by its worked solution --- */
+function bookHTML(parts){
+  const m=MODES[state.mode], booklet=state.mode==='booklet';
+  const title=(el('title').value||'').trim() || T(m.title)+courseSuffix(parts);
+  const n=parts.reduce((k,p)=>k+p.items.length,0);
+  const toc = booklet && parts.length>1 ? `<div class="bk-toc"><h3>${T('contents')}</h3><ol>${parts.map(p=>`<li>${partLabel(p)}</li>`).join('')}</ol></div>` : '';
+  const body=parts.map((p,pi)=>`<section class="bk-topic">
+      <h3 class="bk-h"><span class="bk-n">${pi+1}</span> ${partLabel(p)}<span class="bk-course">${partCourse(p)}</span></h3>
+      ${p.items.map((it,ii)=>`<div class="bk-ex">
+        <div class="bk-exh">${T('example')} ${ii+1}</div>
+        <div class="bk-q" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</div>
+        ${it.s?`<div class="bk-solh">${T('solution')}</div><div class="bk-steps" dir="${dirFor(it.s)}">${it.s}</div>`:''}
+        <div class="bk-ans" dir="${dirFor(it.a)}"><span class="bk-al">${T('answer')}:</span> ${keyText(it)}</div>
+      </div>`).join('')}
+    </section>`).join('');
+  return `<div class="sheet book${booklet?' booklet':''}"><div class="sheet-head"><div><h2 class="sheet-title">${title}</h2>
+    <div class="sheet-sub">${parts.length} ${T('topicsW')} &nbsp;·&nbsp; ${n} ${T('examplesW')}</div></div></div>${toc}${body}</div>`;
+}
+
 /* --- optional page with the full statistical tables used by the test --- */
 const FULL={};
 function tablesPageHTML(){
@@ -361,6 +390,7 @@ function render(){
     el('out').innerHTML=`<div class="sheet"><div class="sheet-sub" style="text-align:center;padding:48px 0">${T('emptyTest')}</div></div>`;
     return;
   }
+  if(isBook()){ el('out').innerHTML=bookHTML(state.sheets[0])+tablesPageHTML(); return; }
   const multi=state.sheets.length>1, draw=state.mode==='practice'?practiceHTML:examHTML;
   el('out').innerHTML=state.sheets.map((parts,v)=>
     draw(parts, multi?`${T('version')} ${String.fromCharCode(65+v)}`:'')).join('')+tablesPageHTML();
@@ -484,7 +514,7 @@ function applyPayload(s, showKey){
   el('custom').value=s.custom||''; state.showKey=!!showKey; el('fullTables').checked=s.fullTables!==false;
   state.mode=MODES[s.mode]?s.mode:'practice';
   document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode===state.mode));
-  document.querySelectorAll('.exam-only').forEach(n=>n.hidden = state.mode==='practice');
+  document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !MODES[state.mode].nQ);
   if(s.nQ) el('nQ').value=s.nQ; if(s.marks) el('marks').value=s.marks;
   buildVersions(); renderSections(); render();
 }

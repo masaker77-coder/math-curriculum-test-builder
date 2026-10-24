@@ -218,6 +218,20 @@
   .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600}
   .total-marks{font-size:18px;padding:5px 0}
   .xq{margin-top:16px;break-inside:avoid}
+  .topic-list.book .tmc, .topic-list.book .trow.head span:last-child{visibility:hidden}
+  .bk-toc{margin:10px 0 4px;font-size:14px} .bk-toc h3{font-size:15px;margin:0 0 4px}
+  .bk-topic{margin-top:18px}
+  .bk-h{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:17px;margin:0 0 6px;padding-bottom:4px;border-bottom:2px solid var(--accent)}
+  .bk-n{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:12px;background:var(--accent);color:#fff;font-size:13px}
+  .bk-course{font-size:12px;font-weight:500;color:var(--muted);margin-inline-start:auto}
+  .bk-ex{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0;break-inside:avoid}
+  .bk-exh{font-weight:700;color:var(--accent);font-size:14px;margin-bottom:4px}
+  .bk-q{font-family:var(--font-math);font-size:15px}
+  .bk-solh{font-weight:700;font-size:13px;margin:8px 0 2px;color:var(--muted)}
+  .bk-steps ol.steps{margin:0}
+  .bk-ans{margin-top:6px;padding:5px 8px;background:#eef6f0;border-radius:6px;color:var(--key)}
+  .bk-al{font-weight:700;margin-inline-end:4px}
+  html[dir="rtl"] .bk-q, html[dir="rtl"] .bk-ans{text-align:right}
   .xq-head{display:flex;justify-content:space-between;gap:10px;font-weight:700;font-size:15px;border-bottom:1px solid var(--line);padding-bottom:3px}
   .xq-head .mk{font-weight:600;color:var(--muted);font-size:13px;white-space:nowrap}
   ol.xparts{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
@@ -264,6 +278,7 @@
     .keywrap.same{break-before:avoid;margin-top:20px}
     .tables-page{break-before:page}
     .xq{break-inside:avoid}
+    .booklet .bk-topic+.bk-topic{break-before:page}
     .plot{background:none}
     ol.sols>li{break-inside:avoid}
   }
