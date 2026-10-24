@@ -25,6 +25,7 @@ const MODES = {
   app:      { app:true, count:1, title:'titleApp' },   // interactive practice app (preview + standalone download)
 };
 const isBook = () => !!MODES[state.mode].book;
+const isProof = t => String(t).startsWith('proof_');   // a proof is always one essay question, whatever count is entered
 const LONG = ['lpFormulate','lpGraphical','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian','rectangle','triangleArea','circle','pythagorean','slope','derivative',
               'systems','proportions','integral','defIntegral','trigRatios',
               'rounding','percentOf','fracToDecimal','gcfLcm','evalExpr','inequalities','midpoint',
@@ -143,8 +144,8 @@ function buildTopicList(keep, resetCounts){
   box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T(isBook()?'examplesCol':'essay')}</span><span>${T('mcShort')}</span></div>`+
     c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:isBook()?0:1};
       return `<div class="trow${p.on?' on':''}" data-t="${t}"><input type="checkbox" class="tchk"${p.on?' checked':''}><span>${topicLabel(t)}</span>
-        <input type="number" class="tess" min="0" max="40" value="${p.essay}" title="${T('essay')}">
-        <input type="number" class="tmc" min="0" max="40" value="${p.mc}" title="${T('mcType')}"></div>`; }).join('');
+        <input type="number" class="tess" min="0" max="40" value="${isProof(t)?1:p.essay}" title="${T('essay')}"${isProof(t)?' disabled':''}>
+        <input type="number" class="tmc" min="0" max="40" value="${isProof(t)?0:p.mc}" title="${T('mcType')}"${isProof(t)?' disabled':''}></div>`; }).join('');
   box.querySelectorAll('.tchk').forEach(ch=>ch.onchange=()=>ch.closest('.trow').classList.toggle('on',ch.checked));
   el('tAll').onchange=e=>box.querySelectorAll('.tchk').forEach(ch=>{ ch.checked=e.target.checked; ch.closest('.trow').classList.toggle('on',ch.checked); });
 }
@@ -154,7 +155,7 @@ function readTopicRows(){
     essay:Math.max(0,Math.min(40,parseInt(r.querySelector('.tess').value)||0)), mc:Math.max(0,Math.min(40,parseInt(r.querySelector('.tmc').value)||0)) }; });
   return out;
 }
-function checkedTopics(){ return Object.entries(readTopicRows()).map(([t,v])=>({topic:t, ...v, mc:isBook()?0:v.mc})).filter(v=>v.on&&v.essay+v.mc>0); }
+function checkedTopics(){ return Object.entries(readTopicRows()).map(([t,v])=>isProof(t)?{topic:t, on:v.on, essay:1, mc:0}:({topic:t, ...v, mc:isBook()?0:v.mc})).filter(v=>v.on&&v.essay+v.mc>0); }
 
 /* --- Search by topic / course code / course title / level (English or Arabic) --- */
 function runSearch(){
@@ -198,7 +199,7 @@ function autoPick(n){
 }
 /* fewer items than the preset number of questions: add items to the chosen topics in turn until it is reached */
 function topUp(n){
-  const gen=test.sections.filter(x=>!x.custom); if(!gen.length) return;
+  const gen=test.sections.filter(x=>!x.custom&&!isProof(x.topic)); if(!gen.length) return;
   let total=test.sections.reduce((k,x)=>k+x.items.length,0), i=0;
   while(total<n){ const sec=gen[i++%gen.length]; sec.items.push(...genItems(sec.topic,1,sec.diff,false)); sec.nEssay=nEss(sec)+1; sec.nMc=nMc(sec); sec.count++; total++; }
 }
@@ -211,7 +212,7 @@ function setMode(mode){
   if(m.app){ if(checkedTopics().length) addSelected(true); }
   else if(m.book){                                      // the same topics become worked examples (essay only)
     if(checkedTopics().length) addSelected(true);
-    else test.sections.forEach(s=>{ if(s.custom) return; s.nEssay=m.count; s.nMc=0; s.count=m.count; s.items=sectionItems(s); });
+    else test.sections.forEach(s=>{ if(s.custom) return; const k=isProof(s.topic)?1:m.count; s.nEssay=k; s.nMc=0; s.count=k; s.items=sectionItems(s); });
   }
   else if(m.nQ){
     el('nQ').value=m.nQ; el('marks').value=m.marks;
@@ -445,7 +446,7 @@ function paginateBook(){
 }
 /* a topic's last page has room left: add more worked examples of that topic while they fit (kept in the test) */
 function fillPage(body, pi){
-  const p=state.sheets[0][pi], sec=test.sections[pi]; if(!p||p.custom||!G[p.topic]) return false;
+  const p=state.sheets[0][pi], sec=test.sections[pi]; if(!p||p.custom||!G[p.topic]||isProof(p.topic)) return false;
   let misses=0, added=false;
   while(misses<3 && p.items.length<12){
     const it=G[p.topic](p.diff);
