@@ -26,6 +26,8 @@
     <button class="mode" data-mode="hw" data-i18n="modeHw">Create homework</button>
     <button class="mode" data-mode="mid" data-i18n="modeMid">Create midterm exam</button>
     <button class="mode" data-mode="final" data-i18n="modeFinal">Create final exam</button>
+    <button class="mode" data-mode="examples" data-i18n="modeEx">Worked examples</button>
+    <button class="mode" data-mode="booklet" data-i18n="modeBook">Create booklet</button>
   </div>
 
   <!-- Pick a course, then tick one or more topics (count + type for each) -->
@@ -74,6 +76,14 @@
       <b id="totalMarks" class="total-marks">—</b>
     </div>
     <div class="hint" data-i18n="partsHint">If there are more items than questions, each question is split into parts (a), (b), …</div>
+  </div>
+
+  <!-- Booklet cover details -->
+  <div class="controls book-only" style="margin-top:12px">
+    <div class="hint" data-i18n="bookletInfo">Cover page details (optional)</div>
+    <div class="field" style="flex:1 1 180px"><label for="bkUni" data-i18n="bkUni">University / college</label><input type="text" id="bkUni"></div>
+    <div class="field" style="flex:1 1 150px"><label for="bkBy" data-i18n="bkBy">Prepared by</label><input type="text" id="bkBy"></div>
+    <div class="field" style="flex:1 1 150px"><label for="bkTerm" data-i18n="bkTerm">Semester / year</label><input type="text" id="bkTerm"></div>
   </div>
 
   <!-- Whole-test output options -->

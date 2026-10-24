@@ -1,7 +1,9 @@
 import { G } from './generators.js';
 import { TOPIC_LABELS, TOPIC_LABELS_AR, TOPIC_TABLES, CURRICULUM, INDEX, courseAt } from './curriculum.js';
 import { shuffled, strip, sup, groupItems } from './helpers.js';
-import { zFullHTML, tFullHTML, fFullHTML } from './viz.js';
+import { zFullHTML, tFullHTML, fFullHTML, L } from './viz.js';
+import { INTRO } from './intros.js';
+import { coverArt } from './cover.js';
 import { LANGS, tr, pickLang } from './i18n.js';
 
 /* ============================ UI WIRING (Test Builder) ============================ */
@@ -16,7 +18,10 @@ const MODES = {
   hw:    { nQ:5, marks:0.4, title:'titleHw' },      // 5 questions, 2 marks in total
   mid:   { nQ:3, marks:5,   title:'titleMid' },     // 3 questions × 5 marks
   final: { nQ:5, marks:10,  title:'titleFinal' },   // 5 questions × 10 marks
+  examples: { book:true, count:5, title:'titleEx' },   // worked examples: each question followed by its solution
+  booklet:  { book:true, count:3, title:'titleBook' }, // study booklet: 3 worked examples per topic, a topic per page
 };
+const isBook = () => !!MODES[state.mode].book;
 const LONG = ['lpFormulate','lpGraphical','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian','rectangle','triangleArea','circle','pythagorean','slope','derivative',
               'systems','proportions','integral','defIntegral','trigRatios',
               'rounding','percentOf','fracToDecimal','gcfLcm','evalExpr','inequalities','midpoint',
@@ -119,14 +124,16 @@ function selectedCourse(){
   const [li,ci]=(el('bCourse').value||'').split(':').map(Number);
   return { li, ci, c:courseAt(li,ci) };
 }
-const defaultCount = () => 1;
-function buildTopicList(keep){
+const defaultCount = () => MODES[state.mode].count || 1;
+function buildTopicList(keep, resetCounts){
   const box=el('topicList'), {c}=selectedCourse();
   const prev = keep ? readTopicRows() : {};
+  if(resetCounts) for(const t in prev) prev[t]={on:prev[t].on, essay:defaultCount(), mc:isBook()?0:1};
   if(!c||!c.topics.length){ box.innerHTML=`<div class="sections-empty" style="padding:10px">${T('noTopics')}</div>`; el('addSection').disabled=true; return; }
   el('addSection').disabled=false;
-  box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T('essay')}</span><span>${T('mcShort')}</span></div>`+
-    c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:1};
+  box.classList.toggle('book', isBook());
+  box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T(isBook()?'examplesCol':'essay')}</span><span>${T('mcShort')}</span></div>`+
+    c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:isBook()?0:1};
       return `<div class="trow${p.on?' on':''}" data-t="${t}"><input type="checkbox" class="tchk"${p.on?' checked':''}><span>${topicLabel(t)}</span>
         <input type="number" class="tess" min="0" max="40" value="${p.essay}" title="${T('essay')}">
         <input type="number" class="tmc" min="0" max="40" value="${p.mc}" title="${T('mcType')}"></div>`; }).join('');
@@ -139,7 +146,7 @@ function readTopicRows(){
     essay:Math.max(0,Math.min(40,parseInt(r.querySelector('.tess').value)||0)), mc:Math.max(0,Math.min(40,parseInt(r.querySelector('.tmc').value)||0)) }; });
   return out;
 }
-function checkedTopics(){ return Object.entries(readTopicRows()).filter(([,v])=>v.on&&v.essay+v.mc>0).map(([t,v])=>({topic:t, ...v})); }
+function checkedTopics(){ return Object.entries(readTopicRows()).map(([t,v])=>({topic:t, ...v, mc:isBook()?0:v.mc})).filter(v=>v.on&&v.essay+v.mc>0); }
 
 /* --- Search by topic / course code / course title / level (English or Arabic) --- */
 function runSearch(){
@@ -188,10 +195,16 @@ function topUp(n){
   while(total<n){ const sec=gen[i++%gen.length]; sec.items.push(...genItems(sec.topic,1,sec.diff,false)); sec.nEssay=nEss(sec)+1; sec.nMc=nMc(sec); sec.count++; total++; }
 }
 function setMode(mode){
-  state.mode=mode; const m=MODES[mode];
+  const wasBook=isBook(); state.mode=mode; const m=MODES[mode];
   document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode===mode));
-  document.querySelectorAll('.exam-only').forEach(n=>n.hidden = mode==='practice');
-  if(mode!=='practice'){
+  document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !m.nQ);
+  document.querySelectorAll('.book-only').forEach(n=>n.hidden = mode!=='booklet');
+  buildTopicList(true, wasBook!==!!m.book);           // entering / leaving the booklet modes resets the counts
+  if(m.book){                                           // the same topics become worked examples (essay only)
+    if(checkedTopics().length) addSelected(true);
+    else test.sections.forEach(s=>{ if(s.custom) return; s.nEssay=m.count; s.nMc=0; s.count=m.count; s.items=sectionItems(s); });
+  }
+  else if(m.nQ){
     el('nQ').value=m.nQ; el('marks').value=m.marks;
     if(checkedTopics().length) addSelected(true);
     else if(!test.sections.length) autoPick(m.nQ);
@@ -342,6 +355,90 @@ function examHTML(parts, vLabel){
   return `<div class="sheet">${headerHTML(title, sub, total, vLabel)}<div class="exam">${qs}</div>${keyHTML(entries, vLabel, true)}</div>`;
 }
 
+/* --- worked examples / study booklet: every question followed by its worked solution --- */
+const introHTML = t => INTRO[t] ? `<div class="bk-intro"><div class="bk-introh">${T('overview')}</div><div class="bk-introp">${L(INTRO[t][0], INTRO[t][1])}</div></div>` : '';
+const exampleHTML = (it, ii) => `<div class="bk-ex bk-block">
+    <div class="bk-exh">${T('example')} ${ii+1}</div>
+    <div class="bk-q" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</div>
+    ${it.s?`<div class="bk-solh">${T('solution')}</div><div class="bk-steps" dir="${dirFor(it.s)}">${it.s}</div>`:''}
+    <div class="bk-ans" dir="${dirFor(it.a)}"><span class="bk-al">${T('answer')}:</span> ${keyText(it)}</div>
+  </div>`;
+function bookHTML(parts){
+  if(state.mode==='booklet') return bookletHTML(parts);
+  const m=MODES[state.mode];
+  const title=(el('title').value||'').trim() || T(m.title)+courseSuffix(parts);
+  const n=parts.reduce((k,p)=>k+p.items.length,0);
+  const body=parts.map((p,pi)=>`<section class="bk-topic">
+      <h3 class="bk-h"><span class="bk-n">${pi+1}</span> ${partLabel(p)}<span class="bk-course">${partCourse(p)}</span></h3>
+      ${p.custom?'':introHTML(p.topic)}${p.items.map(exampleHTML).join('')}
+    </section>`).join('');
+  return `<div class="sheet book"><div class="sheet-head"><div><h2 class="sheet-title">${title}</h2>
+    <div class="sheet-sub">${parts.length} ${T('topicsW')} &nbsp;·&nbsp; ${n} ${T('examplesW')}</div></div></div>${body}</div>`;
+}
+
+/* --- study booklet: cover page, index page, then each topic (overview + worked examples) on A4 pages --- */
+function courseInfo(parts){
+  const codes=[...new Set(parts.filter(p=>!p.custom).map(p=>p.code))];
+  if(codes.length!==1) return { code:codes.join(' · '), title:'', level:'' };
+  const p=parts.find(x=>x.code===codes[0]), lv=CURRICULUM.find(l=>l.courses.some(c=>c.code===codes[0]));
+  return { code:p.code, title:pickLang(p.title, p.titleAr, state.lang), level:lv?pickLang(lv.level, lv.ar, state.lang):'' };
+}
+const blank = v => (v||'').trim() || '<span class="cv-blank"></span>';
+function bookletHTML(parts){
+  const info=courseInfo(parts), n=parts.reduce((k,p)=>k+p.items.length,0);
+  const title=(el('title').value||'').trim() || info.title || T('titleBook');
+  const topics=parts.filter(p=>!p.custom).map(p=>p.topic);
+  const cover=`<section class="bk-page bk-cover">
+      <div class="cv-band"><div class="cv-uni">${blank(el('bkUni').value)}</div><div class="cv-kicker">${T('titleBook')}</div></div>
+      <h1 class="cv-title">${title}</h1>
+      <div class="cv-code">${[info.code, info.level].filter(Boolean).join(' &nbsp;·&nbsp; ')}</div>
+      <div class="cv-art">${coverArt(topics.length?topics:['linearEquation'])}</div>
+      <div class="cv-chips">${parts.slice(0,14).map(p=>`<span>${partLabel(p)}</span>`).join('')}${parts.length>14?'<span>…</span>':''}</div>
+      <div class="cv-desc">${T('bkTagline')}</div>
+      <table class="cv-info">
+        <tr><th>${T('bkBy')}</th><td>${blank(el('bkBy').value)}</td></tr>
+        <tr><th>${T('bkTerm')}</th><td>${blank(el('bkTerm').value)}</td></tr>
+        <tr><th>${T('bkContent')}</th><td>${parts.length} ${T('topicsW')} &nbsp;·&nbsp; ${n} ${T('examplesW')}</td></tr>
+      </table>
+    </section>`;
+  const index=`<section class="bk-page bk-index"><div class="bk-body">
+      <h2 class="ix-h">${T('index')}</h2>
+      <table class="ix"><tr><th>#</th><th>${T('topic')}</th><th>${T('examplesCol')}</th><th>${T('page')}</th></tr>
+      ${parts.map((p,i)=>`<tr><td class="ix-n">${i+1}</td><td class="ix-t"><span>${partLabel(p)}</span>${p.custom?'':`<small>${p.code}</small>`}</td><td class="ix-c">${p.items.length}</td><td class="ix-pg"></td></tr>`).join('')}
+      </table></div><div class="bk-foot"></div></section>`;
+  const flows=parts.map((p,pi)=>`<div class="bk-flow">
+      <div class="bk-block bk-start"><div class="bk-th"><span class="bk-n">${pi+1}</span><div><div class="bk-tt">${partLabel(p)}</div><div class="bk-tc">${partCourse(p)}</div></div></div>
+        ${p.custom?'':introHTML(p.topic)}</div>
+      ${p.items.map(exampleHTML).join('')}</div>`).join('');
+  return `<div class="booklet-doc"><div class="bk-scale" data-run="${[info.code, info.title||title].filter(Boolean).join(' — ').replace(/"/g,'&quot;')}">${cover}${index}${flows}</div></div>`;
+}
+/* split each topic's blocks over A4 pages (measured in the real layout), number the pages and fill the index */
+function paginateBook(){
+  const sc=el('out').querySelector('.bk-scale'); if(!sc) return;
+  const run=sc.dataset.run; let no=2;
+  const newPage=before=>{ const pg=document.createElement('section'); pg.className='bk-page';
+    pg.innerHTML=`<div class="bk-run">${run}</div><div class="bk-body"></div><div class="bk-foot">${++no}</div>`; sc.insertBefore(pg, before); return pg.querySelector('.bk-body'); };
+  sc.querySelector('.bk-index .bk-foot').textContent=2;
+  const starts=[];
+  sc.querySelectorAll('.bk-flow').forEach(flow=>{
+    let body=newPage(flow); starts.push(no);
+    [...flow.children].forEach(b=>{
+      body.appendChild(b);
+      if(body.scrollHeight>body.clientHeight+1 && body.children.length>1){ body.removeChild(b); body=newPage(flow); body.appendChild(b); }
+    });
+    flow.remove();
+  });
+  sc.querySelectorAll('.ix-pg').forEach((c,i)=>c.textContent=starts[i]||'');
+  fitBook();
+}
+/* scale the A4 pages down to the width of the preview column (the print layout is unscaled) */
+function fitBook(){
+  const doc=el('out').querySelector('.booklet-doc'), sc=doc&&doc.querySelector('.bk-scale'); if(!sc) return;
+  sc.style.transform=''; const k=Math.min(1, doc.clientWidth/sc.offsetWidth);
+  sc.style.transformOrigin = document.documentElement.dir==='rtl' ? 'top right' : 'top left';
+  sc.style.transform=`scale(${k})`; doc.style.height=Math.ceil(sc.offsetHeight*k)+'px';
+}
+
 /* --- optional page with the full statistical tables used by the test --- */
 const FULL={};
 function tablesPageHTML(){
@@ -361,6 +458,7 @@ function render(){
     el('out').innerHTML=`<div class="sheet"><div class="sheet-sub" style="text-align:center;padding:48px 0">${T('emptyTest')}</div></div>`;
     return;
   }
+  if(isBook()){ el('out').innerHTML=bookHTML(state.sheets[0])+tablesPageHTML(); paginateBook(); return; }
   const multi=state.sheets.length>1, draw=state.mode==='practice'?practiceHTML:examHTML;
   el('out').innerHTML=state.sheets.map((parts,v)=>
     draw(parts, multi?`${T('version')} ${String.fromCharCode(65+v)}`:'')).join('')+tablesPageHTML();
@@ -449,10 +547,13 @@ async function exportPDF(){
   try{
     const h2p=await loadPdfLib();
     document.body.classList.add('pdf-export');
-    const blob=await h2p().set({ margin:[10,10,12,10], image:{type:'jpeg',quality:0.96},
+    const book=el('out').querySelector('.bk-scale');
+    const blob=await (book ? h2p().set({ margin:0, image:{type:'jpeg',quality:0.96}, html2canvas:{scale:2, useCORS:true, backgroundColor:'#ffffff'},
+        jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}, pagebreak:{mode:['css'], before:['.bk-page + .bk-page']} }).from(book).outputPdf('blob')
+      : h2p().set({ margin:[10,10,12,10], image:{type:'jpeg',quality:0.96},
       html2canvas:{scale:2, useCORS:true, backgroundColor:'#ffffff'}, jsPDF:{unit:'mm', format:'a4', orientation:'portrait'},
       pagebreak:{mode:['css','legacy'], before:['.sheet + .sheet','.tables-page','.keywrap:not(.same)'], avoid:['.xq','ol.problems li','ol.sols>li','table','.plot']} })
-      .from(el('out')).outputPdf('blob');
+      .from(el('out')).outputPdf('blob'));
     document.body.classList.remove('pdf-export');
     await saveFile(fileBase()+'.pdf', blob);
   }catch(e){
@@ -484,7 +585,8 @@ function applyPayload(s, showKey){
   el('custom').value=s.custom||''; state.showKey=!!showKey; el('fullTables').checked=s.fullTables!==false;
   state.mode=MODES[s.mode]?s.mode:'practice';
   document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode===state.mode));
-  document.querySelectorAll('.exam-only').forEach(n=>n.hidden = state.mode==='practice');
+  document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !MODES[state.mode].nQ);
+  document.querySelectorAll('.book-only').forEach(n=>n.hidden = state.mode!=='booklet');
   if(s.nQ) el('nQ').value=s.nQ; if(s.marks) el('marks').value=s.marks;
   buildVersions(); renderSections(); render();
 }
@@ -533,6 +635,9 @@ el('spacing').onchange=render;
 el('keyMode').onchange=render;
 el('solMode').onchange=()=>{ if(el('solMode').value==='steps') state.showKey=true; render(); };
 el('title').oninput=render;
+['bkUni','bkBy','bkTerm'].forEach(id=>el(id).oninput=render);
+window.addEventListener('resize', fitBook);
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(isBook()) render(); });   // re-measure the pages with the real fonts
 el('presentBtn').onclick=openPresent;
 el('save').onclick=doSave;
 el('del').onclick=doDelete;
@@ -546,6 +651,7 @@ state.lang = LANGS.includes(saved) ? saved : 'en'; el('lang').value=state.lang;
 buildLevelSelect(); el('bLevel').value='all'; buildCourseSelect(); buildTopicList(false);
 document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode==='practice'));
 document.querySelectorAll('.exam-only').forEach(n=>n.hidden=true);
+document.querySelectorAll('.book-only').forEach(n=>n.hidden=true);
 // start with a small sample so the page shows something
 const first=el('topicList').querySelector('.tchk'); if(first){ first.checked=true; addSelected(false); }
 applyLang();
