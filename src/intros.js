@@ -1,6 +1,6 @@
 /* A short plain-language explanation of every topic, shown before its worked examples in the study booklet.
    Each entry is [English, Arabic]; simple inline HTML (sub/sup) is allowed. */
-import { COURSE_PROOFS } from './proofs.js';
+import { PROOFS, proofKey } from './proofs.js';
 export const INTRO = {
   /* ---- algebra basics ---- */
   linearEquation: ['A linear equation has the unknown x only to the first power, like ax + b = c. Move the constant to the other side, then divide by the coefficient of x. Always check by substituting back.',
@@ -484,6 +484,6 @@ export const INTRO = {
   inverseFunction: ['To find f⁻¹: write y = f(x), swap x and y, and solve for y. Check: f(f⁻¹(x)) = x.',
                     'لإيجاد الدالة العكسية: نكتب y = f(x) ونبدّل x و y ثم نحل بالنسبة لـ y. والتحقق: f(f⁻¹(x)) = x.'],
 };
-for(const code in COURSE_PROOFS) INTRO['proofs_'+code.replace(/\s+/g,'')] = [
+for(const id in PROOFS) INTRO[proofKey(id)] = [
   'To prove a formula, start from what is already known — a definition, an earlier formula (for example the confidence interval), or an axiom — and move by justified steps (algebra, substitution, a known theorem) until the required formula appears. Every step must follow from the previous ones.',
   'لإثبات قانون نبدأ مما هو معلوم — تعريف أو قانون سابق (مثل فترة الثقة) أو مسلّمة — ونتقدم بخطوات مبرّرة (عمليات جبرية، تعويض، مبرهنة معروفة) حتى نصل إلى القانون المطلوب، وكل خطوة يجب أن تنتج مما قبلها.'];
