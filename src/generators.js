@@ -1325,16 +1325,63 @@ export const G = {
 
   /* ---- Partial Differential Equations (MATH 315) ---- */
   pdeClassify(d){
-    let A=nz(-5,5), B=R(-8,8), C=nz(-5,5);
-    if(Math.random()<1/3){ const k=pick([1,-1,2]), s=R(1,3), t=R(1,3); A=k*s*s; C=k*t*t; B=2*k*s*t*pick([1,-1]); } // B² = 4AC
-    const disc=B*B-4*A*C;
-    const pde=`${lead(A,'u<sub>xx</sub>')}${term(B,'u<sub>xy</sub>')}${term(C,'u<sub>yy</sub>')} = 0`;
-    const T=disc>0?['Hyperbolic','زائدية','like the wave equation','مثل معادلة الموجة']:disc===0?['Parabolic','مكافئة','like the heat equation','مثل معادلة الحرارة']:['Elliptic','ناقصية','like Laplace\'s equation','مثل معادلة لابلاس'];
-    return {q:`Classify the PDE ${pde}.`,
-            a:`<b>${Li(T[0],T[1])}</b>`,
-      s:steps(L(`For ${M('Au<sub>xx</sub> + Bu<sub>xy</sub> + Cu<sub>yy</sub> = 0')}: A = ${A}, B = ${B}, C = ${C}.`, `للمعادلة ${M('Au<sub>xx</sub> + Bu<sub>xy</sub> + Cu<sub>yy</sub> = 0')}: ${M(`A = ${A}, B = ${B}, C = ${C}`)}.`),
-              L(`${M(`B${sup(2)} &minus; 4AC = ${B*B} &minus; (${4*A*C}) = ${disc}`)}`, `${M(`B${sup(2)} &minus; 4AC = ${B*B} &minus; (${4*A*C}) = ${disc}`)}`),
-              L(`${M(`B${sup(2)} &minus; 4AC ${disc>0?'&gt;':disc===0?'=':'&lt;'} 0`)} ⇒ <b>${T[0]}</b> (${T[2]}).`, `${M(`B${sup(2)} &minus; 4AC ${disc>0?'&gt;':disc===0?'=':'&lt;'} 0`)} ⇐ <b>${T[1]}</b> (${T[3]}).`))};
+    // a PDE in u(x, y) as a list of terms {k: number, v: variable factor, uf: multiplied by u, n: derivative letters ('' = u itself), p: power}
+    const D=n=>n?`u<sub>${n}</sub>`:'u', ord=t=>t.n.length, pw=t=>t.p||1;
+    const order = d===1 ? pick([1,2,2]) : pick([1,2,2,2,3]), T=[];
+    if(order===1) T.push({k:nz(-5,5),n:'x'},{k:nz(-5,5),n:'y'});
+    else if(order===2){
+      let A=nz(-4,4), B=pick([0,0,R(-6,6)]), C=nz(-4,4);
+      if(Math.random()<0.3){ const k=pick([1,-1,2]), s=R(1,2), t=R(1,2); A=k*s*s; C=k*t*t; B=2*k*s*t*pick([1,-1]); }   // B² = 4AC
+      const vary = d>1 && Math.random()<0.3;                                   // variable leading coefficient, e.g. y·u_xx + u_yy
+      T.push({k:A,n:'xx',v:vary?pick(['x','y']):''}); if(B&&!vary) T.push({k:B,n:'xy'}); T.push({k:C,n:'yy'});
+    } else T.push({k:1,n:'xxx'},{k:nz(-4,4),n:'y'});
+    if(Math.random()<(order===2?0.12:0.25)) T[0].p=pick([2,3]);                 // raises the degree
+    const extra=pick(['none','lin','lin','nonlin','var']);
+    if(extra==='lin') T.push({k:nz(-5,5),n:order===1?'':'x'});
+    if(extra==='nonlin') T.push(pick([{k:nz(-3,3),uf:true,n:'x'},{k:nz(-3,3),n:'y',p:2},{k:nz(-3,3),n:'',p:2}]));
+    if(extra==='var') T.push({k:nz(-3,3),v:pick(['x','y','xy']),n:order===1?'':'x'});
+    const rhs = Math.random()<0.45 ? '0' : pick(['x','y'+sup(2),'sin x','e'+sup('y'),'xy','3','x + y']);
+    const body=t=>(t.v?t.v+'&thinsp;':'')+(t.uf?'u&thinsp;':'')+(pw(t)>1?(t.n?`(${D(t.n)})`:'u')+sup(pw(t)):D(t.n));
+    const pde=T.map((t,i)=>i?term(t.k,body(t)):lead(t.k,body(t))).join('')+` = ${rhs}`;
+
+    const top=T.filter(t=>ord(t)===order), deg=Math.max(...top.map(pw));
+    const bad=T.filter(t=>pw(t)>1||t.uf), linear=!bad.length, homog=rhs==='0', vars=T.filter(t=>t.v);
+    const show=t=>M(body(t));
+    const res=[[`Order ${order}`,`الرتبة ${order}`],[`degree ${deg}`,`الدرجة ${deg}`],linear?['linear','خطية']:['nonlinear','غير خطية'],
+               homog?['homogeneous','متجانسة']:['non-homogeneous','غير متجانسة'], vars.length?['variable coefficients','معاملات متغيرة']:['constant coefficients','معاملات ثابتة']];
+    const st=[
+      L(`<b>Order</b> = order of the highest derivative: ${top.map(show).join(', ')} is of order ${order}.`, `<b>الرتبة</b> = رتبة أعلى مشتقة: ${top.map(show).join('، ')} من الرتبة ${M(order)}.`),
+      L(`<b>Degree</b> = power of the highest-order derivative: ${M(deg)}.`, `<b>الدرجة</b> = أس أعلى مشتقة: ${M(deg)}.`),
+      linear ? L('<b>Linearity</b>: u and its derivatives appear only to the first power, are not multiplied together, and the coefficients depend on x, y only ⇒ <b>linear</b>.', '<b>الخطية</b>: الدالة u ومشتقاتها من الدرجة الأولى فقط، ولا يُضرب بعضها في بعض، والمعاملات تعتمد على x و y فقط ⇐ <b>خطية</b>.')
+             : L(`<b>Linearity</b>: the term ${bad.map(show).join(', ')} ${bad[0].uf?'multiplies u by its derivative':'is a power higher than 1'} ⇒ <b>nonlinear</b>.`, `<b>الخطية</b>: الحد ${bad.map(show).join('، ')} ${bad[0].uf?'فيه u مضروبة في مشتقتها':'مرفوع لأس أكبر من 1'} ⇐ <b>غير خطية</b>.`),
+      homog ? L('<b>Homogeneity</b>: every term contains u or one of its derivatives (right-hand side = 0) ⇒ <b>homogeneous</b>.', '<b>التجانس</b>: كل حد يحتوي على u أو إحدى مشتقاتها (الطرف الأيمن = 0) ⇐ <b>متجانسة</b>.')
+            : L(`<b>Homogeneity</b>: there is a free term ${M('f(x, y) = '+rhs)} without u ⇒ <b>non-homogeneous</b>.`, `<b>التجانس</b>: يوجد حد حر ${M('f(x, y) = '+rhs)} لا يحتوي على u ⇐ <b>غير متجانسة</b>.`),
+      vars.length ? L(`<b>Coefficients</b>: the coefficient of ${vars.map(show).join(', ')} depends on ${vars.map(t=>t.v).join(', ')} ⇒ <b>variable coefficients</b>.`, `<b>المعاملات</b>: معامل ${vars.map(show).join('، ')} يعتمد على ${M(vars.map(t=>t.v).join(', '))} ⇐ <b>معاملات متغيرة</b>.`)
+                  : L('<b>Coefficients</b>: all coefficients are numbers ⇒ <b>constant coefficients</b>.', '<b>المعاملات</b>: كل المعاملات أعداد ثابتة ⇐ <b>معاملات ثابتة</b>.')];
+    if(order===2){
+      const prin=T.filter(t=>ord(t)===2);
+      if(prin.some(t=>pw(t)>1||t.uf)){
+        res.push(['type not defined','لا يُحدد النوع']);
+        st.push(L('<b>Type</b>: the hyperbolic / parabolic / elliptic classification needs the second-order terms to be linear; here they are not, so it does not apply.', '<b>النوع</b>: التصنيف إلى زائدية / مكافئة / ناقصية يتطلب أن تكون حدود الرتبة الثانية خطية، وهي هنا ليست كذلك، فلا ينطبق.'));
+      } else {
+        const get=n=>prin.find(t=>t.n===n)||{k:0,v:''}, A=get('xx'), B=get('xy'), C=get('yy');
+        const NAMES={h:['hyperbolic','زائدية'],p:['parabolic','مكافئة'],e:['elliptic','ناقصية']}, cls=x=>x>0?'h':x===0?'p':'e';
+        const abc=L(`<b>Type</b> (second order): compare with ${M('Au<sub>xx</sub> + Bu<sub>xy</sub> + Cu<sub>yy</sub> + … = f')}: ${M(`A = ${A.v?(A.k===1?'':A.k===-1?'&minus;':A.k)+A.v:A.k}, B = ${B.k}, C = ${C.k}`)}.`,
+                    `<b>النوع</b> (الرتبة الثانية): نقارن مع ${M('Au<sub>xx</sub> + Bu<sub>xy</sub> + Cu<sub>yy</sub> + … = f')}: ${M(`A = ${A.v?(A.k===1?'':A.k===-1?'&minus;':A.k)+A.v:A.k}, B = ${B.k}, C = ${C.k}`)}.`);
+        if(!A.v){
+          const disc=B.k*B.k-4*A.k*C.k, c=cls(disc);
+          res.push(NAMES[c]);
+          st.push(abc, M(`B${sup(2)} &minus; 4AC = ${B.k*B.k} &minus; (${sgn(4*A.k*C.k)}) = ${sgn(disc)} ${disc>0?'&gt;':disc===0?'=':'&lt;'} 0`)+' ⇒ '+L(`<b>${NAMES[c][0]}</b>`, `<b>${NAMES[c][1]}</b>`));
+        } else {
+          const m=-4*A.k*C.k, v=A.v, pos=m>0?'h':'e', neg=m>0?'e':'h';   // B² − 4AC = m·v
+          res.push([`${NAMES[pos][0]} for ${v} > 0, parabolic on ${v} = 0, ${NAMES[neg][0]} for ${v} < 0`, `${NAMES[pos][1]} عندما ${v} > 0، مكافئة عند ${v} = 0، ${NAMES[neg][1]} عندما ${v} < 0`]);
+          st.push(abc, M(`B${sup(2)} &minus; 4AC = 0 &minus; 4(${lead(A.k,v)})(${C.k}) = ${lead(m,v)}`),
+            L(`The sign depends on ${v}: ${NAMES[pos][0]} where ${v} > 0, parabolic on the line ${v} = 0, ${NAMES[neg][0]} where ${v} < 0.`, `الإشارة تعتمد على ${M(v)}: ${NAMES[pos][1]} حيث ${M(v+' > 0')}، ومكافئة على المستقيم ${M(v+' = 0')}، و${NAMES[neg][1]} حيث ${M(v+' < 0')}.`));
+        }
+      }
+    }
+    return {q:L(`Classify the PDE (order, degree, linearity, homogeneity, coefficients${order===2?', type':''}):`, `صنّف المعادلة التفاضلية الجزئية (الرتبة، الدرجة، الخطية، التجانس، المعاملات${order===2?'، النوع':''}):`)+'<br>'+M(pde),
+            a:`<b>${res.map(([e,a])=>Li(e,a)).join(' · ')}</b>`, s:steps(...st)};
   },
   waveSpeed(d){
     const c=R(2,d===1?5:12);

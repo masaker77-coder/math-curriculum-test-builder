@@ -258,8 +258,8 @@ export const INTRO = {
   varianceDiscrete: ['Variance measures spread: Var(X) = E(X²) − [E(X)]², where E(X²) = Σ x²·P(x).',
                      'التباين يقيس التشتت: Var(X) = E(X²) − [E(X)]² حيث E(X²) = Σ x²·P(x).'],
   /* ---- PDE ---- */
-  pdeClassify: ['A second-order PDE Au<sub>xx</sub> + Bu<sub>xy</sub> + Cu<sub>yy</sub> + … = 0 is classified by B² − 4AC: < 0 elliptic, = 0 parabolic, > 0 hyperbolic.',
-                'المعادلة التفاضلية الجزئية من الرتبة الثانية Au<sub>xx</sub> + Bu<sub>xy</sub> + Cu<sub>yy</sub> + … = 0 تُصنف بالمميز B² − 4AC: سالب ناقصية، صفر مكافئة، موجب زائدية.'],
+  pdeClassify: ['To classify a PDE: its order (the highest derivative), its degree (the power of that highest derivative), linear or nonlinear (u and its derivatives only to the first power and not multiplied together), homogeneous or not (is there a free term f(x, y) without u?), and constant or variable coefficients. A linear second-order PDE Au<sub>xx</sub> + Bu<sub>xy</sub> + Cu<sub>yy</sub> + … = f is also classified by B² − 4AC: > 0 hyperbolic, = 0 parabolic, < 0 elliptic.',
+                'لتصنيف المعادلة التفاضلية الجزئية: الرتبة (أعلى مشتقة)، والدرجة (أس أعلى مشتقة)، وخطية أو غير خطية (u ومشتقاتها من الدرجة الأولى فقط ولا يُضرب بعضها في بعض)، ومتجانسة أو غير متجانسة (هل يوجد حد حر f(x, y) بدون u؟)، والمعاملات ثابتة أو متغيرة. والمعادلة الخطية من الرتبة الثانية Au<sub>xx</sub> + Bu<sub>xy</sub> + Cu<sub>yy</sub> + … = f تُصنف أيضاً بالمميز B² − 4AC: موجب زائدية، صفر مكافئة، سالب ناقصية.'],
   waveSpeed: ['The wave equation u<sub>tt</sub> = c²u<sub>xx</sub> describes waves moving with speed c.',
               'معادلة الموجة u<sub>tt</sub> = c²u<sub>xx</sub> تصف موجات تتحرك بسرعة c.'],
   laplacianPoly: ['The Laplacian is Δu = u<sub>xx</sub> + u<sub>yy</sub>: differentiate twice in x (y constant) and twice in y (x constant), then add.',
