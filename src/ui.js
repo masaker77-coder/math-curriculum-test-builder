@@ -39,7 +39,9 @@ const LONG = ['rectangle','triangleArea','circle','pythagorean','slope','derivat
               'ciMeanZ','ciMeanS','ciMeanT','ciProportion','sampleSizeMean','sampleSizeProp',
               'testMeanZ','testMeanS','testMeanT','testProportion','anovaTable',
               'fdSchemeClassify','fdFirstX','fdFirstT','fdSecondX','fdSecondT','fdmOdeUx','fdmOdeUt',
-              'fdmOdeUxx','fdmOdeUtt','fdmAdvection','fdmFamous'];
+              'fdmOdeUxx','fdmOdeUtt','fdmAdvection','fdmFamous',
+              'numberSets','breakEven','absEquation','absInequality','functionDomain','funcOps','evenOdd','inverseFunction',
+              'gaussJordan','inverseSolve','intervalNotation'];
 
 /* --- language --- */
 const T = key => tr(key, state.lang);
@@ -280,7 +282,7 @@ function keyHTML(entries, vLabel, labeled){
   if(keyMode==='none'||!entries.length) return '';
   const ans=entries.map(e=>`<li dir="${dirFor(e.it.a)}">${labeled?`<span class="kl">${e.label}</span>`:''}${keyText(e.it)}</li>`).join('');
   const sols=withSteps ? entries.map((e,i)=>e.it.s ? `<li${labeled?'':` value="${i+1}"`} dir="${dirFor(e.it.s)}">${labeled?`<span class="kl">${e.label}</span>`:''}
-      <div class="solq">${e.it.q}</div><div class="sola">${e.it.a}</div>${e.it.s}</li>` : '').join('') : '';
+      <div class="solq" dir="${dirFor(e.it.q)}">${e.it.q}</div><div class="sola" dir="${dirFor(e.it.a)}">${e.it.a}</div>${e.it.s}</li>` : '').join('') : '';
   return `<div class="keywrap ${keyMode==='same'?'same':''}" ${state.showKey?'':'hidden'}>
       <div class="key-head"><h3>${T('keyHead')}${vLabel?' &mdash; '+vLabel:''}</h3></div>
       <ol class="answers${labeled?' labeled':''}">${ans}</ol>

@@ -39,6 +39,10 @@ export const TOPIC_LABELS = {
   binomialProb:'Binomial probabilities', expectedValue:'Expected value E(X)', varianceDiscrete:'Variance Var(X)',
   lpCornerPoint:'Linear programming (corner points)', effectiveRate:'Effective annual rate', annuityFV:'Future value of an annuity',
   improvedEuler:'Improved Euler (Heun) method', fredholmSeparable:'Fredholm equations (separable kernel)',
+  numberSets:'Number sets', intervalNotation:'Interval notation', breakEven:'Break-even analysis',
+  absEquation:'Absolute-value equations', absInequality:'Absolute-value inequalities', functionDomain:'Domain of a function',
+  funcOps:'Operations & composition of functions', evenOdd:'Even and odd functions', inverseFunction:'Inverse functions',
+  gaussJordan:'Gauss–Jordan elimination', matrixSubtract:'Matrix subtraction', inverseSolve:'Solving systems by the inverse matrix',
   linearEquation:'Linear equations', inequalityGraph:'Inequalities (number line)', linearSystem2:'Two equations in two unknowns',
   quadraticEquation:'Quadratic equations (formula & graph)', logExp:'Logarithms & exponents',
   ciMeanZ:'CI for a mean — σ known (z)', ciMeanS:'CI for a mean — σ unknown, large n (z)', ciMeanT:'CI for a mean — small n (t)',
@@ -111,6 +115,10 @@ export const TOPIC_LABELS_AR = {
   gammaHalf:'Γ عند أنصاف الأعداد', betaFunction:'دالة بيتا B(m, n)', legendreP:'كثيرات حدود لوجاندر', chebyshevT:'كثيرات حدود تشيبيشيف',
   vectorNorms:'معايير المتجهات (1، 2، ∞)', operatorNormDiag:'معيار المؤثر (قطري)', l2InnerProduct:'الضرب الداخلي في L²',
   simpleInterest:'الفائدة البسيطة', compoundInterest:'الفائدة المركبة', presentValue:'القيمة الحالية',
+  numberSets:'مجموعات الأعداد', intervalNotation:'الفترات', breakEven:'نقطة التعادل',
+  absEquation:'معادلات القيمة المطلقة', absInequality:'متباينات القيمة المطلقة', functionDomain:'مجال الدالة',
+  funcOps:'العمليات على الدوال وتركيبها', evenOdd:'الدوال الزوجية والفردية', inverseFunction:'الدالة العكسية',
+  gaussJordan:'طريقة جاوس–جوردان', matrixSubtract:'طرح المصفوفات', inverseSolve:'حل الأنظمة بمعكوس المصفوفة',
   linearEquation:'المعادلات الخطية', inequalityGraph:'المتباينات (التمثيل على خط الأعداد)', linearSystem2:'معادلتان في مجهولين',
   quadraticEquation:'المعادلة التربيعية (القانون العام والرسم)', logExp:'اللوغاريتمات والأسس',
   ciMeanZ:'فترة ثقة لمتوسط — σ معلومة (z)', ciMeanS:'فترة ثقة لمتوسط — σ مجهولة وعينة كبيرة (z)', ciMeanT:'فترة ثقة لمتوسط — عينة صغيرة (t)',
@@ -127,7 +135,7 @@ export const TOPIC_TABLES = {
   testMeanZ:['z'], testMeanS:['z'], testMeanT:['t'], testProportion:['z'], anovaTable:['f'],
 };
 /* Mathematics study plan (Shaqra University, BSc Mathematics, 130 credit hours):
-   level -> courses (code, title, topics), Level 1..8 in plan order, then the electives.
+   level -> courses (code, title, topics), Level 1..8 in plan order, then the electives, then service courses for other departments.
    Only MATH/STAT courses are listed; empty topics = no auto-generated problems (e.g. graduation projects). */
 export const CURRICULUM = [
   { level:'Level 1', ar:'المستوى الأول', courses:[
@@ -187,6 +195,13 @@ export const CURRICULUM = [
     { code:'MATH 444', title:'Rings and Fields', ar:'الحلقات والحقول', topics:['isUnit','modInverse','zeroDivisors','polyEvalModP','fieldCheck'] },
     { code:'MATH 468', title:'Graph Theory', ar:'نظرية المخططات', topics:['completeGraphEdges','degreeSum','treeEdges','bipartiteEdges','eulerCircuit','chromaticNumber'] },
     { code:'MATH 485', title:'Complex Analysis', ar:'تحليل مركب', topics:['complexAdd','complexMultiply','complexModulus','iPowers','complexConjugate','complexDivide','complexSquare','complexArgument'] },
+  ]},
+  /* service courses taught for other departments */
+  { level:'Business Administration Dept.', ar:'قسم إدارة الأعمال', courses:[
+    { code:'QM 102', title:'Principles of Quantitative Methods (2)', ar:'مبادئ الأساليب الكمية 2 (102 كمى)', topics:['numberSets','intervalNotation',
+      'linearEquation','inequalityGraph','breakEven','absEquation','absInequality','complexAdd','complexMultiply','quadraticEquation','factorQuad',
+      'functionDomain','funcOps','evenOdd','inverseFunction','exponentRules','expEquation','logEval','logExp',
+      'linearSystem2','gaussJordan','matrixAdd','matrixSubtract','matrixMultiply','inverse2','inverseSolve'] },
   ]},
 ];
 /* flat search index over every topic in the curriculum */
