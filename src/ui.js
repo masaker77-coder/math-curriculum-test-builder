@@ -119,14 +119,14 @@ function selectedCourse(){
   const [li,ci]=(el('bCourse').value||'').split(':').map(Number);
   return { li, ci, c:courseAt(li,ci) };
 }
-const defaultCount = () => state.mode==='practice' ? 6 : 1;
+const defaultCount = () => 1;
 function buildTopicList(keep){
   const box=el('topicList'), {c}=selectedCourse();
   const prev = keep ? readTopicRows() : {};
   if(!c||!c.topics.length){ box.innerHTML=`<div class="sections-empty" style="padding:10px">${T('noTopics')}</div>`; el('addSection').disabled=true; return; }
   el('addSection').disabled=false;
   box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T('essay')}</span><span>${T('mcShort')}</span></div>`+
-    c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:0};
+    c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:1};
       return `<div class="trow${p.on?' on':''}" data-t="${t}"><input type="checkbox" class="tchk"${p.on?' checked':''}><span>${topicLabel(t)}</span>
         <input type="number" class="tess" min="0" max="40" value="${p.essay}" title="${T('essay')}">
         <input type="number" class="tmc" min="0" max="40" value="${p.mc}" title="${T('mcType')}"></div>`; }).join('');
