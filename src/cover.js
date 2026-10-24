@@ -123,7 +123,7 @@ export function coverArt(topics, w=600, h=380){
   const glyphs=fams.flatMap(f=>GLYPHS[f]).slice(0,10);
   const gpos=[[0.06,0.12],[0.62,0.08],[0.3,0.5],[0.8,0.46],[0.08,0.9],[0.55,0.95],[0.42,0.2],[0.86,0.86],[0.2,0.68],[0.7,0.62]];
   return `<svg class="cover-art" viewBox="0 0 ${w} ${h}" role="img" aria-label="cover illustration" xmlns="http://www.w3.org/2000/svg">
-    <defs><linearGradient id="cvBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f2a5c"/><stop offset="0.6" stop-color="#173f86"/><stop offset="1" stop-color="#0c6a7a"/></linearGradient>
+    <defs><linearGradient id="cvBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--th-1,#0f2a5c)"/><stop offset="0.6" style="stop-color:var(--th-2,#173f86)"/><stop offset="1" style="stop-color:var(--th-3,#0c6a7a)"/></linearGradient>
       <pattern id="cvGrid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#ffffff" stroke-opacity="0.06"/></pattern></defs>
     <rect width="${w}" height="${h}" rx="14" fill="url(#cvBg)"/><rect width="${w}" height="${h}" rx="14" fill="url(#cvGrid)"/>
     ${glyphs.map((g,i)=>`<text class="glyph" x="${f1(gpos[i][0]*w)}" y="${f1(gpos[i][1]*h)}">${g}</text>`).join('')}
