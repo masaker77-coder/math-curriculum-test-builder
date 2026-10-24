@@ -1144,3 +1144,90 @@ test('QM 102 — Gauss–Jordan and inverse-matrix solutions satisfy the system'
     for (let k = 0; k < 4; k++) assert.equal(a[k], q[k] - q[k + 4]);
   });
 });
+
+/* ================= STAT 312 — Probability Theory (2) ================= */
+// read a joint pmf table back out of a question: { xs, ys, p[j][i] }
+function readJoint(html) {
+  const t = String(html).match(/<table class="stbl joint">(.*?)<\/table>/)[1];
+  const rows = [...t.matchAll(/<tr>(.*?)<\/tr>/g)].map(r => r[1]);
+  const xs = [...rows[0].matchAll(/<th>(-?\d+)<\/th>/g)].map(m => +m[1]);
+  const ys = [], p = [];
+  for (const r of rows.slice(1)) { ys.push(+r.match(/^<th>(-?\d+)<\/th>/)[1]); p.push([...r.matchAll(/<td>(.*?)<\/td>/g)].map(c => fval(c[1]))); }
+  return { xs, ys, p };
+}
+const STAT312 = ['jointConstant', 'jointProb', 'marginalDist', 'conditionalProb', 'jointMoments', 'correlationCoef', 'independenceCheck', 'sumOfRV', 'bivariateNormal', 'multinomialProb'];
+
+test('STAT 312 — bilingual steps and a valid joint pmf in every table question', () => {
+  for (const t of STAT312) for (const d of DIFFS) times(40, () => {
+    const o = G[t](d);
+    assert.ok(o.s && o.s.includes('<ol class="steps">') && !/NaN|undefined|Infinity/.test(o.q + o.a + o.s), t);
+    if (o.q.includes('stbl joint')) { const J = readJoint(o.q); close(J.p.flat().reduce((a, b) => a + b, 0), 1); }
+  });
+});
+
+test('STAT 312 — normalising constant, joint and conditional probabilities, marginals', () => {
+  for (const d of DIFFS) times(150, () => {
+    let o = G.jointConstant(d), q = E(o.q), c = fval(o.a.replace(/c = /, ''));
+    let m;
+    if ((m = q.match(/c&middot;xy for 0 &lt; x &lt; (\d+), 0 &lt; y &lt; (\d+)/))) close(c * simpson(x => simpson(y => x * y, 0, +m[2], 200), 0, +m[1], 200), 1, 1e-6);
+    else { m = q.match(/c\((\d*)x \+ (\d*)y\) for x = ([\d, ]+) and y = ([\d, ]+) is/);
+      const a = m[1] ? +m[1] : 1, b = m[2] ? +m[2] : 1, xs = m[3].split(', ').map(Number), ys = m[4].split(', ').map(Number);
+      close(c * xs.reduce((s, x) => s + ys.reduce((t2, y) => t2 + a * x + b * y, 0), 0), 1); }
+
+    o = G.jointProb(d); let J = readJoint(o.q); q = E(o.q); let want = 0;
+    if ((m = q.match(/Find P\(X = (\d), Y = (\d)\)/))) want = J.p[J.ys.indexOf(+m[2])][J.xs.indexOf(+m[1])];
+    else if ((m = q.match(/Find P\(X \+ Y &le; (\d)\)/))) J.ys.forEach((y, j) => J.xs.forEach((x, i) => { if (x + y <= +m[1]) want += J.p[j][i]; }));
+    else { m = q.match(/Find P\(X &le; (\d), Y = (\d)\)/); J.xs.forEach((x, i) => { if (x <= +m[1]) want += J.p[J.ys.indexOf(+m[2])][i]; }); }
+    close(fval(o.a), want);
+
+    o = G.conditionalProb(d); J = readJoint(o.q); m = E(o.q).match(/P\(X = (\d) \| Y = (\d)\)/);
+    const j = J.ys.indexOf(+m[2]), i = J.xs.indexOf(+m[1]);
+    close(fval(o.a), J.p[j][i] / J.p[j].reduce((a, b) => a + b, 0));
+
+    o = G.marginalDist(d); J = readJoint(o.q); const ofX = /distribution of X/.test(E(o.q));
+    const parts = [...o.a.matchAll(/\((\d)\) = (.*?)(?=, &nbsp;|<\/b>)/g)];
+    for (const [, v, html] of parts) {
+      const marg = ofX ? J.ys.reduce((s, _, jj) => s + J.p[jj][J.xs.indexOf(+v)], 0) : J.p[J.ys.indexOf(+v)].reduce((a, b) => a + b, 0);
+      close(fval(html), marg);
+    }
+    assert.equal(parts.length, ofX ? J.xs.length : J.ys.length);
+  });
+});
+
+test('STAT 312 — covariance, correlation and independence', () => {
+  const mom = J => { let EX = 0, EY = 0, EXY = 0, EX2 = 0, EY2 = 0;
+    J.ys.forEach((y, j) => J.xs.forEach((x, i) => { const p = J.p[j][i]; EX += x * p; EY += y * p; EXY += x * y * p; EX2 += x * x * p; EY2 += y * y * p; }));
+    return { cov: EXY - EX * EY, vx: EX2 - EX * EX, vy: EY2 - EY * EY }; };
+  for (const d of DIFFS) times(150, () => {
+    let o = G.jointMoments(d); close(fval(o.a.replace(/Cov\(X, Y\) = /, '')), mom(readJoint(o.q)).cov);
+    o = G.correlationCoef(d); const r = mom(readJoint(o.q));
+    close(+plain(o.a).match(/(-?\d+(?:\.\d+)?)\s*<?\/?b?>?$/)?.[1] ?? val(o.a), r.cov / Math.sqrt(r.vx * r.vy), 6e-5);
+    o = G.independenceCheck(d); const J = readJoint(o.q);
+    const mx = J.xs.map((_, i) => J.ys.reduce((s, _, j) => s + J.p[j][i], 0)), my = J.p.map(row => row.reduce((a, b) => a + b, 0));
+    const indep = J.ys.every((_, j) => J.xs.every((_, i) => Math.abs(J.p[j][i] - mx[i] * my[j]) < 1e-12));
+    assert.equal(plain(enOnly(o.a)), indep ? 'Independent' : 'Not independent');
+  });
+});
+
+test('STAT 312 — aX + bY, bivariate normal, multinomial', () => {
+  for (const d of DIFFS) times(150, () => {
+    let o = G.sumOfRV(d), q = E(o.q);
+    const [ex, ey, vx, vy, cov] = ['E\\(X\\)', 'E\\(Y\\)', 'Var\\(X\\)', 'Var\\(Y\\)', 'Cov\\(X, Y\\)'].map(k => +q.match(new RegExp(k + ' = (-?\\d+)'))[1]);
+    const W = q.match(/W = (.*)\.$/)[1].replace(/\s/g, ''), a = coefOf(W, 'X'), b = coefOf(W, 'Y');
+    const [mE, mV] = ints(plain(o.a).replace(/\(W\)/g, ''));
+    assert.equal(mE, a * ex + b * ey + 0); assert.equal(mV, a * a * vx + b * b * vy + 2 * a * b * cov + 0);
+
+    o = G.bivariateNormal(d); q = E(o.q);
+    const g = k => +q.match(new RegExp(k + ' = (-?\\d+(?:\\.\\d+)?)'))[1];
+    const [mx, my, sx, sy, rho] = ['μX', 'μY', 'σX', 'σY', 'ρ'].map(g), x = +q.match(/X = (-?\d+)\)/)[1];
+    const cm = my + rho * sy / sx * (x - mx), cv = sy * sy * (1 - rho * rho), A = plain(o.a);
+    if (/Var/.test(A)) { const [, m1, v1] = A.match(/= (-?[\d.]+), Var\(Y \| X = -?\d+\) = ([\d.]+)/); close(+m1, cm, 6e-5); close(+v1, cv, 6e-5); }
+    else { const y = +q.match(/P\(Y &le; (-?\d+)/)[1], z = +A.match(/z = (-?[\d.]+)/)[1];
+      close(z, (y - cm) / Math.sqrt(cv), 0.0051); close(+A.match(/P &asymp; ([\d.]+)/)[1], 0.5 + Math.sign(z) * simpson(normPdf, 0, Math.abs(z), 2000), 6e-5); }
+
+    o = G.multinomialProb(d); q = o.q;
+    const ps = fracs(enOnly(q)), [n] = ints(E(o.q).match(/In (\d+) independent/)[0]), xs = ints(E(o.q).match(/P\((.*)\)\.$/)[1].replace(/X\d/g, ''));
+    const coef = fact(n) / xs.reduce((s, k) => s * fact(k), 1);
+    close(fval(o.a), coef * xs.reduce((s, k, i) => s * ps[i] ** k, 1), 1e-12);
+  });
+});

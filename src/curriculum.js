@@ -43,6 +43,10 @@ export const TOPIC_LABELS = {
   absEquation:'Absolute-value equations', absInequality:'Absolute-value inequalities', functionDomain:'Domain of a function',
   funcOps:'Operations & composition of functions', evenOdd:'Even and odd functions', inverseFunction:'Inverse functions',
   gaussJordan:'Gauss–Jordan elimination', matrixSubtract:'Matrix subtraction', inverseSolve:'Solving systems by the inverse matrix',
+  jointConstant:'Joint pmf/pdf: find the constant', jointProb:'Joint probabilities', marginalDist:'Marginal distributions',
+  conditionalProb:'Conditional probabilities', jointMoments:'Moments and covariance', correlationCoef:'Correlation coefficient',
+  independenceCheck:'Independence of X and Y', sumOfRV:'Mean and variance of aX + bY', bivariateNormal:'Bivariate normal distribution',
+  multinomialProb:'Multinomial distribution',
   linearEquation:'Linear equations', inequalityGraph:'Inequalities (number line)', linearSystem2:'Two equations in two unknowns',
   quadraticEquation:'Quadratic equations (formula & graph)', logExp:'Logarithms & exponents',
   ciMeanZ:'CI for a mean — σ known (z)', ciMeanS:'CI for a mean — σ unknown, large n (z)', ciMeanT:'CI for a mean — small n (t)',
@@ -119,6 +123,10 @@ export const TOPIC_LABELS_AR = {
   absEquation:'معادلات القيمة المطلقة', absInequality:'متباينات القيمة المطلقة', functionDomain:'مجال الدالة',
   funcOps:'العمليات على الدوال وتركيبها', evenOdd:'الدوال الزوجية والفردية', inverseFunction:'الدالة العكسية',
   gaussJordan:'طريقة جاوس–جوردان', matrixSubtract:'طرح المصفوفات', inverseSolve:'حل الأنظمة بمعكوس المصفوفة',
+  jointConstant:'دالة الاحتمال المشتركة: إيجاد الثابت', jointProb:'الاحتمالات المشتركة', marginalDist:'التوزيعات الهامشية',
+  conditionalProb:'الاحتمالات الشرطية', jointMoments:'العزوم والتغاير', correlationCoef:'معامل الارتباط',
+  independenceCheck:'استقلال المتغيرين X و Y', sumOfRV:'توقع وتباين aX + bY', bivariateNormal:'التوزيع الطبيعي الثنائي',
+  multinomialProb:'التوزيع متعدد الحدود',
   linearEquation:'المعادلات الخطية', inequalityGraph:'المتباينات (التمثيل على خط الأعداد)', linearSystem2:'معادلتان في مجهولين',
   quadraticEquation:'المعادلة التربيعية (القانون العام والرسم)', logExp:'اللوغاريتمات والأسس',
   ciMeanZ:'فترة ثقة لمتوسط — σ معلومة (z)', ciMeanS:'فترة ثقة لمتوسط — σ مجهولة وعينة كبيرة (z)', ciMeanT:'فترة ثقة لمتوسط — عينة صغيرة (t)',
@@ -132,7 +140,7 @@ export const TOPIC_LABELS_AR = {
 /* statistical tables a topic's questions are read from (for the optional full-tables page) */
 export const TOPIC_TABLES = {
   ciMeanZ:['z'], ciMeanS:['z'], ciMeanT:['t'], ciProportion:['z'], sampleSizeMean:['z'], sampleSizeProp:['z'],
-  testMeanZ:['z'], testMeanS:['z'], testMeanT:['t'], testProportion:['z'], anovaTable:['f'],
+  testMeanZ:['z'], testMeanS:['z'], testMeanT:['t'], testProportion:['z'], anovaTable:['f'], bivariateNormal:['z'],
 };
 /* Mathematics study plan (Shaqra University, BSc Mathematics, 130 credit hours):
    level -> courses (code, title, topics), Level 1..8 in plan order, then the electives, then service courses for other departments.
@@ -165,7 +173,7 @@ export const CURRICULUM = [
     { code:'MATH 353', title:'Numerical Analysis', ar:'التحليل العددي', topics:['newtonSqrt','linearInterp','bisectionStep','trapezoidRule','eulerStep','absoluteError'] },
   ]},
   { level:'Level 6', ar:'المستوى السادس', courses:[
-    { code:'STAT 312', title:'Probability Theory (2)', ar:'نظرية الاحتمال (2)', topics:['binomialProb','expectedValue','varianceDiscrete'] },
+    { code:'STAT 312', title:'Probability Theory (2)', ar:'نظرية الاحتمال (2)', topics:['jointConstant','jointProb','marginalDist','conditionalProb','jointMoments','correlationCoef','independenceCheck','sumOfRV','bivariateNormal','multinomialProb','expectedValue','varianceDiscrete'] },
     { code:'MATH 315', title:'Partial Differential Equations', ar:'المعادلات التفاضلية الجزئية', topics:['pdeClassify','waveSpeed','laplacianPoly','heatSeparation'] },
     { code:'STAT 361', title:'Operations Research (1)', ar:'بحوث العمليات (1)', topics:['lpCornerPoint','systems'] },
     { code:'MATH 371', title:'Economic and Financial Mathematics', ar:'الرياضيات الاقتصادية والمالية', topics:['effectiveRate','annuityFV','compoundInterest','presentValue'] },

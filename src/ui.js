@@ -41,7 +41,9 @@ const LONG = ['rectangle','triangleArea','circle','pythagorean','slope','derivat
               'fdSchemeClassify','fdFirstX','fdFirstT','fdSecondX','fdSecondT','fdmOdeUx','fdmOdeUt',
               'fdmOdeUxx','fdmOdeUtt','fdmAdvection','fdmFamous',
               'numberSets','breakEven','absEquation','absInequality','functionDomain','funcOps','evenOdd','inverseFunction',
-              'gaussJordan','inverseSolve','intervalNotation'];
+              'gaussJordan','inverseSolve','intervalNotation',
+              'jointConstant','jointProb','marginalDist','conditionalProb','jointMoments','correlationCoef','independenceCheck',
+              'sumOfRV','bivariateNormal','multinomialProb'];
 
 /* --- language --- */
 const T = key => tr(key, state.lang);

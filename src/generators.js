@@ -1,6 +1,6 @@
 import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, sgn, cplx, mat, TRIG, shuffled,
          lcm, totient, powMod, isPrimeN, vec } from './helpers.js';
-import { L, Li, M, align, steps, num, plot, numberLine, intervalLine, aug, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML } from './viz.js';
+import { L, Li, M, align, steps, num, plot, numberLine, intervalLine, aug, Phi, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML } from './viz.js';
 
 /* a small discrete distribution: distinct values xs with probabilities cs[i]/D (all cs[i] ≥ 1) */
 function discreteDist(d){
@@ -111,6 +111,26 @@ function detN(A){
 function linN(cs, vars){
   const t=cs.map((c,j)=>[c,vars[j]]).filter(([c])=>c!==0);
   return t.length ? t.map(([c,v],i)=>i===0?lead(c,v):term(c,v)).join('') : '0';
+}
+
+/* joint pmf of (X, Y) as integer weights w[y][x] over N (shown as reduced fractions); indep=true makes w = product of marginals */
+function jointTable(d, indep=false){
+  const xs=d===1?[0,1]:[0,1,2], ys=d===3?[0,1,2]:[0,1];
+  const sumRow=r=>r.reduce((s,v)=>s+v,0);
+  let w, mx, my, N;
+  const marg=()=>{ N=w.reduce((s,r)=>s+sumRow(r),0); mx=xs.map((_,i)=>w.reduce((s,r)=>s+r[i],0)); my=w.map(sumRow); };
+  if(indep){ const ax=xs.map(()=>R(1,4)), ay=ys.map(()=>R(1,4)); w=ys.map((_,j)=>xs.map((_,i)=>ax[i]*ay[j])); marg(); }
+  else do{ w=ys.map(()=>xs.map(()=>R(d===3?0:1,5))); marg(); }
+       while(N===0 || w.every((r,j)=>r.every((v,i)=>v*N===mx[i]*my[j])));    // keep it genuinely dependent
+  const html=`<table class="stbl joint"><tr><th>Y \\ X</th>${xs.map(x=>`<th>${x}</th>`).join('')}</tr>`+
+    ys.map((y,j)=>`<tr><th>${y}</th>${xs.map((_,i)=>`<td>${fracStr(w[j][i],N)}</td>`).join('')}</tr>`).join('')+'</table>';
+  return { xs, ys, w, N, mx, my, html };
+}
+/* E(X), E(Y), E(XY), Var(X), Var(Y) of a joint table, as exact fractions [p, q] */
+function jointE(J){
+  const sx=k=>J.xs.reduce((s,x,i)=>s+x**k*J.mx[i],0), sy=k=>J.ys.reduce((s,y,j)=>s+y**k*J.my[j],0);
+  const EX=rN([sx(1),J.N]), EY=rN([sy(1),J.N]), EXY=rN([J.ys.reduce((s,y,j)=>s+J.xs.reduce((t,x,i)=>t+x*y*J.w[j][i],0),0), J.N]);
+  return { EX, EY, EXY, VX:rSub(rN([sx(2),J.N]), rMul(EX,EX)), VY:rSub(rN([sy(2),J.N]), rMul(EY,EY)) };
 }
 
 /* ============================ GENERATORS ============================ */
@@ -1616,6 +1636,121 @@ export const G = {
               L(`${M(`det A = (${sgn(A[0])})(${sgn(A[3])}) &minus; (${sgn(A[1])})(${sgn(A[2])}) = ${det}`)}`, `${M(`det A = (${sgn(A[0])})(${sgn(A[3])}) &minus; (${sgn(A[1])})(${sgn(A[2])}) = ${det}`)}`),
               L(`${M('A'+sup('&minus;1')+' = (1/det)')} ${mat([A[3],-A[1],-A[2],A[0]])} = ${mat(I)}`, `${M('A'+sup('&minus;1')+' = (1/det)')} ${mat([A[3],-A[1],-A[2],A[0]])} = ${mat(I)}`),
               L(`${M('X = A'+sup('&minus;1')+'B')} = ${mat([x,y],1)}`, `${M('X = A'+sup('&minus;1')+'B')} = ${mat([x,y],1)}`))};
+  },
+
+  /* ================= STAT 312 — Probability Theory (2): bivariate random variables ================= */
+  jointConstant(d){
+    if(d===3 && Math.random()<0.5){                                   // continuous: f(x,y) = c·x·y on 0<x<a, 0<y<b ⇒ c = 4/(a²b²)
+      const a=R(1,3), b=R(1,3), c=fracStr(4, a*a*b*b);
+      return {q:L(`f(x, y) = c&middot;xy for 0 &lt; x &lt; ${a}, 0 &lt; y &lt; ${b} (0 elsewhere) is a joint pdf. Find c.`, `${M(`f(x, y) = c&middot;xy`)} عندما ${M(`0 &lt; x &lt; ${a}, 0 &lt; y &lt; ${b}`)} (وصفر خلاف ذلك) دالة كثافة مشتركة. أوجد ${M('c')}.`),
+        a:`<b>c = ${c}</b>`,
+        s:steps(L(`The total probability is 1: ${M(`&int;<sub>0</sub><sup>${b}</sup>&int;<sub>0</sub><sup>${a}</sup> c&middot;xy dx dy = 1`)}`, `مجموع الاحتمال يساوي 1: ${M(`&int;<sub>0</sub><sup>${b}</sup>&int;<sub>0</sub><sup>${a}</sup> c&middot;xy dx dy = 1`)}`),
+                M(`c &middot; (${a}${sup(2)}/2)(${b}${sup(2)}/2) = c &middot; ${fracStr(a*a*b*b,4)} = 1`),
+                L(`${M(`c = ${c}`)}`, `${M(`c = ${c}`)}`))};
+    }
+    const xs=[1,2,...(d>1?[3]:[])], ys=[1,2], a=R(1,3), b=R(1,3);
+    const S=xs.reduce((s,x)=>s+ys.reduce((t,y)=>t+a*x+b*y,0),0), fx=`${a===1?'':a}x + ${b===1?'':b}y`;
+    return {q:L(`f(x, y) = c(${fx}) for x = ${xs.join(', ')} and y = ${ys.join(', ')} is a joint pmf. Find c.`, `${M(`f(x, y) = c(${fx})`)} عندما ${M(`x = ${xs.join(', ')}`)} و ${M(`y = ${ys.join(', ')}`)} دالة احتمال مشتركة. أوجد ${M('c')}.`),
+      a:`<b>c = ${fracStr(1,S)}</b>`,
+      s:steps(L(`The probabilities add up to 1: ${M(`&sum;&sum; c(${fx}) = 1`)}`, `مجموع الاحتمالات يساوي 1: ${M(`&sum;&sum; c(${fx}) = 1`)}`),
+              M(`c(${xs.flatMap(x=>ys.map(y=>a*x+b*y)).join(' + ')}) = ${S}c = 1`), M(`c = ${fracStr(1,S)}`))};
+  },
+  jointProb(d){
+    const J=jointTable(d), t=pick(['cell','sumLe','xLe']);
+    let w=0, desc, descAr;
+    if(t==='cell'){ const i=R(0,J.xs.length-1), j=R(0,J.ys.length-1); w=J.w[j][i]; desc=`P(X = ${J.xs[i]}, Y = ${J.ys[j]})`; descAr=desc; }
+    else if(t==='sumLe'){ const k=R(1,J.xs.length+J.ys.length-2); J.ys.forEach((y,j)=>J.xs.forEach((x,i)=>{ if(x+y<=k) w+=J.w[j][i]; })); desc=`P(X + Y &le; ${k})`; descAr=desc; }
+    else { const k=J.xs[R(0,J.xs.length-2)], y0=pick(J.ys); J.xs.forEach((x,i)=>{ if(x<=k) w+=J.w[J.ys.indexOf(y0)][i]; }); desc=`P(X &le; ${k}, Y = ${y0})`; descAr=desc; }
+    return {q:L(`The joint pmf of X and Y is given below. Find ${desc}.`, `دالة الاحتمال المشتركة لـ ${M('X')} و ${M('Y')} في الجدول. أوجد ${M(descAr)}.`)+J.html,
+      a:`<b>${fracStr(w,J.N)}</b>`,
+      s:steps(L(`Add the cells of the table that satisfy the condition ${M(desc)}.`, `نجمع خلايا الجدول التي تحقق الشرط ${M(desc)}.`), M(`${desc} = ${fracStr(w,J.N)}`))};
+  },
+  marginalDist(d){
+    const J=jointTable(d), ofX=Math.random()<0.5, V=ofX?J.xs:J.ys, m=ofX?J.mx:J.my, v=ofX?'X':'Y', o=ofX?'y':'x';
+    const list=V.map((x,i)=>`f<sub>${v}</sub>(${x}) = ${fracStr(m[i],J.N)}`).join(', &nbsp;');
+    return {q:L(`The joint pmf of X and Y is given below. Find the marginal distribution of ${v}.`, `دالة الاحتمال المشتركة في الجدول. أوجد التوزيع الهامشي لـ ${M(v)}.`)+J.html,
+      a:`<b>${list}</b>`,
+      s:steps(L(`${M(`f<sub>${v}</sub>(${v.toLowerCase()}) = &sum;<sub>${o}</sub> f(x, y)`)}: add each ${ofX?'column':'row'} of the table.`, `${M(`f<sub>${v}</sub>(${v.toLowerCase()}) = &sum;<sub>${o}</sub> f(x, y)`)}: نجمع كل ${ofX?'عمود':'صف'} في الجدول.`),
+              M(list), L(`Check: the marginal probabilities add up to 1.`, 'تحقق: مجموع الاحتمالات الهامشية يساوي 1.'))};
+  },
+  conditionalProb(d){
+    const J=jointTable(d), i=R(0,J.xs.length-1), j=R(0,J.ys.length-1);
+    if(J.my[j]===0) return G.conditionalProb(d);
+    const x=J.xs[i], y=J.ys[j];
+    return {q:L(`The joint pmf of X and Y is given below. Find P(X = ${x} | Y = ${y}).`, `دالة الاحتمال المشتركة في الجدول. أوجد ${M(`P(X = ${x} | Y = ${y})`)}.`)+J.html,
+      a:`<b>${fracStr(J.w[j][i], J.my[j])}</b>`,
+      s:steps(L(`${M(`P(X = x | Y = y) = f(x, y) / f<sub>Y</sub>(y)`)}`, `${M(`P(X = x | Y = y) = f(x, y) / f<sub>Y</sub>(y)`)}`),
+              M(`f<sub>Y</sub>(${y}) = ${fracStr(J.my[j],J.N)}`),
+              M(`P(X = ${x} | Y = ${y}) = ${fracStr(J.w[j][i],J.N)} &divide; ${fracStr(J.my[j],J.N)} = ${fracStr(J.w[j][i], J.my[j])}`))};
+  },
+  jointMoments(d){
+    const J=jointTable(d), {EX,EY,EXY}=jointE(J), cov=rSub(EXY, rMul(EX,EY)), F=([p,q])=>fracStr(p,q);
+    return {q:L('The joint pmf of X and Y is given below. Find Cov(X, Y).', `دالة الاحتمال المشتركة في الجدول. أوجد ${M('Cov(X, Y)')}.`)+J.html,
+      a:`<b>Cov(X, Y) = ${F(cov)}</b>`,
+      s:steps(L(`${M(`E(X) = &sum; x f<sub>X</sub>(x) = ${F(EX)}`)}, ${M(`E(Y) = &sum; y f<sub>Y</sub>(y) = ${F(EY)}`)}`, `${M(`E(X) = &sum; x f<sub>X</sub>(x) = ${F(EX)}`)}، ${M(`E(Y) = &sum; y f<sub>Y</sub>(y) = ${F(EY)}`)}`),
+              L(`${M(`E(XY) = &sum;&sum; xy f(x, y) = ${F(EXY)}`)}`, `${M(`E(XY) = &sum;&sum; xy f(x, y) = ${F(EXY)}`)}`),
+              L(`${M(`Cov(X, Y) = E(XY) &minus; E(X)E(Y) = ${F(EXY)} &minus; (${F(EX)})(${F(EY)}) = ${F(cov)}`)}`, `${M(`Cov(X, Y) = E(XY) &minus; E(X)E(Y) = ${F(EXY)} &minus; (${F(EX)})(${F(EY)}) = ${F(cov)}`)}`))};
+  },
+  correlationCoef(d){
+    let J, r; do{ J=jointTable(d); r=jointE(J); }while(r.VX[0]===0||r.VY[0]===0);
+    const {EX,EY,EXY,VX,VY}=r, cov=rSub(EXY, rMul(EX,EY)), F=([p,q])=>fracStr(p,q), v=x=>x[0]/x[1], rho=v(cov)/Math.sqrt(v(VX)*v(VY));
+    return {q:L('The joint pmf of X and Y is given below. Find the correlation coefficient ρ(X, Y).', `دالة الاحتمال المشتركة في الجدول. أوجد معامل الارتباط ${M('ρ(X, Y)')}.`)+J.html,
+      a:`<b>ρ &asymp; ${num(rho,4)}</b>`,
+      s:steps(L(`${M(`Cov(X, Y) = E(XY) &minus; E(X)E(Y) = ${F(EXY)} &minus; (${F(EX)})(${F(EY)}) = ${F(cov)}`)}`, `${M(`Cov(X, Y) = E(XY) &minus; E(X)E(Y) = ${F(cov)}`)}`),
+              L(`${M(`Var(X) = E(X${sup(2)}) &minus; [E(X)]${sup(2)} = ${F(VX)}`)}, ${M(`Var(Y) = ${F(VY)}`)}`, `${M(`Var(X) = E(X${sup(2)}) &minus; [E(X)]${sup(2)} = ${F(VX)}`)}، ${M(`Var(Y) = ${F(VY)}`)}`),
+              L(`${M(`ρ = Cov(X, Y) / &radic;(Var(X)Var(Y)) &asymp; ${num(rho,4)}`)} (always between −1 and 1)`, `${M(`ρ = Cov(X, Y) / &radic;(Var(X)Var(Y)) &asymp; ${num(rho,4)}`)} (دائماً بين −1 و 1)`))};
+  },
+  independenceCheck(d){
+    const J=jointTable(d, Math.random()<0.5);
+    let bad=null; J.ys.forEach((y,j)=>J.xs.forEach((x,i)=>{ if(!bad && J.w[j][i]*J.N!==J.mx[i]*J.my[j]) bad={x,y,i,j}; }));
+    const indep=!bad;
+    return {q:L('The joint pmf of X and Y is given below. Are X and Y independent?', `دالة الاحتمال المشتركة في الجدول. هل ${M('X')} و ${M('Y')} مستقلان؟`)+J.html,
+      a:`<b>${indep?Li('Independent','مستقلان'):Li('Not independent','غير مستقلين')}</b>`,
+      s:steps(L(`X and Y are independent iff ${M('f(x, y) = f<sub>X</sub>(x) f<sub>Y</sub>(y)')} for every cell.`, `${M('X')} و ${M('Y')} مستقلان إذا وفقط إذا ${M('f(x, y) = f<sub>X</sub>(x) f<sub>Y</sub>(y)')} لكل خلية.`),
+              L(`Marginals: ${M(J.xs.map((x,i)=>`f<sub>X</sub>(${x}) = ${fracStr(J.mx[i],J.N)}`).join(', '))}; ${M(J.ys.map((y,j)=>`f<sub>Y</sub>(${y}) = ${fracStr(J.my[j],J.N)}`).join(', '))}`,
+                `الهامشيات: ${M(J.xs.map((x,i)=>`f<sub>X</sub>(${x}) = ${fracStr(J.mx[i],J.N)}`).join(', '))}؛ ${M(J.ys.map((y,j)=>`f<sub>Y</sub>(${y}) = ${fracStr(J.my[j],J.N)}`).join(', '))}`),
+              indep ? L('Every cell equals the product of its marginals ⇒ independent.', 'كل خلية تساوي حاصل ضرب الهامشيين ⇐ مستقلان.')
+                    : L(`At (${bad.x}, ${bad.y}): ${M(`f = ${fracStr(J.w[bad.j][bad.i],J.N)} &ne; ${fracStr(J.mx[bad.i],J.N)} &times; ${fracStr(J.my[bad.j],J.N)} = ${fracStr(J.mx[bad.i]*J.my[bad.j],J.N*J.N)}`)} ⇒ not independent.`,
+                        `عند ${M(`(${bad.x}, ${bad.y})`)}: ${M(`f = ${fracStr(J.w[bad.j][bad.i],J.N)} &ne; ${fracStr(J.mx[bad.i],J.N)} &times; ${fracStr(J.my[bad.j],J.N)} = ${fracStr(J.mx[bad.i]*J.my[bad.j],J.N*J.N)}`)} ⇐ غير مستقلين.`))};
+  },
+  sumOfRV(d){
+    const ex=R(-5,9), ey=R(-5,9), vx=R(1,9), vy=R(1,9), cov=d===1?0:R(-2,3), a=nz(-3,3), b=nz(-3,3);
+    const E=a*ex+b*ey, V=a*a*vx+b*b*vy+2*a*b*cov, W=`${lead(a,'X')}${term(b,'Y')}`;
+    return {q:L(`E(X) = ${ex}, E(Y) = ${ey}, Var(X) = ${vx}, Var(Y) = ${vy}, Cov(X, Y) = ${cov}. Find the mean and variance of W = ${W}.`,
+                `${M(`E(X) = ${ex}, E(Y) = ${ey}, Var(X) = ${vx}, Var(Y) = ${vy}, Cov(X, Y) = ${cov}`)}. أوجد التوقع والتباين للمتغير ${M(`W = ${W}`)}.`),
+      a:`<b>E(W) = ${sgn(E)}, Var(W) = ${V}</b>`,
+      s:steps(L(`${M('E(aX + bY) = aE(X) + bE(Y)')} = ${M(`(${a})(${ex}) + (${b})(${ey}) = ${sgn(E)}`)}`, `${M('E(aX + bY) = aE(X) + bE(Y)')} = ${M(`(${a})(${ex}) + (${b})(${ey}) = ${sgn(E)}`)}`),
+              L(`${M(`Var(aX + bY) = a${sup(2)}Var(X) + b${sup(2)}Var(Y) + 2ab&middot;Cov(X, Y)`)}`, `${M(`Var(aX + bY) = a${sup(2)}Var(X) + b${sup(2)}Var(Y) + 2ab&middot;Cov(X, Y)`)}`),
+              M(`= ${a*a}(${vx}) + ${b*b}(${vy}) + 2(${a})(${b})(${cov}) = ${V}`),
+              cov===0 ? L('(Cov = 0, e.g. X and Y independent.)', '(التغاير صفر، كما لو كان X و Y مستقلين.)') : '')};
+  },
+  bivariateNormal(d){
+    const mx=R(10,60), my=R(10,60), sx=pick([2,4,5,10]), sy=pick([2,3,4,5,6,8]), rho=pick([0.2,0.4,0.5,0.6,0.8,-0.5,-0.6]), x=mx+pick([-2,-1,1,2])*sx;
+    const cm=my+rho*sy/sx*(x-mx), cv=sy*sy*(1-rho*rho);
+    const base=steps(
+      L(`For a bivariate normal: ${M(`E(Y | X = x) = μ<sub>Y</sub> + ρ(σ<sub>Y</sub>/σ<sub>X</sub>)(x &minus; μ<sub>X</sub>)`)}`, `للتوزيع الطبيعي الثنائي: ${M(`E(Y | X = x) = μ<sub>Y</sub> + ρ(σ<sub>Y</sub>/σ<sub>X</sub>)(x &minus; μ<sub>X</sub>)`)}`),
+      M(`= ${my} + (${rho})(${sy}/${sx})(${x} &minus; ${mx}) = ${num(cm,4)}`),
+      L(`${M(`Var(Y | X = x) = σ<sub>Y</sub>${sup(2)}(1 &minus; ρ${sup(2)}) = ${sy*sy}(1 &minus; ${num(rho*rho,4)}) = ${num(cv,4)}`)}`, `${M(`Var(Y | X = x) = σ<sub>Y</sub>${sup(2)}(1 &minus; ρ${sup(2)}) = ${sy*sy}(1 &minus; ${num(rho*rho,4)}) = ${num(cv,4)}`)}`));
+    const given=`μ<sub>X</sub> = ${mx}, μ<sub>Y</sub> = ${my}, σ<sub>X</sub> = ${sx}, σ<sub>Y</sub> = ${sy}, ρ = ${rho}`;
+    if(d<3) return {q:L(`(X, Y) is bivariate normal with ${given}. Find E(Y | X = ${x}) and Var(Y | X = ${x}).`, `${M('(X, Y)')} له توزيع طبيعي ثنائي حيث ${M(given)}. أوجد ${M(`E(Y | X = ${x})`)} و ${M(`Var(Y | X = ${x})`)}.`),
+      a:`<b>E(Y | X = ${x}) = ${num(cm,4)}, Var(Y | X = ${x}) = ${num(cv,4)}</b>`, s:base};
+    const y=Math.round(cm+pick([-1,1])*Math.sqrt(cv)*pick([0.5,1,1.5])), z=+((y-cm)/Math.sqrt(cv)).toFixed(2), P=Phi(z);
+    return {q:L(`(X, Y) is bivariate normal with ${given}. Find P(Y &le; ${y} | X = ${x}).`, `${M('(X, Y)')} له توزيع طبيعي ثنائي حيث ${M(given)}. أوجد ${M(`P(Y &le; ${y} | X = ${x})`)}.`),
+      a:`<b>z = ${num(z,2)}; P &asymp; ${num(P,4)}</b>`,
+      s:base+steps(L(`Given X = ${x}, Y is normal: ${M(`z = (${y} &minus; ${num(cm,4)}) / &radic;${num(cv,4)} = ${num(z,2)}`)}`, `بمعلومية ${M(`X = ${x}`)} يكون ${M('Y')} طبيعياً: ${M(`z = (${y} &minus; ${num(cm,4)}) / &radic;${num(cv,4)} = ${num(z,2)}`)}`),
+                   L(`${M(`P(Y &le; ${y} | X = ${x}) = Φ(${num(z,2)}) &asymp; ${num(P,4)}`)} (z table)`, `${M(`P(Y &le; ${y} | X = ${x}) = Φ(${num(z,2)}) &asymp; ${num(P,4)}`)} (من جدول z)`)+distPlot({crit:Math.abs(z), kind:z<0?'left':'right', stat:z}))};
+  },
+  multinomialProb(d){
+    const n=d===1?R(3,4):R(4,6), den=pick([4,5,6,10]); let w1=R(1,den-2), w2=R(1,den-w1-1); const w3=den-w1-w2;
+    const a=R(0,n), b=R(0,n-a), c=n-a-b;
+    const coef=factorial(n)/(factorial(a)*factorial(b)*factorial(c)), num_=coef*w1**a*w2**b*w3**c, dd=den**n;
+    const p=(w)=>fracStr(w,den);
+    return {q:L(`Each trial gives outcome 1, 2 or 3 with probabilities ${p(w1)}, ${p(w2)}, ${p(w3)}. In ${n} independent trials, find P(X<sub>1</sub> = ${a}, X<sub>2</sub> = ${b}, X<sub>3</sub> = ${c}).`,
+                `كل محاولة تعطي النتيجة 1 أو 2 أو 3 باحتمالات ${M(`${p(w1)}, ${p(w2)}, ${p(w3)}`)}. في ${M(n)} محاولات مستقلة أوجد ${M(`P(X<sub>1</sub> = ${a}, X<sub>2</sub> = ${b}, X<sub>3</sub> = ${c})`)}.`),
+      a:`<b>${fracStr(num_,dd)}</b>`,
+      s:steps(L(`Multinomial: ${M(`P = n! / (x<sub>1</sub>! x<sub>2</sub>! x<sub>3</sub>!) &middot; p<sub>1</sub>${sup('x₁')} p<sub>2</sub>${sup('x₂')} p<sub>3</sub>${sup('x₃')}`)}`, `التوزيع متعدد الحدود: ${M(`P = n! / (x<sub>1</sub>! x<sub>2</sub>! x<sub>3</sub>!) &middot; p<sub>1</sub>${sup('x₁')} p<sub>2</sub>${sup('x₂')} p<sub>3</sub>${sup('x₃')}`)}`),
+              M(`${n}! / (${a}! ${b}! ${c}!) = ${coef}`),
+              M(`P = ${coef} &middot; (${p(w1)})${sup(a)} (${p(w2)})${sup(b)} (${p(w3)})${sup(c)} = ${fracStr(num_,dd)}`))};
   },
 
   /* ---- Probability (STAT 212) ---- */
