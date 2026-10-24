@@ -378,7 +378,10 @@ const exampleHTML = (it, ii) => `<div class="bk-ex bk-block" data-ii="${ii}">
 /* booklet: graphs move next to the solution (the side that the text leaves empty) */
 function splitFigures(ex){
   const fig=ex.querySelector('.bk-fig'); if(!fig) return;
-  ex.querySelectorAll('.bk-steps svg.plot').forEach(svg=>fig.appendChild(svg));
+  ex.querySelectorAll('.bk-steps svg.plot').forEach(svg=>{     // wide strips (number lines) stay under their step
+    const w=+svg.getAttribute('width')||0, h=+svg.getAttribute('height')||1;
+    if(!svg.classList.contains('nl') && w/h<=2.2) fig.appendChild(svg);
+  });
   ex.classList.toggle('has-fig', fig.children.length>0);
 }
 function bookHTML(parts){
@@ -480,7 +483,20 @@ function paginateBook(){
     const tryPutNew=(bd,b)=>bd.children.length>0 && tryPut(bd,b);   // extra examples never open a page of their own
     [...flow.children].forEach(b=>{
       const it = b.dataset.ii!==undefined && p ? p.items[+b.dataset.ii] : null;
-      if(!tryPut(body,b)){ fillGap(body); body=newPage(flow); tryPut(body,b); }
+      if(!tryPut(body,b)){
+        const last=body.lastElementChild, free=body.clientHeight-(last ? last.offsetTop+last.offsetHeight-body.offsetTop : 0);
+        if(b.classList.contains('bk-ex') && b.querySelector('.bk-steps ol.steps') && free>body.clientHeight*0.35) body.appendChild(b);   // lots of room: start it here and continue below
+        else { fillGap(body); body=newPage(flow); tryPut(body,b); }
+      }
+      for(let cur=b; over(body) && cur.classList.contains('bk-ex') && cur.parentNode===body; ){   // too tall: continue on the next page
+        const rest=splitExample(body, cur, over);
+        if(!rest || over(body)){                            // even its start does not fit here: move it whole to a new page
+          if(rest) joinExample(cur, rest);
+          if(body.children.length<=1) break;
+          body.removeChild(cur); body=newPage(flow); body.appendChild(cur); continue;
+        }
+        body=newPage(flow); body.appendChild(rest); cur=rest;
+      }
       if(it){ out.push(it); els.push(b); }
     });
     fillGap(body);
@@ -511,6 +527,24 @@ function fitIndex(sc){
     cur=next;
   }
   return pages;
+}
+/* move the last steps (and the answer) of an example that overflows its page into a continuation block */
+function splitExample(bd, ex, over){
+  const ol=ex.querySelector('.bk-steps ol.steps'); if(!ol || ol.children.length<2) return null;
+  const head=(ex.querySelector('.bk-exh span')||{}).textContent||'';
+  const cont=document.createElement('div'); cont.className='bk-ex bk-block bk-cont';
+  cont.innerHTML=`<div class="bk-exh"><span>${head.startsWith(T('continued'))?head:`${T('continued')} — ${head}`}</span></div><div class="bk-main"><div class="bk-steps"><ol class="steps"></ol></div></div>`;
+  const col=cont.querySelector('ol.steps'), first=+(ol.dataset.first||1), ans=ex.querySelector('.bk-ans');
+  if(ans) cont.querySelector('.bk-main').appendChild(ans);           // the answer always closes the example
+  while(over(bd) && ol.children.length>1) col.insertBefore(ol.lastElementChild, col.firstChild);
+  if(!col.children.length) col.appendChild(ol.lastElementChild);   // the answer never travels alone: take the last step with it
+  const next=first+ol.children.length;
+  col.dataset.first=next; col.style.counterReset=`st ${next-1}`;
+  return cont;
+}
+function joinExample(ex, cont){                          // undo splitExample
+  const ol=ex.querySelector('.bk-steps ol.steps'); [...cont.querySelectorAll('ol.steps > li')].forEach(li=>ol.appendChild(li));
+  const ans=cont.querySelector('.bk-ans'); if(ans) ex.querySelector('.bk-main').appendChild(ans);
 }
 /* scale the A4 pages down to the width of the preview column (the print layout is unscaled) */
 function fitBook(){

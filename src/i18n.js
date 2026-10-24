@@ -92,6 +92,7 @@ export const UI = {
   titleEx:      ['Worked Examples', 'أمثلة محلولة'],
   titleBook:    ['Study Booklet', 'ملزمة'],
   example:      ['Example', 'مثال'],
+  continued:    ['Continued', 'تابع'],
   solution:     ['Solution', 'الحل'],
   answer:       ['Answer', 'الإجابة'],
   index:        ['Index', 'الفهرس'],
