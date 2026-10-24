@@ -275,12 +275,13 @@
   /* ---- study booklet: A4 pages (scaled to the preview column on screen) ---- */
   .booklet-doc{overflow:hidden}
   .bk-scale{width:210mm}
-  .bk-page{width:210mm;height:296mm;box-sizing:border-box;padding:16mm 16mm 0;position:relative;overflow:hidden;background:#fff;
+  .bk-page{width:210mm;height:296mm;box-sizing:border-box;padding:14mm 16mm 0;position:relative;overflow:hidden;background:#fff;
     font-size:13px;color:var(--ink);box-shadow:0 1px 6px rgba(15,23,42,.18);border-radius:2px}
   .bk-page + .bk-page{margin-top:18px}
-  .bk-body{height:calc(296mm - 16mm - 18mm);overflow:hidden}
-  .bk-run{position:absolute;top:7mm;inset-inline:16mm;font-size:10px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:3px}
-  .bk-foot{position:absolute;bottom:7mm;inset-inline:0;text-align:center;font-size:11px;color:var(--muted)}
+  .bk-body{height:calc(296mm - 14mm - 15mm);overflow:hidden}
+  .bk-page svg.plot{height:165px;width:auto;max-width:100%}   /* compact graphs so more examples fit on a page */
+  .bk-run{position:absolute;top:6mm;inset-inline:16mm;font-size:10px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:3px}
+  .bk-foot{position:absolute;bottom:6mm;inset-inline:0;text-align:center;font-size:11px;color:var(--muted)}
   .bk-foot:not(:empty)::before{content:"— "} .bk-foot:not(:empty)::after{content:" —"}
   .bk-block{margin:0 0 10px}
   .bk-th{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#0f2a5c,#173f86 60%,#0c6a7a);color:#fff;border-radius:10px;padding:12px 16px;margin-bottom:8px}
