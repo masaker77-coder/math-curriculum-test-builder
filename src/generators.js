@@ -1,6 +1,6 @@
 import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, sgn, cplx, mat, TRIG, shuffled,
          lcm, totient, powMod, isPrimeN, vec } from './helpers.js';
-import { L, Li, M, align, steps, num, plot, numberLine, intervalLine, aug, Phi, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML } from './viz.js';
+import { L, Li, M, align, steps, num, plot, numberLine, intervalLine, aug, Phi, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML, tbl } from './viz.js';
 
 /* a small discrete distribution: distinct values xs with probabilities cs[i]/D (all cs[i] ≥ 1) */
 function discreteDist(d){
@@ -135,6 +135,110 @@ function jointE(J){
 
 /* ============================ GENERATORS ============================ */
 /* each generator: (d) => {q:"<html>", a:"<html>"}  where d = 1..3 */
+
+/* ---- STAT 361 helpers: LP data, transportation and assignment ---- */
+/* two ≤ constraints through an integer point (x, y) whose intercepts cross, so the region has 4 corners */
+function lpData(d){
+  const k=d===1?3:6;
+  for(;;){
+    const x=R(1,d===1?5:8), y=R(1,d===1?5:8), a1=R(1,k), b1=R(1,k), a2=R(1,k), b2=R(1,k);
+    if(a1*b2===a2*b1) continue;
+    const c1=a1*x+b1*y, c2=a2*x+b2*y;
+    if(!((c1*a2<c2*a1 && c1*b2>c2*b1) || (c1*a2>c2*a1 && c1*b2<c2*b1))) continue;
+    return {c:[R(1,d===1?6:12)*(d===1?1:5), R(1,d===1?6:12)*(d===1?1:5)], rows:[[a1,b1,c1],[a2,b2,c2]]};
+  }
+}
+const cx=a=>a===1?'':a;                                              // coefficient 1 is not written
+function lpCross([[a1,b1,c1],[a2,b2,c2]]){ const D=a1*b2-a2*b1; return [rN([c1*b2-c2*b1,D]), rN([a1*c2-a2*c1,D])]; }
+/* corner points (exact fractions): Max with ≤ → 4 corners incl. origin; Min with ≥ → 3 corners of the open region */
+function lpVertices(rows, min){
+  const v=f=>f[0]/f[1], xi=rows.map(([a,,c])=>rN([c,a])), yi=rows.map(([,b,c])=>rN([c,b])), Z=[0,1];
+  const ext=(arr,big)=>arr.reduce((m,f)=>(big?v(f)>v(m):v(f)<v(m))?f:m);
+  return min ? [[Z,ext(yi,true)], lpCross(rows), [ext(xi,true),Z]] : [[Z,Z],[ext(xi,false),Z],lpCross(rows),[Z,ext(yi,false)]];
+}
+function decisionTreeSVG(alts){
+  const n=alts.length, w=380, rowH=86, h=n*rowH+6, yD=h/2, cx=150, out=[], neg=v=>v<0?'−'+Math.abs(v):''+v;
+  out.push(`<rect class="dnode" x="8" y="${yD-9}" width="18" height="18"/>`);
+  alts.forEach((a,i)=>{
+    const y=3+rowH*i+rowH/2;
+    out.push(`<line class="ax" x1="26" y1="${yD}" x2="${cx-9}" y2="${y}"/>`, `<text class="lb" x="${(26+cx)/2-8}" y="${(yD+y)/2-6}">A${i+1}</text>`,
+             `<circle class="cnode" cx="${cx}" cy="${y}" r="9"/>`, `<text class="tl" x="${cx-24}" y="${y+24}">EMV ${neg(a.emv)}</text>`);
+    [[y-26,`p = ${a.p}`,a.hi],[y+26,`p = ${num(1-a.p,2)}`,a.lo]].forEach(([y2,pl,val])=>
+      out.push(`<line class="ax" x1="${cx+9}" y1="${y}" x2="290" y2="${y2}"/>`, `<text class="tl" x="205" y="${(y+y2)/2-4}">${pl}</text>`,
+               `<text class="lb" x="296" y="${y2+4}">${neg(val)}</text>`));
+  });
+  return `<svg class="plot" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img">${out.join('')}</svg>`;
+}
+/* balanced transportation problem: 3 sources, 3 (or 4) destinations, quantities in multiples of 5 */
+function transportData(d){
+  const m=3, n=d===3?4:3, C=Array.from({length:m},()=>Array.from({length:n},()=>R(2,d===1?12:20)));
+  const s=Array.from({length:m},()=>R(4,d===1?8:12)*5), units=s.reduce((a,b)=>a+b,0)/5, dm=new Array(n).fill(1);
+  for(let k=n;k<units;k++) dm[R(0,n-1)]++;
+  return {C, s, dm:dm.map(v=>v*5)};
+}
+const SRC=i=>`S<sub>${i+1}</sub>`, DST=j=>`D<sub>${j+1}</sub>`;
+/* initial basic solution; log holds one step per allocation (Vogel adds the penalties) */
+function transportSolve({C,s,dm}, method){
+  const m=s.length, n=dm.length, S=[...s], D=[...dm], x=C.map(r=>r.map(()=>0)), log=[];
+  const rowOn=new Array(m).fill(true), colOn=new Array(n).fill(true);
+  const give=(i,j,extra)=>{ const q=Math.min(S[i],D[j]); x[i][j]+=q; S[i]-=q; D[j]-=q; log.push({i,j,q,extra});
+    if(S[i]===0) rowOn[i]=false; if(D[j]===0) colOn[j]=false; };
+  if(method==='nw'){ let i=0,j=0; while(i<m&&j<n){ give(i,j); const a=S[i]===0, b=D[j]===0; if(a) i++; if(b) j++; } }
+  else while(rowOn.some(Boolean)&&colOn.some(Boolean)){
+    const cells=[]; for(let i=0;i<m;i++) for(let j=0;j<n;j++) if(rowOn[i]&&colOn[j]) cells.push([i,j]);
+    if(method==='lc'){
+      cells.sort((a,b)=>C[a[0]][a[1]]-C[b[0]][b[1]] || Math.min(S[b[0]],D[b[1]])-Math.min(S[a[0]],D[a[1]]));
+      give(...cells[0]);
+    } else {
+      const pen=v=>{ const t=[...v].sort((a,b)=>a-b); return t.length>1?t[1]-t[0]:t[0]; };
+      const rp=C.map((r,i)=>rowOn[i]?pen(r.filter((_,j)=>colOn[j])):null), cp=dm.map((_,j)=>colOn[j]?pen(C.filter((_,i)=>rowOn[i]).map(r=>r[j])):null);
+      const top=Math.max(...rp.filter(v=>v!==null), ...cp.filter(v=>v!==null));
+      const cheapest=list=>list.reduce((b,c)=>C[c[0]][c[1]]<C[b[0]][b[1]]?c:b);
+      const cand=[...rp.map((v,i)=>v===top?{c:cheapest(cells.filter(c=>c[0]===i)),line:SRC(i)}:null), ...cp.map((v,j)=>v===top?{c:cheapest(cells.filter(c=>c[1]===j)),line:DST(j)}:null)].filter(Boolean);
+      const {c:[i,j],line}=cand.reduce((b,e)=>C[e.c[0]][e.c[1]]<C[b.c[0]][b.c[1]]?e:b);
+      give(i,j,{rp,cp,top,line});
+    }
+  }
+  const cost=x.reduce((t,r,i)=>t+r.reduce((u,q,j)=>u+q*C[i][j],0),0);
+  return {x, log, cost};
+}
+function transportTableHTML({C,s,dm}, x){
+  return tbl(['',...dm.map((_,j)=>DST(j)),Li('Supply','العرض')],
+    [...C.map((r,i)=>[SRC(i), ...r.map((c,j)=>x&&x[i][j]>0?{v:`<b>${x[i][j]}</b> <small>(${c})</small>`,hl:true}:x?`<small>(${c})</small>`:c), s[i]]),
+     [Li('Demand','الطلب'), ...dm, s.reduce((a,b)=>a+b,0)]]);
+}
+const T_NAMES={nw:['Northwest corner','الركن الشمالي الغربي'], lc:['Least cost','أقل تكلفة'], vogel:['Vogel approximation','فوجل التقريبية']};
+function transport(d, method){
+  const T=transportData(d), r=transportSolve(T, method), [en,ar]=T_NAMES[method], F=v=>v===null?'—':v;
+  const rule={nw:['start at the top-left cell, allocate as much as possible, then move right (demand left) or down (supply left)','نبدأ من الخلية العليا اليسرى ونخصص أكبر كمية ممكنة ثم ننتقل يميناً (إن بقي طلب) أو لأسفل (إن بقي عرض)'],
+    lc:['allocate as much as possible to the cheapest remaining cell, cross out the satisfied row/column, repeat','نخصص أكبر كمية ممكنة لأرخص خلية متبقية ثم نشطب الصف أو العمود المستوفى ونكرر'],
+    vogel:['penalty = difference of the two smallest costs in each row/column; take the largest penalty and allocate to its cheapest cell','الجزاء = الفرق بين أصغر تكلفتين في كل صف وعمود؛ نختار أكبر جزاء ونخصص لأرخص خلية فيه']}[method];
+  const lines=r.log.map(({i,j,q,extra})=>{
+    const cell=M(`(${SRC(i)}, ${DST(j)})`), c=T.C[i][j];
+    const pre = extra ? L(`Penalties — rows: ${extra.rp.map(F).join(', ')}; columns: ${extra.cp.map(F).join(', ')}. Largest ${extra.top} (${extra.line}).`,
+                          `الجزاءات — الصفوف: ${M(extra.rp.map(F).join(', '))}، الأعمدة: ${M(extra.cp.map(F).join(', '))}. الأكبر ${M(extra.top)} (${M(extra.line)}).`)+' ' : '';
+    return pre+L(`${cell} (cost ${c}): allocate ${q}.`, `${cell} (التكلفة ${M(c)}): نخصص ${M(q)}.`);
+  });
+  const terms=[]; T.C.forEach((row,i)=>row.forEach((c,j)=>{ if(r.x[i][j]>0) terms.push(`${r.x[i][j]}(${c})`); }));
+  return {q:L(`Find an initial basic feasible solution by the ${en} method and its total cost:`, `أوجد الحل الأساسي المبدئي بطريقة ${ar} والتكلفة الكلية:`)+transportTableHTML(T),
+    a:`<b>${Li('Total cost','التكلفة الكلية')} = ${r.cost}</b>`,
+    s:steps(L(`Supply = demand = ${T.s.reduce((a,b)=>a+b,0)} (balanced). Rule: ${rule[0]}.`, `العرض = الطلب = ${M(T.s.reduce((a,b)=>a+b,0))} (متوازنة). القاعدة: ${rule[1]}.`),
+            ...lines, L('Allocation table:', 'جدول التخصيص:')+transportTableHTML(T, r.x),
+            M(`${Li('Cost','التكلفة')} = ${terms.join(' + ')} = ${r.cost}`))};
+}
+/* fewest lines (rows + columns) covering every zero — brute force over row sets (n ≤ 4) */
+function minLineCover(A){
+  const n=A.length; let best=null;
+  for(let mask=0; mask<1<<n; mask++){
+    const rows=[...Array(n)].map((_,i)=>!!(mask>>i&1)), cols=new Array(n).fill(false);
+    for(let i=0;i<n;i++) if(!rows[i]) for(let j=0;j<n;j++) if(A[i][j]===0) cols[j]=true;
+    const count=rows.filter(Boolean).length+cols.filter(Boolean).length;
+    if(!best||count<best.count) best={count,rows,cols};
+  }
+  return best;
+}
+function permutations(n){ if(n===1) return [[0]]; return permutations(n-1).flatMap(p=>[...Array(n).keys()].map(k=>[...p.slice(0,k),n-1,...p.slice(k)])); }
+const bestZeroAssignment=A=>permutations(A.length).find(p=>p.every((j,i)=>A[i][j]===0));
 
 export const G = {
   /* ---- Pre-Algebra ---- */
@@ -1168,6 +1272,146 @@ export const G = {
     const V=[[0,0],[p,0],[p,c-p],[c-q,q],[0,q]], best=Math.max(...V.map(([x,y])=>a*x+b*y));
     return {q:L(`Maximize Z = ${a}x + ${b}y subject to:`, `أوجد القيمة العظمى لـ ${M(`Z = ${a}x + ${b}y`)} بشرط:`)+'<br>'+
               align([['x + y','&le;',c],['x','&le;',p],['y','&le;',q],['x, y','&ge;','0']], true), a:`<b>max Z = ${best}</b>`};
+  },
+
+  /* ================= STAT 361 — Operations Research (1) ================= */
+  lpFormulate(d){
+    const P=lpData(d), [p1,p2]=P.c, [[a1,b1,c1],[a2,b2,c2]]=P.rows;
+    const model=align([['Max Z','=',`${cx(p1)}x<sub>1</sub> + ${cx(p2)}x<sub>2</sub>`],[`${cx(a1)}x<sub>1</sub> + ${cx(b1)}x<sub>2</sub>`,'&le;',c1],[`${cx(a2)}x<sub>1</sub> + ${cx(b2)}x<sub>2</sub>`,'&le;',c2],['x<sub>1</sub>, x<sub>2</sub>','&ge;','0']], true);
+    return {q:L(`A factory makes two products A and B. A unit of A needs ${a1} hours on machine 1 and ${a2} hours on machine 2; a unit of B needs ${b1} and ${b2} hours. Machine 1 is available ${c1} hours and machine 2 ${c2} hours. The profit is ${p1} SAR per unit of A and ${p2} SAR per unit of B. Formulate the linear programming model.`,
+                `مصنع ينتج منتجين A و B. تحتاج الوحدة من A إلى ${M(a1)} ساعات على الآلة 1 و ${M(a2)} ساعات على الآلة 2، وتحتاج الوحدة من B إلى ${M(b1)} و ${M(b2)} ساعات. الوقت المتاح للآلة 1 هو ${M(c1)} ساعة وللآلة 2 هو ${M(c2)} ساعة. الربح ${M(p1)} ريال لوحدة A و ${M(p2)} ريال لوحدة B. صِغ نموذج البرمجة الخطية.`),
+      a:`<b>${model}</b>`,
+      s:steps(L(`Decision variables: ${M('x<sub>1</sub>')} = units of A, ${M('x<sub>2</sub>')} = units of B.`, `متغيرات القرار: ${M('x<sub>1</sub>')} عدد وحدات A، و ${M('x<sub>2</sub>')} عدد وحدات B.`),
+              L(`Objective (total profit): ${M(`Max Z = ${cx(p1)}x<sub>1</sub> + ${cx(p2)}x<sub>2</sub>`)}`, `دالة الهدف (الربح الكلي): ${M(`Max Z = ${cx(p1)}x<sub>1</sub> + ${cx(p2)}x<sub>2</sub>`)}`),
+              L('Constraints: hours used on each machine ≤ hours available; quantities cannot be negative.', 'القيود: الساعات المستخدمة على كل آلة ≤ الساعات المتاحة، والكميات لا تكون سالبة.')+'<br>'+model)};
+  },
+  lpGraphical(d){
+    const P=lpData(d), min=d===3&&Math.random()<0.5, rows=P.rows, [c1,c2]=P.c;
+    const V=lpVertices(rows, min);                                       // corner points as exact fractions
+    const z=([x,y])=>c1*x[0]/x[1]+c2*y[0]/y[1], vals=V.map(z), best=min?Math.min(...vals):Math.max(...vals);
+    if(vals.filter(v=>Math.abs(v-best)<1e-9).length>1) return G.lpGraphical(d);   // avoid ties (alternative optima)
+    const k=vals.findIndex(v=>Math.abs(v-best)<1e-9), F=([p,q])=>fracStr(p,q), pt=v=>`(${F(v[0])}, ${F(v[1])})`;
+    const rel=min?'&ge;':'&le;', xs=V.map(v=>v[0][0]/v[0][1]), ys=V.map(v=>v[1][0]/v[1][1]), X1=Math.max(...xs)*1.25+1, Y1=Math.max(...ys)*1.25+1;
+    const line=([a,b,c])=>t=>(c-a*t)/b, P2=V.map((v,i)=>[xs[i],ys[i]]), poly=min ? [...P2,[X1,0],[X1,Y1],[0,Y1]] : P2;
+    const g=plot({x:[0,X1], y:[0,Y1], curves:rows.map((r,i)=>({f:line(r), cls:i?'c2':'c1'})), polys:[{pts:poly}], points:V.map((v,i)=>({x:xs[i], y:ys[i], label:`(${num(xs[i],2)}, ${num(ys[i],2)})`, cls:i===k?'stat':'pt'}))});
+    const cons=rows.map(([a,b,c])=>[`${a===1?'':a}x<sub>1</sub> + ${b===1?'':b}x<sub>2</sub>`, rel, c]);
+    const intercepts=rows.map(([a,b,c],i)=>tbl([`(${i+1})`,'x<sub>1</sub>','x<sub>2</sub>'],[['',0,F(rN([c,a]))],['',F(rN([c,b])),0]]));
+    return {q:L(`Solve graphically:`, 'حل بالرسم البياني:')+'<br>'+align([[min?'Min Z':'Max Z','=',`${cx(c1)}x<sub>1</sub> + ${cx(c2)}x<sub>2</sub>`],...cons,['x<sub>1</sub>, x<sub>2</sub>','&ge;','0']], true),
+      a:`<b>${M(`x<sub>1</sub> = ${F(V[k][0])}, x<sub>2</sub> = ${F(V[k][1])}, ${min?'Min':'Max'} Z = ${num(best,4)}`)}</b>`,
+      s:steps(L('Turn each constraint into an equation and find where it meets the axes:', 'نحوّل كل قيد إلى معادلة ونوجد نقاط تقاطعه مع المحورين:')+intercepts.join(' '),
+              L(`Intersection of the two lines (solving the equations together): ${M(pt(lpCross(rows)))}`, `نقطة تقاطع المستقيمين (بحل المعادلتين معاً): ${M(pt(lpCross(rows)))}`),
+              L(`Shade the feasible region (${min?'above':'below'} both lines, x₁, x₂ ≥ 0) and list its corner points:`, `نظلّل منطقة الحلول الممكنة (${min?'فوق':'تحت'} المستقيمين و ${M('x₁, x₂ ≥ 0')}) ونحدد رؤوسها:`)+g,
+              L('Substitute every corner point in Z:', 'نعوّض بكل رأس في دالة الهدف:')+tbl([L('Point','النقطة'),'Z'], V.map((v,i)=>[pt(v), i===k?{v:num(vals[i],4),hl:true}:num(vals[i],4)])),
+              L(`The ${min?'smallest':'largest'} value is the optimum: ${M(`Z = ${num(best,4)}`)} at ${M(pt(V[k]))}.`, `${min?'أصغر':'أكبر'} قيمة هي الحل الأمثل: ${M(`Z = ${num(best,4)}`)} عند ${M(pt(V[k]))}.`))};
+  },
+  simplexMethod(d){
+    const P=lpData(d), [[a1,b1,c1],[a2,b2,c2]]=P.rows, [p1,p2]=P.c, F=([p,q])=>fracStr(p,q);
+    const names=['x<sub>1</sub>','x<sub>2</sub>','S<sub>1</sub>','S<sub>2</sub>'];
+    let T=[[a1,b1,1,0,c1],[a2,b2,0,1,c2],[-p1,-p2,0,0,0]].map(r=>r.map(v=>[v,1])), basis=[2,3];
+    const show=(enter,leave,ratios)=>tbl([L('Basic','الأساسي'),...names,L('Solution','الحل'),'Ratio'],
+      T.map((r,i)=>[i<2?names[basis[i]]:'Z', ...r.slice(0,4).map((v,j)=>i===leave&&j===enter?{v:F(v),hl:true}:F(v)), F(r[4]), i<2&&ratios?ratios[i]:'']));
+    const out=[];
+    for(let it=0; it<4; it++){
+      const zr=T[2].slice(0,4), minv=Math.min(...zr.map(v=>v[0]/v[1]));
+      if(minv>=0){ out.push(L('No negative entries remain in the Z row ⇒ the tableau is optimal.', 'لا توجد قيم سالبة في صف Z ⇐ الجدول أمثل.')+show(-1,-1,null)); break; }
+      const e=zr.findIndex(v=>v[0]/v[1]===minv);
+      const ratios=[0,1].map(i=>T[i][e][0]>0 ? rDiv(T[i][4],T[i][e]) : null);
+      const rv=ratios.map(r=>r?r[0]/r[1]:Infinity), l=rv.indexOf(Math.min(...rv));
+      out.push(L(`Entering ${M(names[e])} (most negative in the Z row); ratios Solution ÷ column; leaving ${M(names[basis[l]])} (smallest ratio); pivot ${M(F(T[l][e]))}.`,
+                 `المتغير الداخل ${M(names[e])} (أكبر قيمة سالبة في صف Z)؛ النسب = الحل ÷ العمود؛ المتغير الخارج ${M(names[basis[l]])} (أصغر نسبة)؛ المحور ${M(F(T[l][e]))}.`)
+              +show(e,l,ratios.map(r=>r?F(r):'—')));
+      const pv=T[l][e]; T[l]=T[l].map(v=>rDiv(v,pv));
+      for(let i=0;i<3;i++){ if(i===l||T[i][e][0]===0) continue; const m=T[i][e]; T[i]=T[i].map((v,j)=>rSub(v,rMul(m,T[l][j]))); }
+      basis[l]=e;
+    }
+    const val=k=>{ const i=basis.indexOf(k); return i<0?[0,1]:T[i][4]; }, x1=val(0), x2=val(1), Z=T[2][4];
+    return {q:L('Solve by the simplex method:', 'حل بطريقة السمبلكس:')+'<br>'+align([['Max Z','=',`${cx(p1)}x<sub>1</sub> + ${cx(p2)}x<sub>2</sub>`],[`${cx(a1)}x<sub>1</sub> + ${cx(b1)}x<sub>2</sub>`,'&le;',c1],[`${cx(a2)}x<sub>1</sub> + ${cx(b2)}x<sub>2</sub>`,'&le;',c2],['x<sub>1</sub>, x<sub>2</sub>','&ge;','0']], true),
+      a:`<b>${M(`x<sub>1</sub> = ${F(x1)}, x<sub>2</sub> = ${F(x2)}, Max Z = ${F(Z)}`)}</b>`,
+      s:steps(L(`Standard form with slack variables: ${M(`Z &minus; ${cx(p1)}x<sub>1</sub> &minus; ${cx(p2)}x<sub>2</sub> = 0`)}, ${M(`${cx(a1)}x<sub>1</sub> + ${cx(b1)}x<sub>2</sub> + S<sub>1</sub> = ${c1}`)}, ${M(`${cx(a2)}x<sub>1</sub> + ${cx(b2)}x<sub>2</sub> + S<sub>2</sub> = ${c2}`)}`,
+                `الصيغة القياسية بإضافة متغيرات الفائض: ${M(`Z &minus; ${cx(p1)}x<sub>1</sub> &minus; ${cx(p2)}x<sub>2</sub> = 0`)}، ${M(`${cx(a1)}x<sub>1</sub> + ${cx(b1)}x<sub>2</sub> + S<sub>1</sub> = ${c1}`)}، ${M(`${cx(a2)}x<sub>1</sub> + ${cx(b2)}x<sub>2</sub> + S<sub>2</sub> = ${c2}`)}`),
+              ...out, L(`Read the solution: ${M(`x<sub>1</sub> = ${F(x1)}, x<sub>2</sub> = ${F(x2)}, Z = ${F(Z)}`)}`, `نقرأ الحل: ${M(`x<sub>1</sub> = ${F(x1)}, x<sub>2</sub> = ${F(x2)}, Z = ${F(Z)}`)}`))};
+  },
+  decisionCriteria(d){
+    const nA=d===1?3:R(3,4), nS=3, A=Array.from({length:nA},(_,i)=>`A<sub>${i+1}</sub>`), S=[...Array(nS).keys()].map(j=>`S<sub>${j+1}</sub>`);
+    const crit=pick(d===1?['maximax','maximin','laplace']:['maximax','maximin','laplace','hurwicz','regret','ev']);
+    const al=pick([0.4,0.6,0.7]), pr=pick([[0.2,0.5,0.3],[0.3,0.4,0.3],[0.5,0.3,0.2],[0.1,0.6,0.3]]);
+    let P, score, best;
+    for(let tries=0;;tries++){
+      P=A.map(()=>S.map(()=>R(-4,20)*5));
+      const colMax=S.map((_,j)=>Math.max(...P.map(r=>r[j])));
+      score = { maximax:P.map(r=>Math.max(...r)), maximin:P.map(r=>Math.min(...r)), laplace:P.map(r=>r.reduce((s,v)=>s+v,0)/nS),
+                hurwicz:P.map(r=>al*Math.max(...r)+(1-al)*Math.min(...r)), regret:P.map(r=>Math.max(...r.map((v,j)=>colMax[j]-v))),
+                ev:P.map(r=>r.reduce((s,v,j)=>s+v*pr[j],0)) }[crit].map(v=>+v.toFixed(6));
+      best = crit==='regret' ? Math.min(...score) : Math.max(...score);
+      if(score.filter(v=>v===best).length===1) break;
+    }
+    const k=score.indexOf(best), name={maximax:['Maximax (optimistic)','المتفائل (أعظم الأعظم)'], maximin:['Maximin (pessimistic)','المتشائم (أعظم الأصغر)'],
+      laplace:['Laplace (equal likelihood)','لابلاس (الاحتمالات المتساوية)'], hurwicz:[`Hurwicz (α = ${al})`,`هيرويز (${M('α = '+al)})`],
+      regret:['Minimax regret (Savage)','أقل الندم (سافاج)'], ev:['Expected value','القيمة المتوقعة']}[crit];
+    const colMax=S.map((_,j)=>Math.max(...P.map(r=>r[j])));
+    const how={maximax:['largest payoff of each alternative, then the largest of these','أكبر عائد لكل بديل ثم نختار الأكبر'], maximin:['smallest payoff of each alternative, then the largest of these','أصغر عائد لكل بديل ثم نختار الأكبر'],
+      laplace:['average of each row, then the largest','متوسط كل صف ثم نختار الأكبر'], hurwicz:[`α·max + (1 − α)·min for each row, then the largest`,`${M('α·max + (1 − α)·min')} لكل صف ثم نختار الأكبر`],
+      regret:['regret = column max − payoff; take each row\'s largest regret, then the smallest','الندم = أكبر قيمة في العمود − العائد؛ نأخذ أكبر ندم لكل صف ثم نختار الأصغر'],
+      ev:['Σ payoff × probability for each row, then the largest','مجموع العائد × الاحتمال لكل صف ثم نختار الأكبر']}[crit];
+    const head=[L('Alternative','البديل'),...S.map((s,j)=>crit==='ev'?`${s} (${pr[j]})`:s)];
+    const table=tbl(head, P.map((r,i)=>[A[i],...r]));
+    const work = crit==='regret' ? tbl([L('Regret','الندم'),...S,'max'], P.map((r,i)=>[A[i],...r.map((v,j)=>colMax[j]-v), i===k?{v:score[i],hl:true}:score[i]]))
+                                 : tbl([L('Alternative','البديل'),L('Value','القيمة')], A.map((a,i)=>[a, i===k?{v:num(score[i],4),hl:true}:num(score[i],4)]));
+    return {q:L(`Payoff table (profit, SAR). Choose the best alternative by the ${name[0]} criterion.`, `جدول العوائد (ربح بالريال). اختر أفضل بديل حسب معيار ${name[1]}.`)+table,
+      a:`<b>${A[k]} (${num(best,4)})</b>`,
+      s:steps(L(`${name[0]}: ${how[0]}.`, `${name[1]}: ${how[1]}.`)+work, L(`Best: ${M(A[k])} with ${M(num(best,4))}.`, `الأفضل: ${M(A[k])} بقيمة ${M(num(best,4))}.`))};
+  },
+  decisionTree(d){
+    const n=d===1?2:3, alts=[];
+    for(let i=0;i<n;i++){ const p=pick([0.2,0.3,0.4,0.5,0.6,0.7]), hi=R(10,60)*1000, lo=R(-20,8)*1000; alts.push({p,hi,lo,emv:+(p*hi+(1-p)*lo).toFixed(2)}); }
+    if(new Set(alts.map(a=>a.emv)).size<n || alts.filter(a=>a.emv===Math.max(...alts.map(b=>b.emv))).length>1) return G.decisionTree(d);
+    const k=alts.reduce((b,a,i)=>a.emv>alts[b].emv?i:b,0), nm=i=>`A<sub>${i+1}</sub>`;
+    const tree=decisionTreeSVG(alts);
+    return {q:L(`An investor has ${n} alternatives. Each succeeds with the probability shown (profit) or fails (loss), in SAR. Draw the decision tree and choose the best alternative by expected monetary value.`,
+                `لدى مستثمر ${M(n)} بدائل، كل بديل ينجح بالاحتمال المذكور (ربح) أو يفشل (خسارة) بالريال. ارسم شجرة القرارات واختر أفضل بديل حسب القيمة النقدية المتوقعة.`)+
+              tbl([L('Alternative','البديل'),L('P(success)','احتمال النجاح'),L('Profit','الربح'),L('Loss','الخسارة')], alts.map((a,i)=>[nm(i),a.p,a.hi,sgn(a.lo)])),
+      a:`<b>${nm(k)} (EMV = ${sgn(alts[k].emv)})</b>`,
+      s:steps(L('Decision node (square) → one branch per alternative → chance node (circle) → success / failure branches:', 'عقدة القرار (مربع) ← فرع لكل بديل ← عقدة احتمال (دائرة) ← فرعا النجاح والفشل:')+tree,
+              ...alts.map((a,i)=>M(`EMV(${nm(i)}) = ${a.p}(${a.hi}) + ${num(1-a.p,2)}(${sgn(a.lo)}) = ${sgn(a.emv)}`)),
+              L(`Largest EMV: ${M(nm(k))}.`, `أكبر قيمة متوقعة: ${M(nm(k))}.`))};
+  },
+  transportNW(d){ return transport(d,'nw'); },
+  transportLeastCost(d){ return transport(d,'lc'); },
+  transportVogel(d){ return transport(d,'vogel'); },
+  transportCompare(d){
+    const T=transportData(d), r={nw:transportSolve(T,'nw'), lc:transportSolve(T,'lc'), vogel:transportSolve(T,'vogel')};
+    const low=Math.min(r.nw.cost,r.lc.cost,r.vogel.cost), names={nw:['Northwest corner','الركن الشمالي الغربي'], lc:['Least cost','أقل تكلفة'], vogel:['Vogel','فوجل']};
+    const winners=Object.keys(r).filter(k=>r[k].cost===low);
+    return {q:L('Find an initial solution by the northwest corner, least cost and Vogel methods and compare their total costs.', 'أوجد الحل المبدئي بطرق الركن الشمالي الغربي وأقل تكلفة وفوجل، وقارن بين التكاليف الكلية.')+transportTableHTML(T),
+      a:`<b>NW = ${r.nw.cost}; ${Li('Least cost','أقل تكلفة')} = ${r.lc.cost}; Vogel = ${r.vogel.cost} → ${Li(winners.map(k=>names[k][0]).join(', '), winners.map(k=>names[k][1]).join('، '))}</b>`,
+      s:steps(...Object.keys(r).map(k=>L(`${names[k][0]}: total cost ${M(r[k].cost)}`, `${names[k][1]}: التكلفة الكلية ${M(r[k].cost)}`)+transportTableHTML(T,r[k].x)),
+              L('Vogel usually gives the lowest (closest to optimal) starting cost; the northwest corner ignores costs completely.', 'طريقة فوجل تعطي عادة أقل تكلفة مبدئية (الأقرب للأمثل)، بينما الركن الشمالي الغربي لا يراعي التكاليف إطلاقاً.'))};
+  },
+  assignmentHungarian(d){
+    const n=d===3?4:3, C=Array.from({length:n},()=>Array.from({length:n},()=>R(2,d===1?12:20)));
+    const costs=permutations(n).map(p=>p.reduce((s,j,i)=>s+C[i][j],0)), lo=Math.min(...costs);
+    if(costs.filter(c=>c===lo).length>1) return G.assignmentHungarian(d);          // keep the optimal assignment unique
+    const W=n===3?['W<sub>1</sub>','W<sub>2</sub>','W<sub>3</sub>']:['W<sub>1</sub>','W<sub>2</sub>','W<sub>3</sub>','W<sub>4</sub>'], J=W.map((_,j)=>`J<sub>${j+1}</sub>`);
+    const show=(Mx,hl)=>tbl(['',...J], Mx.map((r,i)=>[W[i],...r.map((v,j)=>hl&&hl[i]===j?{v,hl:true}:v)]));
+    const out=[]; let Mx=C.map(r=>{ const m=Math.min(...r); return r.map(v=>v-m); });
+    out.push(L('Subtract the smallest element of each row from that row:', 'نطرح أصغر عنصر في كل صف من عناصر الصف:')+show(Mx));
+    for(let j=0;j<n;j++){ const m=Math.min(...Mx.map(r=>r[j])); Mx.forEach(r=>r[j]-=m); }
+    out.push(L('Subtract the smallest element of each column from that column:', 'نطرح أصغر عنصر في كل عمود من عناصر العمود:')+show(Mx));
+    for(let it=0;; it++){
+      const cover=minLineCover(Mx);
+      if(it>8) return G.assignmentHungarian(d);
+      if(cover.count===n) { out.push(L(`The zeros need ${n} lines to cover them (= n) ⇒ an optimal assignment exists among the zeros.`, `نحتاج ${M(n)} خطوط لتغطية الأصفار (= عدد الصفوف) ⇐ يوجد تخصيص أمثل على الأصفار.`)); break; }
+      let m=Infinity; for(let i=0;i<n;i++) for(let j=0;j<n;j++) if(!cover.rows[i]&&!cover.cols[j]) m=Math.min(m,Mx[i][j]);
+      for(let i=0;i<n;i++) for(let j=0;j<n;j++){ if(!cover.rows[i]&&!cover.cols[j]) Mx[i][j]-=m; else if(cover.rows[i]&&cover.cols[j]) Mx[i][j]+=m; }
+      const lines=[...cover.rows.map((r,i)=>r?W[i]:null), ...cover.cols.map((c,j)=>c?J[j]:null)].filter(Boolean).join(', ');
+      out.push(L(`Only ${cover.count} lines (${lines}) cover all zeros (&lt; ${n}): subtract the smallest uncovered element ${m} from uncovered cells and add it where lines cross:`,
+                 `تكفي ${M(cover.count)} خطوط (${M(lines)}) لتغطية الأصفار (أقل من ${M(n)}): نطرح أصغر عنصر غير مغطى ${M(m)} من العناصر غير المغطاة ونضيفه عند تقاطع الخطوط:`)+show(Mx));
+    }
+    const perm=bestZeroAssignment(Mx), cost=perm.reduce((s,j,i)=>s+C[i][j],0);
+    return {q:L(`Assign each worker to one job (cost table below) so that the total cost is minimal (Hungarian method).`, 'خصّص كل عامل لعمل واحد (جدول التكاليف أدناه) بحيث تكون التكلفة الكلية أقل ما يمكن (الطريقة المجرية).')+show(C),
+      a:`<b>${perm.map((j,i)=>`${W[i]}&rarr;${J[j]}`).join(', ')}; ${Li('total cost','التكلفة الكلية')} = ${cost}</b>`,
+      s:steps(...out, L('Assignment on the zeros (back in the original table):', 'التخصيص على الأصفار (في الجدول الأصلي):')+show(C,perm),
+              M(`${perm.map((j,i)=>C[i][j]).join(' + ')} = ${cost}`))};
   },
 
   /* ---- Economic and Financial Mathematics (MATH 371) ---- */

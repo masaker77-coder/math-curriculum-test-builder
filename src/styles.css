@@ -171,6 +171,8 @@
   .plot .apx{fill:#e07a2e;stroke:#fff;stroke-width:1}
   .plot .stat{fill:#0a7a4b;stroke:#fff;stroke-width:1}
   .plot .shade{fill:var(--accent);opacity:.18}
+  .plot .dnode{fill:#fff;stroke:var(--accent);stroke-width:2}
+  .plot .cnode{fill:#fff;stroke:#e07a2e;stroke-width:2}
   .plot .rej{fill:#c0392b;opacity:.28}
   .plot .ray{stroke:var(--accent);stroke-width:4}
   .plot .rayhead{fill:var(--accent)}

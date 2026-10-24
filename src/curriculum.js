@@ -37,7 +37,7 @@ export const TOPIC_LABELS = {
   gammaFunction:'Gamma function Γ(n)',
   setUnion:'Inclusion–exclusion |A∪B|', powerSetSize:'Size of a power set',
   binomialProb:'Binomial probabilities', expectedValue:'Expected value E(X)', varianceDiscrete:'Variance Var(X)',
-  lpCornerPoint:'Linear programming (corner points)', effectiveRate:'Effective annual rate', annuityFV:'Future value of an annuity',
+  lpCornerPoint:'Linear programming (corner points)', lpFormulate:'LP model formulation', lpGraphical:'LP graphical method', simplexMethod:'Simplex method', decisionCriteria:'Decision criteria (uncertainty / risk)', decisionTree:'Decision tree (EMV)', transportNW:'Transportation: northwest corner', transportLeastCost:'Transportation: least cost', transportVogel:'Transportation: Vogel', transportCompare:'Transportation: comparing the methods', assignmentHungarian:'Assignment (Hungarian method)', effectiveRate:'Effective annual rate', annuityFV:'Future value of an annuity',
   improvedEuler:'Improved Euler (Heun) method', fredholmSeparable:'Fredholm equations (separable kernel)',
   numberSets:'Number sets', intervalNotation:'Interval notation', breakEven:'Break-even analysis',
   absEquation:'Absolute-value equations', absInequality:'Absolute-value inequalities', functionDomain:'Domain of a function',
@@ -100,7 +100,7 @@ export const TOPIC_LABELS_AR = {
   eulerPhi:'دالة أويلر φ(n)', modPow:'الأس النمطي', newtonSqrt:'طريقة نيوتن (الجذر التربيعي)', linearInterp:'الاستيفاء الخطي',
   complexConjugate:'مرافق العدد المركب', completeGraphEdges:'حواف الرسم الكامل', degreeSum:'مجموع الدرجات (المصافحة)', elementOrder:'رتبة عنصر في ℤ_n',
   isUnit:'الوحدات في ℤ_n', gammaFunction:'دالة غاما Γ(n)', setUnion:'مبدأ التضمين والاستبعاد', powerSetSize:'عدد عناصر مجموعة القوة',
-  binomialProb:'احتمالات ذي الحدين', expectedValue:'القيمة المتوقعة E(X)', varianceDiscrete:'التباين Var(X)', lpCornerPoint:'البرمجة الخطية (النقاط الركنية)',
+  binomialProb:'احتمالات ذي الحدين', expectedValue:'القيمة المتوقعة E(X)', varianceDiscrete:'التباين Var(X)', lpCornerPoint:'البرمجة الخطية (النقاط الركنية)', lpFormulate:'صياغة نموذج البرمجة الخطية', lpGraphical:'الطريقة البيانية', simplexMethod:'طريقة السمبلكس', decisionCriteria:'معايير اتخاذ القرار', decisionTree:'شجرة القرارات', transportNW:'النقل: الركن الشمالي الغربي', transportLeastCost:'النقل: أقل تكلفة', transportVogel:'النقل: فوجل', transportCompare:'النقل: المقارنة بين الطرق', assignmentHungarian:'التخصيص (الطريقة المجرية)',
   effectiveRate:'معدل الفائدة الفعلي', annuityFV:'القيمة المستقبلية للدفعات', improvedEuler:'طريقة أويلر المحسّنة (هيون)', fredholmSeparable:'معادلات فريدهولم (نواة قابلة للفصل)',
   riemannSum:'مجاميع ريمان', avgValue:'القيمة المتوسطة للدالة', defIntegralExp:'تكامل eˣ المحدد', derivChainAt:'قاعدة السلسلة عند نقطة',
   derivProductAt:'قاعدة الضرب عند نقطة', criticalPoints:'النقاط الحرجة', setOps:'العمليات على المجموعات', cartesianSize:'الضرب الديكارتي',
@@ -175,7 +175,7 @@ export const CURRICULUM = [
   { level:'Level 6', ar:'المستوى السادس', courses:[
     { code:'STAT 312', title:'Probability Theory (2)', ar:'نظرية الاحتمال (2)', topics:['jointConstant','jointProb','marginalDist','conditionalProb','jointMoments','correlationCoef','independenceCheck','sumOfRV','bivariateNormal','multinomialProb','expectedValue','varianceDiscrete'] },
     { code:'MATH 315', title:'Partial Differential Equations', ar:'المعادلات التفاضلية الجزئية', topics:['pdeClassify','waveSpeed','laplacianPoly','heatSeparation'] },
-    { code:'STAT 361', title:'Operations Research (1)', ar:'بحوث العمليات (1)', topics:['lpCornerPoint','systems'] },
+    { code:'STAT 361', title:'Operations Research (1)', ar:'بحوث العمليات (1)', topics:['lpFormulate','lpGraphical','lpCornerPoint','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian'] },
     { code:'MATH 371', title:'Economic and Financial Mathematics', ar:'الرياضيات الاقتصادية والمالية', topics:['effectiveRate','annuityFV','compoundInterest','presentValue'] },
   ]},
   { level:'Level 7', ar:'المستوى السابع', courses:[

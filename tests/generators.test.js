@@ -1231,3 +1231,110 @@ test('STAT 312 — aX + bY, bivariate normal, multinomial', () => {
     close(fval(o.a), coef * xs.reduce((s, k, i) => s * ps[i] ** k, 1), 1e-12);
   });
 });
+
+/* ---- STAT 361 Operations Research ---- */
+// every "stbl ortbl" table as rows of English cell text
+const readTbls = html => [...String(html).matchAll(/<table class="stbl ortbl">(.*?)<\/table>/g)].map(t =>
+  [...t[1].matchAll(/<tr>(.*?)<\/tr>/g)].map(r => [...r[1].matchAll(/<t[hd][^>]*>(.*?)<\/t[hd]>/g)].map(c => E(c[1]))));
+const num0 = s => +String(s).replace(/−|&minus;/g, '-');
+// LP in the question: objective + constraints, coefficient 1 may be omitted
+function readLP(html) {
+  const s = E(html).replace(/&le;/g, '≤').replace(/&ge;/g, '≥').replace(/x\s*([12])/g, 'x$1'), co = t => t === '' ? 1 : +t;
+  const [, kind, c1, c2] = s.match(/(Max|Min) Z = (\d*)x1 \+ (\d*)x2/);
+  const rows = [...s.matchAll(/(\d*)x1 \+ (\d*)x2 (≤|≥) (\d+)/g)].map(m => [co(m[1]), co(m[2]), +m[4]]);
+  return { min: kind === 'Min', c: [co(c1), co(c2)], rows };
+}
+// optimum by enumerating all intersections of the constraint lines and the axes
+function lpBrute({ min, c, rows }) {
+  const lines = [...rows, [1, 0, 0], [0, 1, 0]], ok = (x, y) => x > -1e-9 && y > -1e-9 && rows.every(([a, b, r]) => min ? a * x + b * y >= r - 1e-9 : a * x + b * y <= r + 1e-9);
+  let best = null;
+  for (let i = 0; i < lines.length; i++) for (let j = i + 1; j < lines.length; j++) {
+    const [a1, b1, r1] = lines[i], [a2, b2, r2] = lines[j], D = a1 * b2 - a2 * b1;
+    if (!D) continue;
+    const x = (r1 * b2 - r2 * b1) / D, y = (a1 * r2 - a2 * r1) / D, z = c[0] * x + c[1] * y;
+    if (ok(x, y) && (best === null || (min ? z < best : z > best))) best = z;
+  }
+  return best;
+}
+const xsOf = a => { const s = String(a); return [1, 2].map(k => { const m = s.slice(s.indexOf(`x<sub>${k}</sub> = `) + 15); return fval(m.slice(0, m.indexOf(','))); }); };
+
+test('STAT 361 — LP formulation, graphical and simplex reach the true optimum', () => {
+  for (const d of DIFFS) times(150, () => {
+    let o = G.lpFormulate(d); const t = E(o.q);
+    const [a1, a2] = t.match(/needs (\d+) hours on machine 1 and (\d+) hours/).slice(1).map(Number), [b1, b2] = t.match(/B needs (\d+) and (\d+)/).slice(1).map(Number);
+    const [p1, p2] = t.match(/profit is (\d+) SAR per unit of A and (\d+)/).slice(1).map(Number);
+    const lp = readLP(o.a);
+    assert.deepEqual(lp.c, [p1, p2]); assert.deepEqual(lp.rows.map(r => r.slice(0, 2)), [[a1, b1], [a2, b2]]);
+    o = G.lpGraphical(d); let P = readLP(o.q); assert.equal(P.rows.length, 2);
+    close(+E(o.a).match(/Z = (-?[\d.]+)/)[1], lpBrute(P), 1e-3);
+    o = G.simplexMethod(d); P = readLP(o.q); assert.equal(P.rows.length, 2);
+    const Z = fval(o.a.slice(o.a.indexOf('Z = ') + 4)), [x1, x2] = xsOf(o.a);
+    close(Z, lpBrute(P), 1e-9); close(P.c[0] * x1 + P.c[1] * x2, Z, 1e-9);
+    assert.ok(P.rows.every(([a, b, r]) => a * x1 + b * x2 <= r + 1e-9));
+  });
+});
+
+test('STAT 361 — decision criteria and decision tree', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.decisionCriteria(d); const q = E(o.q), [T] = readTbls(o.q), P = T.slice(1).map(r => r.slice(1).map(num0));
+    const probs = T[0].slice(1).map(h => +(h.match(/\(([\d.]+)\)/) || [0, 0])[1]), al = +(q.match(/α = ([\d.]+)/) || [0, 0])[1];
+    const crit = /Maximax/.test(q) ? 'maximax' : /Maximin/.test(q) ? 'maximin' : /Laplace/.test(q) ? 'laplace' : /Hurwicz/.test(q) ? 'hurwicz' : /regret/.test(q) ? 'regret' : 'ev';
+    const colMax = P[0].map((_, j) => Math.max(...P.map(r => r[j])));
+    const sc = P.map(r => ({ maximax: Math.max(...r), maximin: Math.min(...r), laplace: r.reduce((s, v) => s + v, 0) / r.length,
+      hurwicz: al * Math.max(...r) + (1 - al) * Math.min(...r), regret: Math.max(...r.map((v, j) => colMax[j] - v)), ev: r.reduce((s, v, j) => s + v * probs[j], 0) })[crit]);
+    const best = crit === 'regret' ? Math.min(...sc) : Math.max(...sc), k = sc.findIndex(v => Math.abs(v - best) < 1e-9);
+    assert.equal(sc.filter(v => Math.abs(v - best) < 1e-9).length, 1);
+    assert.match(o.a, new RegExp(`A<sub>${k + 1}</sub> \\(`)); close(num0(E(o.a).match(/\((.*)\)/)[1]), best, 1e-3);
+
+    o = G.decisionTree(d); const R2 = readTbls(o.q)[0].slice(1).map(r => r.slice(1).map(num0));
+    const emv = R2.map(([p, hi, lo]) => p * hi + (1 - p) * lo), j = emv.indexOf(Math.max(...emv));
+    assert.match(o.a, new RegExp(`A<sub>${j + 1}</sub> \\(EMV`)); close(num0(E(o.a).match(/EMV = (.*)\)/)[1]), emv[j], 1e-6);
+  });
+});
+
+// cost table, supply and demand from the question; allocations from a solution table
+const readTransport = html => { const T = readTbls(html)[0], body = T.slice(1, -1);
+  return { C: body.map(r => r.slice(1, -1).map(Number)), s: body.map(r => +r.at(-1)), dm: T.at(-1).slice(1, -1).map(Number) }; };
+const readAlloc = rows => rows.slice(1, -1).map(r => r.slice(1, -1).map(c => /^\d+ \(/.test(c) ? +c.split(' ')[0] : 0));
+function checkAlloc({ C, s, dm }, x, cost) {
+  x.forEach((r, i) => assert.equal(r.reduce((a, b) => a + b, 0), s[i]));
+  dm.forEach((v, j) => assert.equal(x.reduce((a, r) => a + r[j], 0), v));
+  assert.equal(x.reduce((t, r, i) => t + r.reduce((u, q, j) => u + q * C[i][j], 0), 0), cost);
+  assert.ok(x.flat().filter(v => v > 0).length <= s.length + dm.length - 1);
+}
+test('STAT 361 — transportation: northwest corner, least cost, Vogel, comparison', () => {
+  const costOf = a => +E(a).match(/= (\d+)/)[1];
+  for (const d of DIFFS) times(150, () => {
+    for (const k of ['transportNW', 'transportLeastCost', 'transportVogel']) {
+      const o = G[k](d), T = readTransport(o.q), tabs = readTbls(o.s);
+      assert.equal(T.s.reduce((a, b) => a + b, 0), T.dm.reduce((a, b) => a + b, 0));
+      const x = readAlloc(tabs.at(-1)), cost = costOf(o.a);
+      checkAlloc(T, x, cost);
+      if (k === 'transportNW') {                                   // independent northwest-corner run
+        const S = [...T.s], D = [...T.dm]; let i = 0, j = 0, c = 0;
+        while (i < S.length && j < D.length) { const q = Math.min(S[i], D[j]); c += q * T.C[i][j]; S[i] -= q; D[j] -= q; const a = !S[i], b = !D[j]; if (a) i++; if (b) j++; }
+        assert.equal(cost, c);
+      }
+      if (k === 'transportLeastCost') {                            // the cheapest cell always gets the most it can
+        const [i0, j0] = T.C.flatMap((r, i) => r.map((v, j) => [i, j])).sort((a, b) => T.C[a[0]][a[1]] - T.C[b[0]][b[1]])[0];
+        if (T.C.flat().filter(v => v === T.C[i0][j0]).length === 1) assert.equal(x[i0][j0], Math.min(T.s[i0], T.dm[j0]));
+      }
+    }
+    const o = G.transportCompare(d), T = readTransport(o.q), tabs = readTbls(o.s);
+    const costs = E(o.a).match(/NW = (\d+); Least cost = (\d+); Vogel = (\d+)/).slice(1).map(Number);
+    tabs.forEach((t, i) => checkAlloc(T, readAlloc(t), costs[i]));
+  });
+});
+
+test('STAT 361 — Hungarian method gives the cheapest assignment', () => {
+  const perms = n => n === 1 ? [[0]] : perms(n - 1).flatMap(p => [...Array(n).keys()].map(k => [...p.slice(0, k), n - 1, ...p.slice(k)]));
+  for (const d of DIFFS) times(150, () => {
+    const o = G.assignmentHungarian(d), C = readTbls(o.q)[0].slice(1).map(r => r.slice(1).map(Number));
+    const best = Math.min(...perms(C.length).map(p => p.reduce((s, j, i) => s + C[i][j], 0)));
+    const pairs = [...o.a.matchAll(/W<sub>(\d)<\/sub>&rarr;J<sub>(\d)<\/sub>/g)].map(m => [+m[1] - 1, +m[2] - 1]);
+    assert.equal(pairs.length, C.length);
+    assert.equal(new Set(pairs.map(p => p[1])).size, C.length);
+    assert.equal(pairs.reduce((s, [i, j]) => s + C[i][j], 0), best);
+    assert.equal(+E(o.a).match(/= (\d+)/)[1], best);
+  });
+});
