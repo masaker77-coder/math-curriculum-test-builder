@@ -268,6 +268,7 @@
   .bk-steps ol.steps{margin:0}
   .bk-ans{margin-top:6px;padding:5px 8px;background:#eef6f0;border-radius:6px;color:var(--key)}
   .bk-al{font-weight:700;margin-inline-end:4px}
+  .bk-fig:empty{display:none}
   html[dir="rtl"] .bk-q, html[dir="rtl"] .bk-ans{text-align:right}
   .bk-intro{border-inline-start:4px solid #e0a526;background:#fff8e6;border-radius:6px;padding:8px 12px;margin:8px 0 12px;font-size:14px;line-height:1.7}
   .bk-introh{font-weight:700;color:#9a6a00;font-size:13px;margin-bottom:2px}
@@ -280,10 +281,38 @@
   .bk-page + .bk-page{margin-top:18px}
   .bk-body{height:calc(296mm - 14mm - 15mm);overflow:hidden}
   .bk-page svg.plot{height:165px;width:auto;max-width:100%}   /* compact graphs so more examples fit on a page */
-  .bk-run{position:absolute;top:6mm;inset-inline:16mm;font-size:10px;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:3px}
-  .bk-foot{position:absolute;bottom:6mm;inset-inline:0;text-align:center;font-size:11px;color:var(--muted)}
-  .bk-foot:not(:empty)::before{content:"— "} .bk-foot:not(:empty)::after{content:" —"}
-  .bk-block{margin:0 0 10px}
+  .bk-run{position:absolute;top:6mm;inset-inline:16mm;font-size:10.5px;color:#3b4a66;border-bottom:1.5px solid #0f2a5c;padding-bottom:3px}
+  .bk-foot{position:absolute;bottom:5mm;inset-inline:0;display:flex;justify-content:center}
+  .bk-foot{font:700 11px var(--font-ui);color:#fff}
+  .bk-foot span{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:12px;background:#0f2a5c;padding:0 6px}
+  .bk-block{margin:0 0 12px}
+  /* ---- booklet typography and example cards ---- */
+  .bk-page{font-size:15px;line-height:1.6}
+  .bk-page [lang="ar"], .bk-page .bk-run, .bk-page .bk-exh, .bk-page .bk-solh, .bk-page .bk-al{font-family:"Noto Sans Arabic","Segoe UI",Tahoma,sans-serif}
+  .bk-page bdi{font-family:var(--font-math)}
+  .bk-page .bk-ex{border:0;border-radius:0;padding:0 0 12px;margin:0 0 12px;border-bottom:1px solid #e3e8f1}
+  .bk-page .bk-exh{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:14px}
+  .bk-page .bk-exh span{background:#0f2a5c;color:#fff;border-radius:6px;padding:2px 14px;font-weight:700}
+  .bk-page .bk-exh::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,#e0a526,transparent)}
+  html[dir="rtl"] .bk-page .bk-exh::after{background:linear-gradient(270deg,#e0a526,transparent)}
+  .bk-page .bk-q{font-size:17px;line-height:1.7;background:#f3f6fb;border-inline-start:4px solid #173f86;border-radius:6px;padding:8px 14px;margin-bottom:8px}
+  .bk-page .bk-grid{display:block}
+  .bk-page .has-fig .bk-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
+  .bk-page .bk-fig{display:flex;flex-direction:column;gap:8px;align-items:center;padding-top:26px}
+  .bk-page .bk-fig svg.plot{height:175px}
+  .bk-page .bk-solh{display:inline-block;font-size:13px;font-weight:700;color:#9a6a00;border-bottom:2px solid #e0a526;margin:2px 0 6px;padding-bottom:1px}
+  .bk-page ol.steps{list-style:none;counter-reset:st;padding:0;gap:7px;font-size:15.5px}
+  .bk-page ol.steps>li{counter-increment:st;position:relative;padding-inline-start:30px;min-height:22px}
+  .bk-page ol.steps>li::before{content:counter(st);position:absolute;inset-inline-start:0;top:2px;width:21px;height:21px;border-radius:50%;
+    background:#e8eef9;color:#173f86;font:700 12px/21px var(--font-ui);text-align:center}
+  .bk-page .bk-ans{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:6px 14px;background:#eaf6ef;border:1.5px solid #0a7a4b;border-radius:8px;color:#0a5c39;font-size:16px}
+  .bk-page .bk-ans::before{content:"✓";display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#0a7a4b;color:#fff;font:700 12px var(--font-ui)}
+  .bk-page table.stbl{font-size:13px}
+  .bk-page .bk-intro{font-size:15px;line-height:1.75}
+  .bk-pair{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:0 0 12px}
+  .bk-pair>.bk-ex{margin:0}
+  .bk-pair>.bk-ex+.bk-ex{border-inline-start:1px dashed #c9d3e6;padding-inline-start:16px}
+  .bk-run{display:flex;justify-content:space-between;gap:10px}
   .bk-th{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,#0f2a5c,#173f86 60%,#0c6a7a);color:#fff;border-radius:10px;padding:12px 16px;margin-bottom:8px}
   .bk-th .bk-n{background:#e0a526;color:#0f2a5c;min-width:34px;height:34px;border-radius:17px;font-size:16px;font-weight:700}
   .bk-tt{font-size:19px;font-weight:700} .bk-tc{font-size:11px;opacity:.85}

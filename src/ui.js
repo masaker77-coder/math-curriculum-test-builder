@@ -368,11 +368,19 @@ function examHTML(parts, vLabel){
 /* --- worked examples / study booklet: every question followed by its worked solution --- */
 const introHTML = t => INTRO[t] ? `<div class="bk-intro"><div class="bk-introh">${T('overview')}</div><div class="bk-introp">${L(INTRO[t][0], INTRO[t][1])}</div></div>` : '';
 const exampleHTML = (it, ii) => `<div class="bk-ex bk-block" data-ii="${ii}">
-    <div class="bk-exh">${T('example')} ${ii+1}</div>
+    <div class="bk-exh"><span>${T('example')} ${ii+1}</span></div>
     <div class="bk-q" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</div>
-    ${it.s?`<div class="bk-solh">${T('solution')}</div><div class="bk-steps" dir="${dirFor(it.s)}">${it.s}</div>`:''}
-    <div class="bk-ans" dir="${dirFor(it.a)}"><span class="bk-al">${T('answer')}:</span> ${keyText(it)}</div>
+    <div class="bk-grid"><div class="bk-main">
+      ${it.s?`<div class="bk-solh">${T('solution')}</div><div class="bk-steps" dir="${dirFor(it.s)}">${it.s}</div>`:''}
+      <div class="bk-ans" dir="${dirFor(it.a)}"><span class="bk-al">${T('answer')}:</span> ${keyText(it)}</div>
+    </div><div class="bk-fig"></div></div>
   </div>`;
+/* booklet: graphs move next to the solution (the side that the text leaves empty) */
+function splitFigures(ex){
+  const fig=ex.querySelector('.bk-fig'); if(!fig) return;
+  ex.querySelectorAll('.bk-steps svg.plot').forEach(svg=>fig.appendChild(svg));
+  ex.classList.toggle('has-fig', fig.children.length>0);
+}
 function bookHTML(parts){
   if(state.mode==='booklet') return bookletHTML(parts);
   const m=MODES[state.mode];
@@ -426,13 +434,35 @@ function bookletHTML(parts){
 function paginateBook(){
   const sc=el('out').querySelector('.bk-scale'); if(!sc) return;
   const run=sc.dataset.run; let no=1+fitIndex(sc), grew=false;
+  let topic='';
   const newPage=before=>{ const pg=document.createElement('section'); pg.className='bk-page';
-    pg.innerHTML=`<div class="bk-run">${run}</div><div class="bk-body"></div><div class="bk-foot">${++no}</div>`; sc.insertBefore(pg, before); return pg.querySelector('.bk-body'); };
-  sc.querySelectorAll('.bk-index .bk-foot').forEach((f,i)=>f.textContent=2+i);
+    pg.innerHTML=`<div class="bk-run"><span>${run}</span><span>${topic}</span></div><div class="bk-body"></div><div class="bk-foot"><span>${++no}</span></div>`; sc.insertBefore(pg, before); return pg.querySelector('.bk-body'); };
+  sc.querySelectorAll('.bk-index .bk-foot').forEach((f,i)=>f.innerHTML=`<span>${2+i}</span>`);
   const starts=[];
   const over=body=>body.scrollHeight>body.clientHeight+1;
+  /* an example with no figure or table whose lines are short can share a row with the next one */
+  const narrow=(bd,b)=>{
+    if(!b.classList.contains('bk-ex') || b.querySelector('.bk-fig svg, table, .mat, .plot')) return false;
+    bd.appendChild(b); const hFull=b.offsetHeight, w=Math.floor(bd.clientWidth*0.47);
+    b.style.cssText=`position:absolute;visibility:hidden;width:${w}px`; const hHalf=b.offsetHeight, sw=b.scrollWidth;
+    bd.removeChild(b); b.style.cssText='';
+    return sw<=w+2 && hHalf<=hFull*1.45;                    // fits half the width without growing much taller
+  };
+  const tryPut=(bd,b)=>{                                   // place b on this page if it fits (the first block always does)
+    if(narrow(bd,b)){
+      const last=bd.lastElementChild;
+      if(last && last.classList.contains('bk-pair') && last.children.length===1){
+        last.appendChild(b); if(!over(bd)) return true; last.removeChild(b); return false;
+      }
+      const row=document.createElement('div'); row.className='bk-pair'; row.appendChild(b); bd.appendChild(row);
+      if(!over(bd) || bd.children.length===1) return true; bd.removeChild(row); return false;
+    }
+    bd.appendChild(b); if(!over(bd) || bd.children.length===1) return true; bd.removeChild(b); return false;
+  };
+  sc.querySelectorAll('.bk-flow .bk-ex').forEach(splitFigures);
   sc.querySelectorAll('.bk-flow').forEach(flow=>{
     const pi=+flow.dataset.pi, p=state.sheets[0][pi], sec=test.sections[pi];
+    topic=(flow.querySelector('.bk-tt')||{}).textContent||'';
     const canFill=!!(p && !p.custom && G[p.topic] && !isProof(p.topic));
     const out=[], els=[];                                   // the topic's examples in page order, with their blocks
     let body=newPage(flow), added=0; starts.push(no);
@@ -442,16 +472,15 @@ function paginateBook(){
       while(canFill && misses<3 && added<6){
         const it=G[p.topic](p.diff);
         if(out.some(x=>x.q===it.q) || p.items.some(x=>x.q===it.q)){ misses++; continue; }
-        const tmp=document.createElement('div'); tmp.innerHTML=exampleHTML(it, 0); const b=tmp.firstElementChild;
-        bd.appendChild(b);
-        if(over(bd)){ bd.removeChild(b); misses++; continue; }
+        const tmp=document.createElement('div'); tmp.innerHTML=exampleHTML(it, 0); const b=tmp.firstElementChild; splitFigures(b);
+        if(!tryPutNew(bd,b)){ misses++; continue; }
         out.push(it); els.push(b); added++;
       }
     };
+    const tryPutNew=(bd,b)=>bd.children.length>0 && tryPut(bd,b);   // extra examples never open a page of their own
     [...flow.children].forEach(b=>{
       const it = b.dataset.ii!==undefined && p ? p.items[+b.dataset.ii] : null;
-      body.appendChild(b);
-      if(over(body) && body.children.length>1){ body.removeChild(b); fillGap(body); body=newPage(flow); body.appendChild(b); }
+      if(!tryPut(body,b)){ fillGap(body); body=newPage(flow); tryPut(body,b); }
       if(it){ out.push(it); els.push(b); }
     });
     fillGap(body);
@@ -544,7 +573,7 @@ async function downloadApp(){
     const cfg={...appConfig(), lang:state.lang==='en'?'en':'ar', standalone:true}, ar=cfg.lang==='ar';
     const html=`<!doctype html><html lang="${ar?'ar':'en'}" dir="${ar?'rtl':'ltr'}" data-lang="${cfg.lang}"><head><meta charset="utf-8">`+
       `<meta name="viewport" content="width=device-width, initial-scale=1"><title>${(ar?cfg.title[1]:cfg.title[0]).replace(/</g,'&lt;')}</title>`+
-      `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">`+
+      `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">`+
       `<style>${css.replace(/<\/style/gi,'<\\/style')}</style></head><body class="pr-standalone"><div id="app"></div>`+
       `<script>${bundle(src, names)}\n__m.practice.mountPractice(document.getElementById('app'), ${JSON.stringify(cfg).replace(/</g,'\\u003c')});<\/script></body></html>`;
     await saveFile(((el('title').value||'').trim()||'practice-app').replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,'-')+'.html', html);
@@ -616,11 +645,12 @@ async function saveFile(filename, data){
 }
 const fileBase = () => (((el('title').value||'').trim() || (document.querySelector('.sheet-title')||{}).textContent || 'math-test')
   .replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,'-').slice(0,80) || 'math-test');
+const FONTS_CSS='https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap';
 function printableHTML(){
   const css=[...document.styleSheets].map(ss=>{ try{ return [...ss.cssRules].map(r=>r.cssText).join('\n'); }catch(e){ return ''; } }).join('\n');
   const root=document.documentElement;
   return `<!doctype html><html lang="${root.lang}" dir="${root.dir}" data-lang="${state.lang}"><head><meta charset="utf-8"><title>${fileBase()}</title>`+
-    `<style>${css}</style><style>body{display:block!important;height:auto!important;overflow:visible!important}.wrap{height:auto!important;overflow:visible!important}</style></head>`+
+    `<link rel="stylesheet" href="${FONTS_CSS}"><style>${css}</style><style>body{display:block!important;height:auto!important;overflow:visible!important}.wrap{height:auto!important;overflow:visible!important}</style></head>`+
     `<body><div class="wrap">${el('out').innerHTML}</div><script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>`;
 }
 function flashNote(msg){ el('sections').insertAdjacentHTML('afterbegin',`<div class="sections-empty note" style="color:#c0392b">${msg}</div>`); setTimeout(renderSections,6000); }
@@ -725,7 +755,10 @@ el('solMode').onchange=()=>{ if(el('solMode').value==='steps') state.showKey=tru
 el('title').oninput=render;
 ['bkUni','bkBy','bkTerm'].forEach(id=>el(id).oninput=render);
 window.addEventListener('resize', fitBook);
-if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(isBook()) render(); });   // re-measure the pages with the real fonts
+if(document.fonts){                                     // re-measure the booklet pages whenever a web font finishes loading
+  let t=0; const again=()=>{ clearTimeout(t); t=setTimeout(()=>{ if(isBook()) render(); }, 60); };
+  document.fonts.ready.then(again); document.fonts.addEventListener('loadingdone', again);
+}
 el('presentBtn').onclick=openPresent;
 el('save').onclick=doSave;
 el('del').onclick=doDelete;
