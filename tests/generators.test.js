@@ -1391,17 +1391,19 @@ test('interactive app: the standalone bundle evaluates and generates questions',
   assert.ok(o.q && o.a && o.s);
 });
 
-test('proofs of formulas: every course with topics has a proofs topic and every proof renders', async () => {
-  const { PROOFS, COURSE_PROOFS } = await import('../src/proofs.js');
+test('proofs: every course with topics has its own proof topics (one per formula) and every proof renders', async () => {
+  const { PROOFS, COURSE_PROOFS, proofKey } = await import('../src/proofs.js');
   for (const c of CURRICULUM.flatMap(m => m.courses).filter(c => c.topics.length)) {
-    const k = 'proofs_' + c.code.replace(/\s+/g, '');
-    assert.ok(c.topics.includes(k) && COURSE_PROOFS[c.code], `${c.code} has no proofs topic`);
+    assert.ok(COURSE_PROOFS[c.code], `${c.code} has no proofs`);
+    for (const id of COURSE_PROOFS[c.code]) assert.ok(c.topics.includes(proofKey(id)) && G[proofKey(id)], `${c.code}: ${id}`);
   }
   for (const [id, P] of Object.entries(PROOFS)) {
     assert.ok(P.t[0] && P.t[1] && P.g && P.s.length >= 1, id);
     for (const st of P.s) assert.ok(typeof st === 'string' || (st.length === 2 && st[0] && st[1]), id);
     for (const st of P.s) if (typeof st !== 'string') for (const s of st) assert.equal((s.match(/`/g) || []).length % 2, 0, `${id}: unbalanced math marks`);
   }
-  const o = G.proofs_STAT302(2);
+  const { TOPIC_LABELS_AR } = await import('../src/curriculum.js');
+  assert.equal(TOPIC_LABELS_AR[proofKey('sampleSizeMeanPf')], 'إثبات قانون حجم العينة لمتوسط (من فترة الثقة)');
+  const o = G[proofKey('sampleSizePropPf')](2);
   assert.ok(o.q.includes('Prove') && o.s.includes('<ol class="steps">'));
 });

@@ -1,6 +1,6 @@
 import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, sgn, cplx, mat, TRIG, shuffled,
          lcm, totient, powMod, isPrimeN, vec } from './helpers.js';
-import { PROOFS, COURSE_PROOFS } from './proofs.js';
+import { PROOFS, proofKey } from './proofs.js';
 import { L, Li, M, align, steps, num, plot, numberLine, intervalLine, aug, Phi, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML, tbl } from './viz.js';
 
 /* a small discrete distribution: distinct values xs with probabilities cs[i]/D (all cs[i] ≥ 1) */
@@ -2598,15 +2598,12 @@ export const G = {
   },
 };
 
-/* "Proofs of formulas": one topic per course (proofs_MATH130, …) that picks one of the course's proofs */
+/* proof topics: one per formula (proof_quadFormula, proof_sampleSizeMeanPf, …), each always proves that formula */
 const mathTicks = str => str.replace(/`([^`]+)`/g, (_, x) => M(x));
-export const proofTopic = code => 'proofs_' + code.replace(/\s+/g, '');
-for(const code in COURSE_PROOFS){
-  G[proofTopic(code)] = d => {
-    const P = PROOFS[pick(COURSE_PROOFS[code])];
-    return { q: L(`Prove ${P.t[0]}:`, `أثبت ${P.t[1]}:`) + '<br>' + M(P.g), a: `<b>${M(P.g)}</b>`,
-             s: steps(...P.s.map(x => typeof x === 'string' ? M(x) : L(mathTicks(x[0]), mathTicks(x[1])))) };
-  };
+for(const id in PROOFS){
+  const P = PROOFS[id];
+  G[proofKey(id)] = d => ({ q: L(`Prove ${P.t[0]}:`, `أثبت ${P.t[1]}:`) + '<br>' + M(P.g), a: `<b>${M(P.g)}</b>`,
+    s: steps(...P.s.map(x => typeof x === 'string' ? M(x) : L(mathTicks(x[0]), mathTicks(x[1])))) });
 }
 
 

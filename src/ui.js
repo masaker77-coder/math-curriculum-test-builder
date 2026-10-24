@@ -327,7 +327,7 @@ function practiceHTML(parts, vLabel){
   const multiPart=parts.length>1;
   const entries=[];
   const partsHtml=parts.map((p,pi)=>{
-    const long=p.custom?false:(LONG.includes(p.topic)||p.topic.startsWith('proofs_'));
+    const long=p.custom?false:(LONG.includes(p.topic)||p.topic.startsWith('proof_'));
     const lis=p.items.map((it,ii)=>{ const lbl=qLabel(pi, p.items.length>1?ii:-1); entries.push({it, label:lbl});
       return `<li style="min-height:${sp}px"><span class="ql">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span></li>`; }).join('');
     return `<div class="part"><ol class="problems labeled ${long?'single':''}">${lis}</ol></div>`;

@@ -31,7 +31,7 @@ export const PROOFS = {
     ['If A is invertible, multiply both sides of `AX = B` on the left by `A⁻¹`:','إذا كانت A قابلة للعكس نضرب طرفي `AX = B` من اليسار في `A⁻¹`:'], 'A<sup>&minus;1</sup>(AX) = A<sup>&minus;1</sup>B',
     ['Associativity and `A⁻¹A = I`:','التجميع و `A⁻¹A = I`:'], '(A<sup>&minus;1</sup>A)X = IX = X = A<sup>&minus;1</sup>B',
     ['It is the only solution: any solution must equal `A⁻¹B` by the same steps.','وهو الحل الوحيد: أي حل يساوي `A⁻¹B` بالخطوات نفسها.']]},
-  breakEvenPt:{ t:['the break-even quantity','كمية التعادل'], g:`x = ${fr('F','p &minus; v')}`, s:[
+  breakEvenPt:{ t:['the break-even quantity','قانون كمية التعادل'], g:`x = ${fr('F','p &minus; v')}`, s:[
     ['Revenue `R(x) = px`; cost `C(x) = F + vx` (fixed cost F, variable cost v per unit).','الإيراد `R(x) = px` والتكلفة `C(x) = F + vx` (تكلفة ثابتة F ومتغيرة v للوحدة).'],
     ['Break-even means no profit and no loss: `R(x) = C(x)`.','التعادل يعني لا ربح ولا خسارة: `R(x) = C(x)`.'], 'px = F + vx &rArr; (p &minus; v)x = F',
     ['Divide by `p − v` (the profit per unit, > 0):','نقسم على `p − v` (ربح الوحدة، موجب):'], `x = ${fr('F','p &minus; v')}`]},
@@ -80,7 +80,7 @@ export const PROOFS = {
     ['Average of n sample values `f(x₁), …, f(xₙ)` with `Δx = (b − a)/n`:','متوسط n قيمة `f(x₁)، …، f(xₙ)` حيث `Δx = (b − a)/n`:'], `${fr(1,'n')}&Sigma; f(x<sub>i</sub>) = ${fr(1,'b &minus; a')}&Sigma; f(x<sub>i</sub>)&Delta;x`,
     ['As n → ∞ the sum becomes the integral:','عندما n → ∞ يصبح المجموع تكاملاً:'], `f<sub>avg</sub> = ${fr(1,'b &minus; a')}&int;<sub>a</sub><sup>b</sup> f(x) dx`]},
   /* ---------- geometry & trigonometry ---------- */
-  triangleAreaPf:{ t:['the area of a triangle','مساحة المثلث'], g:`A = ${fr(1,2)}bh`, s:[
+  triangleAreaPf:{ t:['the area of a triangle','قانون مساحة المثلث'], g:`A = ${fr(1,2)}bh`, s:[
     ['Copy the triangle, rotate it 180° and join it along a side: the two copies form a parallelogram with base b and height h.','ننسخ المثلث وندوّره 180° ونلصقه على أحد أضلاعه: تتكون من النسختين متوازي أضلاع قاعدته b وارتفاعه h.'],
     ['Parallelogram area = `bh` (cut a right triangle off one end and move it to the other to get a rectangle).','مساحة متوازي الأضلاع = `bh` (نقص مثلثاً قائماً من طرف وننقله للطرف الآخر فنحصل على مستطيل).'],
     ['The triangle is half of it:','والمثلث نصفه:'], `A = ${fr(1,2)}bh`]},
@@ -90,7 +90,7 @@ export const PROOFS = {
   distancePf:{ t:['the distance formula','قانون المسافة بين نقطتين'], g:`d = ${rt('(x<sub>2</sub> &minus; x<sub>1</sub>)'+s2+' + (y<sub>2</sub> &minus; y<sub>1</sub>)'+s2)}`, s:[
     ['Draw the right triangle with horizontal leg `|x₂ − x₁|` and vertical leg `|y₂ − y₁|`; the segment is its hypotenuse.','نرسم مثلثاً قائماً ضلعه الأفقي `|x₂ − x₁|` والرأسي `|y₂ − y₁|`؛ والقطعة هي الوتر.'],
     ['Pythagoras:','فيثاغورس:'], `d${s2} = (x<sub>2</sub> &minus; x<sub>1</sub>)${s2} + (y<sub>2</sub> &minus; y<sub>1</sub>)${s2}`, ['Take the positive root.','نأخذ الجذر الموجب.']]},
-  polygonSum:{ t:['the sum of the interior angles of a polygon','مجموع الزوايا الداخلية للمضلع'], g:'S = (n &minus; 2) &times; 180&deg;', s:[
+  polygonSum:{ t:['the sum of the interior angles of a polygon','قانون مجموع الزوايا الداخلية للمضلع'], g:'S = (n &minus; 2) &times; 180&deg;', s:[
     ['From one vertex draw diagonals to all non-adjacent vertices: they split the convex n-gon into `n − 2` triangles.','من رأس واحد نرسم الأقطار لكل الرؤوس غير المجاورة فتقسم المضلع المحدب إلى `n − 2` مثلثاً.'],
     ['The angles of these triangles make up exactly the interior angles of the polygon; each triangle contributes 180°:','زوايا هذه المثلثات تكوّن تماماً الزوايا الداخلية للمضلع، وكل مثلث 180°:'], 'S = (n &minus; 2) &times; 180&deg;']},
   /* ---------- sets & logic ---------- */
@@ -131,7 +131,7 @@ export const PROOFS = {
   bayes:{ t:["Bayes' theorem","مبرهنة بايز"], g:`P(A|B) = ${fr('P(B|A)P(A)','P(B)')}`, s:[
     ['From the definition of conditional probability, `P(A ∩ B)` can be written two ways:','من تعريف الاحتمال الشرطي يُكتب `P(A ∩ B)` بطريقتين:'], 'P(A &cap; B) = P(A|B)P(B) = P(B|A)P(A)',
     ['Divide by `P(B) > 0`.','نقسم على `P(B) > 0`.'], `P(A|B) = ${fr('P(B|A)P(A)','P(B)')}`]},
-  binomMean:{ t:['the mean of a binomial variable E(X) = np','متوسط ذي الحدين E(X) = np'], g:'E(X) = np', s:[
+  binomMean:{ t:['the mean of a binomial variable E(X) = np','قانون متوسط ذي الحدين E(X) = np'], g:'E(X) = np', s:[
     ['Write `X = X₁ + … + Xₙ` where Xᵢ = 1 if trial i succeeds, 0 otherwise.','نكتب `X = X₁ + … + Xₙ` حيث Xᵢ = 1 إذا نجحت المحاولة i و 0 خلاف ذلك.'],
     'E(X<sub>i</sub>) = 1&middot;p + 0&middot;(1 &minus; p) = p', ['Expectation is additive:','التوقع يقبل الجمع:'], 'E(X) = p + p + &hellip; + p = np']},
   varShortcutRV:{ t:['Var(X) = E(X²) − [E(X)]²','Var(X) = E(X²) − [E(X)]²'], g:'Var(X) = E(X<sup>2</sup>) &minus; &mu;<sup>2</sup>', s:[
@@ -139,26 +139,26 @@ export const PROOFS = {
     '= E(X<sup>2</sup>) &minus; 2&mu;<sup>2</sup> + &mu;<sup>2</sup> = E(X<sup>2</sup>) &minus; &mu;<sup>2</sup>']},
   binomSum:{ t:['the binomial probabilities add up to 1','مجموع احتمالات ذي الحدين يساوي 1'], g:'&Sigma;<sub>k=0</sub><sup>n</sup> C(n, k)p<sup>k</sup>(1 &minus; p)<sup>n&minus;k</sup> = 1', s:[
     ['Binomial theorem: `(a + b)ⁿ = Σ C(n, k)aᵏbⁿ⁻ᵏ`. Put `a = p`, `b = 1 − p`:','مبرهنة ذات الحدين: `(a + b)ⁿ = Σ C(n, k)aᵏbⁿ⁻ᵏ`. نضع `a = p` و `b = 1 − p`:'], '&Sigma; C(n, k)p<sup>k</sup>(1 &minus; p)<sup>n&minus;k</sup> = (p + 1 &minus; p)<sup>n</sup> = 1']},
-  ciMeanPf:{ t:['the confidence interval for a mean','فترة الثقة للمتوسط'], g:`x&#772; &plusmn; z${a2}${fr('&sigma;',rt('n'))}`, s:[
+  ciMeanPf:{ t:['the confidence interval for a mean','قانون فترة الثقة لمتوسط'], g:`x&#772; &plusmn; z${a2}${fr('&sigma;',rt('n'))}`, s:[
     [`\`Z = (x̄ − μ)/(σ/√n)\` is standard normal, so`,'`Z = (x̄ − μ)/(σ/√n)` طبيعي معياري، إذن'], `P(&minus;z${a2} &lt; ${fr('x&#772; &minus; &mu;','&sigma;/'+rt('n'))} &lt; z${a2}) = 1 &minus; &alpha;`,
     ['Multiply by `σ/√n` and solve the inequalities for μ:','نضرب في `σ/√n` ونحل المتباينة بالنسبة لـ μ:'], `P(x&#772; &minus; z${a2}${fr('&sigma;',rt('n'))} &lt; &mu; &lt; x&#772; + z${a2}${fr('&sigma;',rt('n'))}) = 1 &minus; &alpha;`]},
-  ciPropPf:{ t:['the confidence interval for a proportion','فترة الثقة للنسبة'], g:`p&#770; &plusmn; z${a2}${rt(fr('p&#770;(1 &minus; p&#770;)','n'))}`, s:[
+  ciPropPf:{ t:['the confidence interval for a proportion','قانون فترة الثقة لنسبة'], g:`p&#770; &plusmn; z${a2}${rt(fr('p&#770;(1 &minus; p&#770;)','n'))}`, s:[
     ['For large n, `p̂` is approximately normal with mean p and standard deviation `√(p(1 − p)/n)`.','للعينات الكبيرة `p̂` تقريباً طبيعي متوسطه p وانحرافه `√(p(1 − p)/n)`.'],
     ['So `P(−z_{α/2} < (p̂ − p)/√(p(1−p)/n) < z_{α/2}) = 1 − α`; solve for p and estimate the unknown p in the root by p̂:','إذن `P(−z_{α/2} < (p̂ − p)/√(p(1−p)/n) < z_{α/2}) = 1 − α`؛ نحل بالنسبة لـ p ونقدّر p داخل الجذر بـ p̂:'],
     `p&#770; &minus; z${a2}${rt(fr('p&#770;(1 &minus; p&#770;)','n'))} &lt; p &lt; p&#770; + z${a2}${rt(fr('p&#770;(1 &minus; p&#770;)','n'))}`]},
-  sampleSizeMeanPf:{ t:['the sample size for estimating a mean (from the confidence interval)','حجم العينة لتقدير المتوسط (من فترة الثقة)'], g:`n = (${fr(`z${a2}&sigma;`,'E')})${s2}`, s:[
+  sampleSizeMeanPf:{ t:['the sample-size formula for a mean (from the confidence interval)','قانون حجم العينة لمتوسط (من فترة الثقة)'], g:`n = (${fr(`z${a2}&sigma;`,'E')})${s2}`, s:[
     ['The confidence interval is `x̄ ± z_{α/2}σ/√n`; its half-width is the margin of error:','فترة الثقة `x̄ ± z_{α/2}σ/√n`، ونصف طولها هو هامش الخطأ:'], `E = z${a2}${fr('&sigma;',rt('n'))}`,
     ['Solve for √n, then square:','نحل بالنسبة لـ √n ثم نربّع:'], `${rt('n')} = ${fr(`z${a2}&sigma;`,'E')} &rArr; n = (${fr(`z${a2}&sigma;`,'E')})${s2}`,
     ['n must be a whole number at least this large, so round UP.','يجب أن يكون n عدداً صحيحاً لا يقل عن ذلك، لذا نقرّب للأعلى.']]},
-  sampleSizePropPf:{ t:['the sample size for estimating a proportion (from the confidence interval)','حجم العينة لتقدير النسبة (من فترة الثقة)'], g:`n = ${fr(`z${a2}${s2}p(1 &minus; p)`,'E'+s2)} &le; ${fr(`z${a2}${s2}`,'4E'+s2)}`, s:[
+  sampleSizePropPf:{ t:['the sample-size formula for a proportion (from the confidence interval)','قانون حجم العينة لنسبة (من فترة الثقة)'], g:`n = ${fr(`z${a2}${s2}p(1 &minus; p)`,'E'+s2)} &le; ${fr(`z${a2}${s2}`,'4E'+s2)}`, s:[
     ['Margin of error of the interval for p:','هامش خطأ فترة الثقة للنسبة:'], `E = z${a2}${rt(fr('p(1 &minus; p)','n'))}`,
     ['Square and solve for n:','نربّع ونحل بالنسبة لـ n:'], `E${s2} = z${a2}${s2}${fr('p(1 &minus; p)','n')} &rArr; n = ${fr(`z${a2}${s2}p(1 &minus; p)`,'E'+s2)}`,
     ['`p(1 − p) = ¼ − (p − ½)²` is largest at `p = ½`, so with no estimate of p use ¼:','`p(1 − p) = ¼ − (p − ½)²` أكبر ما يمكن عند `p = ½`، لذا بدون تقدير لـ p نأخذ ¼:'], `n = ${fr(`z${a2}${s2}`,'4E'+s2)}`]},
-  testFromCI:{ t:['the hypothesis test for a mean from the confidence interval','اختبار الفرض للمتوسط من فترة الثقة'], g:`|z| = |${fr('x&#772; &minus; &mu;<sub>0</sub>','&sigma;/'+rt('n'))}| &gt; z${a2} &hArr; reject H<sub>0</sub>`, s:[
+  testFromCI:{ t:['the hypothesis test for a mean from the confidence interval','قانون اختبار الفرض لمتوسط (من فترة الثقة)'], g:`|z| = |${fr('x&#772; &minus; &mu;<sub>0</sub>','&sigma;/'+rt('n'))}| &gt; z${a2} &hArr; reject H<sub>0</sub>`, s:[
     ['Two-sided test of `H₀: μ = μ₀` at level α: reject H₀ exactly when μ₀ is NOT inside the `(1 − α)` confidence interval.','اختبار ذو طرفين لـ `H₀: μ = μ₀` عند α: نرفض H₀ عندما لا تقع μ₀ داخل فترة الثقة `(1 − α)`.'],
     ['μ₀ inside the interval means:','وقوع μ₀ داخل الفترة يعني:'], `x&#772; &minus; z${a2}${fr('&sigma;',rt('n'))} &lt; &mu;<sub>0</sub> &lt; x&#772; + z${a2}${fr('&sigma;',rt('n'))} &hArr; |x&#772; &minus; &mu;<sub>0</sub>| &lt; z${a2}${fr('&sigma;',rt('n'))}`,
     ['Divide by `σ/√n`: μ₀ is inside ⇔ `|z| < z_{α/2}`. So we reject H₀ ⇔ `|z| > z_{α/2}` — the test statistic and critical value.','نقسم على `σ/√n`: μ₀ داخل الفترة ⇔ `|z| < z_{α/2}`. إذن نرفض H₀ ⇔ `|z| > z_{α/2}` — وهي إحصاءة الاختبار والقيمة الحرجة.']]},
-  testPropFromCI:{ t:['the test statistic for a proportion','إحصاءة اختبار النسبة'], g:`z = ${fr('p&#770; &minus; p<sub>0</sub>',rt(fr('p<sub>0</sub>(1 &minus; p<sub>0</sub>)','n')))}`, s:[
+  testPropFromCI:{ t:['the test statistic for a proportion','قانون إحصاءة اختبار الفرض لنسبة'], g:`z = ${fr('p&#770; &minus; p<sub>0</sub>',rt(fr('p<sub>0</sub>(1 &minus; p<sub>0</sub>)','n')))}`, s:[
     ['Under `H₀: p = p₀`, p̂ is approximately normal with mean p₀ and standard deviation `√(p₀(1 − p₀)/n)` (we use p₀, not p̂, because H₀ fixes p).','تحت `H₀: p = p₀` يكون p̂ تقريباً طبيعياً متوسطه p₀ وانحرافه `√(p₀(1 − p₀)/n)` (نستخدم p₀ لأن H₀ يحدد p).'],
     ['Standardise:','نحوّل للمعياري:'], `z = ${fr('p&#770; &minus; p<sub>0</sub>',rt(fr('p<sub>0</sub>(1 &minus; p<sub>0</sub>)','n')))}`, ['Reject H₀ when z falls in the rejection region, as for a mean.','نرفض H₀ إذا وقعت z في منطقة الرفض كما في المتوسط.']]},
   anovaSST:{ t:['SST = SSB + SSW in one-way ANOVA','SST = SSB + SSW في تحليل التباين'], g:'SST = SSB + SSW', s:[
@@ -172,7 +172,7 @@ export const PROOFS = {
   covShortcut:{ t:['Cov(X, Y) = E(XY) − E(X)E(Y)','Cov(X, Y) = E(XY) − E(X)E(Y)'], g:'Cov(X, Y) = E(XY) &minus; &mu;<sub>X</sub>&mu;<sub>Y</sub>', s:[
     'E[(X &minus; &mu;<sub>X</sub>)(Y &minus; &mu;<sub>Y</sub>)] = E(XY) &minus; &mu;<sub>Y</sub>E(X) &minus; &mu;<sub>X</sub>E(Y) + &mu;<sub>X</sub>&mu;<sub>Y</sub>',
     '= E(XY) &minus; &mu;<sub>X</sub>&mu;<sub>Y</sub> &minus; &mu;<sub>X</sub>&mu;<sub>Y</sub> + &mu;<sub>X</sub>&mu;<sub>Y</sub> = E(XY) &minus; &mu;<sub>X</sub>&mu;<sub>Y</sub>']},
-  varSum:{ t:['Var(aX + bY)','تباين aX + bY'], g:'Var(aX + bY) = a<sup>2</sup>Var(X) + b<sup>2</sup>Var(Y) + 2ab Cov(X, Y)', s:[
+  varSum:{ t:['Var(aX + bY)','قانون تباين aX + bY'], g:'Var(aX + bY) = a<sup>2</sup>Var(X) + b<sup>2</sup>Var(Y) + 2ab Cov(X, Y)', s:[
     ['Centre: `aX + bY − E(aX + bY) = a(X − μ_X) + b(Y − μ_Y)`. Square and take expectations:','نطرح المتوسط: `aX + bY − E(aX + bY) = a(X − μ_X) + b(Y − μ_Y)`. نربّع ونأخذ التوقع:'],
     'E[a<sup>2</sup>(X &minus; &mu;<sub>X</sub>)<sup>2</sup> + 2ab(X &minus; &mu;<sub>X</sub>)(Y &minus; &mu;<sub>Y</sub>) + b<sup>2</sup>(Y &minus; &mu;<sub>Y</sub>)<sup>2</sup>]', '= a<sup>2</sup>Var(X) + 2ab Cov(X, Y) + b<sup>2</sup>Var(Y)']},
   indepCov:{ t:['independence implies Cov(X, Y) = 0','الاستقلال يؤدي إلى Cov(X, Y) = 0'], g:'X, Y independent &rArr; Cov(X, Y) = 0', s:[
@@ -182,16 +182,16 @@ export const PROOFS = {
     ['A variance is never negative. Apply this to the standardised sum and difference:','التباين لا يكون سالباً. نطبق ذلك على مجموع المتغيرين المعياريين وفرقهما:'], `0 &le; Var(${fr('X','&sigma;<sub>X</sub>')} &plusmn; ${fr('Y','&sigma;<sub>Y</sub>')}) = 1 + 1 &plusmn; 2&rho; = 2(1 &plusmn; &rho;)`,
     ['So `1 + ρ ≥ 0` and `1 − ρ ≥ 0`, i.e. `−1 ≤ ρ ≤ 1`.','إذن `1 + ρ ≥ 0` و `1 − ρ ≥ 0` أي `−1 ≤ ρ ≤ 1`.']]},
   /* ---------- financial mathematics ---------- */
-  simpleAmount:{ t:['the simple-interest amount','الجملة بالفائدة البسيطة'], g:'A = P(1 + rt)', s:[['Interest each year is `Pr`; after t years it is `Prt`.','الفائدة كل سنة `Pr`، وبعد t سنة تكون `Prt`.'], 'A = P + Prt = P(1 + rt)']},
-  compoundAmount:{ t:['the compound amount A = P(1 + r)ᵗ','الجملة بالفائدة المركبة A = P(1 + r)ᵗ'], g:'A = P(1 + r)<sup>t</sup>', s:[
+  simpleAmount:{ t:['the simple-interest amount','قانون الجملة بالفائدة البسيطة'], g:'A = P(1 + rt)', s:[['Interest each year is `Pr`; after t years it is `Prt`.','الفائدة كل سنة `Pr`، وبعد t سنة تكون `Prt`.'], 'A = P + Prt = P(1 + rt)']},
+  compoundAmount:{ t:['the compound amount A = P(1 + r)ᵗ','قانون الجملة بالفائدة المركبة A = P(1 + r)ᵗ'], g:'A = P(1 + r)<sup>t</sup>', s:[
     ['Each year the balance is multiplied by `(1 + r)`: `A₁ = P(1 + r)`, `A₂ = A₁(1 + r) = P(1 + r)²`, …','كل سنة يُضرب الرصيد في `(1 + r)`: `A₁ = P(1 + r)` و `A₂ = A₁(1 + r) = P(1 + r)²` …'],
     ['Induction: if `Aₖ = P(1 + r)ᵏ` then `Aₖ₊₁ = Aₖ(1 + r) = P(1 + r)ᵏ⁺¹`.','بالاستقراء: إذا `Aₖ = P(1 + r)ᵏ` فإن `Aₖ₊₁ = Aₖ(1 + r) = P(1 + r)ᵏ⁺¹`.'], 'A<sub>t</sub> = P(1 + r)<sup>t</sup>']},
   presentValuePf:{ t:['the present value formula','قانون القيمة الحالية'], g:`PV = ${fr('FV','(1 + r)<sup>t</sup>')}`, s:[
     ['PV is the amount that grows to FV: `PV(1 + r)ᵗ = FV`.','القيمة الحالية هي المبلغ الذي ينمو إلى FV: `PV(1 + r)ᵗ = FV`.'], ['Divide:','نقسم:'], `PV = ${fr('FV','(1 + r)<sup>t</sup>')}`]},
-  effectiveRatePf:{ t:['the effective annual rate','المعدل السنوي الفعلي'], g:'r<sub>eff</sub> = (1 + r/m)<sup>m</sup> &minus; 1', s:[
+  effectiveRatePf:{ t:['the effective annual rate','قانون المعدل السنوي الفعلي'], g:'r<sub>eff</sub> = (1 + r/m)<sup>m</sup> &minus; 1', s:[
     ['Compounding m times a year at `r/m` per period, 1 riyal grows in one year to `(1 + r/m)ᵐ`.','بالتركيب m مرة في السنة بمعدل `r/m` لكل فترة، يصبح الريال بعد سنة `(1 + r/m)ᵐ`.'],
     ['The effective rate is the single annual rate giving the same growth:','المعدل الفعلي هو المعدل السنوي الوحيد الذي يعطي النمو نفسه:'], '1 + r<sub>eff</sub> = (1 + r/m)<sup>m</sup>']},
-  annuityFVPf:{ t:['the future value of an annuity','القيمة المستقبلية للدفعات'], g:`FV = P${fr('(1 + i)<sup>n</sup> &minus; 1','i')}`, s:[
+  annuityFVPf:{ t:['the future value of an annuity','قانون القيمة المستقبلية للدفعات'], g:`FV = P${fr('(1 + i)<sup>n</sup> &minus; 1','i')}`, s:[
     ['Payment k (end of period k) earns interest for `n − k` periods:','الدفعة k (نهاية الفترة k) تكسب فائدة لمدة `n − k` فترة:'], 'FV = P[1 + (1 + i) + (1 + i)<sup>2</sup> + &hellip; + (1 + i)<sup>n&minus;1</sup>]',
     ['Geometric series with ratio `1 + i`:','متسلسلة هندسية أساسها `1 + i`:'], `FV = P${fr('(1 + i)<sup>n</sup> &minus; 1','(1 + i) &minus; 1')} = P${fr('(1 + i)<sup>n</sup> &minus; 1','i')}`]},
   continuousComp:{ t:['continuous compounding A = Peʳᵗ','التركيب المستمر A = Peʳᵗ'], g:'A = Pe<sup>rt</sup>', s:[
@@ -201,7 +201,7 @@ export const PROOFS = {
   expSolution:{ t:['the solution of y′ = ky','حل المعادلة y′ = ky'], g:'y = y<sub>0</sub>e<sup>kt</sup>', s:[
     ['Separate the variables (y ≠ 0):','نفصل المتغيرات (y ≠ 0):'], `${fr('dy','y')} = k dt &rArr; ln|y| = kt + C`,
     ['Exponentiate and use `y(0) = y₀`:','نأخذ الأس ونستخدم `y(0) = y₀`:'], 'y = Ae<sup>kt</sup>, &nbsp; A = y(0) = y<sub>0</sub>']},
-  doublingTime:{ t:['the doubling time T = ln 2 / k','زمن التضاعف T = ln 2 / k'], g:`T = ${fr('ln 2','k')}`, s:[
+  doublingTime:{ t:['the doubling time T = ln 2 / k','قانون زمن التضاعف T = ln 2 / k'], g:`T = ${fr('ln 2','k')}`, s:[
     ['Doubling means `y(T) = 2y₀`:','التضاعف يعني `y(T) = 2y₀`:'], 'y<sub>0</sub>e<sup>kT</sup> = 2y<sub>0</sub> &rArr; e<sup>kT</sup> = 2', ['Take ln:','نأخذ ln:'], `kT = ln 2 &rArr; T = ${fr('ln 2','k')}`]},
   charEquationPf:{ t:['the characteristic equation of ay″ + by′ + cy = 0','المعادلة المميزة لـ ay″ + by′ + cy = 0'], g:'ar<sup>2</sup> + br + c = 0', s:[
     ['Try `y = e^{rx}`: `y′ = re^{rx}`, `y″ = r²e^{rx}`. Substitute:','نجرب `y = e^{rx}`: `y′ = re^{rx}` و `y″ = r²e^{rx}`. نعوّض:'], '(ar<sup>2</sup> + br + c)e<sup>rx</sup> = 0',
@@ -281,12 +281,12 @@ export const PROOFS = {
     ['Mixed partials are equal (Clairaut), so the terms cancel in pairs: `R_yx − R_xy`, `P_zy − P_yz`, `Q_xz − Q_zx`.','المشتقات المختلطة متساوية (كليرو) فتُحذف الحدود مثنى: `R_yx − R_xy` و `P_zy − P_yz` و `Q_xz − Q_zx`.']]},
   curlGrad:{ t:['curl(grad f) = 0','curl(grad f) = 0'], g:'&nabla; &times; (&nabla;f) = 0', s:[
     '&nabla;&times;&nabla;f = &lang;f<sub>zy</sub> &minus; f<sub>yz</sub>, f<sub>xz</sub> &minus; f<sub>zx</sub>, f<sub>yx</sub> &minus; f<sub>xy</sub>&rang;', ['Equal mixed partials make every component zero.','تساوي المشتقات المختلطة يجعل كل مركبة صفراً.']]},
-  curvCircle:{ t:['the curvature of a circle is 1/r','انحناء الدائرة 1/r'], g:`&kappa; = ${fr(1,'r')}`, s:[
+  curvCircle:{ t:['the curvature of a circle is 1/r','قانون انحناء الدائرة 1/r'], g:`&kappa; = ${fr(1,'r')}`, s:[
     ['Arc-length parametrisation: `r(s) = (r cos(s/r), r sin(s/r))`, so `|r′(s)| = 1`.','الوسيط بطول القوس: `r(s) = (r cos(s/r), r sin(s/r))` فيكون `|r′(s)| = 1`.'], `r&Prime;(s) = &minus;${fr(1,'r')}(cos(s/r), sin(s/r))`, `&kappa; = |r&Prime;(s)| = ${fr(1,'r')}`]},
-  curvGraph:{ t:['the curvature of y = f(x)','انحناء المنحنى y = f(x)'], g:`&kappa; = ${fr('|y&Prime;|','(1 + y&prime;'+s2+')<sup>3/2</sup>')}`, s:[
+  curvGraph:{ t:['the curvature of y = f(x)','قانون انحناء المنحنى y = f(x)'], g:`&kappa; = ${fr('|y&Prime;|','(1 + y&prime;'+s2+')<sup>3/2</sup>')}`, s:[
     ['Parametrise `r(x) = (x, f(x))`: `r′ = (1, f′)`, `r″ = (0, f″)`.','نضع `r(x) = (x, f(x))`: `r′ = (1, f′)` و `r″ = (0, f″)`.'],
     ['Plane-curve formula `κ = |x′y″ − y′x″| / |r′|³`:','قانون المنحنى المستوي `κ = |x′y″ − y′x″| / |r′|³`:'], `&kappa; = ${fr('|1&middot;f&Prime; &minus; f&prime;&middot;0|','(1 + f&prime;'+s2+')<sup>3/2</sup>')}`]},
-  helixPf:{ t:['the curvature of a helix','انحناء الحلزون'], g:`&kappa; = ${fr('a','a'+s2+' + b'+s2)}`, s:[
+  helixPf:{ t:['the curvature of a helix','قانون انحناء الحلزون'], g:`&kappa; = ${fr('a','a'+s2+' + b'+s2)}`, s:[
     ['`r = (a cos t, a sin t, bt)`: `r′ = (−a sin t, a cos t, b)`, `|r′| = √(a² + b²)`; `r″ = (−a cos t, −a sin t, 0)`.','`r = (a cos t, a sin t, bt)`: `r′ = (−a sin t, a cos t, b)` و `|r′| = √(a² + b²)`، و `r″ = (−a cos t, −a sin t, 0)`.'],
     `r&prime; &times; r&Prime; = (ab sin t, &minus;ab cos t, a${s2}), &nbsp; |r&prime; &times; r&Prime;| = a${rt('a'+s2+' + b'+s2)}`,
     `&kappa; = ${fr('|r&prime; &times; r&Prime;|','|r&prime;|'+s3)} = ${fr('a'+rt('a'+s2+' + b'+s2),'(a'+s2+' + b'+s2+')<sup>3/2</sup>')} = ${fr('a','a'+s2+' + b'+s2)}`]},
@@ -311,7 +311,7 @@ export const PROOFS = {
     ['So the pairs (a, b) and (b, r) have the same common divisors, hence the same gcd.','إذن للزوجين (a, b) و (b, r) القواسم المشتركة نفسها، فلهما القاسم المشترك الأكبر نفسه.']]},
   phiPrimePower:{ t:['φ(pᵏ) = pᵏ − pᵏ⁻¹','φ(pᵏ) = pᵏ − pᵏ⁻¹'], g:'&phi;(p<sup>k</sup>) = p<sup>k</sup> &minus; p<sup>k&minus;1</sup>', s:[
     ['A number `1 ≤ m ≤ pᵏ` shares a factor with pᵏ only if p divides it.','العدد `1 ≤ m ≤ pᵏ` يشترك مع pᵏ في عامل فقط إذا كان p يقسمه.'], ['The multiples of p up to pᵏ are `p, 2p, …, p^{k−1}·p`: `p^{k−1}` of them.','مضاعفات p حتى pᵏ هي `p، 2p، …، p^{k−1}·p` وعددها `p^{k−1}`.'], '&phi;(p<sup>k</sup>) = p<sup>k</sup> &minus; p<sup>k&minus;1</sup>']},
-  tauFormula:{ t:['the number of divisors τ(n)','عدد القواسم τ(n)'], g:'&tau;(n) = (a<sub>1</sub> + 1)(a<sub>2</sub> + 1)&hellip;(a<sub>k</sub> + 1)', s:[
+  tauFormula:{ t:['the number of divisors τ(n)','قانون عدد القواسم τ(n)'], g:'&tau;(n) = (a<sub>1</sub> + 1)(a<sub>2</sub> + 1)&hellip;(a<sub>k</sub> + 1)', s:[
     ['With `n = p₁^{a₁}…pₖ^{aₖ}`, every divisor is `p₁^{b₁}…pₖ^{bₖ}` with `0 ≤ bᵢ ≤ aᵢ` (unique factorisation).','مع `n = p₁^{a₁}…pₖ^{aₖ}` كل قاسم على الصورة `p₁^{b₁}…pₖ^{bₖ}` حيث `0 ≤ bᵢ ≤ aᵢ` (وحدانية التحليل).'],
     ['Each bᵢ has `aᵢ + 1` choices; multiply.','لكل bᵢ عدد `aᵢ + 1` من الخيارات؛ نضرب.']]},
   congruenceUnique:{ t:['ax ≡ b (mod m) has a unique solution when gcd(a, m) = 1','للتطابق ax ≡ b (mod m) حل وحيد عندما gcd(a, m) = 1'], g:'x &equiv; a<sup>&minus;1</sup>b (mod m)', s:[
@@ -326,7 +326,7 @@ export const PROOFS = {
   fieldNoZeroDiv:{ t:['a field has no zero divisors','الحقل لا يحتوي قواسم للصفر'], g:'ab = 0 &rArr; a = 0 or b = 0', s:[
     ['Let `ab = 0` with `a ≠ 0`. Multiply by `a⁻¹`:','نفرض `ab = 0` مع `a ≠ 0`. نضرب في `a⁻¹`:'], 'b = a<sup>&minus;1</sup>(ab) = a<sup>&minus;1</sup>0 = 0']},
   /* ---------- analysis ---------- */
-  geomSeriesPf:{ t:['the sum of a geometric series','مجموع المتسلسلة الهندسية'], g:`&Sigma;<sub>n=0</sub><sup>&infin;</sup> ar${sn} = ${fr('a','1 &minus; r')}, &nbsp; |r| &lt; 1`, s:[
+  geomSeriesPf:{ t:['the sum of a geometric series','قانون مجموع المتسلسلة الهندسية'], g:`&Sigma;<sub>n=0</sub><sup>&infin;</sup> ar${sn} = ${fr('a','1 &minus; r')}, &nbsp; |r| &lt; 1`, s:[
     ['Partial sum: multiply `Sₙ = a + ar + … + arⁿ⁻¹` by r and subtract:','المجموع الجزئي: نضرب `Sₙ = a + ar + … + arⁿ⁻¹` في r ونطرح:'], `S<sub>n</sub> &minus; rS<sub>n</sub> = a &minus; ar${sn} &rArr; S<sub>n</sub> = ${fr('a(1 &minus; r'+sn+')','1 &minus; r')}`,
     ['For |r| < 1, `rⁿ → 0`:','عندما |r| < 1 فإن `rⁿ → 0`:'], `S = ${fr('a','1 &minus; r')}`]},
   limitOneOverN:{ t:['lim 1/n = 0 (ε–N proof)','lim 1/n = 0 (برهان ε–N)'], g:`lim<sub>n&rarr;&infin;</sub> ${fr(1,'n')} = 0`, s:[
@@ -405,13 +405,17 @@ export const PROOFS = {
   /* ---------- foundations (MATH 319) ---------- */
   fracAddPf:{ t:['the rule for adding fractions','قاعدة جمع الكسور'], g:`${fr('a','b')} + ${fr('c','d')} = ${fr('ad + bc','bd')}`, s:[
     ['Rewrite both over the common denominator bd (multiplying by 1 = d/d and b/b):','نكتب الكسرين على المقام المشترك bd (بالضرب في 1 = d/d و b/b):'], `${fr('a','b')}&middot;${fr('d','d')} + ${fr('c','d')}&middot;${fr('b','b')} = ${fr('ad','bd')} + ${fr('bc','bd')} = ${fr('ad + bc','bd')}`]},
-  arithSumPf:{ t:['the sum of an arithmetic sequence (Gauss)','مجموع المتتابعة الحسابية (جاوس)'], g:`S<sub>n</sub> = ${fr('n(a<sub>1</sub> + a<sub>n</sub>)',2)}`, s:[
+  arithSumPf:{ t:['the sum of an arithmetic sequence (Gauss)','قانون مجموع المتتابعة الحسابية (جاوس)'], g:`S<sub>n</sub> = ${fr('n(a<sub>1</sub> + a<sub>n</sub>)',2)}`, s:[
     ['Write the sum forwards and backwards and add term by term; each pair adds to `a₁ + aₙ`:','نكتب المجموع من الأمام والخلف ونجمع حداً حداً؛ كل زوج مجموعه `a₁ + aₙ`:'], '2S<sub>n</sub> = n(a<sub>1</sub> + a<sub>n</sub>)', `S<sub>n</sub> = ${fr('n(a<sub>1</sub> + a<sub>n</sub>)',2)}`]},
-  geomSumFinite:{ t:['the sum of a geometric sequence','مجموع المتتابعة الهندسية'], g:`S<sub>n</sub> = ${fr('a(r'+sn+' &minus; 1)','r &minus; 1')}`, s:[
+  geomSumFinite:{ t:['the sum of a geometric sequence','قانون مجموع المتتابعة الهندسية'], g:`S<sub>n</sub> = ${fr('a(r'+sn+' &minus; 1)','r &minus; 1')}`, s:[
     ['`rSₙ − Sₙ`: all middle terms cancel:','`rSₙ − Sₙ`: تُحذف كل الحدود الوسطى:'], '(r &minus; 1)S<sub>n</sub> = ar<sup>n</sup> &minus; a', ['Divide by `r − 1` (r ≠ 1).','نقسم على `r − 1` (r ≠ 1).']]},
   gcdLcm:{ t:['GCF × LCM = a × b','ع.م.أ × م.م.أ = a × b'], g:'gcd(a, b) &middot; lcm(a, b) = ab', s:[
     ['For each prime p, let a and b contain p to the powers α and β.','لكل عدد أولي p ليكن أسّه في a و b هو α و β.'], ['The gcd takes `min(α, β)` and the lcm takes `max(α, β)`; and `min + max = α + β`.','القاسم المشترك يأخذ `min(α, β)` والمضاعف يأخذ `max(α, β)`، و `min + max = α + β`.'], ['So the product has exactly the prime powers of ab.','إذن حاصل الضرب له قوى الأعداد الأولية نفسها في ab.']]},
 };
+
+/* topic label of a proof: "Proof: …" / "إثبات …" */
+export const proofLabel = P => [`Proof: ${P.t[0]}`, P.t[1].startsWith('إثبات') ? P.t[1] : `إثبات ${P.t[1]}`];
+export const proofKey = id => 'proof_' + id;
 
 /* which proofs each course offers (shared proofs appear in several courses) */
 export const COURSE_PROOFS = {
