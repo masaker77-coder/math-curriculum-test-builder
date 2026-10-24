@@ -4,6 +4,8 @@ import { shuffled, strip, sup, groupItems } from './helpers.js';
 import { zFullHTML, tFullHTML, fFullHTML, L } from './viz.js';
 import { INTRO } from './intros.js';
 import { coverArt } from './cover.js';
+import { mountPractice } from './practice.js';
+import { bundle } from './bundle.js';
 import { LANGS, tr, pickLang } from './i18n.js';
 
 /* ============================ UI WIRING (Test Builder) ============================ */
@@ -20,6 +22,7 @@ const MODES = {
   final: { nQ:5, marks:10,  title:'titleFinal' },   // 5 questions × 10 marks
   examples: { book:true, count:5, title:'titleEx' },   // worked examples: each question followed by its solution
   booklet:  { book:true, count:3, title:'titleBook' }, // study booklet: 3 worked examples per topic, a topic per page
+  app:      { app:true, count:1, title:'titleApp' },   // interactive practice app (preview + standalone download)
 };
 const isBook = () => !!MODES[state.mode].book;
 const LONG = ['lpFormulate','lpGraphical','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian','rectangle','triangleArea','circle','pythagorean','slope','derivative',
@@ -104,7 +107,11 @@ const nMc  = s => s.nMc ?? (s.mc ? s.count : 0);
 const sectionItems = s => [...genItems(s.topic, nEss(s), s.diff, false), ...genItems(s.topic, nMc(s), s.diff, true)];
 function genItems(topic, count, d, mc){
   const gen=G[topic]; const items=[];
-  for(let i=0;i<count;i++){ const it=gen(d); if(mc) it.choices=buildChoices(it.a, gen, d); items.push(it); }
+  const seen=new Set();
+  for(let i=0;i<count;i++){
+    let it=gen(d); for(let k=0; k<20 && seen.has(it.q); k++) it=gen(d);   // avoid repeating a question (topics with few variants, e.g. proofs)
+    seen.add(it.q); if(mc) it.choices=buildChoices(it.a, gen, d); items.push(it);
+  }
   return items;
 }
 
@@ -132,6 +139,7 @@ function buildTopicList(keep, resetCounts){
   if(!c||!c.topics.length){ box.innerHTML=`<div class="sections-empty" style="padding:10px">${T('noTopics')}</div>`; el('addSection').disabled=true; return; }
   el('addSection').disabled=false;
   box.classList.toggle('book', isBook());
+  box.classList.toggle('app', !!MODES[state.mode].app);
   box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T(isBook()?'examplesCol':'essay')}</span><span>${T('mcShort')}</span></div>`+
     c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:isBook()?0:1};
       return `<div class="trow${p.on?' on':''}" data-t="${t}"><input type="checkbox" class="tchk"${p.on?' checked':''}><span>${topicLabel(t)}</span>
@@ -200,7 +208,8 @@ function setMode(mode){
   document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !m.nQ);
   document.querySelectorAll('.book-only').forEach(n=>n.hidden = mode!=='booklet');
   buildTopicList(true, wasBook!==!!m.book);           // entering / leaving the booklet modes resets the counts
-  if(m.book){                                           // the same topics become worked examples (essay only)
+  if(m.app){ if(checkedTopics().length) addSelected(true); }
+  else if(m.book){                                      // the same topics become worked examples (essay only)
     if(checkedTopics().length) addSelected(true);
     else test.sections.forEach(s=>{ if(s.custom) return; s.nEssay=m.count; s.nMc=0; s.count=m.count; s.items=sectionItems(s); });
   }
@@ -318,7 +327,7 @@ function practiceHTML(parts, vLabel){
   const multiPart=parts.length>1;
   const entries=[];
   const partsHtml=parts.map((p,pi)=>{
-    const long=p.custom?false:LONG.includes(p.topic);
+    const long=p.custom?false:(LONG.includes(p.topic)||p.topic.startsWith('proofs_'));
     const lis=p.items.map((it,ii)=>{ const lbl=qLabel(pi, p.items.length>1?ii:-1); entries.push({it, label:lbl});
       return `<li style="min-height:${sp}px"><span class="ql">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span></li>`; }).join('');
     return `<div class="part"><ol class="problems labeled ${long?'single':''}">${lis}</ol></div>`;
@@ -406,7 +415,7 @@ function bookletHTML(parts){
       <table class="ix"><tr><th>#</th><th>${T('topic')}</th><th>${T('examplesCol')}</th><th>${T('page')}</th></tr>
       ${parts.map((p,i)=>`<tr><td class="ix-n">${i+1}</td><td class="ix-t"><span>${partLabel(p)}</span>${p.custom?'':`<small>${p.code}</small>`}</td><td class="ix-c">${p.items.length}</td><td class="ix-pg"></td></tr>`).join('')}
       </table></div><div class="bk-foot"></div></section>`;
-  const flows=parts.map((p,pi)=>`<div class="bk-flow">
+  const flows=parts.map((p,pi)=>`<div class="bk-flow" data-pi="${pi}">
       <div class="bk-block bk-start"><div class="bk-th"><span class="bk-n">${pi+1}</span><div><div class="bk-tt">${partLabel(p)}</div><div class="bk-tc">${partCourse(p)}</div></div></div>
         ${p.custom?'':introHTML(p.topic)}</div>
       ${p.items.map(exampleHTML).join('')}</div>`).join('');
@@ -415,7 +424,7 @@ function bookletHTML(parts){
 /* split each topic's blocks over A4 pages (measured in the real layout), number the pages and fill the index */
 function paginateBook(){
   const sc=el('out').querySelector('.bk-scale'); if(!sc) return;
-  const run=sc.dataset.run; let no=2;
+  const run=sc.dataset.run; let no=2, grew=false;
   const newPage=before=>{ const pg=document.createElement('section'); pg.className='bk-page';
     pg.innerHTML=`<div class="bk-run">${run}</div><div class="bk-body"></div><div class="bk-foot">${++no}</div>`; sc.insertBefore(pg, before); return pg.querySelector('.bk-body'); };
   sc.querySelector('.bk-index .bk-foot').textContent=2;
@@ -426,10 +435,28 @@ function paginateBook(){
       body.appendChild(b);
       if(body.scrollHeight>body.clientHeight+1 && body.children.length>1){ body.removeChild(b); body=newPage(flow); body.appendChild(b); }
     });
+    if(fillPage(body, +flow.dataset.pi)) grew=true;
     flow.remove();
   });
   sc.querySelectorAll('.ix-pg').forEach((c,i)=>c.textContent=starts[i]||'');
+  sc.querySelectorAll('.ix-c').forEach((c,i)=>{ const p=state.sheets[0][i]; if(p) c.textContent=p.items.length; });
+  if(grew) renderSections();
   fitBook();
+}
+/* a topic's last page has room left: add more worked examples of that topic while they fit (kept in the test) */
+function fillPage(body, pi){
+  const p=state.sheets[0][pi], sec=test.sections[pi]; if(!p||p.custom||!G[p.topic]) return false;
+  let misses=0, added=false;
+  while(misses<3 && p.items.length<12){
+    const it=G[p.topic](p.diff);
+    if(p.items.some(x=>x.q===it.q)){ misses++; continue; }
+    const tmp=document.createElement('div'); tmp.innerHTML=exampleHTML(it, p.items.length); const b=tmp.firstElementChild;
+    body.appendChild(b);
+    if(body.scrollHeight>body.clientHeight+1){ body.removeChild(b); misses++; continue; }   // too tall: try another, then stop
+    p.items.push(it); added=true;
+  }
+  if(added && sec && sec.items===p.items){ sec.nEssay=p.items.length; sec.nMc=0; sec.count=p.items.length; }
+  return added;
 }
 /* scale the A4 pages down to the width of the preview column (the print layout is unscaled) */
 function fitBook(){
@@ -459,9 +486,45 @@ function render(){
     return;
   }
   if(isBook()){ el('out').innerHTML=bookHTML(state.sheets[0])+tablesPageHTML(); paginateBook(); return; }
+  if(MODES[state.mode].app){ appView(); return; }
   const multi=state.sheets.length>1, draw=state.mode==='practice'?practiceHTML:examHTML;
   el('out').innerHTML=state.sheets.map((parts,v)=>
     draw(parts, multi?`${T('version')} ${String.fromCharCode(65+v)}`:'')).join('')+tablesPageHTML();
+}
+
+/* ---------------- Interactive practice app ---------------- */
+function appConfig(){
+  const secs=test.sections.filter(s=>!s.custom), seen=new Set(), topics=[];
+  secs.forEach(s=>{ if(seen.has(s.topic)) return; seen.add(s.topic); topics.push({t:s.topic, en:TOPIC_LABELS[s.topic]||s.topic, ar:TOPIC_LABELS_AR[s.topic]||'', code:s.code}); });
+  const codes=[...new Set(secs.map(s=>s.code))], one=codes.length===1 ? secs.find(s=>s.code===codes[0]) : null;
+  const custom=(el('title').value||'').trim();
+  const title = custom ? [custom, custom] : one ? [`${one.code} · ${one.title}`, `${one.code} · ${one.titleAr||one.title}`] : [tr('titleApp','en'), tr('titleApp','ar')];
+  return { topics, title, lang:state.lang, key:topics.map(o=>o.t).join(',') };
+}
+function appView(){
+  const cfg=appConfig();
+  if(!cfg.topics.length){ el('out').innerHTML=`<div class="sheet"><div class="sheet-sub" style="text-align:center;padding:48px 0">${T('emptyTest')}</div></div>`; return; }
+  el('out').innerHTML=`<div class="app-bar"><div><b>${T('appReady')}</b><div class="hint">${T('appHint')}</div></div>
+      <button class="btn primary" id="appDl">${T('appDownload')}</button></div><div id="appMount" class="app-preview"></div>`;
+  el('appDl').onclick=downloadApp;
+  mountPractice(el('appMount'), cfg);
+}
+/* one self-contained HTML file: the page styles, the needed modules bundled, and the chosen topics */
+async function downloadApp(){
+  const btn=el('appDl'), label=btn.textContent; btn.disabled=true; btn.textContent='…';
+  try{
+    const names=['helpers','viz','proofs','intros','generators','practice'], src={};
+    await Promise.all(names.map(async n=>{ const r=await fetch(new URL(`./${n}.js`, import.meta.url)); if(!r.ok) throw new Error(n); src[n]=await r.text(); }));
+    const css=[...document.styleSheets].map(ss=>{ try{ return [...ss.cssRules].map(r=>r.cssText).join('\n'); }catch(e){ return ''; } }).join('\n');
+    const cfg={...appConfig(), lang:state.lang==='en'?'en':'ar', standalone:true}, ar=cfg.lang==='ar';
+    const html=`<!doctype html><html lang="${ar?'ar':'en'}" dir="${ar?'rtl':'ltr'}" data-lang="${cfg.lang}"><head><meta charset="utf-8">`+
+      `<meta name="viewport" content="width=device-width, initial-scale=1"><title>${(ar?cfg.title[1]:cfg.title[0]).replace(/</g,'&lt;')}</title>`+
+      `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">`+
+      `<style>${css.replace(/<\/style/gi,'<\\/style')}</style></head><body class="pr-standalone"><div id="app"></div>`+
+      `<script>${bundle(src, names)}\n__m.practice.mountPractice(document.getElementById('app'), ${JSON.stringify(cfg).replace(/</g,'\\u003c')});<\/script></body></html>`;
+    await saveFile(((el('title').value||'').trim()||'practice-app').replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,'-')+'.html', html);
+  }catch(e){ if(!(e && e.code==='declined')) flashNote(T('appFailed')); }
+  finally{ btn.disabled=false; btn.textContent=label; }
 }
 
 /* ---------------- Presentation mode (whole test, flattened) ---------------- */
