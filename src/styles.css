@@ -302,6 +302,7 @@
   .cv-info th{color:#0f2a5c;text-align:start;padding:6px 14px;width:42mm;border-bottom:1px solid #d8deea}
   .cv-info td{text-align:start;padding:6px 14px;border-bottom:1px solid #d8deea}
   .cv-blank{display:inline-block;min-width:60mm;border-bottom:1px dotted #8a93a5;height:1em}
+  .cover-art{direction:ltr;unicode-bidi:isolate}
   .cover-art .tile{fill:#ffffff;fill-opacity:.07;stroke:#ffffff;stroke-opacity:.18}
   .cover-art .glyph{fill:#ffffff;fill-opacity:.13;font:italic 15px var(--font-math)}
   .cover-art .ax{fill:none;stroke:#ffffff;stroke-opacity:.45;stroke-width:1.2}
@@ -316,11 +317,12 @@
   .cover-art .lbl{fill:#ffffff;font:italic 14px var(--font-math)}
   /* index */
   .ix-h{font-size:26px;color:#0f2a5c;margin:4mm 0 8mm;padding-bottom:6px;border-bottom:3px solid #e0a526}
-  table.ix{width:100%;border-collapse:collapse;font-size:14px}
+  table.ix{width:100%;border-collapse:collapse;font-size:var(--ixf,14px)}
   table.ix th{text-align:start;color:#3b4a66;font-size:12px;border-bottom:2px solid #0f2a5c;padding:6px 8px}
-  table.ix td{padding:9px 8px;border-bottom:1px dotted #b7c0d3;vertical-align:baseline}
+  table.ix td{padding:calc(var(--ixf,14px)*0.62) 8px;border-bottom:1px dotted #b7c0d3;vertical-align:baseline}
+  table.ix.dense td{padding:3px 8px} table.ix.dense .ix-t small{display:inline;margin-inline-start:8px}
   .ix-n{width:10mm;font-weight:700;color:#173f86} .ix-c,.ix-pg{width:22mm;text-align:center} .ix-pg{font-weight:700}
-  .ix-t small{display:block;color:var(--muted);font-size:11px}
+  .ix-t small{display:block;color:var(--muted);font-size:calc(var(--ixf,14px)*0.78)}
   .xq-head{display:flex;justify-content:space-between;gap:10px;font-weight:700;font-size:15px;border-bottom:1px solid var(--line);padding-bottom:3px}
   .xq-head .mk{font-weight:600;color:var(--muted);font-size:13px;white-space:nowrap}
   ol.xparts{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}

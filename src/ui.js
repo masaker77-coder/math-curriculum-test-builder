@@ -425,10 +425,10 @@ function bookletHTML(parts){
 /* split each topic's blocks over A4 pages (measured in the real layout), number the pages and fill the index */
 function paginateBook(){
   const sc=el('out').querySelector('.bk-scale'); if(!sc) return;
-  const run=sc.dataset.run; let no=2, grew=false;
+  const run=sc.dataset.run; let no=1+fitIndex(sc), grew=false;
   const newPage=before=>{ const pg=document.createElement('section'); pg.className='bk-page';
     pg.innerHTML=`<div class="bk-run">${run}</div><div class="bk-body"></div><div class="bk-foot">${++no}</div>`; sc.insertBefore(pg, before); return pg.querySelector('.bk-body'); };
-  sc.querySelector('.bk-index .bk-foot').textContent=2;
+  sc.querySelectorAll('.bk-index .bk-foot').forEach((f,i)=>f.textContent=2+i);
   const starts=[];
   sc.querySelectorAll('.bk-flow').forEach(flow=>{
     let body=newPage(flow); starts.push(no);
@@ -443,6 +443,22 @@ function paginateBook(){
   sc.querySelectorAll('.ix-c').forEach((c,i)=>{ const p=state.sheets[0][i]; if(p) c.textContent=p.items.length; });
   if(grew) renderSections();
   fitBook();
+}
+/* keep the index on one page: shrink its font, then a denser layout; only a very long list continues on more pages */
+function fitIndex(sc){
+  const first=sc.querySelector('.bk-index'), fits=pg=>{ const b=pg.querySelector('.bk-body'); return b.scrollHeight<=b.clientHeight+1; };
+  const tbl=first.querySelector('table.ix');
+  for(const dense of [false,true]){ tbl.classList.toggle('dense',dense);
+    for(const fs of [14,13,12,11,10,9]){ tbl.style.setProperty('--ixf', fs+'px'); if(fits(first)) return 1; } }
+  let pages=1, cur=first;
+  while(!fits(cur)){
+    const next=cur.cloneNode(true), rows=[...cur.querySelectorAll('table.ix tr')].slice(1), nt=next.querySelector('table.ix');
+    [...nt.querySelectorAll('tr')].slice(1).forEach(r=>r.remove());
+    cur.after(next); pages++;
+    for(let i=rows.length-1; i>0 && !fits(cur); i--) nt.insertBefore(rows[i], nt.rows[1]||null);   // move rows from the end
+    cur=next;
+  }
+  return pages;
 }
 /* a topic's last page has room left: add more worked examples of that topic while they fit (kept in the test) */
 function fillPage(body, pi){
