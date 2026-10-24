@@ -62,7 +62,7 @@ export const TOPIC_LABELS = {
   inverse2:'Inverse of a 2×2 matrix', matVec:'Matrix–vector product', dotProduct:'Dot product', eigenvalues2:'Eigenvalues (2×2)',
   bisectionStep:'Bisection method', trapezoidRule:'Trapezoidal rule', eulerStep:"Euler's method", absoluteError:'Absolute & relative error',
   charRoots:'Characteristic equation roots', expGrowth:'Exponential growth (y′ = ky)', ivpPolynomial:'Initial value problems',
-  pdeClassify:'Classify 2nd-order PDEs', waveSpeed:'Wave equation speed', laplacianPoly:'Laplacian of a polynomial', heatSeparation:'Heat equation (separated solution)',
+  pdeClassify:'Classify PDEs (order, degree, linearity, type)', waveSpeed:'Wave equation speed', laplacianPoly:'Laplacian of a polynomial', heatSeparation:'Heat equation (separated solution)',
   crossProduct:'Cross product', vectorMagnitude:'Magnitude of a vector', divergence:'Divergence', gradientAt:'Gradient at a point',
   seqLimit:'Limits of sequences', geometricSeries:'Geometric series', telescopingSum:'Telescoping sums', epsilonN:'ε–N definition',
   eulerCharacteristic:'Euler characteristic V − E + F', surfaceGenus:'Genus & Euler characteristic', topologyOpenSets:'Counting open sets',

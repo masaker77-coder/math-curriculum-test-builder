@@ -514,12 +514,31 @@ test('MATH 333 — exponential growth and polynomial IVPs', () => {
   });
 });
 
-test('MATH 315 — PDE classification by B² − 4AC', () => {
-  for (const d of DIFFS) times(300, () => {
-    const o = G.pdeClassify(d), t = plain(o.q).replace(/\s/g, '').match(/PDE(.*)=0/)[1];
+test('MATH 442 — PDE classification: order, degree, linearity, homogeneity, coefficients, type', () => {
+  const seen = new Set();
+  for (const d of DIFFS) times(400, () => {
+    const o = G.pdeClassify(d), eq = o.q.slice(o.q.lastIndexOf('<bdi dir="ltr">') + 15, o.q.lastIndexOf('</bdi>'));
+    const [lhs, rhs] = eq.split(" = "), ans = enOnly(o.a).replace(/<\/?span[^>]*>/g, "");
+    const subs = [...lhs.matchAll(/u<sub>([xy]+)<\/sub>/g)].map(m => m[1]), order = Math.max(...subs.map(x => x.length));
+    const powTop = [...lhs.matchAll(/\(u<sub>([xy]+)<\/sub>\)<sup>(\d)<\/sup>/g)].filter(m => m[1].length === order).map(m => +m[2]);
+    const degree = powTop.length ? Math.max(...powTop) : 1;
+    const linear = !/<sup>|u&thinsp;u/.test(lhs), homog = rhs === '0', variable = /[xy]&thinsp;/.test(lhs);
+    assert.match(ans, new RegExp(`^<b>Order ${order} · degree ${degree} · ${linear ? 'linear' : 'nonlinear'} · ${homog ? 'homogeneous' : 'non-homogeneous'} · ${variable ? 'variable' : 'constant'} coefficients`));
+    if (order !== 2) { assert.ok(!/bolic|elliptic|type/.test(ans)); return; }
+    const prinNonlin = /\(u<sub>(xx|xy|yy)<\/sub>\)<sup>|u&thinsp;u<sub>(xx|xy|yy)</.test(lhs);
+    if (prinNonlin) { assert.match(ans, /type not defined/); seen.add('none'); return; }
+    const t = plain(lhs).replace(/\s/g, '');
+    const vm = t.match(/^(-?\d*)([xy])&thinsp;uxx/);
+    if (vm) {                                                             // B² − 4AC = −4·k·C·v
+      const k = vm[1] === '' ? 1 : vm[1] === '-' ? -1 : +vm[1], C = coefOf(t, 'uyy'), m = -4 * k * C;
+      assert.match(ans, new RegExp(`${m > 0 ? 'hyperbolic' : 'elliptic'} for ${vm[2]} > 0, parabolic on ${vm[2]} = 0, ${m > 0 ? 'elliptic' : 'hyperbolic'} for ${vm[2]} < 0`));
+      seen.add('regions'); return;
+    }
     const A = coefOf(t, 'uxx'), B = coefOf(t, 'uxy'), C = coefOf(t, 'uyy'), D = B * B - 4 * A * C;
-    assert.equal(plain(enOnly(o.a)), D > 0 ? 'Hyperbolic' : D === 0 ? 'Parabolic' : 'Elliptic');
+    const type = D > 0 ? 'hyperbolic' : D === 0 ? 'parabolic' : 'elliptic';
+    assert.match(ans, new RegExp(`· ${type}</b>$`)); seen.add(type);
   });
+  for (const k of ['hyperbolic', 'parabolic', 'elliptic', 'regions', 'none']) assert.ok(seen.has(k), k);
 });
 
 test('MATH 315 — wave speed, Laplacian, heat-equation decay rate', () => {
