@@ -32,7 +32,7 @@ export function num(v, dp=4){
 /* ---- SVG plotting ---- */
 const esc = s => String(s).replace(/&(?![a-z#0-9]+;)/gi,'&amp;');
 /* plot({x:[x0,x1], y:[y0,y1], curves:[{f,cls}], fills:[{f,a,b,cls}], points:[{x,y,label,cls}], vlines:[{x,label,cls}], segs:[{x1,y1,x2,y2,cls}]}) */
-export function plot({x, y, w=320, h=200, curves=[], fills=[], points=[], vlines=[], segs=[], ticks=true}){
+export function plot({x, y, w=320, h=200, curves=[], fills=[], polys=[], points=[], vlines=[], segs=[], ticks=true}){
   const [x0,x1]=x, [y0,y1]=y, pad=22;
   // left margin wide enough for the longest y tick label (e.g. 25000)
   const yw=Math.max(...[y0,y1].map(v=>String(Math.round(Math.abs(v))).length+(v<0?1:0))), padL=Math.max(pad, 6*yw+12);
@@ -42,6 +42,8 @@ export function plot({x, y, w=320, h=200, curves=[], fills=[], points=[], vlines
     const n=60, pts=[]; for(let i=0;i<=n;i++){ const t=F.a+(F.b-F.a)*i/n; pts.push(`${X(t).toFixed(1)},${Y(Math.min(y1,Math.max(y0,F.f(t)))).toFixed(1)}`); }
     out.push(`<polygon class="${F.cls||'shade'}" points="${X(F.a).toFixed(1)},${Y(Math.max(y0,0)).toFixed(1)} ${pts.join(' ')} ${X(F.b).toFixed(1)},${Y(Math.max(y0,0)).toFixed(1)}"/>`);
   }
+  for(const P of polys)                                                  // shaded polygon in data coordinates (e.g. a feasible region)
+    out.push(`<polygon class="${P.cls||'shade'}" points="${P.pts.map(([u,v])=>`${X(Math.min(x1,Math.max(x0,u))).toFixed(1)},${Y(Math.min(y1,Math.max(y0,v))).toFixed(1)}`).join(' ')}"/>`);
   // axes
   if(y0<=0&&y1>=0) out.push(`<line class="ax" x1="${padL}" x2="${w-pad}" y1="${Y(0)}" y2="${Y(0)}"/>`);
   if(x0<=0&&x1>=0) out.push(`<line class="ax" y1="${pad}" y2="${h-pad}" x1="${X(0)}" x2="${X(0)}"/>`);
@@ -96,6 +98,12 @@ export function intervalLine(lo, hi, closed, outside){
 export function aug(rows){
   const n=rows[0].length;
   return `<span class="mat aug" style="grid-template-columns:repeat(${n},auto)">${rows.map(r=>r.map((c,j)=>`<span${j===n-1?' class="ab"':''}>${c}</span>`).join('')).join('')}</span>`;
+}
+
+/* small table: head = header cells, rows = arrays of cells; a cell is HTML or {v, hl:true} to highlight it */
+export function tbl(head, rows, cls='ortbl'){
+  const td=c=> c && typeof c==='object' ? `<td${c.hl?' class="hl"':''}>${c.v}</td>` : `<td>${c}</td>`;
+  return `<table class="stbl ${cls}"><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map((c,i)=>i===0?`<th>${c}</th>`:td(c)).join('')}</tr>`).join('')}</table>`;
 }
 
 /* ---- statistics: densities and printed critical-value tables ---- */

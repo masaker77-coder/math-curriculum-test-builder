@@ -1144,3 +1144,197 @@ test('QM 102 — Gauss–Jordan and inverse-matrix solutions satisfy the system'
     for (let k = 0; k < 4; k++) assert.equal(a[k], q[k] - q[k + 4]);
   });
 });
+
+/* ================= STAT 312 — Probability Theory (2) ================= */
+// read a joint pmf table back out of a question: { xs, ys, p[j][i] }
+function readJoint(html) {
+  const t = String(html).match(/<table class="stbl joint">(.*?)<\/table>/)[1];
+  const rows = [...t.matchAll(/<tr>(.*?)<\/tr>/g)].map(r => r[1]);
+  const xs = [...rows[0].matchAll(/<th>(-?\d+)<\/th>/g)].map(m => +m[1]);
+  const ys = [], p = [];
+  for (const r of rows.slice(1)) { ys.push(+r.match(/^<th>(-?\d+)<\/th>/)[1]); p.push([...r.matchAll(/<td>(.*?)<\/td>/g)].map(c => fval(c[1]))); }
+  return { xs, ys, p };
+}
+const STAT312 = ['jointConstant', 'jointProb', 'marginalDist', 'conditionalProb', 'jointMoments', 'correlationCoef', 'independenceCheck', 'sumOfRV', 'bivariateNormal', 'multinomialProb'];
+
+test('STAT 312 — bilingual steps and a valid joint pmf in every table question', () => {
+  for (const t of STAT312) for (const d of DIFFS) times(40, () => {
+    const o = G[t](d);
+    assert.ok(o.s && o.s.includes('<ol class="steps">') && !/NaN|undefined|Infinity/.test(o.q + o.a + o.s), t);
+    if (o.q.includes('stbl joint')) { const J = readJoint(o.q); close(J.p.flat().reduce((a, b) => a + b, 0), 1); }
+  });
+});
+
+test('STAT 312 — normalising constant, joint and conditional probabilities, marginals', () => {
+  for (const d of DIFFS) times(150, () => {
+    let o = G.jointConstant(d), q = E(o.q), c = fval(o.a.replace(/c = /, ''));
+    let m;
+    if ((m = q.match(/c&middot;xy for 0 &lt; x &lt; (\d+), 0 &lt; y &lt; (\d+)/))) close(c * simpson(x => simpson(y => x * y, 0, +m[2], 200), 0, +m[1], 200), 1, 1e-6);
+    else { m = q.match(/c\((\d*)x \+ (\d*)y\) for x = ([\d, ]+) and y = ([\d, ]+) is/);
+      const a = m[1] ? +m[1] : 1, b = m[2] ? +m[2] : 1, xs = m[3].split(', ').map(Number), ys = m[4].split(', ').map(Number);
+      close(c * xs.reduce((s, x) => s + ys.reduce((t2, y) => t2 + a * x + b * y, 0), 0), 1); }
+
+    o = G.jointProb(d); let J = readJoint(o.q); q = E(o.q); let want = 0;
+    if ((m = q.match(/Find P\(X = (\d), Y = (\d)\)/))) want = J.p[J.ys.indexOf(+m[2])][J.xs.indexOf(+m[1])];
+    else if ((m = q.match(/Find P\(X \+ Y &le; (\d)\)/))) J.ys.forEach((y, j) => J.xs.forEach((x, i) => { if (x + y <= +m[1]) want += J.p[j][i]; }));
+    else { m = q.match(/Find P\(X &le; (\d), Y = (\d)\)/); J.xs.forEach((x, i) => { if (x <= +m[1]) want += J.p[J.ys.indexOf(+m[2])][i]; }); }
+    close(fval(o.a), want);
+
+    o = G.conditionalProb(d); J = readJoint(o.q); m = E(o.q).match(/P\(X = (\d) \| Y = (\d)\)/);
+    const j = J.ys.indexOf(+m[2]), i = J.xs.indexOf(+m[1]);
+    close(fval(o.a), J.p[j][i] / J.p[j].reduce((a, b) => a + b, 0));
+
+    o = G.marginalDist(d); J = readJoint(o.q); const ofX = /distribution of X/.test(E(o.q));
+    const parts = [...o.a.matchAll(/\((\d)\) = (.*?)(?=, &nbsp;|<\/b>)/g)];
+    for (const [, v, html] of parts) {
+      const marg = ofX ? J.ys.reduce((s, _, jj) => s + J.p[jj][J.xs.indexOf(+v)], 0) : J.p[J.ys.indexOf(+v)].reduce((a, b) => a + b, 0);
+      close(fval(html), marg);
+    }
+    assert.equal(parts.length, ofX ? J.xs.length : J.ys.length);
+  });
+});
+
+test('STAT 312 — covariance, correlation and independence', () => {
+  const mom = J => { let EX = 0, EY = 0, EXY = 0, EX2 = 0, EY2 = 0;
+    J.ys.forEach((y, j) => J.xs.forEach((x, i) => { const p = J.p[j][i]; EX += x * p; EY += y * p; EXY += x * y * p; EX2 += x * x * p; EY2 += y * y * p; }));
+    return { cov: EXY - EX * EY, vx: EX2 - EX * EX, vy: EY2 - EY * EY }; };
+  for (const d of DIFFS) times(150, () => {
+    let o = G.jointMoments(d); close(fval(o.a.replace(/Cov\(X, Y\) = /, '')), mom(readJoint(o.q)).cov);
+    o = G.correlationCoef(d); const r = mom(readJoint(o.q));
+    close(+plain(o.a).match(/(-?\d+(?:\.\d+)?)\s*<?\/?b?>?$/)?.[1] ?? val(o.a), r.cov / Math.sqrt(r.vx * r.vy), 6e-5);
+    o = G.independenceCheck(d); const J = readJoint(o.q);
+    const mx = J.xs.map((_, i) => J.ys.reduce((s, _, j) => s + J.p[j][i], 0)), my = J.p.map(row => row.reduce((a, b) => a + b, 0));
+    const indep = J.ys.every((_, j) => J.xs.every((_, i) => Math.abs(J.p[j][i] - mx[i] * my[j]) < 1e-12));
+    assert.equal(plain(enOnly(o.a)), indep ? 'Independent' : 'Not independent');
+  });
+});
+
+test('STAT 312 — aX + bY, bivariate normal, multinomial', () => {
+  for (const d of DIFFS) times(150, () => {
+    let o = G.sumOfRV(d), q = E(o.q);
+    const [ex, ey, vx, vy, cov] = ['E\\(X\\)', 'E\\(Y\\)', 'Var\\(X\\)', 'Var\\(Y\\)', 'Cov\\(X, Y\\)'].map(k => +q.match(new RegExp(k + ' = (-?\\d+)'))[1]);
+    const W = q.match(/W = (.*)\.$/)[1].replace(/\s/g, ''), a = coefOf(W, 'X'), b = coefOf(W, 'Y');
+    const [mE, mV] = ints(plain(o.a).replace(/\(W\)/g, ''));
+    assert.equal(mE, a * ex + b * ey + 0); assert.equal(mV, a * a * vx + b * b * vy + 2 * a * b * cov + 0);
+
+    o = G.bivariateNormal(d); q = E(o.q);
+    const g = k => +q.match(new RegExp(k + ' = (-?\\d+(?:\\.\\d+)?)'))[1];
+    const [mx, my, sx, sy, rho] = ['μX', 'μY', 'σX', 'σY', 'ρ'].map(g), x = +q.match(/X = (-?\d+)\)/)[1];
+    const cm = my + rho * sy / sx * (x - mx), cv = sy * sy * (1 - rho * rho), A = plain(o.a);
+    if (/Var/.test(A)) { const [, m1, v1] = A.match(/= (-?[\d.]+), Var\(Y \| X = -?\d+\) = ([\d.]+)/); close(+m1, cm, 6e-5); close(+v1, cv, 6e-5); }
+    else { const y = +q.match(/P\(Y &le; (-?\d+)/)[1], z = +A.match(/z = (-?[\d.]+)/)[1];
+      close(z, (y - cm) / Math.sqrt(cv), 0.0051); close(+A.match(/P &asymp; ([\d.]+)/)[1], 0.5 + Math.sign(z) * simpson(normPdf, 0, Math.abs(z), 2000), 6e-5); }
+
+    o = G.multinomialProb(d); q = o.q;
+    const ps = fracs(enOnly(q)), [n] = ints(E(o.q).match(/In (\d+) independent/)[0]), xs = ints(E(o.q).match(/P\((.*)\)\.$/)[1].replace(/X\d/g, ''));
+    const coef = fact(n) / xs.reduce((s, k) => s * fact(k), 1);
+    close(fval(o.a), coef * xs.reduce((s, k, i) => s * ps[i] ** k, 1), 1e-12);
+  });
+});
+
+/* ---- STAT 361 Operations Research ---- */
+// every "stbl ortbl" table as rows of English cell text
+const readTbls = html => [...String(html).matchAll(/<table class="stbl ortbl">(.*?)<\/table>/g)].map(t =>
+  [...t[1].matchAll(/<tr>(.*?)<\/tr>/g)].map(r => [...r[1].matchAll(/<t[hd][^>]*>(.*?)<\/t[hd]>/g)].map(c => E(c[1]))));
+const num0 = s => +String(s).replace(/−|&minus;/g, '-');
+// LP in the question: objective + constraints, coefficient 1 may be omitted
+function readLP(html) {
+  const s = E(html).replace(/&le;/g, '≤').replace(/&ge;/g, '≥').replace(/x\s*([12])/g, 'x$1'), co = t => t === '' ? 1 : +t;
+  const [, kind, c1, c2] = s.match(/(Max|Min) Z = (\d*)x1 \+ (\d*)x2/);
+  const rows = [...s.matchAll(/(\d*)x1 \+ (\d*)x2 (≤|≥) (\d+)/g)].map(m => [co(m[1]), co(m[2]), +m[4]]);
+  return { min: kind === 'Min', c: [co(c1), co(c2)], rows };
+}
+// optimum by enumerating all intersections of the constraint lines and the axes
+function lpBrute({ min, c, rows }) {
+  const lines = [...rows, [1, 0, 0], [0, 1, 0]], ok = (x, y) => x > -1e-9 && y > -1e-9 && rows.every(([a, b, r]) => min ? a * x + b * y >= r - 1e-9 : a * x + b * y <= r + 1e-9);
+  let best = null;
+  for (let i = 0; i < lines.length; i++) for (let j = i + 1; j < lines.length; j++) {
+    const [a1, b1, r1] = lines[i], [a2, b2, r2] = lines[j], D = a1 * b2 - a2 * b1;
+    if (!D) continue;
+    const x = (r1 * b2 - r2 * b1) / D, y = (a1 * r2 - a2 * r1) / D, z = c[0] * x + c[1] * y;
+    if (ok(x, y) && (best === null || (min ? z < best : z > best))) best = z;
+  }
+  return best;
+}
+const xsOf = a => { const s = String(a); return [1, 2].map(k => { const m = s.slice(s.indexOf(`x<sub>${k}</sub> = `) + 15); return fval(m.slice(0, m.indexOf(','))); }); };
+
+test('STAT 361 — LP formulation, graphical and simplex reach the true optimum', () => {
+  for (const d of DIFFS) times(150, () => {
+    let o = G.lpFormulate(d); const t = E(o.q);
+    const [a1, a2] = t.match(/needs (\d+) hours on machine 1 and (\d+) hours/).slice(1).map(Number), [b1, b2] = t.match(/B needs (\d+) and (\d+)/).slice(1).map(Number);
+    const [p1, p2] = t.match(/profit is (\d+) SAR per unit of A and (\d+)/).slice(1).map(Number);
+    const lp = readLP(o.a);
+    assert.deepEqual(lp.c, [p1, p2]); assert.deepEqual(lp.rows.map(r => r.slice(0, 2)), [[a1, b1], [a2, b2]]);
+    o = G.lpGraphical(d); let P = readLP(o.q); assert.equal(P.rows.length, 2);
+    close(+E(o.a).match(/Z = (-?[\d.]+)/)[1], lpBrute(P), 1e-3);
+    o = G.simplexMethod(d); P = readLP(o.q); assert.equal(P.rows.length, 2);
+    const Z = fval(o.a.slice(o.a.indexOf('Z = ') + 4)), [x1, x2] = xsOf(o.a);
+    close(Z, lpBrute(P), 1e-9); close(P.c[0] * x1 + P.c[1] * x2, Z, 1e-9);
+    assert.ok(P.rows.every(([a, b, r]) => a * x1 + b * x2 <= r + 1e-9));
+  });
+});
+
+test('STAT 361 — decision criteria and decision tree', () => {
+  for (const d of DIFFS) times(200, () => {
+    let o = G.decisionCriteria(d); const q = E(o.q), [T] = readTbls(o.q), P = T.slice(1).map(r => r.slice(1).map(num0));
+    const probs = T[0].slice(1).map(h => +(h.match(/\(([\d.]+)\)/) || [0, 0])[1]), al = +(q.match(/α = ([\d.]+)/) || [0, 0])[1];
+    const crit = /Maximax/.test(q) ? 'maximax' : /Maximin/.test(q) ? 'maximin' : /Laplace/.test(q) ? 'laplace' : /Hurwicz/.test(q) ? 'hurwicz' : /regret/.test(q) ? 'regret' : 'ev';
+    const colMax = P[0].map((_, j) => Math.max(...P.map(r => r[j])));
+    const sc = P.map(r => ({ maximax: Math.max(...r), maximin: Math.min(...r), laplace: r.reduce((s, v) => s + v, 0) / r.length,
+      hurwicz: al * Math.max(...r) + (1 - al) * Math.min(...r), regret: Math.max(...r.map((v, j) => colMax[j] - v)), ev: r.reduce((s, v, j) => s + v * probs[j], 0) })[crit]);
+    const best = crit === 'regret' ? Math.min(...sc) : Math.max(...sc), k = sc.findIndex(v => Math.abs(v - best) < 1e-9);
+    assert.equal(sc.filter(v => Math.abs(v - best) < 1e-9).length, 1);
+    assert.match(o.a, new RegExp(`A<sub>${k + 1}</sub> \\(`)); close(num0(E(o.a).match(/\((.*)\)/)[1]), best, 1e-3);
+
+    o = G.decisionTree(d); const R2 = readTbls(o.q)[0].slice(1).map(r => r.slice(1).map(num0));
+    const emv = R2.map(([p, hi, lo]) => p * hi + (1 - p) * lo), j = emv.indexOf(Math.max(...emv));
+    assert.match(o.a, new RegExp(`A<sub>${j + 1}</sub> \\(EMV`)); close(num0(E(o.a).match(/EMV = (.*)\)/)[1]), emv[j], 1e-6);
+  });
+});
+
+// cost table, supply and demand from the question; allocations from a solution table
+const readTransport = html => { const T = readTbls(html)[0], body = T.slice(1, -1);
+  return { C: body.map(r => r.slice(1, -1).map(Number)), s: body.map(r => +r.at(-1)), dm: T.at(-1).slice(1, -1).map(Number) }; };
+const readAlloc = rows => rows.slice(1, -1).map(r => r.slice(1, -1).map(c => /^\d+ \(/.test(c) ? +c.split(' ')[0] : 0));
+function checkAlloc({ C, s, dm }, x, cost) {
+  x.forEach((r, i) => assert.equal(r.reduce((a, b) => a + b, 0), s[i]));
+  dm.forEach((v, j) => assert.equal(x.reduce((a, r) => a + r[j], 0), v));
+  assert.equal(x.reduce((t, r, i) => t + r.reduce((u, q, j) => u + q * C[i][j], 0), 0), cost);
+  assert.ok(x.flat().filter(v => v > 0).length <= s.length + dm.length - 1);
+}
+test('STAT 361 — transportation: northwest corner, least cost, Vogel, comparison', () => {
+  const costOf = a => +E(a).match(/= (\d+)/)[1];
+  for (const d of DIFFS) times(150, () => {
+    for (const k of ['transportNW', 'transportLeastCost', 'transportVogel']) {
+      const o = G[k](d), T = readTransport(o.q), tabs = readTbls(o.s);
+      assert.equal(T.s.reduce((a, b) => a + b, 0), T.dm.reduce((a, b) => a + b, 0));
+      const x = readAlloc(tabs.at(-1)), cost = costOf(o.a);
+      checkAlloc(T, x, cost);
+      if (k === 'transportNW') {                                   // independent northwest-corner run
+        const S = [...T.s], D = [...T.dm]; let i = 0, j = 0, c = 0;
+        while (i < S.length && j < D.length) { const q = Math.min(S[i], D[j]); c += q * T.C[i][j]; S[i] -= q; D[j] -= q; const a = !S[i], b = !D[j]; if (a) i++; if (b) j++; }
+        assert.equal(cost, c);
+      }
+      if (k === 'transportLeastCost') {                            // the cheapest cell always gets the most it can
+        const [i0, j0] = T.C.flatMap((r, i) => r.map((v, j) => [i, j])).sort((a, b) => T.C[a[0]][a[1]] - T.C[b[0]][b[1]])[0];
+        if (T.C.flat().filter(v => v === T.C[i0][j0]).length === 1) assert.equal(x[i0][j0], Math.min(T.s[i0], T.dm[j0]));
+      }
+    }
+    const o = G.transportCompare(d), T = readTransport(o.q), tabs = readTbls(o.s);
+    const costs = E(o.a).match(/NW = (\d+); Least cost = (\d+); Vogel = (\d+)/).slice(1).map(Number);
+    tabs.forEach((t, i) => checkAlloc(T, readAlloc(t), costs[i]));
+  });
+});
+
+test('STAT 361 — Hungarian method gives the cheapest assignment', () => {
+  const perms = n => n === 1 ? [[0]] : perms(n - 1).flatMap(p => [...Array(n).keys()].map(k => [...p.slice(0, k), n - 1, ...p.slice(k)]));
+  for (const d of DIFFS) times(150, () => {
+    const o = G.assignmentHungarian(d), C = readTbls(o.q)[0].slice(1).map(r => r.slice(1).map(Number));
+    const best = Math.min(...perms(C.length).map(p => p.reduce((s, j, i) => s + C[i][j], 0)));
+    const pairs = [...o.a.matchAll(/W<sub>(\d)<\/sub>&rarr;J<sub>(\d)<\/sub>/g)].map(m => [+m[1] - 1, +m[2] - 1]);
+    assert.equal(pairs.length, C.length);
+    assert.equal(new Set(pairs.map(p => p[1])).size, C.length);
+    assert.equal(pairs.reduce((s, [i, j]) => s + C[i][j], 0), best);
+    assert.equal(+E(o.a).match(/= (\d+)/)[1], best);
+  });
+});

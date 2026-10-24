@@ -37,12 +37,16 @@ export const TOPIC_LABELS = {
   gammaFunction:'Gamma function Γ(n)',
   setUnion:'Inclusion–exclusion |A∪B|', powerSetSize:'Size of a power set',
   binomialProb:'Binomial probabilities', expectedValue:'Expected value E(X)', varianceDiscrete:'Variance Var(X)',
-  lpCornerPoint:'Linear programming (corner points)', effectiveRate:'Effective annual rate', annuityFV:'Future value of an annuity',
+  lpCornerPoint:'Linear programming (corner points)', lpFormulate:'LP model formulation', lpGraphical:'LP graphical method', simplexMethod:'Simplex method', decisionCriteria:'Decision criteria (uncertainty / risk)', decisionTree:'Decision tree (EMV)', transportNW:'Transportation: northwest corner', transportLeastCost:'Transportation: least cost', transportVogel:'Transportation: Vogel', transportCompare:'Transportation: comparing the methods', assignmentHungarian:'Assignment (Hungarian method)', effectiveRate:'Effective annual rate', annuityFV:'Future value of an annuity',
   improvedEuler:'Improved Euler (Heun) method', fredholmSeparable:'Fredholm equations (separable kernel)',
   numberSets:'Number sets', intervalNotation:'Interval notation', breakEven:'Break-even analysis',
   absEquation:'Absolute-value equations', absInequality:'Absolute-value inequalities', functionDomain:'Domain of a function',
   funcOps:'Operations & composition of functions', evenOdd:'Even and odd functions', inverseFunction:'Inverse functions',
   gaussJordan:'Gauss–Jordan elimination', matrixSubtract:'Matrix subtraction', inverseSolve:'Solving systems by the inverse matrix',
+  jointConstant:'Joint pmf/pdf: find the constant', jointProb:'Joint probabilities', marginalDist:'Marginal distributions',
+  conditionalProb:'Conditional probabilities', jointMoments:'Moments and covariance', correlationCoef:'Correlation coefficient',
+  independenceCheck:'Independence of X and Y', sumOfRV:'Mean and variance of aX + bY', bivariateNormal:'Bivariate normal distribution',
+  multinomialProb:'Multinomial distribution',
   linearEquation:'Linear equations', inequalityGraph:'Inequalities (number line)', linearSystem2:'Two equations in two unknowns',
   quadraticEquation:'Quadratic equations (formula & graph)', logExp:'Logarithms & exponents',
   ciMeanZ:'CI for a mean — σ known (z)', ciMeanS:'CI for a mean — σ unknown, large n (z)', ciMeanT:'CI for a mean — small n (t)',
@@ -96,7 +100,7 @@ export const TOPIC_LABELS_AR = {
   eulerPhi:'دالة أويلر φ(n)', modPow:'الأس النمطي', newtonSqrt:'طريقة نيوتن (الجذر التربيعي)', linearInterp:'الاستيفاء الخطي',
   complexConjugate:'مرافق العدد المركب', completeGraphEdges:'حواف الرسم الكامل', degreeSum:'مجموع الدرجات (المصافحة)', elementOrder:'رتبة عنصر في ℤ_n',
   isUnit:'الوحدات في ℤ_n', gammaFunction:'دالة غاما Γ(n)', setUnion:'مبدأ التضمين والاستبعاد', powerSetSize:'عدد عناصر مجموعة القوة',
-  binomialProb:'احتمالات ذي الحدين', expectedValue:'القيمة المتوقعة E(X)', varianceDiscrete:'التباين Var(X)', lpCornerPoint:'البرمجة الخطية (النقاط الركنية)',
+  binomialProb:'احتمالات ذي الحدين', expectedValue:'القيمة المتوقعة E(X)', varianceDiscrete:'التباين Var(X)', lpCornerPoint:'البرمجة الخطية (النقاط الركنية)', lpFormulate:'صياغة نموذج البرمجة الخطية', lpGraphical:'الطريقة البيانية', simplexMethod:'طريقة السمبلكس', decisionCriteria:'معايير اتخاذ القرار', decisionTree:'شجرة القرارات', transportNW:'النقل: الركن الشمالي الغربي', transportLeastCost:'النقل: أقل تكلفة', transportVogel:'النقل: فوجل', transportCompare:'النقل: المقارنة بين الطرق', assignmentHungarian:'التخصيص (الطريقة المجرية)',
   effectiveRate:'معدل الفائدة الفعلي', annuityFV:'القيمة المستقبلية للدفعات', improvedEuler:'طريقة أويلر المحسّنة (هيون)', fredholmSeparable:'معادلات فريدهولم (نواة قابلة للفصل)',
   riemannSum:'مجاميع ريمان', avgValue:'القيمة المتوسطة للدالة', defIntegralExp:'تكامل eˣ المحدد', derivChainAt:'قاعدة السلسلة عند نقطة',
   derivProductAt:'قاعدة الضرب عند نقطة', criticalPoints:'النقاط الحرجة', setOps:'العمليات على المجموعات', cartesianSize:'الضرب الديكارتي',
@@ -119,6 +123,10 @@ export const TOPIC_LABELS_AR = {
   absEquation:'معادلات القيمة المطلقة', absInequality:'متباينات القيمة المطلقة', functionDomain:'مجال الدالة',
   funcOps:'العمليات على الدوال وتركيبها', evenOdd:'الدوال الزوجية والفردية', inverseFunction:'الدالة العكسية',
   gaussJordan:'طريقة جاوس–جوردان', matrixSubtract:'طرح المصفوفات', inverseSolve:'حل الأنظمة بمعكوس المصفوفة',
+  jointConstant:'دالة الاحتمال المشتركة: إيجاد الثابت', jointProb:'الاحتمالات المشتركة', marginalDist:'التوزيعات الهامشية',
+  conditionalProb:'الاحتمالات الشرطية', jointMoments:'العزوم والتغاير', correlationCoef:'معامل الارتباط',
+  independenceCheck:'استقلال المتغيرين X و Y', sumOfRV:'توقع وتباين aX + bY', bivariateNormal:'التوزيع الطبيعي الثنائي',
+  multinomialProb:'التوزيع متعدد الحدود',
   linearEquation:'المعادلات الخطية', inequalityGraph:'المتباينات (التمثيل على خط الأعداد)', linearSystem2:'معادلتان في مجهولين',
   quadraticEquation:'المعادلة التربيعية (القانون العام والرسم)', logExp:'اللوغاريتمات والأسس',
   ciMeanZ:'فترة ثقة لمتوسط — σ معلومة (z)', ciMeanS:'فترة ثقة لمتوسط — σ مجهولة وعينة كبيرة (z)', ciMeanT:'فترة ثقة لمتوسط — عينة صغيرة (t)',
@@ -132,7 +140,7 @@ export const TOPIC_LABELS_AR = {
 /* statistical tables a topic's questions are read from (for the optional full-tables page) */
 export const TOPIC_TABLES = {
   ciMeanZ:['z'], ciMeanS:['z'], ciMeanT:['t'], ciProportion:['z'], sampleSizeMean:['z'], sampleSizeProp:['z'],
-  testMeanZ:['z'], testMeanS:['z'], testMeanT:['t'], testProportion:['z'], anovaTable:['f'],
+  testMeanZ:['z'], testMeanS:['z'], testMeanT:['t'], testProportion:['z'], anovaTable:['f'], bivariateNormal:['z'],
 };
 /* Mathematics study plan (Shaqra University, BSc Mathematics, 130 credit hours):
    level -> courses (code, title, topics), Level 1..8 in plan order, then the electives, then service courses for other departments.
@@ -165,9 +173,9 @@ export const CURRICULUM = [
     { code:'MATH 353', title:'Numerical Analysis', ar:'التحليل العددي', topics:['newtonSqrt','linearInterp','bisectionStep','trapezoidRule','eulerStep','absoluteError'] },
   ]},
   { level:'Level 6', ar:'المستوى السادس', courses:[
-    { code:'STAT 312', title:'Probability Theory (2)', ar:'نظرية الاحتمال (2)', topics:['binomialProb','expectedValue','varianceDiscrete'] },
+    { code:'STAT 312', title:'Probability Theory (2)', ar:'نظرية الاحتمال (2)', topics:['jointConstant','jointProb','marginalDist','conditionalProb','jointMoments','correlationCoef','independenceCheck','sumOfRV','bivariateNormal','multinomialProb','expectedValue','varianceDiscrete'] },
     { code:'MATH 315', title:'Partial Differential Equations', ar:'المعادلات التفاضلية الجزئية', topics:['pdeClassify','waveSpeed','laplacianPoly','heatSeparation'] },
-    { code:'STAT 361', title:'Operations Research (1)', ar:'بحوث العمليات (1)', topics:['lpCornerPoint','systems'] },
+    { code:'STAT 361', title:'Operations Research (1)', ar:'بحوث العمليات (1)', topics:['lpFormulate','lpGraphical','lpCornerPoint','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian'] },
     { code:'MATH 371', title:'Economic and Financial Mathematics', ar:'الرياضيات الاقتصادية والمالية', topics:['effectiveRate','annuityFV','compoundInterest','presentValue'] },
   ]},
   { level:'Level 7', ar:'المستوى السابع', courses:[

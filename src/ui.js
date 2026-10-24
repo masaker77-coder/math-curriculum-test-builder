@@ -17,7 +17,7 @@ const MODES = {
   mid:   { nQ:3, marks:5,   title:'titleMid' },     // 3 questions × 5 marks
   final: { nQ:5, marks:10,  title:'titleFinal' },   // 5 questions × 10 marks
 };
-const LONG = ['rectangle','triangleArea','circle','pythagorean','slope','derivative',
+const LONG = ['lpFormulate','lpGraphical','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian','rectangle','triangleArea','circle','pythagorean','slope','derivative',
               'systems','proportions','integral','defIntegral','trigRatios',
               'rounding','percentOf','fracToDecimal','gcfLcm','evalExpr','inequalities','midpoint',
               'polyMultiply','vertex','parallelogram','trapezoid','volumeBox','volumeCylinder',
@@ -41,7 +41,9 @@ const LONG = ['rectangle','triangleArea','circle','pythagorean','slope','derivat
               'fdSchemeClassify','fdFirstX','fdFirstT','fdSecondX','fdSecondT','fdmOdeUx','fdmOdeUt',
               'fdmOdeUxx','fdmOdeUtt','fdmAdvection','fdmFamous',
               'numberSets','breakEven','absEquation','absInequality','functionDomain','funcOps','evenOdd','inverseFunction',
-              'gaussJordan','inverseSolve','intervalNotation'];
+              'gaussJordan','inverseSolve','intervalNotation',
+              'jointConstant','jointProb','marginalDist','conditionalProb','jointMoments','correlationCoef','independenceCheck',
+              'sumOfRV','bivariateNormal','multinomialProb'];
 
 /* --- language --- */
 const T = key => tr(key, state.lang);
