@@ -7,5 +7,6 @@
     "test": "node --test",
     "dev": "python3 -m http.server 8731"
   },
+  "author": "Dr. Mohamed Abdelsalam",
   "license": "SEE LICENSE IN LICENSE"
 }

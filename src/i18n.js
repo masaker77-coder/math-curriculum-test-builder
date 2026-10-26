@@ -138,7 +138,7 @@ export const UI = {
   wordNote:     ['Word file saved. Open it in Word to edit; to keep it as .docx choose File → Save As.', 'تم حفظ ملف Word. افتحه في Word لتعديله، ولحفظه بصيغة ‎.docx اختر ملف ← حفظ باسم.'],
   moodleNote:   ['Moodle file saved. In Moodle: Question bank → Import → “Moodle XML format”. MC questions, numerical questions (graded automatically) and essays with the model answer are created.', 'تم حفظ ملف Moodle. في Moodle: بنك الأسئلة ← استيراد ← «Moodle XML format». تُنشأ أسئلة اختيار من متعدد، وأسئلة عددية تُصحَّح تلقائياً، وأسئلة مقالية مع الإجابة النموذجية.'],
   bbNote:       ['Blackboard file saved. In Blackboard: Tests, Surveys and Pools → Pools → Build Pool → Upload Questions.', 'تم حفظ ملف Blackboard. في Blackboard: الاختبارات والاستبيانات والمجمعات ← المجمعات ← إنشاء مجمع ← تحميل الأسئلة (Upload Questions).'],
-  copyright:    ['© 2026 د. محمد عبد السلام — All rights reserved', '© 2026 د. محمد عبد السلام — جميع الحقوق محفوظة'],
+  copyright:    ['© 2026 Dr. Mohamed Abdelsalam — All rights reserved', '© 2026 د. محمد عبد السلام — جميع الحقوق محفوظة'],
   install:      ['⬇ Install app', '⬇ تثبيت التطبيق'],
   swapQ:        ['Replace this question', 'استبدال هذا السؤال'],
   examplesCol:  ['Examples', 'الأمثلة'],
