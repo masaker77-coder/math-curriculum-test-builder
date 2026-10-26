@@ -47,9 +47,11 @@ const MODE_GUIDE = {
        ['Pages are filled: extra examples are added where there is room, graphs sit beside the solution, short examples go two per row.','تُملأ الصفحات: أمثلة إضافية حيث يوجد فراغ، والرسم بجانب الحل، والأمثلة القصيرة مثالان في صف.'],
        ['3 examples per topic by default; long examples continue on the next page.','3 أمثلة لكل موضوع افتراضياً، والأمثلة الطويلة تُكمَل في الصفحة التالية.']] },
   app: { icon:'📱', t:['Interactive app','تطبيق تفاعلي'],
-    d:['A practice app for students: endless multiple-choice questions with instant checking.', 'تطبيق تدريب للطلاب: أسئلة اختيار من متعدد لا تنتهي مع تصحيح فوري.'],
-    f:[['Steps of the solution appear one at a time; the topic overview is one tap away.','خطوات الحل تظهر خطوة خطوة، والشرح المبسط بضغطة.'],
-       ['Score, percentage and streak; choice of topic and level.','النتيجة والنسبة والإجابات المتتالية، مع اختيار الموضوع والمستوى.'],
+    d:['A practice app for students: endless questions with instant checking, answered by multiple choice or by typing the answer.', 'تطبيق تدريب للطلاب: أسئلة لا تنتهي مع تصحيح فوري، بالاختيار من متعدد أو بكتابة الإجابة.'],
+    f:[['Typed answers are checked by value: 8/5, 1.6 and ١٫٦ are all accepted; points, sets, intervals, expressions and complex numbers too.','الإجابة المكتوبة تُصحَّح بالقيمة: 8/5 و1.6 و١٫٦ كلها مقبولة، وكذلك النقاط والمجموعات والفترات والمقادير والأعداد المركبة.'],
+       ['A hint (the first step), then the steps of the solution one at a time; the topic overview is one tap away.','تلميح (الخطوة الأولى) ثم خطوات الحل خطوة خطوة، والشرح المبسط بضغطة.'],
+       ['Timed quiz (5–20 questions, with or without a time limit) with a results page and the solution of every question.','اختبار بوقت (من 5 إلى 20 سؤالاً، بوقت أو بدونه) مع صفحة نتيجة وحل كل سؤال.'],
+       ['“My mistakes” keeps the wrong answers for review and similar practice; “My progress” shows the level in every topic and suggests what to practise next.','«أخطائي» تحفظ الإجابات الخاطئة للمراجعة والتدرب على أسئلة مشابهة، و«تقدمي» يعرض مستواك في كل موضوع ويقترح ما تتدرب عليه.'],
        ['Download it as one HTML file that works offline on any phone or computer, and share it.','نزّله كملف HTML واحد يعمل بدون إنترنت على أي جوال أو حاسب، وشاركه.']] },
 };
 

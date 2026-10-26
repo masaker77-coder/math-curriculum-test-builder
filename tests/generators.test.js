@@ -1381,7 +1381,7 @@ test('booklet: every topic has an overview and the cover art is valid SVG', asyn
 test('interactive app: the standalone bundle evaluates and generates questions', async () => {
   const { bundle } = await import('../src/bundle.js');
   const fs = await import('node:fs');
-  const names = ['helpers', 'viz', 'proofs', 'intros', 'generators', 'practice'], src = {};
+  const names = ['helpers', 'viz', 'proofs', 'intros', 'generators', 'answer', 'practice'], src = {};
   for (const n of names) src[n] = fs.readFileSync(new URL(`../src/${n}.js`, import.meta.url), 'utf8');
   const code = bundle(src, names);
   assert.ok(!/<\/script/i.test(code));
@@ -1389,6 +1389,7 @@ test('interactive app: the standalone bundle evaluates and generates questions',
   assert.equal(typeof m.practice.mountPractice, 'function');
   const o = m.generators.G.simplexMethod(2);
   assert.ok(o.q && o.a && o.s);
+  assert.equal(m.answer.checkAnswer('8/5', m.answer.answerSpec('<b>1.6</b>')), true);
 });
 
 test('proofs: every course with topics has its own proof topics (one per formula) and every proof renders', async () => {

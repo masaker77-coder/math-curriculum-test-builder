@@ -706,7 +706,7 @@ function appView(){
 async function downloadApp(){
   const btn=el('appDl'), label=btn.textContent; btn.disabled=true; btn.textContent='…';
   try{
-    const names=['helpers','viz','proofs','intros','generators','practice'], src={};
+    const names=['helpers','viz','proofs','intros','generators','answer','practice'], src={};
     await Promise.all(names.map(async n=>{
       if(window.__APP_SRC && window.__APP_SRC[n]){ src[n]=window.__APP_SRC[n]; return; }   // offline single-file build carries its sources
       const r=await fetch(new URL(`./${n}.js`, import.meta.url)); if(!r.ok) throw new Error(n); src[n]=await r.text(); }));
