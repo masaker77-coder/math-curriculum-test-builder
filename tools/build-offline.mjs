@@ -10,7 +10,7 @@ const src = Object.fromEntries(order.map(n => [n, read(`src/${n}.js`)]));
 const appOnly = ['helpers', 'viz', 'proofs', 'intros', 'generators', 'answer', 'practice'];        // what the practice-app download needs
 const forBundle = { ...src, ui: src.ui.replace(/import\.meta\.url/g, 'document.baseURI') };
 const js = `window.__APP_SRC = ${JSON.stringify(Object.fromEntries(appOnly.map(n => [n, src[n]])))};\n` + bundle(forBundle, order);
-const html = read('index.html')
+const html = read('index.html').replace('<!DOCTYPE html>\n', '<!DOCTYPE html>\n<!-- Math Curriculum Test Builder — © 2026 د. محمد عبد السلام. All rights reserved. See LICENSE. -->\n')
   .replace(/<link rel="stylesheet" href="src\/styles\.css">/, () => `<style>\n${read('src/styles.css')}\n</style>`)
   .replace(/<link rel="(manifest|icon|apple-touch-icon)"[^>]*>\n/g, '')              // the installable-app links only work on the website
   .replace(/<script src="src\/compat\.js"><\/script>/, () => `<script>\n${read('src/compat.js')}\n</script>`)
