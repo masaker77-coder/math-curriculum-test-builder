@@ -190,6 +190,11 @@
   table.stbl th, table.stbl td, table.anova th, table.anova td{border:1px solid var(--line);padding:3px 7px;text-align:center}
   table.stbl th, table.anova th{background:#f1f3f8;font-weight:600}
   table.stbl td.hl{background:#ffe08a;font-weight:700}
+  table.stbl.ttab tr.band td, table.stbl.ttab tr.band th, table.stbl.ttab tr.zrow td, table.stbl.ttab tr.zrow th{background:#cfe0f7}
+  table.stbl.ttab tr td.hl{background:#ffe08a}
+  table.stbl.ttab th.hl{background:#fff0bf}
+  table.stbl.ttab tr.conf td{font-weight:600;background:#fff}
+  table.stbl.ttab tr:first-child th, table.stbl.ttab tr:nth-child(2) th, table.stbl.ttab tr:nth-child(3) th{font-variant-numeric:tabular-nums}
   table.anova{font-size:13px;margin-top:8px}
   .present .psteps{max-width:min(820px,92%);max-height:38vh;overflow:auto;background:#fff;color:var(--ink);border-radius:10px;padding:10px 16px;text-align:start;font-size:15px}
 
@@ -552,5 +557,5 @@
     .bubble-sheet{break-before:page;border-top:0;margin-top:0;padding-top:0}
     .clo{border:0}
     .clo::placeholder{color:transparent}
-    .bub.on,table.xh-student th,table.xh-marks th,table.bp thead th,.xh-instr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .bub.on,table.stbl.ttab tr,table.xh-student th,table.xh-marks th,table.bp thead th,.xh-instr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }

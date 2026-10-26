@@ -550,6 +550,8 @@ export const INTRO = {
     'خوارزمية إقليدس (نحو 300 ق.م) تجد القاسم المشترك الأكبر بالقسمة المتكررة: gcd(a, b) = gcd(b, a mod b) حتى يصبح الباقي صفراً، وآخر باقٍ غير صفري هو القاسم المشترك الأكبر.'],
   sieveCount: ['Eratosthenes (about 240 BC) listed the numbers up to n and crossed out the multiples of each prime p with p² ≤ n; the numbers left are exactly the primes.',
     'كتب إراتوستينس (نحو 240 ق.م) الأعداد حتى n وشطب مضاعفات كل عدد أولي p حيث p² ≤ n، فالأعداد المتبقية هي الأعداد الأولية تماماً.'],
+  pearsonR: ['Pearson’s r measures the strength of a straight-line relationship: r = [nΣxy − ΣxΣy] / √([nΣx² − (Σx)²][nΣy² − (Σy)²]); −1 ≤ r ≤ 1, near ±1 is strong, near 0 is weak.',
+    'معامل ارتباط بيرسون r يقيس قوة العلاقة الخطية: r = [nΣxy − ΣxΣy] / √([nΣx² − (Σx)²][nΣy² − (Σy)²])؛ و −1 ≤ r ≤ 1، فالقيم القريبة من ±1 قوية والقريبة من 0 ضعيفة.'],
 };
 for(const id in PROOFS) INTRO[proofKey(id)] = [
   'To prove a formula, start from what is already known — a definition, an earlier formula (for example the confidence interval), or an axiom — and move by justified steps (algebra, substitution, a known theorem) until the required formula appears. Every step must follow from the previous ones.',
