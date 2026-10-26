@@ -33,6 +33,6 @@ test('old phone browsers can run it: no ES2020+ syntax in the sources, compat.js
   if (acorn) {                                                          // where a parser is installed, check exactly
     acorn.parse(read('src/compat.js'), { ecmaVersion: 5 });
     for (const f of fs.readdirSync(new URL('../src/', import.meta.url)).filter(f => f.endsWith('.js') && f !== 'compat.js'))
-      acorn.parse(read(`src/${f}`), { ecmaVersion: 2018, sourceType: 'module' });
+      acorn.parse(read(`src/${f}`).replace(/import\.meta\.url/g, 'document.baseURI'), { ecmaVersion: 2018, sourceType: 'module' });   // as the offline build does
   }
 });
