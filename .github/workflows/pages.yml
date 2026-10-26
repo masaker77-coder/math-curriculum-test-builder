@@ -1,0 +1,59 @@
+name: website
+
+# Publishes the app to GitHub Pages: https://<owner>.github.io/<repo>/
+# One-time setup: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# Until that is done the job only prints a reminder (it does not fail).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run tests
+        run: node --test
+      - name: Is GitHub Pages enabled?
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" --jq .build_type > /dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::GitHub Pages is not enabled yet. Open Settings → Pages and choose Source: GitHub Actions, then re-run this workflow."
+          fi
+      - name: Build the site
+        if: steps.pages.outputs.enabled == 'true'
+        run: |
+          node tools/build-offline.mjs
+          mkdir -p _site
+          cp -r index.html manifest.webmanifest sw.js src icons dist _site/
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+        if: steps.pages.outputs.enabled == 'true'
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.pages.outputs.enabled == 'true'
+        with:
+          path: _site
+      - id: deploy
+        if: steps.pages.outputs.enabled == 'true'
+        uses: actions/deploy-pages@v4

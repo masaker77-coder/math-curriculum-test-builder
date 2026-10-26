@@ -129,6 +129,7 @@ export const UI = {
   bpWeight:     ['Weight', 'الوزن النسبي'],
   bpClo:        ['Learning outcome (CLO)', 'مخرج التعلم (CLO)'],
   bpHead:       ['Head of department', 'رئيس القسم'],
+  install:      ['⬇ Install app', '⬇ تثبيت التطبيق'],
   swapQ:        ['Replace this question', 'استبدال هذا السؤال'],
   examplesCol:  ['Examples', 'الأمثلة'],
   topicsW:      ['topics', 'موضوع'],

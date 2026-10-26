@@ -175,6 +175,15 @@ myTopic: 'My topic name',
 
 MIT
 
+## الموقع على الإنترنت وتثبيته كتطبيق
+
+يُنشر البرنامج تلقائياً على GitHub Pages مع كل دمج في `main` (سير العمل `.github/workflows/pages.yml`) على الرابط:
+**https://masaker77-coder.github.io/math-curriculum-test-builder/**
+
+- خطوة واحدة لأول مرة: في GitHub افتح **Settings ← Pages ← Build and deployment ← Source** واختر **GitHub Actions**، ثم أعد تشغيل سير العمل «website» من تبويب Actions (أو ادمج أي تعديل).
+- الموقع تطبيق قابل للتثبيت (PWA): من Chrome أو Edge يظهر زر «⬇ تثبيت التطبيق» أعلى الصفحة، ومن iPhone: زر المشاركة ← «إضافة إلى الشاشة الرئيسية».
+- بعد أول فتح يعمل بدون إنترنت (عامل الخدمة `sw.js` يحفظ الملفات، ويجلب النسخة الأحدث عند توفر الإنترنت).
+
 ## نسخة تعمل بدون إنترنت
 
 `dist/math-test-builder-offline.html` ملف واحد (حوالي 0.9 ميجابايت) فيه البرنامج كاملاً: يُفتح بالضغط مرتين بدون خادم ولا إنترنت، والطباعة تعمل من زر «طباعة / PDF». الملف المضغوط `dist/math-test-builder-offline.zip` يحتويه مع دليل قصير.
