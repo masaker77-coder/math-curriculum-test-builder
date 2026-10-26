@@ -167,3 +167,9 @@ myTopic: 'My topic name',
 ## الترخيص
 
 MIT
+
+## نسخة تعمل بدون إنترنت
+
+`dist/math-test-builder-offline.html` ملف واحد (حوالي 0.9 ميجابايت) فيه البرنامج كاملاً: يُفتح بالضغط مرتين بدون خادم ولا إنترنت، والطباعة تعمل من زر «طباعة / PDF». الملف المضغوط `dist/math-test-builder-offline.zip` يحتويه مع دليل قصير.
+لإعادة بنائه بعد أي تعديل: `node tools/build-offline.mjs`.
+
