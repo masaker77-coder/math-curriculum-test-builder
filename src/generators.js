@@ -244,7 +244,7 @@ const bestZeroAssignment=A=>permutations(A.length).find(p=>p.every((j,i)=>A[i][j
 /* worked steps for a trig value at a special angle (degrees 0–180) */
 function trigStepList(fn, ang, label){
   const key=fn==='sin'?'s':fn==='cos'?'c':'t', v=TRIG[ang][key];
-  if(ang===90&&fn==='tan') return [L('tan = sin ÷ cos, and at 90° cos = 0: division by zero.', 'الظل = الجيب ÷ جيب التمام، وعند 90° جيب التمام = 0 فتكون قسمة على صفر.'), M(`tan 90&deg; = ${v}`)];
+  if(ang===90&&fn==='tan') return [L('tan = sin ÷ cos, and at 90° cos = 0: division by zero.', 'الظل = الجيب ÷ جيب التمام، وعند 90° جيب التمام = 0 فتكون قسمة على صفر.'), M('tan 90&deg; =')+' '+trigVal(v)];
   if(ang<=90) return [L('Use the special-angle values (from the 30°-60°-90° and 45°-45°-90° triangles, or the unit circle):', 'نستخدم قيم الزوايا الخاصة (من المثلثين 30°-60°-90° و 45°-45°-90° أو دائرة الوحدة):'), M(`${fn} ${label} = ${v}`)];
   if(ang===180) return [L('On the unit circle 180° is the point (−1, 0): cos = −1, sin = 0, tan = sin/cos = 0.', 'على دائرة الوحدة الزاوية 180° تقابل النقطة (−1, 0): cos = −1 و sin = 0 و tan = 0.'), M(`${fn} 180&deg; = ${v}`)];
   const ref=180-ang, r=TRIG[ref][key];
@@ -252,6 +252,7 @@ function trigStepList(fn, ang, label){
           L(`In quadrant II only sin is positive, so ${fn} is ${fn==='sin'?'positive':'negative'}:`, `في الربع الثاني الجيب فقط موجب، لذا ${M(fn)} ${fn==='sin'?'موجبة':'سالبة'}:`)+' '+M(`${fn} ${ang}&deg; = ${fn==='sin'?'':'&minus;'}${fn} ${ref}&deg; = ${v}`)];
 }
 const trigSteps=(fn, ang, label)=>steps(...trigStepList(fn, ang, label));
+const trigVal=v=>v==='undefined'?Li('undefined','غير معرّفة'):v;
 
 export const G = {
   /* ---- Pre-Algebra ---- */
@@ -371,7 +372,7 @@ export const G = {
     let x1=nz(-8,8),y1=nz(-8,8),x2=nz(-8,8),y2=nz(-8,8);
     while(x2===x1)x2=nz(-8,8);
     const [n,dd]=reduceFrac(y2-y1,x2-x1);
-    return {q:`Slope through (${x1}, ${y1}) and (${x2}, ${y2})`,
+    return {q:L(`Slope through (${x1}, ${y1}) and (${x2}, ${y2})`, `أوجد ميل المستقيم المار بالنقطتين ${M(`(${x1}, ${y1})`)} و ${M(`(${x2}, ${y2})`)}`),
             a:`<b>m = ${fracStr(n,dd)}</b>`,
       s:steps(L('Slope = change in y ÷ change in x:', 'الميل = التغير في y ÷ التغير في x:')+' '+M(`m = ${frac('y<sub>2</sub> &minus; y<sub>1</sub>','x<sub>2</sub> &minus; x<sub>1</sub>')}`),
               M(`m = ${frac(`${sgn(y2)} &minus; (${sgn(y1)})`, `${sgn(x2)} &minus; (${sgn(x1)})`)} = ${frac(sgn(y2-y1), sgn(x2-x1))} = ${fracStr(n,dd)}`))};
@@ -413,20 +414,20 @@ export const G = {
   /* ---- Geometry ---- */
   rectangle(d){
     const w=R(3,d===3?40:20),h=R(3,d===3?40:20);
-    return {q:`Rectangle ${w} by ${h}. Find area and perimeter.`,
+    return {q:L(`Rectangle ${w} by ${h}. Find area and perimeter.`, `مستطيل بُعداه ${w} و ${h}. أوجد المساحة والمحيط.`),
             a:`<b>A = ${w*h}, P = ${2*(w+h)}</b>`,
       s:steps(L('Area of a rectangle = length × width:', 'مساحة المستطيل = الطول × العرض:')+' '+M(`A = ${w} &times; ${h} = ${w*h}`),
               L('Perimeter = 2 × (length + width):', 'المحيط = 2 × (الطول + العرض):')+' '+M(`P = 2(${w} + ${h}) = 2 &times; ${w+h} = ${2*(w+h)}`))};
   },
   triangleArea(d){
     const b=R(2,d===3?30:16)*2, h=R(2,d===3?30:16);
-    return {q:`Triangle, base ${b}, height ${h}. Find area.`, a:`<b>A = ${b*h/2}</b>`,
+    return {q:L(`Triangle, base ${b}, height ${h}. Find area.`, `مثلث طول قاعدته ${b} وارتفاعه ${h}. أوجد المساحة.`), a:`<b>A = ${b*h/2}</b>`,
       s:steps(L('Area of a triangle = ½ × base × height.', 'مساحة المثلث = ½ × القاعدة × الارتفاع.'),
               M(`A = ${frac(1,2)} &times; ${b} &times; ${h} = ${frac(b*h,2)} = ${b*h/2}`))};
   },
   circle(d){
     const r=R(2,d===3?20:12);
-    return {q:`Circle, radius ${r}. Area and circumference (in terms of &pi;).`,
+    return {q:L(`Circle, radius ${r}. Area and circumference (in terms of &pi;).`, `دائرة نصف قطرها ${r}. أوجد المساحة والمحيط (بدلالة ${M('&pi;')}).`),
             a:`<b>A = ${r*r}&pi;, C = ${2*r}&pi;</b>`,
       s:steps(L('Area of a circle:', 'مساحة الدائرة:')+' '+M(`A = &pi;r${sup(2)} = &pi; &times; ${r}${sup(2)} = ${r*r}&pi;`),
               L('Circumference:', 'محيط الدائرة:')+' '+M(`C = 2&pi;r = 2 &times; &pi; &times; ${r} = ${2*r}&pi;`))};
@@ -435,9 +436,9 @@ export const G = {
     const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[7,24,25],[9,12,15],[20,21,29]]);
     const k=d===3?R(1,3):1; const [a,b,c]=t.map(v=>v*k);
     const rule=L('Pythagoras: in a right triangle', 'نظرية فيثاغورس: في المثلث القائم')+' '+M(`a${sup(2)} + b${sup(2)} = c${sup(2)}`)+' '+L('(c = hypotenuse).', '(c الوتر).');
-    if(Math.random()<0.5) return {q:`Right triangle, legs ${a} and ${b}. Find the hypotenuse.`, a:`<b>c = ${c}</b>`,
+    if(Math.random()<0.5) return {q:L(`Right triangle, legs ${a} and ${b}. Find the hypotenuse.`, `مثلث قائم الزاوية طولا ضلعي القائمة فيه ${a} و ${b}. أوجد طول الوتر.`), a:`<b>c = ${c}</b>`,
       s:steps(rule, M(`c${sup(2)} = ${a}${sup(2)} + ${b}${sup(2)} = ${a*a} + ${b*b} = ${c*c}`), M(`c = ${sq(c*c)} = ${c}`))};
-    return {q:`Right triangle, hypotenuse ${c}, one leg ${a}. Find the other leg.`, a:`<b>${b}</b>`,
+    return {q:L(`Right triangle, hypotenuse ${c}, one leg ${a}. Find the other leg.`, `مثلث قائم الزاوية طول وتره ${c} وطول أحد ضلعي القائمة ${a}. أوجد طول الضلع الآخر.`), a:`<b>${b}</b>`,
       s:steps(rule, M(`b${sup(2)} = ${c}${sup(2)} &minus; ${a}${sup(2)} = ${c*c} &minus; ${a*a} = ${b*b}`), M(`b = ${sq(b*b)} = ${b}`))};
   },
 
@@ -464,14 +465,14 @@ export const G = {
     const hi=d===1?12:d===2?30:80;
     const g=R(2,8), a=g*R(2,hi), b=g*R(2,hi);
     const [n,m]=reduceFrac(a,b), G=gcd(a,b);
-    return {q:`Simplify the ratio ${a} : ${b}`, a:`<b>${n} : ${m}</b>`,
+    return {q:L(`Simplify the ratio ${a} : ${b}`, `بسّط النسبة ${M(`${a} : ${b}`)}`), a:`<b>${n} : ${m}</b>`,
       s:steps(L(`Find the greatest common factor of ${a} and ${b}: ${G}.`, `نوجد العامل المشترك الأكبر للعددين ${M(a)} و ${M(b)}: ${M(G)}.`),
               L('Divide both parts by it:', 'نقسم الحدين عليه:')+' '+M(`${a} &divide; ${G} : ${b} &divide; ${G} = ${n} : ${m}`))};
   },
   proportions(d){
     const m=R(1,6), n=R(1,6), t1=R(2,d===3?9:6), t2=R(2,d===3?9:6);
     const a=m*t1, b=n*t1, c=m*t2, x=n*t2;
-    return {q:`Solve the proportion: ${frac(a,b)} = ${frac(c,'x')}`, a:`<b>x = ${x}</b>`,
+    return {q:L(`Solve the proportion: ${frac(a,b)} = ${frac(c,'x')}`, `حل التناسب: ${M(`${frac(a,b)} = ${frac(c,'x')}`)}`), a:`<b>x = ${x}</b>`,
       s:steps(L('Cross-multiply:', 'نضرب طرفين في وسطين:')+' '+M(`${a} &times; x = ${b} &times; ${c}`),
               M(`${a}x = ${b*c}`), M(`x = ${frac(b*c,a)} = ${x}`))};
   },
@@ -499,14 +500,14 @@ export const G = {
     const angles = d===1?easy:[0,30,45,60,90,120,135,150,180];
     const ang=pick(angles), fn=pick(['sin','cos','tan']);
     const key=fn==='sin'?'s':fn==='cos'?'c':'t';
-    return {q:`${fn} ${ang}&deg; =`, a:`<b>${TRIG[ang][key]}</b>`, s:trigSteps(fn, ang, `${ang}&deg;`)};
+    return {q:`${fn} ${ang}&deg; =`, a:`<b>${trigVal(TRIG[ang][key])}</b>`, s:trigSteps(fn, ang, `${ang}&deg;`)};
   },
   trigRatios(d){
     const t=pick([[3,4,5],[5,12,13],[8,15,17],[7,24,25],[20,21,29],[6,8,10],[9,12,15]]);
     const [opp,adj,hyp]=t, fn=pick(['sin','cos','tan']);
     const [top,bot,en,ar]={sin:[opp,hyp,'opposite ÷ hypotenuse','المقابل ÷ الوتر'], cos:[adj,hyp,'adjacent ÷ hypotenuse','المجاور ÷ الوتر'], tan:[opp,adj,'opposite ÷ adjacent','المقابل ÷ المجاور']}[fn];
     const val=fracStr(top,bot);
-    return {q:`Right triangle with &ang;&theta;: opposite = ${opp}, adjacent = ${adj}, hypotenuse = ${hyp}. Find ${fn} &theta;.`,
+    return {q:L(`Right triangle with &ang;&theta;: opposite = ${opp}, adjacent = ${adj}, hypotenuse = ${hyp}. Find ${fn} &theta;.`, `مثلث قائم الزاوية، بالنسبة للزاوية ${M('&theta;')}: المقابل = ${opp}، المجاور = ${adj}، الوتر = ${hyp}. أوجد ${M(fn+' &theta;')}.`),
             a:`<b>${val}</b>`,
       s:steps(L(`${fn} θ = ${en} (SOH-CAH-TOA).`, `${M(fn+' θ')} = ${ar}.`),
               M(`${fn} &theta; = ${frac(top,bot)}${gcd(top,bot)>1?` = ${val}`:''}`))};
@@ -515,7 +516,7 @@ export const G = {
     const degs = d===1?[30,45,60,90,180]:[30,45,60,90,120,135,150,210,225,240,270,300,315,330,360];
     const deg=pick(degs); const [n,m]=reduceFrac(deg,180);
     const rad = m===1 ? `${n===1?'':n}&pi;` : frac(`${n===1?'':n}&pi;`, m);
-    return {q:`Convert ${deg}&deg; to radians.`, a:`<b>${rad}</b>`,
+    return {q:L(`Convert ${deg}&deg; to radians.`, `حوّل ${M(deg+'&deg;')} إلى الراديان.`), a:`<b>${rad}</b>`,
       s:steps(L('180° = π radians, so multiply the degrees by π/180:', '180° = π راديان، لذا نضرب الدرجات في π/180:'),
               M(`${deg} &times; ${frac('&pi;',180)} = ${frac(deg+'&pi;',180)}`),
               L(`Simplify the fraction ${deg}/180 = ${n}/${m}:`, `نبسّط الكسر ${M(`${deg}/180 = ${n}/${m}`)}:`)+' '+M(rad))};
@@ -555,7 +556,7 @@ export const G = {
     const r=Math.round(n/place)*place;
     const name=place===10?'ten':place===100?'hundred':'thousand', nameAr=place===10?'العشرات':place===100?'المئات':'الآلاف';
     const dig=Math.floor(n/(place/10))%10;
-    return {q:`Round ${n} to the nearest ${name}.`, a:`<b>${r}</b>`,
+    return {q:L(`Round ${n} to the nearest ${name}.`, `قرّب العدد ${n} إلى منزلة ${nameAr}.`), a:`<b>${r}</b>`,
       s:steps(L(`Look at the digit just to the right of the ${name}s place: it is ${dig}.`, `ننظر إلى الرقم الذي على يمين منزلة ${nameAr}: وهو ${M(dig)}.`),
               L(dig>=5?'It is 5 or more, so round up.':'It is less than 5, so round down.', dig>=5?'وهو 5 أو أكثر، لذا نقرّب للأعلى.':'وهو أقل من 5، لذا نقرّب للأسفل.'),
               M(`${n} &asymp; ${r}`))};
@@ -564,14 +565,14 @@ export const G = {
     const p=pick(d===1?[10,25,50]:d===2?[5,10,20,25,40,50,75]:[5,12,15,18,24,35,60]);
     const step=100/gcd(p,100);
     const N=step*R(2,d===3?12:8);
-    return {q:`Find ${p}% of ${N}.`, a:`<b>${p*N/100}</b>`,
+    return {q:L(`Find ${p}% of ${N}.`, `أوجد ${M(p+'%')} من ${N}.`), a:`<b>${p*N/100}</b>`,
       s:steps(L(`${p}% means ${p} out of 100, i.e. ${frac(p,100)}.`, `${M(p+'%')} تعني ${M(p)} من 100 أي ${M(frac(p,100))}.`),
               M(`${frac(p,100)} &times; ${N} = ${frac(p*N,100)} = ${p*N/100}`))};
   },
   fracToDecimal(d){
     const den=pick(d===1?[2,4,5,10]:[2,4,5,8,10,20,25]);
     const num=R(1,den-1), t=[10,100,1000].find(p=>p%den===0);
-    return {q:`Write ${frac(num,den)} as a decimal.`, a:`<b>${+(num/den).toFixed(4)}</b>`,
+    return {q:L(`Write ${frac(num,den)} as a decimal.`, `اكتب ${M(frac(num,den))} في صورة عدد عشري.`), a:`<b>${+(num/den).toFixed(4)}</b>`,
       s:steps(L(`Make the denominator ${t}: multiply top and bottom by ${t/den}.`, `نجعل المقام ${M(t)}: نضرب البسط والمقام في ${M(t/den)}.`),
               M(`${frac(num,den)} = ${frac(num*t/den,t)} = ${+(num/den).toFixed(4)}`))};
   },
@@ -580,9 +581,9 @@ export const G = {
     const a=R(2,hi), b=R(2,hi), g=gcd(a,b);
     const fz=n=>{ const f=[]; for(let p=2;n>1;p++) while(n%p===0){ f.push(p); n/=p; } return f.join(' &times; ')||'1'; };
     const fs=M(`${a} = ${fz(a)}`)+', '+M(`${b} = ${fz(b)}`);
-    if(Math.random()<0.5) return {q:`Find the GCF of ${a} and ${b}.`, a:`<b>${g}</b>`,
+    if(Math.random()<0.5) return {q:L(`Find the GCF of ${a} and ${b}.`, `أوجد القاسم المشترك الأكبر للعددين ${a} و ${b}.`), a:`<b>${g}</b>`,
       s:steps(L('Prime factorisations:', 'التحليل إلى عوامل أولية:')+' '+fs, L('GCF = product of the common prime factors (smallest powers):', 'العامل المشترك الأكبر = حاصل ضرب العوامل الأولية المشتركة (بأصغر أس):')+' '+M(`GCF = ${g}`))};
-    return {q:`Find the LCM of ${a} and ${b}.`, a:`<b>${a*b/g}</b>`,
+    return {q:L(`Find the LCM of ${a} and ${b}.`, `أوجد المضاعف المشترك الأصغر للعددين ${a} و ${b}.`), a:`<b>${a*b/g}</b>`,
       s:steps(L('Prime factorisations:', 'التحليل إلى عوامل أولية:')+' '+fs, M(`GCF = ${g}`),
               L('LCM = (a × b) ÷ GCF:', 'المضاعف المشترك الأصغر = (a × b) ÷ ع.م.أ:')+' '+M(`${frac(`${a} &times; ${b}`, g)} = ${a*b/g}`))};
   },
@@ -605,31 +606,31 @@ export const G = {
   /* ---- Algebra 1 pack ---- */
   evalExpr(d){
     const a=nz(2,9), b=nz(-12,12), x=nz(-8,8);
-    return {q:`Evaluate ${lead(a,'x')}${term(b,'')} for x = ${x}.`, a:`<b>${a*x+b}</b>`,
+    return {q:L(`Evaluate ${lead(a,'x')}${term(b,'')} for x = ${x}.`, `احسب قيمة ${M(lead(a,'x')+term(b,''))} عندما ${M('x = '+x)}.`), a:`<b>${a*x+b}</b>`,
       s:steps(L(`Replace x by ${x} (use brackets for the number):`, `نعوّض عن x بالعدد ${M(x)} (نضعه بين قوسين):`)+' '+M(`${a}(${sgn(x)})${term(b,'')}`),
               L('Multiply first, then add:', 'نضرب أولاً ثم نجمع:')+' '+M(`${sgn(a*x)}${term(b,'')} = ${sgn(a*x+b)}`))};
   },
   inequalities(d){
     const a=nz(2,d===3?9:6), x=nz(-8,8), b=nz(-12,12), op=pick(['&lt;','&gt;','&le;','&ge;']);
     const c=a*x+b;
-    return {q:`Solve: ${a}x ${b<0?'&minus; '+Math.abs(b):'+ '+b} ${op} ${c}`, a:`<b>x ${op} ${x}</b>`,
+    return {q:L(`Solve: ${a}x ${b<0?'&minus; '+Math.abs(b):'+ '+b} ${op} ${c}`, `حل المتباينة: ${M(`${a}x ${b<0?'&minus; '+Math.abs(b):'+ '+b} ${op} ${c}`)}`), a:`<b>x ${op} ${x}</b>`,
       s:steps(L(`Solve like an equation. ${b<0?'Add':'Subtract'} ${Math.abs(b)} on both sides:`, `نحل كالمعادلة. ${b<0?'نضيف':'نطرح'} ${M(Math.abs(b))} للطرفين:`)+' '+M(`${a}x ${op} ${sgn(c-b)}`),
               L(`Divide by ${a}; it is positive, so the inequality sign stays the same:`, `نقسم على ${M(a)}؛ وهو موجب فلا تتغير إشارة المتباينة:`)+' '+M(`x ${op} ${sgn(x)}`),
               L('(Dividing or multiplying by a negative number would reverse the sign.)', '(القسمة أو الضرب في عدد سالب تقلب إشارة المتباينة.)'))};
   },
   exponentRules(d){
     const a=R(2,8), b=R(2,8);
-    if(Math.random()<0.5) return {q:`Simplify: x${sup(a)} &middot; x${sup(b)}`, a:`<b>x${sup(a+b)}</b>`,
+    if(Math.random()<0.5) return {q:L(`Simplify: x${sup(a)} &middot; x${sup(b)}`, `بسّط: ${M(`x${sup(a)} &middot; x${sup(b)}`)}`), a:`<b>x${sup(a+b)}</b>`,
       s:steps(L('Same base multiplied: add the exponents.', 'عند ضرب قوى لها نفس الأساس نجمع الأسس.')+' '+M(`x${sup('m')} &middot; x${sup('n')} = x${sup('m+n')}`),
               M(`x${sup(a)} &middot; x${sup(b)} = x${sup(`${a}+${b}`)} = x${sup(a+b)}`))};
     const hi=Math.max(a,b)+R(1,4), lo=Math.min(a,b);
-    return {q:`Simplify: ${frac('x'+sup(hi),'x'+sup(lo))}`, a:`<b>x${sup(hi-lo)}</b>`,
+    return {q:L(`Simplify: ${frac('x'+sup(hi),'x'+sup(lo))}`, `بسّط: ${M(frac('x'+sup(hi),'x'+sup(lo)))}`), a:`<b>x${sup(hi-lo)}</b>`,
       s:steps(L('Same base divided: subtract the exponents.', 'عند قسمة قوى لها نفس الأساس نطرح الأسس.')+' '+M(`x${sup('m')} / x${sup('n')} = x${sup('m&minus;n')}`),
               M(`x${sup(`${hi}&minus;${lo}`)} = x${sup(hi-lo)}`))};
   },
   midpoint(d){
     const x1=nz(-12,12), y1=nz(-12,12), x2=nz(-12,12), y2=nz(-12,12);
-    return {q:`Find the midpoint of (${x1}, ${y1}) and (${x2}, ${y2}).`,
+    return {q:L(`Find the midpoint of (${x1}, ${y1}) and (${x2}, ${y2}).`, `أوجد نقطة منتصف القطعة المستقيمة الواصلة بين ${M(`(${x1}, ${y1})`)} و ${M(`(${x2}, ${y2})`)}.`),
             a:`<b>(${(x1+x2)/2}, ${(y1+y2)/2})</b>`,
       s:steps(L('The midpoint is the average of the x-coordinates and the average of the y-coordinates:', 'نقطة المنتصف = متوسط الإحداثيين السينيين ومتوسط الإحداثيين الصاديين:')+' '+M(`(${frac('x<sub>1</sub> + x<sub>2</sub>',2)}, ${frac('y<sub>1</sub> + y<sub>2</sub>',2)})`),
               M(`x = ${frac(`${sgn(x1)} + (${sgn(x2)})`,2)} = ${frac(sgn(x1+x2),2)} = ${num((x1+x2)/2)}`),
@@ -641,7 +642,7 @@ export const G = {
     const a=nz(-9,9), b=nz(-9,9);
     const fa=a<0?`(x &minus; ${Math.abs(a)})`:`(x + ${a})`;
     const fb=b<0?`(x &minus; ${Math.abs(b)})`:`(x + ${b})`;
-    return {q:`Expand: ${fa}${fb}`, a:`<b>x${sup(2)}${term(a+b,'x')}${term(a*b,'')}</b>`,
+    return {q:L(`Expand: ${fa}${fb}`, `اضرب وبسّط: ${M(fa+fb)}`), a:`<b>x${sup(2)}${term(a+b,'x')}${term(a*b,'')}</b>`,
       s:steps(L('Multiply each term of the first bracket by each term of the second (FOIL):', 'نضرب كل حد في القوس الأول في كل حد في القوس الثاني:'),
               M(`x&middot;x + x&middot;(${sgn(b)}) + (${sgn(a)})&middot;x + (${sgn(a)})(${sgn(b)})`),
               M(`= x${sup(2)}${term(b,'x')}${term(a,'x')}${term(a*b,'')}`),
@@ -649,27 +650,27 @@ export const G = {
   },
   powerOfPower(d){
     const a=R(2,6), b=R(2,5);
-    return {q:`Simplify: (x${sup(a)})${sup(b)}`, a:`<b>x${sup(a*b)}</b>`,
+    return {q:L(`Simplify: (x${sup(a)})${sup(b)}`, `بسّط: ${M(`(x${sup(a)})${sup(b)}`)}`), a:`<b>x${sup(a*b)}</b>`,
       s:steps(L('Power of a power: multiply the exponents.', 'قوة لقوة: نضرب الأسس.')+' '+M(`(x${sup('m')})${sup('n')} = x${sup('m&middot;n')}`),
               M(`(x${sup(a)})${sup(b)} = x${sup(`${a}&times;${b}`)} = x${sup(a*b)}`))};
   },
   vertex(d){
     const h=nz(-6,6), b=-2*h, c=nz(-9,9), k=c-h*h;
-    return {q:`Find the vertex of y = x${sup(2)}${term(b,'x')}${term(c,'')}`, a:`<b>(${h}, ${k})</b>`,
+    return {q:L(`Find the vertex of y = x${sup(2)}${term(b,'x')}${term(c,'')}`, `أوجد رأس القطع المكافئ ${M('y = x'+sup(2)+term(b,'x')+term(c,''))}`), a:`<b>(${h}, ${k})</b>`,
       s:steps(L(`Here a = 1, b = ${b}, c = ${c}. The x-coordinate of the vertex is ${M('x = &minus;b / 2a')}:`, `هنا ${M(`a = 1, b = ${b}, c = ${c}`)}. الإحداثي السيني للرأس ${M('x = &minus;b / 2a')}:`)+' '+M(`x = &minus;(${sgn(b)}) / 2 = ${sgn(h)}`),
               L('Substitute in y to get the y-coordinate:', 'نعوّض في y لنحصل على الإحداثي الصادي:')+' '+M(`y = (${sgn(h)})${sup(2)} + (${sgn(b)})(${sgn(h)}) + (${sgn(c)}) = ${sgn(k)}`),
               L(`Vertex = ${M(`(${h}, ${k})`)}.`, `الرأس = ${M(`(${h}, ${k})`)}.`))};
   },
   logEval(d){
     const base=pick([2,3,5,10]), exp=R(2,d===3?5:4);
-    return {q:`Evaluate: log<sub>${base}</sub> ${Math.pow(base,exp)}`, a:`<b>${exp}</b>`,
+    return {q:L(`Evaluate: log<sub>${base}</sub> ${Math.pow(base,exp)}`, `احسب: ${M(`log<sub>${base}</sub> ${Math.pow(base,exp)}`)}`), a:`<b>${exp}</b>`,
       s:steps(L(`${M(`log<sub>${base}</sub> ${base**exp}`)} asks: to which power must ${base} be raised to give ${base**exp}?`, `${M(`log<sub>${base}</sub> ${base**exp}`)} تعني: إلى أي قوة نرفع ${M(base)} لنحصل على ${M(base**exp)}؟`),
               M(`${base}${sup(exp)} = ${[...Array(exp)].map(()=>base).join(' &times; ')} = ${base**exp}`),
               M(`log<sub>${base}</sub> ${base**exp} = ${exp}`))};
   },
   expEquation(d){
     const base=pick([2,3,5]), x=R(2,d===3?5:4);
-    return {q:`Solve: ${base}${sup('x')} = ${Math.pow(base,x)}`, a:`<b>x = ${x}</b>`,
+    return {q:L(`Solve: ${base}${sup('x')} = ${Math.pow(base,x)}`, `حل المعادلة: ${M(`${base}${sup('x')} = ${Math.pow(base,x)}`)}`), a:`<b>x = ${x}</b>`,
       s:steps(L(`Write ${base**x} as a power of ${base}:`, `نكتب ${M(base**x)} كقوة للعدد ${M(base)}:`)+' '+M(`${base**x} = ${base}${sup(x)}`),
               L('Same base on both sides, so the exponents are equal:', 'الأساسان متساويان، إذن الأسّان متساويان:')+' '+M(`${base}${sup('x')} = ${base}${sup(x)} &rArr; x = ${x}`))};
   },
@@ -677,33 +678,33 @@ export const G = {
   /* ---- Geometry pack ---- */
   parallelogram(d){
     const b=R(3,d===3?40:20), h=R(3,d===3?40:20);
-    return {q:`Parallelogram with base ${b} and height ${h}. Find the area.`, a:`<b>A = ${b*h}</b>`,
+    return {q:L(`Parallelogram with base ${b} and height ${h}. Find the area.`, `متوازي أضلاع طول قاعدته ${b} وارتفاعه ${h}. أوجد المساحة.`), a:`<b>A = ${b*h}</b>`,
       s:steps(L('Area of a parallelogram = base × height (the perpendicular height, not the slanted side).', 'مساحة متوازي الأضلاع = القاعدة × الارتفاع (العمودي وليس الضلع المائل).'),
               M(`A = ${b} &times; ${h} = ${b*h}`))};
   },
   trapezoid(d){
     const b1=R(3,d===3?30:16), b2=R(3,d===3?30:16), h=R(2,d===3?20:12)*2;
-    return {q:`Trapezoid with parallel sides ${b1} and ${b2}, height ${h}. Find the area.`,
+    return {q:L(`Trapezoid with parallel sides ${b1} and ${b2}, height ${h}. Find the area.`, `شبه منحرف طولا ضلعيه المتوازيين ${b1} و ${b2} وارتفاعه ${h}. أوجد المساحة.`),
             a:`<b>A = ${(b1+b2)*h/2}</b>`,
       s:steps(L('Area of a trapezoid = ½ × (sum of the parallel sides) × height.', 'مساحة شبه المنحرف = ½ × (مجموع الضلعين المتوازيين) × الارتفاع.'),
               M(`A = ${frac(1,2)} &times; (${b1} + ${b2}) &times; ${h} = ${frac(1,2)} &times; ${b1+b2} &times; ${h} = ${(b1+b2)*h/2}`))};
   },
   volumeBox(d){
     const l=R(2,d===3?15:10), w=R(2,d===3?15:10), h=R(2,d===3?15:10);
-    return {q:`Rectangular prism ${l} &times; ${w} &times; ${h}. Find the volume.`, a:`<b>V = ${l*w*h}</b>`,
+    return {q:L(`Rectangular prism ${l} &times; ${w} &times; ${h}. Find the volume.`, `متوازي مستطيلات أبعاده ${M(`${l} &times; ${w} &times; ${h}`)}. أوجد الحجم.`), a:`<b>V = ${l*w*h}</b>`,
       s:steps(L('Volume of a box = length × width × height.', 'حجم متوازي المستطيلات = الطول × العرض × الارتفاع.'),
               M(`V = ${l} &times; ${w} &times; ${h} = ${l*w} &times; ${h} = ${l*w*h}`))};
   },
   volumeCylinder(d){
     const r=R(2,d===3?12:8), h=R(2,d===3?15:10);
-    return {q:`Cylinder with radius ${r} and height ${h}. Find the volume (in terms of &pi;).`,
+    return {q:L(`Cylinder with radius ${r} and height ${h}. Find the volume (in terms of &pi;).`, `أسطوانة نصف قطر قاعدتها ${r} وارتفاعها ${h}. أوجد الحجم (بدلالة ${M('&pi;')}).`),
             a:`<b>V = ${r*r*h}&pi;</b>`,
       s:steps(L('Volume of a cylinder = area of the base circle × height:', 'حجم الأسطوانة = مساحة القاعدة الدائرية × الارتفاع:')+' '+M(`V = &pi;r${sup(2)}h`),
               M(`V = &pi; &times; ${r}${sup(2)} &times; ${h} = &pi; &times; ${r*r} &times; ${h} = ${r*r*h}&pi;`))};
   },
   triangleAngles(d){
     const a=R(30,100), b=R(20,150-a), c=180-a-b;
-    return {q:`Two angles of a triangle are ${a}&deg; and ${b}&deg;. Find the third angle.`, a:`<b>${c}&deg;</b>`,
+    return {q:L(`Two angles of a triangle are ${a}&deg; and ${b}&deg;. Find the third angle.`, `قياسا زاويتين في مثلث ${M(a+'&deg;')} و ${M(b+'&deg;')}. أوجد قياس الزاوية الثالثة.`), a:`<b>${c}&deg;</b>`,
       s:steps(L('The angles of a triangle add up to 180°.', 'مجموع زوايا المثلث 180°.'),
               M(`${a}&deg; + ${b}&deg; = ${a+b}&deg;`), M(`180&deg; &minus; ${a+b}&deg; = ${c}&deg;`))};
   },
@@ -715,14 +716,14 @@ export const G = {
     const choices=d===1?base:Object.assign({},base,more);
     const rk=pick(Object.keys(choices)), ang=choices[rk];
     const fn=pick(['sin','cos','tan']), key=fn==='sin'?'s':fn==='cos'?'c':'t';
-    return {q:`${fn} (${rk}) =`, a:`<b>${TRIG[ang][key]}</b>`,
+    return {q:`${fn} (${rk}) =`, a:`<b>${trigVal(TRIG[ang][key])}</b>`,
       s:steps(L('Convert to degrees (π = 180°):', 'نحوّل إلى درجات (π = 180°):')+' '+M(`${rk} = ${ang}&deg;`), ...trigStepList(fn, ang, `${ang}&deg;`))};
   },
   radToDeg(d){
     const opts=d===1?[['&pi;/6',30],['&pi;/4',45],['&pi;/3',60],['&pi;/2',90],['&pi;',180]]
       :[['&pi;/6',30],['&pi;/4',45],['&pi;/3',60],['2&pi;/3',120],['3&pi;/4',135],['5&pi;/6',150],['&pi;',180],['3&pi;/2',270],['2&pi;',360]];
     const [r,deg]=pick(opts);
-    return {q:`Convert ${r} radians to degrees.`, a:`<b>${deg}&deg;</b>`,
+    return {q:L(`Convert ${r} radians to degrees.`, `حوّل ${M(r)} راديان إلى الدرجات.`), a:`<b>${deg}&deg;</b>`,
       s:steps(L('π radians = 180°, so replace π by 180° (or multiply by 180/π):', 'π راديان = 180°، لذا نضع 180° مكان π (أو نضرب في 180/π):'),
               M(`${r} = ${r.replace('&pi;','(180&deg;)')} = ${deg}&deg;`))};
   },
@@ -733,7 +734,7 @@ export const G = {
     else if(th<180){ ref=180-th; rule=['quadrant II: ref = 180° − θ','الربع الثاني: الزاوية المرجعية = 180° − θ']; }
     else if(th<270){ ref=th-180; rule=['quadrant III: ref = θ − 180°','الربع الثالث: الزاوية المرجعية = θ − 180°']; }
     else { ref=360-th; rule=['quadrant IV: ref = 360° − θ','الربع الرابع: الزاوية المرجعية = 360° − θ']; }
-    return {q:`Find the reference angle for ${th}&deg;.`, a:`<b>${ref}&deg;</b>`,
+    return {q:L(`Find the reference angle for ${th}&deg;.`, `أوجد الزاوية المرجعية للزاوية ${M(th+'&deg;')}.`), a:`<b>${ref}&deg;</b>`,
       s:steps(L('The reference angle is the acute angle between the terminal side and the x-axis.', 'الزاوية المرجعية هي الزاوية الحادة بين الضلع النهائي ومحور x.'),
               L(`${th}° lies in ${rule[0]}.`, `الزاوية ${M(th+'°')} تقع في ${rule[1]}.`),
               M(`${th<180?`180&deg; &minus; ${th}&deg;`:th<270?`${th}&deg; &minus; 180&deg;`:`360&deg; &minus; ${th}&deg;`} = ${ref}&deg;`))};
@@ -770,7 +771,7 @@ export const G = {
     const slope=terms.reduce((s,t)=>s+t[0]*t[1]*Math.pow(a,t[1]-1),0);
     const xp=p=>p===0?'':p===1?'x':'x'+sup(p);
     const dh=terms.map((t,i)=>{ const c=t[0]*t[1], v=xp(t[1]-1); return i===0?(v?lead(c,v):sgn(c)):(v?term(c,v):term(c,'')); }).join('');
-    return {q:`Slope of the tangent to f(x) = ${qh} at x = ${a}.`, a:`<b>${slope}</b>`,
+    return {q:L(`Slope of the tangent to f(x) = ${qh} at x = ${a}.`, `أوجد ميل المماس لمنحنى ${M('f(x) = '+qh)} عند ${M('x = '+a)}.`), a:`<b>${slope}</b>`,
       s:steps(L('The slope of the tangent is the derivative at the point. Differentiate with the power rule', 'ميل المماس هو قيمة المشتقة عند النقطة. نشتق بقاعدة القوة')+' '+M(`(x${sup('n')})&prime; = nx${sup('n&minus;1')}`)+':',
               M(`f&prime;(x) = ${dh}`),
               L(`Substitute x = ${a}:`, `نعوّض ${M(`x = ${a}`)}:`)+' '+M(`f&prime;(${a}) = ${terms.map(t=>t[1]===1?`${t[0]}`:`${t[0]*t[1]}(${sgn(a)})${t[1]-1>1?sup(t[1]-1):''}`).join(' + ')} = ${sgn(slope)}`))};
@@ -793,7 +794,7 @@ export const G = {
     const num=Math.round(R(10,99)*Math.pow(10,e-1));   // integer by construction
     const sig=num/Math.pow(10,e);                        // 1 <= sig < 10
     const sigStr=(+sig.toFixed(1)).toString();
-    return {q:`Write ${num} in scientific notation.`, a:`<b>${sigStr} &times; 10${sup(e)}</b>`,
+    return {q:L(`Write ${num} in scientific notation.`, `اكتب العدد ${M(num)} بالصيغة العلمية.`), a:`<b>${sigStr} &times; 10${sup(e)}</b>`,
       s:steps(L('Scientific notation: a × 10ⁿ with 1 ≤ a < 10.', 'الصيغة العلمية: a × 10ⁿ حيث 1 ≤ a < 10.'),
               L(`Move the decimal point ${e} places to the left to get ${sigStr}:`, `ننقل الفاصلة العشرية ${M(e)} منازل لليسار فنحصل على ${M(sigStr)}:`),
               M(`${num} = ${sigStr} &times; 10${sup(e)}`))};
@@ -818,7 +819,8 @@ export const G = {
     if(type==='mode'){
       const mv=R(1,20), list=[mv,mv,mv], used=new Set([mv]);
       while(list.length<n){ const v=R(1,20); if(!used.has(v)){ used.add(v); list.push(v);} }
-      return {q:`Find the mode: ${shuffled(list).join(', ')}`, a:`<b>${mv}</b>`,
+      const sl=shuffled(list).join(', ');
+      return {q:L(`Find the mode: ${sl}`, `أوجد المنوال: ${M(sl)}`), a:`<b>${mv}</b>`,
         s:steps(L('The mode is the value that appears most often.', 'المنوال هو القيمة الأكثر تكراراً.'),
                 L(`${mv} appears 3 times; every other value appears once.`, `القيمة ${M(mv)} تتكرر 3 مرات وكل قيمة أخرى مرة واحدة.`),
                 L(`Mode = ${mv}.`, `المنوال = ${M(mv)}.`))};
@@ -828,21 +830,21 @@ export const G = {
       for(let i=0;i<n-1;i++){ const v=R(1,2*Mv); list.push(v); sum+=v; }
       const last=n*Mv-sum;
       if(last>=1 && last<=40){ list.push(last); const sh=shuffled(list);
-        return {q:`Find the mean: ${sh.join(', ')}`, a:`<b>${Mv}</b>`,
+        return {q:L(`Find the mean: ${sh.join(', ')}`, `أوجد الوسط الحسابي: ${M(sh.join(', '))}`), a:`<b>${Mv}</b>`,
           s:steps(L('Mean = sum of the values ÷ number of values.', 'الوسط الحسابي = مجموع القيم ÷ عددها.'),
                   L('Sum:', 'المجموع:')+' '+M(`${sh.join(' + ')} = ${n*Mv}`),
                   M(`${n*Mv} &divide; ${n} = ${Mv}`))}; }
     }
     const list=[]; for(let i=0;i<n;i++) list.push(R(1,30));
     const sorted=[...list].sort((a,b)=>a-b);
-    return {q:`Find the median: ${list.join(', ')}`, a:`<b>${sorted[(n-1)/2]}</b>`,
+    return {q:L(`Find the median: ${list.join(', ')}`, `أوجد الوسيط: ${M(list.join(', '))}`), a:`<b>${sorted[(n-1)/2]}</b>`,
       s:steps(L('Order the values from smallest to largest:', 'نرتب القيم تصاعدياً:')+' '+M(sorted.join(', ')),
               L(`There are ${n} values (odd), so the median is the middle one, position ${(n+1)/2}.`, `عدد القيم ${M(n)} (فردي)، إذن الوسيط هو القيمة الوسطى في الترتيب ${M((n+1)/2)}.`),
               L(`Median = ${sorted[(n-1)/2]}.`, `الوسيط = ${M(sorted[(n-1)/2])}.`))};
   },
   probability(d){
     const r=R(1,9), b=R(1,9), tot=r+b; const [n,m]=reduceFrac(r,tot);
-    return {q:`A bag has ${r} red and ${b} blue marbles. Find P(red).`, a:`<b>${fracStr(n,m)}</b>`,
+    return {q:L(`A bag has ${r} red and ${b} blue marbles. Find P(red).`, `كيس به ${r} كرات حمراء و ${b} كرات زرقاء. سُحبت كرة عشوائيًا، أوجد احتمال أن تكون حمراء.`), a:`<b>${fracStr(n,m)}</b>`,
       s:steps(L('P(event) = number of favourable outcomes ÷ total number of outcomes.', 'الاحتمال = عدد النواتج المطلوبة ÷ عدد النواتج الكلي.'),
               L(`Total marbles: ${M(`${r} + ${b} = ${tot}`)}; red marbles: ${r}.`, `عدد الكرات الكلي: ${M(`${r} + ${b} = ${tot}`)}، والكرات الحمراء: ${M(r)}.`),
               M(`P(red) = ${frac(r,tot)}${m!==tot?` = ${fracStr(n,m)}`:''}`))};
@@ -852,7 +854,7 @@ export const G = {
   arithmeticSeq(d){
     const a1=nz(-9,9), diff=nz(-6,6), k=R(6,d===3?20:12);
     const terms=[a1,a1+diff,a1+2*diff,a1+3*diff];
-    return {q:`Find the ${k}th term: ${terms.join(', ')}, ...`, a:`<b>${a1+(k-1)*diff}</b>`,
+    return {q:L(`Find the ${k}th term: ${terms.join(', ')}, ...`, `أوجد الحد رقم ${k} في المتتابعة: ${M(terms.join(', ')+', ...')}`), a:`<b>${a1+(k-1)*diff}</b>`,
       s:steps(L('Common difference:', 'أساس المتتابعة الحسابية:')+' '+M(`d = ${sgn(terms[1])} &minus; (${sgn(terms[0])}) = ${sgn(diff)}`),
               L('nth term:', 'الحد العام:')+' '+M('a<sub>n</sub> = a<sub>1</sub> + (n &minus; 1)d'),
               M(`a<sub>${k}</sub> = ${sgn(a1)} + (${k} &minus; 1)(${sgn(diff)}) = ${sgn(a1)} + (${sgn((k-1)*diff)}) = ${sgn(a1+(k-1)*diff)}`))};
@@ -860,7 +862,7 @@ export const G = {
   factorGCF(d){
     const g=R(2,9); let p=nz(2,9), q=nz(-9,9);
     while(gcd(Math.abs(p),Math.abs(q))!==1) q=nz(-9,9);
-    return {q:`Factor: ${lead(g*p,'x')}${term(g*q,'')}`, a:`<b>${g}(${lead(p,'x')}${term(q,'')})</b>`,
+    return {q:L(`Factor: ${lead(g*p,'x')}${term(g*q,'')}`, `حلّل بإخراج العامل المشترك الأكبر: ${M(lead(g*p,'x')+term(g*q,''))}`), a:`<b>${g}(${lead(p,'x')}${term(q,'')})</b>`,
       s:steps(L(`Find the greatest common factor of ${Math.abs(g*p)} and ${Math.abs(g*q)}: it is ${g}.`, `نوجد العامل المشترك الأكبر للعددين ${M(Math.abs(g*p))} و ${M(Math.abs(g*q))}: وهو ${M(g)}.`),
               L(`Divide each term by ${g}:`, `نقسم كل حد على ${M(g)}:`)+' '+M(`${lead(g*p,'x')} &divide; ${g} = ${lead(p,'x')}`)+', '+M(`${sgn(g*q)} &divide; ${g} = ${sgn(q)}`),
               L('Write the common factor outside the brackets:', 'نكتب العامل المشترك خارج القوس:')+' '+M(`${g}(${lead(p,'x')}${term(q,'')})`))};
@@ -870,14 +872,14 @@ export const G = {
   geometricSeq(d){
     const a1=nz(1,5), r=pick(d===3?[2,3,4]:[2,3]), k=R(4,d===3?7:6);
     const terms=[a1,a1*r,a1*r*r,a1*r*r*r];
-    return {q:`Find the ${k}th term: ${terms.join(', ')}, ...`, a:`<b>${a1*Math.pow(r,k-1)}</b>`,
+    return {q:L(`Find the ${k}th term: ${terms.join(', ')}, ...`, `أوجد الحد رقم ${k} في المتتابعة: ${M(terms.join(', ')+', ...')}`), a:`<b>${a1*Math.pow(r,k-1)}</b>`,
       s:steps(L('Common ratio:', 'أساس المتتابعة الهندسية:')+' '+M(`r = ${terms[1]} &divide; ${terms[0]} = ${r}`),
               L('nth term:', 'الحد العام:')+' '+M(`a<sub>n</sub> = a<sub>1</sub> r${sup('n&minus;1')}`),
               M(`a<sub>${k}</sub> = ${a1} &times; ${r}${sup(k-1)} = ${a1} &times; ${r**(k-1)} = ${a1*r**(k-1)}`))};
   },
   iPowers(d){
     const n=R(2,d===3?40:16), vals=['1','i','&minus;1','&minus;i'];
-    return {q:`Simplify: i${sup(n)}`, a:`<b>${vals[n%4]}</b>`,
+    return {q:L(`Simplify: i${sup(n)}`, `بسّط: ${M('i'+sup(n))}`), a:`<b>${vals[n%4]}</b>`,
       s:steps(L('Powers of i repeat every 4:', 'قوى i تتكرر كل 4:')+' '+M(`i${sup(1)} = i, i${sup(2)} = &minus;1, i${sup(3)} = &minus;i, i${sup(4)} = 1`),
               L(`Divide the exponent by 4: ${M(`${n} = 4 &times; ${Math.floor(n/4)} + ${n%4}`)}.`, `نقسم الأس على 4: ${M(`${n} = 4 &times; ${Math.floor(n/4)} + ${n%4}`)}.`),
               M(`i${sup(n)} = i${sup(n%4)} = ${vals[n%4]}`))};
@@ -888,14 +890,15 @@ export const G = {
     const names={3:'triangle',4:'quadrilateral',5:'pentagon',6:'hexagon',7:'heptagon',8:'octagon',9:'nonagon',10:'decagon'};
     const sides=R(3,d===3?12:8);
     const nm=names[sides]?` (${names[sides]})`:'';
-    return {q:`Find the sum of the interior angles of a polygon with ${sides} sides${nm}.`, a:`<b>${(sides-2)*180}&deg;</b>`,
+    const namesAr={3:'مثلث',4:'رباعي',5:'خماسي',6:'سداسي',7:'سباعي',8:'ثماني',9:'تساعي',10:'عشاري'}, nmAr=namesAr[sides]?` (${namesAr[sides]})`:'';
+    return {q:L(`Find the sum of the interior angles of a polygon with ${sides} sides${nm}.`, `أوجد مجموع قياسات الزوايا الداخلية لمضلع عدد أضلاعه ${sides}${nmAr}.`), a:`<b>${(sides-2)*180}&deg;</b>`,
       s:steps(L('A polygon with n sides splits into (n − 2) triangles, each 180°:', 'المضلع ذو n ضلعاً ينقسم إلى (n − 2) مثلثاً، كل منها 180°:')+' '+M('S = (n &minus; 2) &times; 180&deg;'),
               M(`S = (${sides} &minus; 2) &times; 180&deg; = ${sides-2} &times; 180&deg; = ${(sides-2)*180}&deg;`))};
   },
   distanceFormula(d){
     const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[20,21,29]]);
     const x1=nz(-8,8), y1=nz(-8,8), x2=x1+t[0]*pick([1,-1]), y2=y1+t[1]*pick([1,-1]);
-    return {q:`Find the distance between (${x1}, ${y1}) and (${x2}, ${y2}).`, a:`<b>${t[2]}</b>`,
+    return {q:L(`Find the distance between (${x1}, ${y1}) and (${x2}, ${y2}).`, `أوجد المسافة بين النقطتين ${M(`(${x1}, ${y1})`)} و ${M(`(${x2}, ${y2})`)}.`), a:`<b>${t[2]}</b>`,
       s:steps(L('Distance formula:', 'قانون المسافة:')+' '+M(`d = ${sq('(x<sub>2</sub> &minus; x<sub>1</sub>)'+sup(2)+' + (y<sub>2</sub> &minus; y<sub>1</sub>)'+sup(2))}`),
               L('Differences:', 'الفروق:')+' '+M(`x<sub>2</sub> &minus; x<sub>1</sub> = ${sgn(x2)} &minus; (${sgn(x1)}) = ${sgn(x2-x1)}`)+', '+M(`y<sub>2</sub> &minus; y<sub>1</sub> = ${sgn(y2)} &minus; (${sgn(y1)}) = ${sgn(y2-y1)}`),
               M(`d = ${sq(`(${sgn(x2-x1)})${sup(2)} + (${sgn(y2-y1)})${sup(2)}`)} = ${sq(`${t[0]**2} + ${t[1]**2}`)} = ${sq(t[2]**2)} = ${t[2]}`))};
@@ -905,7 +908,7 @@ export const G = {
   avgRateOfChange(d){
     const c=nz(1,4), e=nz(-9,9), a=nz(-5,5); let b=nz(-5,5); while(b===a) b=nz(-5,5);
     const poly=`${lead(c,'x'+sup(2))}${term(e,'')}`, lo=Math.min(a,b), hi=Math.max(a,b), f=x=>c*x*x+e;
-    return {q:`Average rate of change of f(x) = ${poly} on [${lo}, ${hi}].`, a:`<b>${c*(a+b)}</b>`,
+    return {q:L(`Average rate of change of f(x) = ${poly} on [${lo}, ${hi}].`, `أوجد متوسط معدل التغير للدالة ${M('f(x) = '+poly)} على الفترة ${M(`[${lo}, ${hi}]`)}.`), a:`<b>${c*(a+b)}</b>`,
       s:steps(L('Average rate of change = (f(b) − f(a)) ÷ (b − a).', 'متوسط معدل التغير = (f(b) − f(a)) ÷ (b − a).'),
               M(`f(${hi}) = ${c}(${sgn(hi)})${sup(2)} + (${sgn(e)}) = ${sgn(f(hi))}`), M(`f(${lo}) = ${c}(${sgn(lo)})${sup(2)} + (${sgn(e)}) = ${sgn(f(lo))}`),
               M(`${frac(`${sgn(f(hi))} &minus; (${sgn(f(lo))})`, `${sgn(hi)} &minus; (${sgn(lo)})`)} = ${frac(sgn(f(hi)-f(lo)), hi-lo)} = ${sgn(c*(a+b))}`))};
@@ -990,7 +993,7 @@ export const G = {
   },
   complexConjugate(d){
     const hi=d===1?9:d===2?20:50, a=nz(-hi,hi), b=nz(-hi,hi);
-    return {q:`If z = ${cplx(a,b)}, then <span style="text-decoration:overline">z</span> =`, a:`<b>${cplx(a,-b)}</b>`,
+    return {q:L(`If z = ${cplx(a,b)}, then <span style="text-decoration:overline">z</span> =`, `إذا كان ${M('z = '+cplx(a,b))} فإن ${M('<span style="text-decoration:overline">z</span> =')}`), a:`<b>${cplx(a,-b)}</b>`,
       s:steps(L('The conjugate keeps the real part and changes the sign of the imaginary part:', 'المرافق يُبقي الجزء الحقيقي ويغيّر إشارة الجزء التخيلي:')+' '+M('<span style="text-decoration:overline">a + bi</span> = a &minus; bi'),
               M(cplx(a,-b)))};
   },
@@ -1006,7 +1009,7 @@ export const G = {
     const cand=R(2,d===3?120:50);
     let div=0; for(let i=2;i*i<=cand;i++) if(cand%i===0){ div=i; break; }
     const prime=!div, lim=Math.floor(Math.sqrt(cand));
-    return {q:`Is ${cand} prime?`, a:`<b>${prime?'Yes':'No'}</b>`,
+    return {q:L(`Is ${cand} prime?`, `هل العدد ${cand} أولي؟`), a:`<b>${prime?Li('Yes','نعم'):Li('No','لا')}</b>`,
       s:steps(L(`Check divisibility by primes up to ${sq(cand)} ≈ ${num(Math.sqrt(cand),2)}.`, `نختبر القسمة على الأعداد الأولية حتى ${M(`${sq(cand)} &asymp; ${num(Math.sqrt(cand),2)}`)}.`),
               prime ? L(`None of ${[2,3,5,7,11].filter(p=>p<=lim).join(', ')||'—'} divides ${cand}, so it is prime.`, `لا يقسمه أي من ${M([2,3,5,7,11].filter(p=>p<=lim).join(', ')||'—')}، إذن هو أولي.`)
                     : L(`${cand} = ${div} × ${cand/div}, so it is not prime.`, `${M(`${cand} = ${div} &times; ${cand/div}`)}، إذن ليس أولياً.`))};
@@ -1035,7 +1038,7 @@ export const G = {
   newtonSqrt(d){
     // x1 = (x0 + N/x0)/2 = (x0^2 + N)/(2 x0); N = x0(2k - x0) keeps x1 = k an integer
     const x0=R(2,d===1?5:d===2?9:15), k=R(Math.floor(x0/2)+1, x0+(d===1?2:5)), N=x0*(2*k-x0);
-    return {q:`Approximate &radic;${N} with one Newton step on f(x) = x${sup(2)} &minus; ${N}, starting from x<sub>0</sub> = ${x0}. x<sub>1</sub> =`,
+    return {q:L(`Approximate &radic;${N} with one Newton step on f(x) = x${sup(2)} &minus; ${N}, starting from x<sub>0</sub> = ${x0}. x<sub>1</sub> =`, `قرّب ${M('&radic;'+N)} بخطوة واحدة من طريقة نيوتن على ${M(`f(x) = x${sup(2)} &minus; ${N}`)} بدءًا من ${M(`x<sub>0</sub> = ${x0}`)}. ${M('x<sub>1</sub> =')}`),
             a:`<b>${k}</b>`,
       s:steps(L('Newton step:', 'خطوة نيوتن:')+' '+M(`x<sub>1</sub> = x<sub>0</sub> &minus; ${frac('f(x<sub>0</sub>)','f&prime;(x<sub>0</sub>)')}`)+', '+M('f&prime;(x) = 2x'),
               M(`f(${x0}) = ${x0*x0} &minus; ${N} = ${sgn(x0*x0-N)}`)+', '+M(`f&prime;(${x0}) = ${2*x0}`),
@@ -1044,7 +1047,7 @@ export const G = {
   linearInterp(d){
     const x0=R(-5,10), h=d===1?pick([2,4]):d===2?pick([2,3,4,5]):pick([4,5,6,8,10]);
     const m=nz(d===1?1:-6,6), y0=R(-20,20), t=R(1,h-1), x=x0+t, y1=y0+m*h;
-    return {q:`Linearly interpolate through (${x0}, ${y0}) and (${x0+h}, ${y1}) to estimate y at x = ${x}.`,
+    return {q:L(`Linearly interpolate through (${x0}, ${y0}) and (${x0+h}, ${y1}) to estimate y at x = ${x}.`, `استخدم الاستكمال الخطي بين النقطتين ${M(`(${x0}, ${y0})`)} و ${M(`(${x0+h}, ${y1})`)} لتقدير ${M('y')} عند ${M('x = '+x)}.`),
             a:`<b>${sgn(y0+m*t)}</b>`,
       s:steps(L('Line through the two points:', 'المستقيم المار بالنقطتين:')+' '+M(`y = y<sub>0</sub> + ${frac('y<sub>1</sub> &minus; y<sub>0</sub>','x<sub>1</sub> &minus; x<sub>0</sub>')}(x &minus; x<sub>0</sub>)`),
               L('Slope:', 'الميل:')+' '+M(`${frac(`${sgn(y1)} &minus; (${sgn(y0)})`, `${x0+h} &minus; (${sgn(x0)})`)} = ${frac(sgn(m*h),h)} = ${sgn(m)}`),
@@ -1054,7 +1057,7 @@ export const G = {
   /* ---- Graph Theory (MATH 468) ---- */
   completeGraphEdges(d){
     const n=R(3,d===1?8:d===2?20:60);
-    return {q:`How many edges does the complete graph K<sub>${n}</sub> have?`, a:`<b>${n*(n-1)/2}</b>`,
+    return {q:L(`How many edges does the complete graph K<sub>${n}</sub> have?`, `كم عدد حواف الرسم الكامل ${M(`K<sub>${n}</sub>`)}؟`), a:`<b>${n*(n-1)/2}</b>`,
       s:steps(L('Every pair of vertices is joined by exactly one edge, so count the pairs:', 'كل زوج من الرؤوس يصل بينهما ضلع واحد، لذا نعدّ الأزواج:')+' '+M(`C(n, 2) = ${frac('n(n &minus; 1)',2)}`),
               M(`${frac(`${n} &times; ${n-1}`,2)} = ${n*(n-1)/2}`))};
   },
@@ -1065,8 +1068,8 @@ export const G = {
     for(let i=0;i<n;i++) for(let j=i+1;j<n;j++) if(Math.random()<0.45){ deg[i]++; deg[j]++; e++; }
     if(e===0){ deg[0]++; deg[1]++; e=1; }
     deg.sort((a,b)=>b-a);
-    return {q:`A simple graph has vertex degrees ${deg.join(', ')}. Find the sum of the degrees and the number of edges.`,
-            a:`<b>sum = ${2*e}, edges = ${e}</b>`,
+    return {q:L(`A simple graph has vertex degrees ${deg.join(', ')}. Find the sum of the degrees and the number of edges.`, `رسم بسيط درجات رؤوسه ${M(deg.join(', '))}. أوجد مجموع الدرجات وعدد الحواف.`),
+            a:`<b>${Li(`sum = ${2*e}, edges = ${e}`, `المجموع = ${2*e}، عدد الحواف = ${e}`)}</b>`,
       s:steps(M(`${deg.join(' + ')} = ${2*e}`),
               L('Handshake lemma: each edge adds 2 to the degree sum, so edges = sum ÷ 2.', 'مبرهنة المصافحة: كل ضلع يضيف 2 إلى مجموع الدرجات، لذا عدد الأضلاع = المجموع ÷ 2.'),
               M(`${2*e} &divide; 2 = ${e}`))};
@@ -1075,7 +1078,7 @@ export const G = {
   /* ---- Group Theory (MATH 344) ---- */
   elementOrder(d){
     const n=R(4,d===1?12:d===2?30:60), a=R(1,n-1), g=gcd(a,n);
-    return {q:`Order of ${a} in (&#8484;<sub>${n}</sub>, +) =`, a:`<b>${n/g}</b>`,
+    return {q:L(`Order of ${a} in (&#8484;<sub>${n}</sub>, +) =`, `رتبة العنصر ${M(a)} في الزمرة ${M(`(&#8484;<sub>${n}</sub>, +)`)} =`), a:`<b>${n/g}</b>`,
       s:steps(L(`The order of a in ℤₙ is the smallest k with k·a ≡ 0 (mod n), which equals n ÷ gcd(a, n).`, `رتبة العنصر a في ${M('&#8484;<sub>n</sub>')} هي أصغر k بحيث ${M('k&middot;a &equiv; 0 (mod n)')}، وتساوي ${M('n &divide; gcd(a, n)')}.`),
               M(`gcd(${a}, ${n}) = ${g}`), M(`${n} &divide; ${g} = ${n/g}`),
               L(`Check: ${M(`${n/g} &times; ${a} = ${n/g*a}`)}, a multiple of ${n}.`, `تحقق: ${M(`${n/g} &times; ${a} = ${n/g*a}`)} وهو مضاعف لـ ${M(n)}.`))};
@@ -1085,8 +1088,8 @@ export const G = {
   isUnit(d){
     const n=R(4,d===1?12:d===2?30:60), a=R(2,n-1), g=gcd(a,n);
     let inv=0; if(g===1) for(let x=1;x<n;x++) if(a*x%n===1){ inv=x; break; }
-    return {q:`Is ${a} a unit in &#8484;<sub>${n}</sub>?`,
-            a:`<b>${g===1?`Yes (inverse ${inv})`:`No (gcd = ${g})`}</b>`,
+    return {q:L(`Is ${a} a unit in &#8484;<sub>${n}</sub>?`, `هل العدد ${a} وحدة (له معكوس ضربي) في ${M(`&#8484;<sub>${n}</sub>`)}؟`),
+            a:`<b>${g===1?Li(`Yes (inverse ${inv})`,`نعم (معكوسه ${inv})`):Li(`No (gcd = ${g})`,`لا (${M('gcd = '+g)})`)}</b>`,
       s:steps(L('a is a unit in ℤₙ exactly when gcd(a, n) = 1.', 'العنصر a وحدة في ℤₙ إذا وفقط إذا كان gcd(a, n) = 1.'), M(`gcd(${a}, ${n}) = ${g}`),
               g===1 ? L('So it is a unit; its inverse:', 'إذن هو وحدة، ومعكوسه:')+' '+M(`${a} &times; ${inv} = ${a*inv} &equiv; 1 (mod ${n})`)
                     : L(`${g} ≠ 1, so ${a} is not a unit.`, `${M(`${g} &ne; 1`)}، إذن ${M(a)} ليس وحدة.`))};
@@ -1103,13 +1106,13 @@ export const G = {
   /* ---- Foundations (MATH 234) ---- */
   setUnion(d){
     const hi=d===1?15:d===2?40:120, c=R(0,Math.floor(hi/3)), a=c+R(1,hi), b=c+R(1,hi);
-    return {q:`If |A| = ${a}, |B| = ${b} and |A &cap; B| = ${c}, then |A &cup; B| =`, a:`<b>${a+b-c}</b>`,
+    return {q:L(`If |A| = ${a}, |B| = ${b} and |A &cap; B| = ${c}, then |A &cup; B| =`, `إذا كان ${M(`|A| = ${a}, |B| = ${b}`)} و ${M(`|A &cap; B| = ${c}`)} فإن ${M('|A &cup; B| =')}`), a:`<b>${a+b-c}</b>`,
       s:steps(L('Inclusion–exclusion: elements in both sets are counted twice in |A| + |B|, so subtract them once.', 'مبدأ الاحتواء والاستبعاد: العناصر المشتركة تُعدّ مرتين في |A| + |B| فنطرحها مرة.'),
               M('|A &cup; B| = |A| + |B| &minus; |A &cap; B|'), M(`= ${a} + ${b} &minus; ${c} = ${a+b-c}`))};
   },
   powerSetSize(d){
     const n=R(d===1?1:3,d===1?4:d===2?7:10), A='abcdefghij'.slice(0,n).split('');
-    return {q:`If A = {${A.join(', ')}}, then |&#119979;(A)| =`, a:`<b>${2**n}</b>`,
+    return {q:L(`If A = {${A.join(', ')}}, then |&#119979;(A)| =`, `إذا كانت ${M(`A = {${A.join(', ')}}`)} فإن ${M('|&#119979;(A)| =')}`), a:`<b>${2**n}</b>`,
       s:steps(L(`A has ${n} elements. Each element is either in a subset or not (2 choices).`, `المجموعة A فيها ${M(n)} عناصر، وكل عنصر إما أن يكون في المجموعة الجزئية أو لا (خياران).`),
               M(`|&#119979;(A)| = 2${sup('n')} = 2${sup(n)} = ${2**n}`))};
   },
@@ -1120,7 +1123,7 @@ export const G = {
   riemannSum(d){
     const n=R(2,d===1?3:d===2?4:6), h=d===3?R(1,2):1, k=R(0,5), side=pick(['left','right']);
     let s=0; const xs=[]; for(let i=0;i<n;i++){ const x=(side==='left'?i:i+1)*h; xs.push(x); s+=h*(x*x+k); }
-    return {q:`Compute the ${side} Riemann sum of f(x) = x${sup(2)}${term(k,'')} on [0, ${n*h}] with n = ${n} equal subintervals.`, a:`<b>${s}</b>`,
+    return {q:L(`Compute the ${side} Riemann sum of f(x) = x${sup(2)}${term(k,'')} on [0, ${n*h}] with n = ${n} equal subintervals.`, `احسب مجموع ريمان ${side==='left'?'الأيسر':'الأيمن'} للدالة ${M('f(x) = x'+sup(2)+term(k,''))} على ${M(`[0, ${n*h}]`)} بتقسيمها إلى ${M('n = '+n)} فترات جزئية متساوية.`), a:`<b>${s}</b>`,
       s:steps(L(`Width of each subinterval: ${M(`&Delta;x = ${frac(n*h,n)} = ${h}`)}.`, `عرض كل فترة جزئية: ${M(`&Delta;x = ${frac(n*h,n)} = ${h}`)}.`),
               L(`Use the ${side} endpoints:`, `نستخدم ${side==='left'?'الأطراف اليسرى':'الأطراف اليمنى'}:`)+' '+M(`x = ${xs.join(', ')}`),
               L('Function values:', 'قيم الدالة:')+' '+M(xs.map(x=>`f(${x}) = ${x*x+k}`).join(', ')),
@@ -1128,7 +1131,7 @@ export const G = {
   },
   avgValue(d){
     const p=R(1,d===1?1:d===2?2:3), m=R(1,4), b=R(1,d===3?4:5), c=m*(p+1);
-    return {q:`Find the average value of f(x) = ${c}x${p===1?'':sup(p)} on [0, ${b}].`, a:`<b>${m*b**p}</b>`,
+    return {q:L(`Find the average value of f(x) = ${c}x${p===1?'':sup(p)} on [0, ${b}].`, `أوجد القيمة المتوسطة للدالة ${M(`f(x) = ${c}x${p===1?'':sup(p)}`)} على الفترة ${M(`[0, ${b}]`)}.`), a:`<b>${m*b**p}</b>`,
       s:steps(L('Average value:', 'القيمة المتوسطة:')+' '+M(`f<sub>avg</sub> = ${frac(1,'b &minus; a')} &int;<sub>a</sub><sup>b</sup> f(x) dx`),
               M(`&int;<sub>0</sub><sup>${b}</sup> ${c}x${p===1?'':sup(p)} dx = [${lead(m,'x'+sup(p+1))}]<sub>0</sub><sup>${b}</sup> = ${m*b**(p+1)}`),
               M(`f<sub>avg</sub> = ${frac(m*b**(p+1), b)} = ${m*b**p}`))};
@@ -1144,7 +1147,7 @@ export const G = {
   /* ---- Differential & Integral Calculus (MATH 232) ---- */
   derivChainAt(d){
     const n=R(2,d===1?2:d===2?3:4), a=nz(-3,3), b=nz(-5,5), x0=R(-2,2), u=a*x0+b, v=n*a*u**(n-1);
-    return {q:`f(x) = (${lead(a,'x')}${term(b,'')})${sup(n)}. Find f&prime;(${x0}).`, a:`<b>${sgn(v)}</b>`,
+    return {q:L(`f(x) = (${lead(a,'x')}${term(b,'')})${sup(n)}. Find f&prime;(${x0}).`, `${M(`f(x) = (${lead(a,'x')}${term(b,'')})${sup(n)}`)}. أوجد ${M(`f&prime;(${x0})`)}.`), a:`<b>${sgn(v)}</b>`,
       s:steps(L('Chain rule: derivative of the outside power × derivative of the inside.', 'قاعدة السلسلة: مشتقة القوة الخارجية × مشتقة ما بداخل القوس.')+' '+M(`[u${sup('n')}]&prime; = n u${sup('n&minus;1')} u&prime;`),
               M(`f&prime;(x) = ${n}(${lead(a,'x')}${term(b,'')})${n-1>1?sup(n-1):''} &middot; (${sgn(a)})`),
               L(`At x = ${x0}: inside = ${M(`${a}(${sgn(x0)})${term(b,'')} = ${sgn(u)}`)}.`, `عند ${M(`x = ${x0}`)}: ما بداخل القوس ${M(`= ${a}(${sgn(x0)})${term(b,'')} = ${sgn(u)}`)}.`),
@@ -1153,7 +1156,7 @@ export const G = {
   derivProductAt(d){
     const m=R(1,d===1?2:4), c=nz(-6,6), x0=nz(-3,3), v=m*x0**(m-1)*(x0+c) + x0**m;
     const xm='x'+(m===1?'':sup(m)), dm=m===1?'1':`${m}x${m-1===1?'':sup(m-1)}`;
-    return {q:`f(x) = ${xm}(x${term(c,'')}). Find f&prime;(${x0}).`,
+    return {q:L(`f(x) = ${xm}(x${term(c,'')}). Find f&prime;(${x0}).`, `${M(`f(x) = ${xm}(x${term(c,'')})`)}. أوجد ${M(`f&prime;(${x0})`)}.`),
             a:`<b>${sgn(v)}</b>`,
       s:steps(L('Product rule:', 'قاعدة الضرب:')+' '+M('(uv)&prime; = u&prime;v + uv&prime;')+', '+M(`u = ${xm}, v = x${term(c,'')}`),
               M(`u&prime; = ${dm}, v&prime; = 1`),
@@ -1162,7 +1165,7 @@ export const G = {
   },
   criticalPoints(d){
     const k=R(1,d===1?3:6), c=R(-9,9);
-    return {q:`Find the critical points of f(x) = x${sup(3)}${term(-3*k*k,'x')}${term(c,'')}.`, a:`<b>x = &minus;${k}, ${k}</b>`,
+    return {q:L(`Find the critical points of f(x) = x${sup(3)}${term(-3*k*k,'x')}${term(c,'')}.`, `أوجد النقاط الحرجة للدالة ${M('f(x) = x'+sup(3)+term(-3*k*k,'x')+term(c,''))}.`), a:`<b>x = &minus;${k}, ${k}</b>`,
       s:steps(L('Critical points: where f′(x) = 0 (or does not exist).', 'النقاط الحرجة: حيث f′(x) = 0 (أو غير موجودة).'),
               M(`f&prime;(x) = 3x${sup(2)} &minus; ${3*k*k}`),
               M(`3x${sup(2)} &minus; ${3*k*k} = 0 &rArr; x${sup(2)} = ${k*k} &rArr; x = &plusmn;${k}`))};
@@ -1187,9 +1190,9 @@ export const G = {
   cartesianSize(d){
     const a=R(2,d===1?6:12), b=R(2,d===1?6:12);
     const rule=L('Each element of the product is an ordered tuple: one choice from each set, so multiply the sizes.', 'كل عنصر في الضرب الديكارتي زوج مرتب: اختيار من كل مجموعة، لذا نضرب الأعداد.');
-    if(d===3){ const c=R(2,6); return {q:`|A| = ${a}, |B| = ${b}, |C| = ${c}. Find |A &times; B &times; C|.`, a:`<b>${a*b*c}</b>`,
+    if(d===3){ const c=R(2,6); return {q:L(`|A| = ${a}, |B| = ${b}, |C| = ${c}. Find |A &times; B &times; C|.`, `${M(`|A| = ${a}, |B| = ${b}, |C| = ${c}`)}. أوجد ${M('|A &times; B &times; C|')}.`), a:`<b>${a*b*c}</b>`,
       s:steps(rule, M(`|A &times; B &times; C| = |A|&middot;|B|&middot;|C| = ${a} &times; ${b} &times; ${c} = ${a*b*c}`))}; }
-    return {q:`|A| = ${a}, |B| = ${b}. Find |A &times; B|.`, a:`<b>${a*b}</b>`,
+    return {q:L(`|A| = ${a}, |B| = ${b}. Find |A &times; B|.`, `${M(`|A| = ${a}, |B| = ${b}`)}. أوجد ${M('|A &times; B|')}.`), a:`<b>${a*b}</b>`,
       s:steps(rule, M(`|A &times; B| = |A|&middot;|B| = ${a} &times; ${b} = ${a*b}`))};
   },
   logicEval(d){
@@ -1202,13 +1205,13 @@ export const G = {
       ['(p &or; &not;q) &and; (q &or; r)', (p,q,r)=>(p||!q)&&(q||r), (p,q,r)=>[`&not;q = ${T(!q)}`, `p &or; &not;q = ${T(p||!q)}`, `q &or; r = ${T(q||r)}`]],
       ['&not;(p &or; r) &and; q',     (p,q,r)=>!(p||r)&&q,  (p,q,r)=>[`p &or; r = ${T(p||r)}`, `&not;(p &or; r) = ${T(!(p||r))}`]],
     ]);
-    return {q:`If p = ${T(p)}, q = ${T(q)}, r = ${T(r)}, evaluate ${ex[0]}.`, a:`<b>${T(ex[1](p,q,r))}</b>`,
+    return {q:L(`If p = ${T(p)}, q = ${T(q)}, r = ${T(r)}, evaluate ${ex[0]}.`, `إذا كانت ${M(`p = ${T(p)}, q = ${T(q)}, r = ${T(r)}`)} فأوجد قيمة الصواب للعبارة ${M(ex[0])}.`), a:`<b>${T(ex[1](p,q,r))}</b>`,
       s:steps(L('Rules: ¬ flips the value; ∧ (and) is T only when both are T; ∨ (or) is F only when both are F. Work from the inside brackets out:', 'القواعد: النفي ¬ يعكس القيمة؛ و ∧ صائبة فقط إذا كان الطرفان صائبين؛ و ∨ خاطئة فقط إذا كان الطرفان خاطئين. نبدأ من داخل الأقواس:'),
               ...ex[2](p,q,r).map(t=>M(t)), M(`${ex[0]} = ${T(ex[1](p,q,r))}`))};
   },
   functionCount(d){
     const m=R(2,d===1?3:5), n=R(m,d===1?4:6), inj=Math.random()<0.5, top=[...Array(m)].map((_,i)=>n-i);
-    return {q:`|A| = ${m}, |B| = ${n}. How many ${inj?'one-to-one ':''}functions A &rarr; B are there?`,
+    return {q:L(`|A| = ${m}, |B| = ${n}. How many ${inj?'one-to-one ':''}functions A &rarr; B are there?`, `${M(`|A| = ${m}, |B| = ${n}`)}. كم عدد الدوال ${inj?'المتباينة (واحد لواحد) ':''}من ${M('A')} إلى ${M('B')}؟`),
             a:`<b>${inj?factorial(n)/factorial(n-m):n**m}</b>`,
       s:inj ? steps(L(`One-to-one: the ${m} elements of A must go to different elements of B. The first has ${n} choices, the next ${n-1}, …`, `دالة متباينة: عناصر A الـ ${M(m)} تذهب إلى عناصر مختلفة من B. الأول له ${M(n)} خيارات، والتالي ${M(n-1)}، …`),
                     M(`${top.join(' &times; ')} = ${factorial(n)/factorial(n-m)}`))
@@ -1248,9 +1251,9 @@ export const G = {
     if(p===0){ if(Math.random()<0.5){ b=0; c=R(-hi,hi); } else { c=0; b=R(-hi,hi); } }
     else { const divs=[]; for(let k=1;k<=Math.abs(p);k++) if(p%k===0) divs.push(k); b=pick(divs)*pick([1,-1]); c=p/b; }
     c+=0;
-    const ans = l1===l2 ? `&lambda; = ${sgn(l1)} (double)` : `&lambda; = ${sgn(Math.min(l1,l2))}, ${sgn(Math.max(l1,l2))}`;
+    const ans = l1===l2 ? `&lambda; = ${sgn(l1)} (${Li('double','مكرر')})` : `&lambda; = ${sgn(Math.min(l1,l2))}, ${sgn(Math.max(l1,l2))}`;
     const tr=a+e, det=a*e-b*c, f=r=>r===0?'&lambda;':`(&lambda; ${r<0?'+ '+Math.abs(r):'&minus; '+r})`;
-    return {q:`Find the eigenvalues of ${mat([a,b,c,e])}.`, a:`<b>${ans}</b>`,
+    return {q:L('Find the eigenvalues of','أوجد القيم الذاتية للمصفوفة')+' '+mat([a,b,c,e]), a:`<b>${ans}</b>`,
       s:steps(L('Eigenvalues solve the characteristic equation', 'القيم الذاتية هي حلول المعادلة المميزة')+' '+M('det(A &minus; &lambda;I) = 0')+'. '+L('For a 2×2 matrix it is', 'وللمصفوفة 2×2 هي')+' '+M(`&lambda;${sup(2)} &minus; (tr A)&lambda; + det A = 0`),
               M(`tr A = ${sgn(a)} + (${sgn(e)}) = ${sgn(tr)}`)+', '+M(`det A = (${sgn(a)})(${sgn(e)}) &minus; (${sgn(b)})(${sgn(c)}) = ${sgn(det)}`),
               M(`&lambda;${sup(2)}${term(-tr,'&lambda;')}${term(det,'')} = 0`),
@@ -1262,8 +1265,8 @@ export const G = {
     let a, b, N, m;
     do{ a=R(1,d===1?5:9); b=a+2*R(1,d===3?3:2); N=R(a*a+1,b*b-1); m=(a+b)/2; }while(m*m===N);
     const next = (a*a-N)*(m*m-N)<0 ? [a,m] : [m,b];
-    return {q:`Apply one bisection step to f(x) = x${sup(2)} &minus; ${N} on [${a}, ${b}].`,
-            a:`<b>m = ${m}; new interval [${next[0]}, ${next[1]}]</b>`,
+    return {q:L(`Apply one bisection step to f(x) = x${sup(2)} &minus; ${N} on [${a}, ${b}].`, `طبّق خطوة واحدة من طريقة التنصيف على ${M(`f(x) = x${sup(2)} &minus; ${N}`)} في الفترة ${M(`[${a}, ${b}]`)}.`),
+            a:`<b>${M('m = '+m)}; ${Li('new interval','الفترة الجديدة')} ${M(`[${next[0]}, ${next[1]}]`)}</b>`,
       s:steps(L(`Check the signs at the ends: ${M(`f(${a}) = ${sgn(a*a-N)}`)} &lt; 0 and ${M(`f(${b}) = ${sgn(b*b-N)}`)} &gt; 0, so a root lies between them.`, `نفحص الإشارات عند الطرفين: ${M(`f(${a}) = ${sgn(a*a-N)}`)} سالبة و ${M(`f(${b}) = ${sgn(b*b-N)}`)} موجبة، إذن يوجد جذر بينهما.`),
               L('Midpoint:', 'نقطة المنتصف:')+' '+M(`m = (${a} + ${b})/2 = ${m}`)+', '+M(`f(${m}) = ${m*m} &minus; ${N} = ${sgn(m*m-N)}`),
               L(`Keep the half where the sign changes: f(${m}) is ${m*m-N<0?'negative, like f(a)':'positive, like f(b)'}, so the root is in ${M(`[${next[0]}, ${next[1]}]`)}.`, `نحتفظ بالنصف الذي تتغير فيه الإشارة: ${M(`f(${m})`)} ${m*m-N<0?'سالبة مثل f(a)':'موجبة مثل f(b)'}، إذن الجذر في ${M(`[${next[0]}, ${next[1]}]`)}.`))};
@@ -1272,7 +1275,7 @@ export const G = {
     const n=R(2,d===1?2:4), h=d===3?pick([1,2]):1, p=d===3?3:2, c=R(0,4), f=x=>x**p+c;
     let s=(f(0)+f(n*h))/2; for(let i=1;i<n;i++) s+=f(i*h);
     const xs=[...Array(n+1)].map((_,i)=>i*h);
-    return {q:`Use the trapezoidal rule with n = ${n} subintervals to approximate &int;<sub>0</sub><sup>${n*h}</sup> (x${sup(p)}${term(c,'')}) dx.`,
+    return {q:L(`Use the trapezoidal rule with n = ${n} subintervals to approximate &int;<sub>0</sub><sup>${n*h}</sup> (x${sup(p)}${term(c,'')}) dx.`, `استخدم قاعدة شبه المنحرف بعدد فترات ${M('n = '+n)} لتقريب ${M(`&int;<sub>0</sub><sup>${n*h}</sup> (x${sup(p)}${term(c,'')}) dx`)}.`),
             a:`<b>${h*s}</b>`,
       s:steps(L('Trapezoidal rule:', 'قاعدة شبه المنحرف:')+' '+M(`T = ${frac('h',2)}[f(x<sub>0</sub>) + 2f(x<sub>1</sub>) + … + 2f(x<sub>n&minus;1</sub>) + f(x<sub>n</sub>)]`)+', '+M(`h = ${frac(n*h,n)} = ${h}`),
               L('Values:', 'القيم:')+' '+M(xs.map(x=>`f(${x}) = ${f(x)}`).join(', ')),
@@ -1291,7 +1294,7 @@ export const G = {
   },
   absoluteError(d){
     const p=pick([50,100,200,250,400,500,1000])*(d===3?pick([2,4,5,10]):1), e=R(1,d===1?9:30), approx=p+pick([1,-1])*e;
-    return {q:`True value p = ${p}, approximation p* = ${approx}. Find the absolute and relative errors.`,
+    return {q:L(`True value p = ${p}, approximation p* = ${approx}. Find the absolute and relative errors.`, `القيمة الحقيقية ${M('p = '+p)} والقيمة التقريبية ${M('p* = '+approx)}. أوجد الخطأ المطلق والخطأ النسبي.`),
             a:`<b>abs = ${e}, rel = ${+(e/p).toFixed(6)}</b>`,
       s:steps(L('Absolute error = |true − approximate|:', 'الخطأ المطلق = |القيمة الحقيقية − التقريبية|:')+' '+M(`|${p} &minus; ${approx}| = ${e}`),
               L('Relative error = absolute error ÷ |true value|:', 'الخطأ النسبي = الخطأ المطلق ÷ |القيمة الحقيقية|:')+' '+M(`${frac(e,p)} = ${+(e/p).toFixed(6)}`))};
@@ -1300,16 +1303,16 @@ export const G = {
   /* ---- Ordinary Differential Equations (MATH 333) ---- */
   charRoots(d){
     const hi=d===1?4:d===2?6:9, r1=R(-hi,hi), r2=R(-hi,hi), b=-(r1+r2), c=r1*r2;
-    const ans = r1===r2 ? `r = ${sgn(r1)} (double)` : `r = ${sgn(Math.min(r1,r2))}, ${sgn(Math.max(r1,r2))}`;
+    const ans = r1===r2 ? `r = ${sgn(r1)} (${Li('double','مكرر')})` : `r = ${sgn(Math.min(r1,r2))}, ${sgn(Math.max(r1,r2))}`;
     const f=r=>r===0?'r':`(r ${r<0?'+ '+Math.abs(r):'&minus; '+r})`;
-    return {q:`Find the roots of the characteristic equation of y&Prime;${term(b,'y&prime;')}${term(c,'y')} = 0.`, a:`<b>${ans}</b>`,
+    return {q:L(`Find the roots of the characteristic equation of y&Prime;${term(b,'y&prime;')}${term(c,'y')} = 0.`, `أوجد جذري المعادلة المميزة للمعادلة ${M(`y&Prime;${term(b,'y&prime;')}${term(c,'y')} = 0`)}.`), a:`<b>${ans}</b>`,
       s:steps(L('Try y = e^(rx): each derivative brings a factor r, so y″ → r², y′ → r, y → 1.', 'نجرب y = e^(rx): كل اشتقاق يُخرج r، فيصبح y″ ← r² و y′ ← r و y ← 1.'),
               M(`r${sup(2)}${term(b,'r')}${term(c,'')} = 0`),
               L('Factor:', 'نحلل:')+' '+M(`${f(r1)}${f(r2)} = 0 &rArr; ${ans}`))};
   },
   expGrowth(d){
     const y0=R(2,50), T=R(1,6), n=R(1,d===1?3:d===2?5:8);
-    return {q:`A population follows y&prime; = ky with y(0) = ${y0} and doubles every ${T} hours. Find y(${n*T}).`, a:`<b>${y0*2**n}</b>`,
+    return {q:L(`A population follows y&prime; = ky with y(0) = ${y0} and doubles every ${T} hours. Find y(${n*T}).`, `مجتمع ينمو وفق ${M('y&prime; = ky')} حيث ${M(`y(0) = ${y0}`)} ويتضاعف كل ${T} ساعات. أوجد ${M(`y(${n*T})`)}.`), a:`<b>${y0*2**n}</b>`,
       s:steps(L('The solution of y′ = ky is exponential:', 'حل المعادلة y′ = ky أسي:')+' '+M(`y = y(0)e${sup('kt')}`)+'. '+L(`Doubling every ${T} hours means`, `التضاعف كل ${M(T)} ساعات يعني`)+' '+M(`y = ${y0} &middot; 2${sup(`t/${T}`)}`),
               L(`t = ${n*T} hours is ${n} doubling period(s):`, `${M(`t = ${n*T}`)} ساعة تعادل ${M(n)} فترات تضاعف:`)+' '+M(`${n*T}/${T} = ${n}`),
               M(`y(${n*T}) = ${y0} &times; 2${sup(n)} = ${y0} &times; ${2**n} = ${y0*2**n}`))};
@@ -1386,13 +1389,13 @@ export const G = {
   },
   waveSpeed(d){
     const c=R(2,d===1?5:12);
-    return {q:`u<sub>tt</sub> = ${c*c}u<sub>xx</sub>. Find the wave speed c.`, a:`<b>${c}</b>`,
+    return {q:L(`u<sub>tt</sub> = ${c*c}u<sub>xx</sub>. Find the wave speed c.`, `${M(`u<sub>tt</sub> = ${c*c}u<sub>xx</sub>`)}. أوجد سرعة الموجة ${M('c')}.`), a:`<b>${c}</b>`,
       s:steps(L('The wave equation has the form', 'معادلة الموجة على الصورة')+' '+M(`u<sub>tt</sub> = c${sup(2)}u<sub>xx</sub>`)+'.',
               M(`c${sup(2)} = ${c*c} &rArr; c = ${sq(c*c)} = ${c}`))};
   },
   laplacianPoly(d){
     const a=nz(-6,6), b=R(-6,6), c=nz(-6,6), e=d===1?0:R(-9,9);
-    return {q:`u(x, y) = ${lead(a,'x'+sup(2))}${term(b,'xy')}${term(c,'y'+sup(2))}${term(e,'x')}. Find u<sub>xx</sub> + u<sub>yy</sub>.`,
+    return {q:L(`u(x, y) = ${lead(a,'x'+sup(2))}${term(b,'xy')}${term(c,'y'+sup(2))}${term(e,'x')}. Find u<sub>xx</sub> + u<sub>yy</sub>.`, `${M(`u(x, y) = ${lead(a,'x'+sup(2))}${term(b,'xy')}${term(c,'y'+sup(2))}${term(e,'x')}`)}. أوجد ${M('u<sub>xx</sub> + u<sub>yy</sub>')}.`),
             a:`<b>${sgn(2*a+2*c)}</b>`,
       s:steps(L('Differentiate twice in x (treat y as a constant):', 'نشتق مرتين بالنسبة لـ x (y ثابت):')+' '+M(`u<sub>x</sub> = ${lead(2*a,'x')}${term(b,'y')}${term(e,'')}`)+', '+M(`u<sub>xx</sub> = ${sgn(2*a)}`),
               L('Differentiate twice in y (treat x as a constant):', 'نشتق مرتين بالنسبة لـ y (x ثابت):')+' '+M(`u<sub>y</sub> = ${b?lead(b,'x'):''}${b?term(2*c,'y'):lead(2*c,'y')}`)+', '+M(`u<sub>yy</sub> = ${sgn(2*c)}`),
@@ -1400,7 +1403,7 @@ export const G = {
   },
   heatSeparation(d){
     const n=R(1,d===1?3:6), al=R(1,d===1?3:9), nx=`${n===1?'':n}x`;
-    return {q:`u(x, t) = e${sup('&minus;kt')} sin(${nx}) solves u<sub>t</sub> = ${al===1?'':al}u<sub>xx</sub>. Find k.`, a:`<b>${al*n*n}</b>`,
+    return {q:L(`u(x, t) = e${sup('&minus;kt')} sin(${nx}) solves u<sub>t</sub> = ${al===1?'':al}u<sub>xx</sub>. Find k.`, `الدالة ${M(`u(x, t) = e${sup('&minus;kt')} sin(${nx})`)} تحقق ${M(`u<sub>t</sub> = ${al===1?'':al}u<sub>xx</sub>`)}. أوجد ${M('k')}.`), a:`<b>${al*n*n}</b>`,
       s:steps(M(`u<sub>t</sub> = &minus;k e${sup('&minus;kt')} sin(${nx})`),
               M(`u<sub>xx</sub> = &minus;${n*n===1?'':n*n} e${sup('&minus;kt')} sin(${nx})`),
               L('Substitute in the equation and cancel', 'نعوّض في المعادلة ونحذف')+' '+M(`e${sup('&minus;kt')} sin(${nx})`)+':'+' '+M(`&minus;k = ${al===1?'':al+' &times; '}(&minus;${n*n}) &rArr; k = ${al*n*n}`))};
@@ -1424,7 +1427,7 @@ export const G = {
   },
   divergence(d){
     const a=nz(-5,5), b=nz(-5,5), c=nz(-5,5), x=R(-3,3), y=R(-3,3), z=R(-3,3);
-    return {q:`F = &lang;${lead(a,'xy')}, ${lead(b,'yz')}, ${lead(c,'zx')}&rang;. Find &nabla;&middot;F at (${x}, ${y}, ${z}).`,
+    return {q:L(`F = &lang;${lead(a,'xy')}, ${lead(b,'yz')}, ${lead(c,'zx')}&rang;. Find &nabla;&middot;F at (${x}, ${y}, ${z}).`, `${M(`F = &lang;${lead(a,'xy')}, ${lead(b,'yz')}, ${lead(c,'zx')}&rang;`)}. أوجد التباعد ${M('&nabla;&middot;F')} عند النقطة ${M(`(${x}, ${y}, ${z})`)}.`),
             a:`<b>${sgn(a*y+b*z+c*x)}</b>`,
       s:steps(L('Divergence:', 'التباعد:')+' '+M('&nabla;&middot;F = &part;P/&part;x + &part;Q/&part;y + &part;R/&part;z'),
               M(`&part;(${lead(a,'xy')})/&part;x = ${lead(a,'y')}`)+', '+M(`&part;(${lead(b,'yz')})/&part;y = ${lead(b,'z')}`)+', '+M(`&part;(${lead(c,'zx')})/&part;z = ${lead(c,'x')}`),
@@ -1434,7 +1437,7 @@ export const G = {
   gradientAt(d){
     const a=nz(-5,5), b=nz(-5,5), c=nz(-5,5), x=R(-3,3), y=R(-3,3), z=R(-3,3);
     const g=[2*a*x,2*b*y,2*c*z].map(v=>v+0);
-    return {q:`f = ${lead(a,'x'+sup(2))}${term(b,'y'+sup(2))}${term(c,'z'+sup(2))}. Find &nabla;f at (${x}, ${y}, ${z}).`,
+    return {q:L(`f = ${lead(a,'x'+sup(2))}${term(b,'y'+sup(2))}${term(c,'z'+sup(2))}. Find &nabla;f at (${x}, ${y}, ${z}).`, `${M(`f = ${lead(a,'x'+sup(2))}${term(b,'y'+sup(2))}${term(c,'z'+sup(2))}`)}. أوجد التدرج ${M('&nabla;f')} عند النقطة ${M(`(${x}, ${y}, ${z})`)}.`),
             a:`<b>${vec(g)}</b>`,
       s:steps(L('Gradient = vector of partial derivatives:', 'التدرج = متجه المشتقات الجزئية:')+' '+M('&nabla;f = &lang;f<sub>x</sub>, f<sub>y</sub>, f<sub>z</sub>&rang;'),
               M(`f<sub>x</sub> = ${lead(2*a,'x')}, f<sub>y</sub> = ${lead(2*b,'y')}, f<sub>z</sub> = ${lead(2*c,'z')}`),
@@ -1452,7 +1455,7 @@ export const G = {
   geometricSeries(d){
     const a=nz(-9,9), q=R(2,d===1?3:6), p=d===1?1:nz(-(q-1),q-1);
     const ratio=(p<0?'&minus;':'')+frac(Math.abs(p),q);
-    return {q:`Find the sum of the infinite geometric series with first term ${sgn(a)} and common ratio ${ratio}.`, a:`<b>${fracStr(a*q,q-p)}</b>`,
+    return {q:L(`Find the sum of the infinite geometric series with first term ${sgn(a)} and common ratio ${ratio}.`, `أوجد مجموع المتسلسلة الهندسية اللانهائية التي حدها الأول ${M(sgn(a))} وأساسها ${M(ratio)}.`), a:`<b>${fracStr(a*q,q-p)}</b>`,
       s:steps(L('Since |r| < 1 the series converges, and', 'بما أن |r| < 1 فالمتسلسلة متقاربة، و')+' '+M(`S = ${frac('a','1 &minus; r')}`),
               M(`1 &minus; (${ratio}) = ${frac(q-p,q)}`),
               M(`S = ${sgn(a)} &divide; ${frac(q-p,q)} = ${sgn(a)} &times; ${frac(q,q-p)} = ${fracStr(a*q,q-p)}`))};
@@ -1472,7 +1475,7 @@ export const G = {
   },
   epsilonN(d){
     const c=d===1?1:R(1,5), k=R(2,d===3?1000:20);
-    return {q:`For a<sub>n</sub> = ${frac(c,'n')}, find the smallest N with a<sub>n</sub> &lt; ${frac(1,k)} for all n &ge; N.`, a:`<b>N = ${c*k+1}</b>`,
+    return {q:L(`For a<sub>n</sub> = ${frac(c,'n')}, find the smallest N with a<sub>n</sub> &lt; ${frac(1,k)} for all n &ge; N.`, `للمتتابعة ${M(`a<sub>n</sub> = ${frac(c,'n')}`)}، أوجد أصغر ${M('N')} بحيث ${M(`a<sub>n</sub> &lt; ${frac(1,k)}`)} لكل ${M('n &ge; N')}.`), a:`<b>N = ${c*k+1}</b>`,
       s:steps(L('Solve the inequality for n:', 'نحل المتباينة بالنسبة لـ n:')+' '+M(`${frac(c,'n')} &lt; ${frac(1,k)} &hArr; n &gt; ${c}&times;${k} = ${c*k}`),
               L(`The smallest whole number greater than ${c*k} is ${c*k+1}; since aₙ decreases, all later terms work too.`, `أصغر عدد صحيح أكبر من ${M(c*k)} هو ${M(c*k+1)}، وبما أن المتتابعة متناقصة فكل الحدود بعده تحقق الشرط.`),
               M(`N = ${c*k+1}`))};
@@ -1485,19 +1488,19 @@ export const G = {
     const miss=pick(['V','E','F']), vals={V,E,F};
     const known=['V','E','F'].filter(x=>x!==miss).map(x=>`${x} = ${vals[x]}`).join(', ');
     const solve={V:`V = 2 + E &minus; F = 2 + ${E} &minus; ${F} = ${V}`, E:`E = V + F &minus; 2 = ${V} + ${F} &minus; 2 = ${E}`, F:`F = 2 + E &minus; V = 2 + ${E} &minus; ${V} = ${F}`}[miss];
-    return {q:`A convex polyhedron (${n}-gonal ${solid}) has ${known}. Find ${miss}.`, a:`<b>${miss} = ${vals[miss]}</b>`,
+    return {q:L(`A convex polyhedron (${n}-gonal ${solid}) has ${known}. Find ${miss}.`, `متعدد سطوح محدب (${{prism:'منشور',pyramid:'هرم',bipyramid:'هرم مزدوج'}[solid]} قاعدته مضلع ذو ${n} أضلاع) فيه ${M(known)}. أوجد ${M(miss)}.`), a:`<b>${miss} = ${vals[miss]}</b>`,
       s:steps(L("Euler's formula for convex polyhedra:", 'صيغة أويلر للمجسمات المحدبة:')+' '+M('V &minus; E + F = 2'), M(solve))};
   },
   surfaceGenus(d){
     const g=R(0,d===1?3:10), rule=L('For a closed orientable surface of genus g (g holes):', 'للسطح المغلق القابل للتوجيه من الجنس g (عدد الثقوب):')+' '+M('&chi; = 2 &minus; 2g');
-    if(Math.random()<0.5) return {q:`Find the Euler characteristic of a closed orientable surface of genus ${g}.`, a:`<b>&chi; = ${sgn(2-2*g)}</b>`,
+    if(Math.random()<0.5) return {q:L(`Find the Euler characteristic of a closed orientable surface of genus ${g}.`, `أوجد مميز أويلر لسطح مغلق قابل للتوجيه من الجنس ${g}.`), a:`<b>&chi; = ${sgn(2-2*g)}</b>`,
       s:steps(rule, M(`&chi; = 2 &minus; 2(${g}) = ${sgn(2-2*g)}`))};
-    return {q:`A closed orientable surface has Euler characteristic ${sgn(2-2*g)}. Find its genus.`, a:`<b>g = ${g}</b>`,
+    return {q:L(`A closed orientable surface has Euler characteristic ${sgn(2-2*g)}. Find its genus.`, `سطح مغلق قابل للتوجيه مميز أويلر له ${M(sgn(2-2*g))}. أوجد جنسه.`), a:`<b>g = ${g}</b>`,
       s:steps(rule, M(`${sgn(2-2*g)} = 2 &minus; 2g &rArr; 2g = ${2*g} &rArr; g = ${g}`))};
   },
   topologyOpenSets(d){
     const n=R(1,d===1?4:8), t=pick(['discrete','indiscrete']);
-    return {q:`How many open sets does the ${t} topology on a set with ${n} point${n>1?'s':''} have?`, a:`<b>${t==='discrete'?2**n:2}</b>`,
+    return {q:L(`How many open sets does the ${t} topology on a set with ${n} point${n>1?'s':''} have?`, `كم عدد المجموعات المفتوحة في التبولوجيا ${t==='discrete'?'المتقطعة':'غير المتقطعة'} على مجموعة بها ${n} ${n>1?'عناصر':'عنصر'}؟`), a:`<b>${t==='discrete'?2**n:2}</b>`,
       s:t==='discrete' ? steps(L('In the discrete topology every subset is open, so count all subsets:', 'في التبولوجيا المتقطعة كل مجموعة جزئية مفتوحة، فنعدّ كل المجموعات الجزئية:'), M(`2${sup(n)} = ${2**n}`))
                        : steps(L('The indiscrete topology has only the two required open sets: ∅ and X.', 'التبولوجيا غير المتقطعة فيها المجموعتان المفتوحتان الإلزاميتان فقط: ∅ و X.'), M('{&empty;, X} &rArr; 2'))};
   },
@@ -1505,28 +1508,28 @@ export const G = {
   /* ---- Differential Geometry (MATH 475) ---- */
   circleCurvature(d){
     const r=R(2,d===1?5:20);
-    return {q:`Find the curvature of the circle r(t) = (${r} cos t, ${r} sin t).`, a:`<b>&kappa; = ${fracStr(1,r)}</b>`,
+    return {q:L(`Find the curvature of the circle r(t) = (${r} cos t, ${r} sin t).`, `أوجد انحناء الدائرة ${M(`r(t) = (${r} cos t, ${r} sin t)`)}.`), a:`<b>&kappa; = ${fracStr(1,r)}</b>`,
       s:steps(M(`r&prime;(t) = (&minus;${r} sin t, ${r} cos t), |r&prime;| = ${r}`), M(`r&Prime;(t) = (&minus;${r} cos t, &minus;${r} sin t)`),
               L('For a plane curve', 'لمنحنى مستوٍ')+' '+M(`&kappa; = ${frac('|x&prime;y&Prime; &minus; y&prime;x&Prime;|','|r&prime;|'+sup(3))} = ${frac(r*r,r**3)} = ${fracStr(1,r)}`),
               L('(A circle of radius r always has curvature 1/r.)', '(الدائرة التي نصف قطرها r انحناؤها دائماً 1/r.)'))};
   },
   parabolaCurvature(d){
     const a=nz(-6,6), b=d===1?0:R(-6,6), c=R(-9,9);
-    return {q:`Find the curvature of y = ${lead(a,'x'+sup(2))}${term(b,'x')}${term(c,'')} at its vertex.`, a:`<b>&kappa; = ${2*Math.abs(a)}</b>`,
+    return {q:L(`Find the curvature of y = ${lead(a,'x'+sup(2))}${term(b,'x')}${term(c,'')} at its vertex.`, `أوجد انحناء المنحنى ${M(`y = ${lead(a,'x'+sup(2))}${term(b,'x')}${term(c,'')}`)} عند رأسه.`), a:`<b>&kappa; = ${2*Math.abs(a)}</b>`,
       s:steps(L('Curvature of y = f(x):', 'انحناء المنحنى y = f(x):')+' '+M(`&kappa; = ${frac("|y&Prime;|","(1 + y&prime;"+sup(2)+")"+sup('3/2'))}`),
               M(`y&prime; = ${lead(2*a,'x')}${term(b,'')}, y&Prime; = ${sgn(2*a)}`),
               L('At the vertex y′ = 0, so', 'عند الرأس y′ = 0، إذن')+' '+M(`&kappa; = |${sgn(2*a)}| = ${2*Math.abs(a)}`))};
   },
   helixArcLength(d){
     const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17]]), n=R(1,d===1?1:3), [r,c,h]=Math.random()<0.5?t:[t[1],t[0],t[2]];
-    return {q:`Find the arc length of the helix r(t) = (${r} cos t, ${r} sin t, ${c}t) for 0 &le; t &le; ${2*n}&pi;.`, a:`<b>${2*n*h}&pi;</b>`,
+    return {q:L(`Find the arc length of the helix r(t) = (${r} cos t, ${r} sin t, ${c}t) for 0 &le; t &le; ${2*n}&pi;.`, `أوجد طول قوس اللولب ${M(`r(t) = (${r} cos t, ${r} sin t, ${c}t)`)} حيث ${M(`0 &le; t &le; ${2*n}&pi;`)}.`), a:`<b>${2*n*h}&pi;</b>`,
       s:steps(M(`r&prime;(t) = (&minus;${r} sin t, ${r} cos t, ${c})`),
               M(`|r&prime;(t)| = ${sq(`${r*r}(sin${sup(2)}t + cos${sup(2)}t) + ${c*c}`)} = ${sq(r*r+c*c)} = ${h}`),
               L('The speed is constant, so length = speed × time:', 'السرعة ثابتة، لذا الطول = السرعة × الزمن:')+' '+M(`L = &int;<sub>0</sub><sup>${2*n}&pi;</sup> ${h} dt = ${h} &times; ${2*n}&pi; = ${2*n*h}&pi;`))};
   },
   helixCurvature(d){
     const r=R(1,d===1?4:9), c=R(1,d===1?4:9);
-    return {q:`Find the curvature of the helix r(t) = (${r} cos t, ${r} sin t, ${c}t).`, a:`<b>&kappa; = ${fracStr(r,r*r+c*c)}</b>`,
+    return {q:L(`Find the curvature of the helix r(t) = (${r} cos t, ${r} sin t, ${c}t).`, `أوجد انحناء اللولب ${M(`r(t) = (${r} cos t, ${r} sin t, ${c}t)`)}.`), a:`<b>&kappa; = ${fracStr(r,r*r+c*c)}</b>`,
       s:steps(L('For the helix (a cos t, a sin t, bt):', 'للحلزون (a cos t, a sin t, bt):')+' '+M(`&kappa; = ${frac('|r&prime; &times; r&Prime;|','|r&prime;|'+sup(3))} = ${frac('a','a'+sup(2)+' + b'+sup(2))}`),
               L(`Here a = ${r}, b = ${c}:`, `هنا ${M(`a = ${r}, b = ${c}`)}:`)+' '+M(`&kappa; = ${frac(r, `${r*r} + ${c*c}`)} = ${fracStr(r,r*r+c*c)}`))};
   },
@@ -1534,7 +1537,7 @@ export const G = {
   /* ---- Group Theory (MATH 344) ---- */
   groupGenerators(d){
     const n=R(2,d===1?20:d===2?60:200), ps=[]; let m=n; for(let p=2;p*p<=m;p++) if(m%p===0){ ps.push(p); while(m%p===0) m/=p; } if(m>1) ps.push(m);
-    return {q:`How many generators does the cyclic group &#8484;<sub>${n}</sub> have?`, a:`<b>${totient(n)}</b>`,
+    return {q:L(`How many generators does the cyclic group &#8484;<sub>${n}</sub> have?`, `كم عدد مولدات الزمرة الدائرية ${M(`&#8484;<sub>${n}</sub>`)}؟`), a:`<b>${totient(n)}</b>`,
       s:steps(L(`k generates ℤₙ exactly when gcd(k, n) = 1, so the number of generators is Euler's φ(n).`, `العنصر k يولّد ${M('&#8484;<sub>n</sub>')} عندما ${M('gcd(k, n) = 1')}، لذا عدد المولّدات هو ${M('&phi;(n)')}.`),
               L('Prime factors of', 'العوامل الأولية للعدد')+' '+M(`${n}: ${ps.join(', ')}`),
               M(`&phi;(${n}) = ${n}${ps.map(p=>`(1 &minus; ${frac(1,p)})`).join('')} = ${totient(n)}`))};
@@ -1546,7 +1549,7 @@ export const G = {
       for(let i=1;i<=n;i++){ if(seen.has(i)) continue; const c=[]; let j=i; while(!seen.has(j)){ seen.add(j); c.push(j); j=p[j-1]; } if(c.length>1) cycles.push(c); }
     }while(!cycles.length);
     const o=cycles.reduce((o,c)=>lcm(o,c.length),1);
-    return {q:`Find the order of the permutation ${cycles.map(c=>`(${c.join(' ')})`).join('')} in S<sub>${n}</sub>.`,
+    return {q:L(`Find the order of the permutation ${cycles.map(c=>`(${c.join(' ')})`).join('')} in S<sub>${n}</sub>.`, `أوجد رتبة التبديل ${M(cycles.map(c=>`(${c.join(' ')})`).join(''))} في ${M(`S<sub>${n}</sub>`)}.`),
             a:`<b>${o}</b>`,
       s:steps(L('For disjoint cycles, the order is the LCM of the cycle lengths.', 'رتبة حاصل ضرب دورات منفصلة = المضاعف المشترك الأصغر لأطوال الدورات.'),
               L('Cycle lengths:', 'أطوال الدورات:')+' '+M(cycles.map(c=>c.length).join(', ')),
@@ -1559,11 +1562,11 @@ export const G = {
     const s = t==='S' ? steps(L(`Sₙ contains all permutations of n objects: n! of them.`, `الزمرة ${M('S<sub>n</sub>')} تضم كل تباديل n عنصراً وعددها ${M('n!')}.`), M(`|S<sub>${n}</sub>| = ${n}! = ${[...Array(n)].map((_,i)=>n-i).join(' &times; ')} = ${ans}`))
             : t==='A' ? steps(L('Aₙ contains the even permutations: exactly half of Sₙ.', 'الزمرة المتناوبة تضم التباديل الزوجية وهي نصف تباديل Sₙ.'), M(`|A<sub>${n}</sub>| = ${frac(`${n}!`,2)} = ${frac(factorial(n),2)} = ${ans}`))
             : steps(L(`D${n} has ${n} rotations and ${n} reflections.`, `الزمرة ${M(`D<sub>${n}</sub>`)} فيها ${M(n)} دورانات و ${M(n)} انعكاسات.`), M(`|D<sub>${n}</sub>| = 2 &times; ${n} = ${ans}`));
-    return {q:`Find the order of ${name}.`, a:`<b>${ans}</b>`, s};
+    return {q:L(`Find the order of ${name}.`, `أوجد رتبة ${t==='D'?`الزمرة الديهيدرالية ${M(`D<sub>${n}</sub>`)} (تماثلات مضلع منتظم ذي ${n} ضلعًا)`:`الزمرة ${M(`${t}<sub>${n}</sub>`)}`}.`), a:`<b>${ans}</b>`, s};
   },
   lagrangeIndex(d){
     const k=R(2,d===1?6:12), m=R(2,d===1?6:12);
-    return {q:`A group G of order ${k*m} has a subgroup H of order ${k}. Find [G : H].`, a:`<b>${m}</b>`,
+    return {q:L(`A group G of order ${k*m} has a subgroup H of order ${k}. Find [G : H].`, `زمرة ${M('G')} رتبتها ${k*m} لها زمرة جزئية ${M('H')} رتبتها ${k}. أوجد الدليل ${M('[G : H]')}.`), a:`<b>${m}</b>`,
       s:steps(L('Lagrange: the index (number of cosets) is |G| ÷ |H|.', 'مبرهنة لاغرانج: الدليل (عدد المجموعات المشاركة) = |G| ÷ |H|.'),
               M(`[G : H] = ${frac(k*m,k)} = ${m}`))};
   },
@@ -1574,26 +1577,26 @@ export const G = {
     let inv=1; while(a*inv%m!==1) inv++;
     // extended Euclid rows: r, q
     const rows=[]; let r0=m, r1=a; while(r1){ rows.push(M(`${r0} = ${Math.floor(r0/r1)} &times; ${r1} + ${r0%r1}`)); [r0,r1]=[r1,r0%r1]; }
-    return {q:`Find ${a}${sup('&minus;1')} mod ${m}.`, a:`<b>${inv}</b>`,
+    return {q:L(`Find ${a}${sup('&minus;1')} mod ${m}.`, `أوجد ${M(`${a}${sup('&minus;1')} mod ${m}`)}.`), a:`<b>${inv}</b>`,
       s:steps(L(`We need x with ${a}x ≡ 1 (mod ${m}). Euclid's algorithm confirms gcd = 1:`, `نبحث عن x بحيث ${M(`${a}x &equiv; 1 (mod ${m})`)}. خوارزمية إقليدس تؤكد أن القاسم المشترك = 1:`), ...rows,
               L('Working back (or testing) gives', 'بالرجوع للخلف (أو بالتجربة) نجد')+' '+M(`x = ${inv}`)+': '+M(`${a} &times; ${inv} = ${a*inv} = ${Math.floor(a*inv/m)} &times; ${m} + 1`))};
   },
   zeroDivisors(d){
     const n=R(4,d===1?12:d===2?30:60);
-    return {q:`How many nonzero zero divisors does &#8484;<sub>${n}</sub> have?`, a:`<b>${n-1-totient(n)}</b>`,
+    return {q:L(`How many nonzero zero divisors does &#8484;<sub>${n}</sub> have?`, `كم عدد قواسم الصفر غير الصفرية في ${M(`&#8484;<sub>${n}</sub>`)}؟`), a:`<b>${n-1-totient(n)}</b>`,
       s:steps(L('In ℤₙ every nonzero element is either a unit (gcd with n = 1) or a zero divisor.', 'في ℤₙ كل عنصر غير صفري إما وحدة (قاسمه المشترك مع n = 1) أو قاسم للصفر.'),
               L('Number of units:', 'عدد الوحدات:')+' '+M(`&phi;(${n}) = ${totient(n)}`),
               M(`(${n} &minus; 1) &minus; ${totient(n)} = ${n-1-totient(n)}`))};
   },
   polyEvalModP(d){
     const p=pick(d===1?[5,7]:d===2?[7,11,13]:[13,17,19,23]), a=R(0,p-1), b=R(0,p-1), c=R(0,p-1), v=c*c+a*c+b;
-    return {q:`In &#8484;<sub>${p}</sub>, evaluate f(${c}) for f(x) = x${sup(2)}${term(a,'x')}${term(b,'')}.`, a:`<b>${v%p}</b>`,
+    return {q:L(`In &#8484;<sub>${p}</sub>, evaluate f(${c}) for f(x) = x${sup(2)}${term(a,'x')}${term(b,'')}.`, `في ${M(`&#8484;<sub>${p}</sub>`)} احسب ${M(`f(${c})`)} حيث ${M(`f(x) = x${sup(2)}${term(a,'x')}${term(b,'')}`)}.`), a:`<b>${v%p}</b>`,
       s:steps(L('Substitute, then reduce mod', 'نعوّض ثم نأخذ الباقي على')+' '+M(p)+':', M(`f(${c}) = ${c}${sup(2)} + ${a}(${c}) + ${b} = ${c*c} + ${a*c} + ${b} = ${v}`),
               M(`${v} = ${p} &times; ${Math.floor(v/p)} + ${v%p} &rArr; ${v%p}`))};
   },
   fieldCheck(d){
     const n=R(2,d===1?15:d===2?40:100), pr=isPrimeN(n); let f=0; if(!pr) for(let k=2;k<n;k++) if(n%k===0){ f=k; break; }
-    return {q:`Is &#8484;<sub>${n}</sub> a field?`, a:`<b>${pr?'Yes':'No'}</b>`,
+    return {q:L(`Is &#8484;<sub>${n}</sub> a field?`, `هل ${M(`&#8484;<sub>${n}</sub>`)} حقل؟`), a:`<b>${pr?Li('Yes','نعم'):Li('No','لا')}</b>`,
       s:steps(L('ℤₙ is a field exactly when n is prime (then every nonzero element has an inverse).', 'ℤₙ حقل إذا وفقط إذا كان n أولياً (فيكون لكل عنصر غير صفري معكوس).'),
               pr ? L(`${n} is prime, so ℤ${n} is a field.`, `${M(n)} عدد أولي، إذن ${M(`&#8484;<sub>${n}</sub>`)} حقل.`)
                  : L(`${n} = ${f} × ${n/f} is not prime: ${f} · ${n/f} ≡ 0, so ${f} has no inverse.`, `${M(`${n} = ${f} &times; ${n/f}`)} ليس أولياً: ${M(`${f}&middot;${n/f} &equiv; 0`)}، فلا معكوس للعدد ${M(f)}.`))};
@@ -1623,7 +1626,7 @@ export const G = {
     const arg=['0','&pi;/4','&pi;/2','3&pi;/4','&pi;','&minus;3&pi;/4','&minus;&pi;/2','&minus;&pi;/4'][dir];
     const where=[['on the positive real axis','على الجزء الموجب من المحور الحقيقي'],['in quadrant I with |a| = |b|','في الربع الأول و |a| = |b|'],['on the positive imaginary axis','على الجزء الموجب من المحور التخيلي'],['in quadrant II with |a| = |b|','في الربع الثاني و |a| = |b|'],
       ['on the negative real axis','على الجزء السالب من المحور الحقيقي'],['in quadrant III with |a| = |b|','في الربع الثالث و |a| = |b|'],['on the negative imaginary axis','على الجزء السالب من المحور التخيلي'],['in quadrant IV with |a| = |b|','في الربع الرابع و |a| = |b|']][dir];
-    return {q:`Find the principal argument of z = ${z}.`, a:`<b>Arg z = ${arg}</b>`,
+    return {q:L(`Find the principal argument of z = ${z}.`, `أوجد السعة الرئيسية للعدد ${M('z = '+z)}.`), a:`<b>Arg z = ${arg}</b>`,
       s:steps(L('The principal argument is the angle of z from the positive real axis, in (−π, π].', 'السعة الرئيسية هي زاوية z من الجزء الموجب للمحور الحقيقي، في الفترة (−π, π].'),
               L(`z = (${re}, ${im}) lies ${where[0]}.`, `النقطة ${M(`(${re}, ${im})`)} تقع ${where[1]}.`),
               M(`Arg z = ${arg}`))};
@@ -1633,7 +1636,7 @@ export const G = {
   divisorCount(d){
     const n=R(2,d===1?30:d===2?100:1000); const ds=[]; for(let k=1;k<=n;k++) if(n%k===0) ds.push(k);
     const f=[]; let m=n; for(let p=2;m>1;p++){ let e=0; while(m%p===0){ m/=p; e++; } if(e) f.push([p,e]); }
-    return {q:`&tau;(${n}) = (number of positive divisors)`, a:`<b>${ds.length}</b>`,
+    return {q:L(`&tau;(${n}) = (number of positive divisors)`, `${M(`&tau;(${n}) =`)} (عدد القواسم الموجبة)`), a:`<b>${ds.length}</b>`,
       s:steps(L('Prime factorisation:', 'التحليل إلى عوامل أولية:')+' '+M(`${n} = ${f.map(([p,e])=>e>1?p+sup(e):p).join(' &middot; ')}`),
               L('Number of divisors = product of (exponent + 1):', 'عدد القواسم = حاصل ضرب (الأس + 1):')+' '+M(`&tau;(${n}) = ${f.map(([,e])=>`(${e} + 1)`).join('')} = ${ds.length}`),
               L('The divisors:', 'القواسم:')+' '+M(ds.join(', ')))};
@@ -1641,13 +1644,13 @@ export const G = {
   divisorSum(d){
     const n=R(2,d===1?30:d===2?100:500); const ds=[]; for(let k=1;k<=n;k++) if(n%k===0) ds.push(k);
     const s=ds.reduce((a,b)=>a+b,0);
-    return {q:`&sigma;(${n}) = (sum of positive divisors)`, a:`<b>${s}</b>`,
+    return {q:L(`&sigma;(${n}) = (sum of positive divisors)`, `${M(`&sigma;(${n}) =`)} (مجموع القواسم الموجبة)`), a:`<b>${s}</b>`,
       s:steps(L(`List the divisors of ${n}:`, `نكتب قواسم ${M(n)}:`)+' '+M(ds.join(', ')), M(`&sigma;(${n}) = ${ds.join(' + ')} = ${s}`))};
   },
   linearCongruence(d){
     const m=R(5,d===1?12:d===2?30:60); let a=R(2,m-1); while(gcd(a,m)!==1) a=R(2,m-1);
     const x=R(0,m-1), b=a*x%m; let inv=1; while(a*inv%m!==1) inv++;
-    return {q:`Solve ${a}x &equiv; ${b} (mod ${m}).`, a:`<b>x &equiv; ${x} (mod ${m})</b>`,
+    return {q:L(`Solve ${a}x &equiv; ${b} (mod ${m}).`, `حل التطابق ${M(`${a}x &equiv; ${b} (mod ${m})`)}.`), a:`<b>x &equiv; ${x} (mod ${m})</b>`,
       s:steps(L(`gcd(${a}, ${m}) = 1, so ${a} has an inverse mod ${m} and there is exactly one solution.`, `${M(`gcd(${a}, ${m}) = 1`)}، إذن للعدد ${M(a)} معكوس بمقياس ${M(m)} ويوجد حل وحيد.`),
               L('Inverse:', 'المعكوس:')+' '+M(`${a} &times; ${inv} = ${a*inv} &equiv; 1 (mod ${m})`),
               L('Multiply both sides by it:', 'نضرب الطرفين فيه:')+' '+M(`x &equiv; ${b} &times; ${inv} = ${b*inv} &equiv; ${x} (mod ${m})`))};
@@ -1666,7 +1669,7 @@ export const G = {
     const ps=shuffled(d===1?[2,3,5]:[2,3,5,7,11,13]).slice(0,d===1?2:R(2,4)).sort((a,b)=>a-b);
     const ex=ps.map(()=>R(1,d===3?3:2)); let n=1; ps.forEach((p,i)=>n*=p**ex[i]);
     const chain=[]; let m=n; for(const p of ps) while(m%p===0){ chain.push(M(`${m} &divide; ${p} = ${m/p}`)); m/=p; }
-    return {q:`Find the prime factorization of ${n}.`, a:`<b>${ps.map((p,i)=>ex[i]>1?p+sup(ex[i]):''+p).join(' &middot; ')}</b>`,
+    return {q:L(`Find the prime factorization of ${n}.`, `حلّل العدد ${n} إلى عوامله الأولية.`), a:`<b>${ps.map((p,i)=>ex[i]>1?p+sup(ex[i]):''+p).join(' &middot; ')}</b>`,
       s:steps(L('Divide repeatedly by the smallest prime that divides the number:', 'نقسم بالتكرار على أصغر عدد أولي يقسم العدد:'), ...chain,
               M(`${n} = ${ps.map((p,i)=>ex[i]>1?p+sup(ex[i]):''+p).join(' &middot; ')}`))};
   },
@@ -1674,14 +1677,14 @@ export const G = {
   /* ---- Graph Theory (MATH 468) ---- */
   treeEdges(d){
     const n=R(4,d===1?15:100);
-    if(d===3 && Math.random()<0.5){ const k=R(2,6); return {q:`A forest has ${n} vertices and ${k} components (trees). How many edges does it have?`, a:`<b>${n-k}</b>`,
+    if(d===3 && Math.random()<0.5){ const k=R(2,6); return {q:L(`A forest has ${n} vertices and ${k} components (trees). How many edges does it have?`, `غابة بها ${n} رأسًا و ${k} مركّبات (أشجار). كم عدد حوافها؟`), a:`<b>${n-k}</b>`,
       s:steps(L('Each tree with v vertices has v − 1 edges. Adding over the k trees:', 'كل شجرة فيها v رأساً لها v − 1 ضلعاً. بالجمع على الأشجار k:')+' '+M('E = n &minus; k'), M(`E = ${n} &minus; ${k} = ${n-k}`))}; }
-    return {q:`How many edges does a tree with ${n} vertices have?`, a:`<b>${n-1}</b>`,
+    return {q:L(`How many edges does a tree with ${n} vertices have?`, `كم عدد حواف شجرة بها ${n} رأسًا؟`), a:`<b>${n-1}</b>`,
       s:steps(L('A tree is connected with no cycles; it always has one edge fewer than its vertices.', 'الشجرة بيان متصل بلا دورات، وعدد أضلاعها دائماً أقل من عدد رؤوسها بواحد.'), M(`E = ${n} &minus; 1 = ${n-1}`))};
   },
   bipartiteEdges(d){
     const m=R(2,d===1?5:12), n=R(2,d===1?5:12);
-    return {q:`How many edges does the complete bipartite graph K<sub>${m},${n}</sub> have?`, a:`<b>${m*n}</b>`,
+    return {q:L(`How many edges does the complete bipartite graph K<sub>${m},${n}</sub> have?`, `كم عدد حواف الرسم الثنائي الكامل ${M(`K<sub>${m},${n}</sub>`)}؟`), a:`<b>${m*n}</b>`,
       s:steps(L(`Each of the ${m} vertices on one side is joined to all ${n} vertices on the other side.`, `كل رأس من الرؤوس الـ ${M(m)} في جهة متصل بكل الرؤوس الـ ${M(n)} في الجهة الأخرى.`), M(`${m} &times; ${n} = ${m*n}`))};
   },
   eulerCircuit(d){
@@ -1694,23 +1697,23 @@ export const G = {
     }
     const odd=deg.filter(x=>x%2).length;
     deg.sort((a,b)=>b-a);
-    return {q:`A connected graph has vertex degrees ${deg.join(', ')}. Does it have an Euler circuit?`,
-            a:`<b>${odd?`No (${odd} odd-degree vertices)`:'Yes'}</b>`,
+    return {q:L(`A connected graph has vertex degrees ${deg.join(', ')}. Does it have an Euler circuit?`, `رسم متصل درجات رؤوسه ${M(deg.join(', '))}. هل توجد له دارة أويلر؟`),
+            a:`<b>${odd?Li(`No (${odd} odd-degree vertices)`,`لا (${odd} رؤوس فردية الدرجة)`):Li('Yes','نعم')}</b>`,
       s:steps(L("Euler's theorem: a connected graph has an Euler circuit exactly when every vertex has even degree.", 'مبرهنة أويلر: البيان المتصل له دارة أويلرية إذا وفقط إذا كانت درجات جميع الرؤوس زوجية.'),
               odd ? L(`Odd degrees: ${deg.filter(x=>x%2).join(', ')} (${odd} vertices), so there is no Euler circuit.`, `الدرجات الفردية: ${M(deg.filter(x=>x%2).join(', '))} (${M(odd)} رؤوس)، إذن لا توجد دارة أويلرية.`)
                   : L('All degrees are even, so an Euler circuit exists.', 'كل الدرجات زوجية، إذن توجد دارة أويلرية.'))};
   },
   chromaticNumber(d){
     const t=pick(['C','K','KK','W']), n=R(t==='W'?3:t==='C'?3:2,d===1?6:12);
-    if(t==='C') return {q:`Find the chromatic number of the cycle C<sub>${n}</sub>.`, a:`<b>${n%2?3:2}</b>`,
+    if(t==='C') return {q:L(`Find the chromatic number of the cycle C<sub>${n}</sub>.`, `أوجد العدد اللوني للدورة ${M(`C<sub>${n}</sub>`)}.`), a:`<b>${n%2?3:2}</b>`,
       s:steps(L('Colour around the cycle alternating two colours.', 'نلوّن حول الدورة بلونين بالتناوب.'),
               n%2 ? L(`${n} is odd, so the last vertex meets the first in the same colour: a third colour is needed → 3.`, `${M(n)} فردي، فيلتقي الرأس الأخير بالأول بنفس اللون، فنحتاج لوناً ثالثاً ← 3.`)
                   : L(`${n} is even, so two colours work → 2.`, `${M(n)} زوجي، فيكفي لونان ← 2.`))};
-    if(t==='K') return {q:`Find the chromatic number of the complete graph K<sub>${n}</sub>.`, a:`<b>${n}</b>`,
+    if(t==='K') return {q:L(`Find the chromatic number of the complete graph K<sub>${n}</sub>.`, `أوجد العدد اللوني للرسم الكامل ${M(`K<sub>${n}</sub>`)}.`), a:`<b>${n}</b>`,
       s:steps(L('Every two vertices are adjacent, so all vertices need different colours.', 'كل رأسين متجاوران، لذا يحتاج كل رأس لوناً مختلفاً.'), M(`&chi;(K<sub>${n}</sub>) = ${n}`))};
-    if(t==='KK'){ const m=R(1,8); return {q:`Find the chromatic number of K<sub>${m},${n}</sub>.`, a:`<b>2</b>`,
+    if(t==='KK'){ const m=R(1,8); return {q:L(`Find the chromatic number of K<sub>${m},${n}</sub>.`, `أوجد العدد اللوني للرسم ${M(`K<sub>${m},${n}</sub>`)}.`), a:`<b>2</b>`,
       s:steps(L('A bipartite graph: give one side colour 1 and the other side colour 2. It has edges, so one colour is not enough.', 'بيان ثنائي التجزئة: نلوّن جهة باللون 1 والأخرى باللون 2. وفيه أضلاع فلا يكفي لون واحد.'), M('&chi; = 2'))}; }
-    return {q:`Find the chromatic number of the wheel W<sub>${n}</sub> (a cycle C<sub>${n}</sub> plus a hub).`, a:`<b>${n%2?4:3}</b>`,
+    return {q:L(`Find the chromatic number of the wheel W<sub>${n}</sub> (a cycle C<sub>${n}</sub> plus a hub).`, `أوجد العدد اللوني للعجلة ${M(`W<sub>${n}</sub>`)} (الدورة ${M(`C<sub>${n}</sub>`)} مع رأس مركزي).`), a:`<b>${n%2?4:3}</b>`,
       s:steps(L('The hub is adjacent to every rim vertex, so it needs its own colour.', 'المركز متصل بكل رؤوس الإطار، لذا يحتاج لوناً خاصاً.'),
               L(`The rim is C${n}: it needs ${n%2?3:2} colours (${n} is ${n%2?'odd':'even'}).`, `الإطار هو ${M(`C<sub>${n}</sub>`)} ويحتاج ${M(n%2?3:2)} ألوان (${M(n)} ${n%2?'فردي':'زوجي'}).`),
               M(`&chi; = ${n%2?3:2} + 1 = ${n%2?4:3}`))};
@@ -1736,13 +1739,13 @@ export const G = {
     const [num,den] = n===2 ? [3*x*x-1,2] : n===3 ? [5*x**3-3*x,2] : [35*x**4-30*x*x+3,8];
     const f = n===2 ? `${frac(1,2)}(3x${sup(2)} &minus; 1)` : n===3 ? `${frac(1,2)}(5x${sup(3)} &minus; 3x)` : `${frac(1,8)}(35x${sup(4)} &minus; 30x${sup(2)} + 3)`;
     const sub = n===2 ? `${frac(1,2)}(3(${sgn(x)})${sup(2)} &minus; 1)` : n===3 ? `${frac(1,2)}(5(${sgn(x)})${sup(3)} &minus; 3(${sgn(x)}))` : `${frac(1,8)}(35(${sgn(x)})${sup(4)} &minus; 30(${sgn(x)})${sup(2)} + 3)`;
-    return {q:`P<sub>${n}</sub>(${x}) = (Legendre polynomial)`, a:`<b>${fracStr(num,den)}</b>`,
+    return {q:L(`P<sub>${n}</sub>(${x}) = (Legendre polynomial)`, `${M(`P<sub>${n}</sub>(${x}) =`)} (كثيرة حدود ليجندر)`), a:`<b>${fracStr(num,den)}</b>`,
       s:steps(L('Legendre polynomial:', 'كثيرة حدود لوجندر:')+' '+M(`P<sub>${n}</sub>(x) = ${f}`), M(`P<sub>${n}</sub>(${x}) = ${sub} = ${frac(sgn(num),den)}`), M(`= ${fracStr(num,den)}`))};
   },
   chebyshevT(d){
     const n=R(2,d===1?3:5), x=R(-3,3); let a=1, b=x; const st=[M(`T<sub>0</sub> = 1, T<sub>1</sub> = ${sgn(x)}`)];
     for(let k=1;k<n;k++){ const c=2*x*b-a; st.push(M(`T<sub>${k+1}</sub> = 2(${sgn(x)})(${sgn(b)}) &minus; (${sgn(a)}) = ${sgn(c)}`)); [a,b]=[b,c]; }
-    return {q:`T<sub>${n}</sub>(${x}) = (Chebyshev polynomial)`, a:`<b>${sgn(b)}</b>`,
+    return {q:L(`T<sub>${n}</sub>(${x}) = (Chebyshev polynomial)`, `${M(`T<sub>${n}</sub>(${x}) =`)} (كثيرة حدود تشيبيشيف)`), a:`<b>${sgn(b)}</b>`,
       s:steps(L('Use the recurrence', 'نستخدم العلاقة التكرارية')+' '+M('T<sub>k+1</sub>(x) = 2x T<sub>k</sub>(x) &minus; T<sub>k&minus;1</sub>(x)')+' '+L(`with x = ${x}:`, `مع ${M(`x = ${x}`)}:`), ...st)};
   },
 
@@ -1755,19 +1758,19 @@ export const G = {
     const s = t==='1' ? steps(L('1-norm = sum of the absolute values:', 'النظيم 1 = مجموع القيم المطلقة:'), M(`${v.map(x=>Math.abs(x)).join(' + ')} = ${ans}`))
             : t==='&infin;' ? steps(L('∞-norm = the largest absolute value:', 'النظيم ∞ = أكبر قيمة مطلقة:'), M(`max(${v.map(x=>Math.abs(x)).join(', ')}) = ${ans}`))
             : steps(L('2-norm = square root of the sum of squares:', 'النظيم 2 = الجذر التربيعي لمجموع المربعات:'), M(`${sq(v.map(x=>x*x).join(' + '))} = ${sq(ans*ans)} = ${ans}`));
-    return {q:`v = (${v.map(sgn).join(', ')}). Find &Vert;v&Vert;<sub>${t}</sub>.`, a:`<b>${ans}</b>`, s};
+    return {q:L(`v = (${v.map(sgn).join(', ')}). Find &Vert;v&Vert;<sub>${t}</sub>.`, `${M(`v = (${v.map(sgn).join(', ')})`)}. أوجد ${M(`&Vert;v&Vert;<sub>${t}</sub>`)}.`), a:`<b>${ans}</b>`, s};
   },
   operatorNormDiag(d){
     const n=d===1?2:R(3,4), D=new Array(n*n).fill(0); for(let i=0;i<n;i++) D[i*n+i]=nz(-12,12);
     const dg=[...Array(n)].map((_,i)=>D[i*n+i]), mx=Math.max(...dg.map(Math.abs));
-    return {q:`Find the operator norm (induced 2-norm) of ${mat(D,n)}.`, a:`<b>${mx}</b>`,
+    return {q:L('Find the operator norm (induced 2-norm) of','أوجد معيار المؤثر (المعيار-2 المستحث) للمصفوفة')+' '+mat(D,n), a:`<b>${mx}</b>`,
       s:steps(L('A diagonal matrix stretches each coordinate axis by its diagonal entry, so the largest stretch is the largest |entry| (its largest singular value).', 'المصفوفة القطرية تمدّ كل محور بعنصرها القطري، لذا أكبر تمديد هو أكبر قيمة مطلقة لعناصر القطر (أكبر قيمة شاذة).'),
               M(`&Vert;D&Vert;<sub>2</sub> = max(${dg.map(x=>`|${sgn(x)}|`).join(', ')}) = ${mx}`))};
   },
   l2InnerProduct(d){
     const a=nz(-6,6), b=nz(-6,6), m=R(0,d===1?2:5), n=R(0,d===1?2:5);
     const mono=(c,p)=>p===0?sgn(c):lead(c,'x'+(p===1?'':sup(p)));
-    return {q:`In L${sup(2)}[0, 1], compute &lang;${mono(a,m)}, ${mono(b,n)}&rang;.`, a:`<b>${fracStr(a*b,m+n+1)}</b>`,
+    return {q:L(`In L${sup(2)}[0, 1], compute &lang;${mono(a,m)}, ${mono(b,n)}&rang;.`, `في الفضاء ${M(`L${sup(2)}[0, 1]`)} احسب ${M(`&lang;${mono(a,m)}, ${mono(b,n)}&rang;`)}.`), a:`<b>${fracStr(a*b,m+n+1)}</b>`,
       s:steps(L('Inner product in L²[0, 1]:', 'الضرب الداخلي في L²[0, 1]:')+' '+M('&lang;f, g&rang; = &int;<sub>0</sub><sup>1</sup> f(x)g(x) dx'),
               M(`&int;<sub>0</sub><sup>1</sup> ${mono(a*b, m+n)} dx = ${sgn(a*b)}[${frac('x'+sup(m+n+1), m+n+1)}]<sub>0</sub><sup>1</sup> = ${frac(sgn(a*b), m+n+1)}${gcd(Math.abs(a*b),m+n+1)>1?' = '+fracStr(a*b,m+n+1):''}`))};
   },
@@ -1778,21 +1781,21 @@ export const G = {
   binomialProb(d){
     const n=R(2,d===1?4:d===2?6:8), k=R(0,n), [a,b]=pick(d===1?[[1,2]]:[[1,2],[1,3],[2,3],[1,4],[3,4]]);
     let C=1; for(let i=1;i<=k;i++) C=C*(n-k+i)/i;
-    return {q:`X ~ Bin(${n}, ${frac(a,b)}). Find P(X = ${k}).`, a:`<b>${fracStr(C*a**k*(b-a)**(n-k), b**n)}</b>`,
+    return {q:L(`X ~ Bin(${n}, ${frac(a,b)}). Find P(X = ${k}).`, `${M(`X ~ Bin(${n}, ${frac(a,b)})`)}. أوجد ${M(`P(X = ${k})`)}.`), a:`<b>${fracStr(C*a**k*(b-a)**(n-k), b**n)}</b>`,
       s:steps(L('Binomial formula:', 'قانون ذي الحدين:')+' '+M(`P(X = k) = C(n, k) p${sup('k')} (1 &minus; p)${sup('n&minus;k')}`),
               L(`Here n = ${n}, p = ${a}/${b}, 1 − p = ${b-a}/${b}, k = ${k}; ${M(`C(${n}, ${k}) = ${C}`)}.`, `هنا ${M(`n = ${n}, p = ${a}/${b}, 1 &minus; p = ${b-a}/${b}, k = ${k}`)}، و ${M(`C(${n}, ${k}) = ${C}`)}.`),
               M(`P(X = ${k}) = ${C} &times; (${frac(a,b)})${sup(k)} &times; (${frac(b-a,b)})${sup(n-k)} = ${frac(C*a**k*(b-a)**(n-k), b**n)}${gcd(C*a**k*(b-a)**(n-k), b**n)>1?` = ${fracStr(C*a**k*(b-a)**(n-k), b**n)}`:''}`))};
   },
   expectedValue(d){
     const [xs,cs,D]=discreteDist(d), E=xs.reduce((s,x,i)=>s+x*cs[i],0);
-    return {q:`X takes the values ${xs.map(sgn).join(', ')} with probabilities ${cs.map(c=>fracStr(c,D)).join(', ')}. Find E(X).`, a:`<b>${fracStr(E,D)}</b>`,
+    return {q:L(`X takes the values ${xs.map(sgn).join(', ')} with probabilities ${cs.map(c=>fracStr(c,D)).join(', ')}. Find E(X).`, `المتغير ${M('X')} يأخذ القيم ${M(xs.map(sgn).join(', '))} باحتمالات ${M(cs.map(c=>fracStr(c,D)).join(', '))}. أوجد ${M('E(X)')}.`), a:`<b>${fracStr(E,D)}</b>`,
       s:steps(L('Expected value = sum of (value × probability):', 'القيمة المتوقعة = مجموع (القيمة × الاحتمال):')+' '+M('E(X) = &Sigma; x P(x)'),
               M(`E(X) = ${xs.map((x,i)=>`(${sgn(x)})(${fracStr(cs[i],D)})`).join(' + ')}`),
               L(`Put everything over ${D}:`, `نوحّد المقامات على ${M(D)}:`)+' '+M(`${frac(xs.map((x,i)=>sgn(x*cs[i])).join(' + '), D)} = ${frac(sgn(E),D)}${gcd(E,D)>1?` = ${fracStr(E,D)}`:''}`))};
   },
   varianceDiscrete(d){
     const [xs,cs,D]=discreteDist(d), E=xs.reduce((s,x,i)=>s+x*cs[i],0), E2=xs.reduce((s,x,i)=>s+x*x*cs[i],0);
-    return {q:`X takes the values ${xs.map(sgn).join(', ')} with probabilities ${cs.map(c=>fracStr(c,D)).join(', ')}. Find Var(X).`,
+    return {q:L(`X takes the values ${xs.map(sgn).join(', ')} with probabilities ${cs.map(c=>fracStr(c,D)).join(', ')}. Find Var(X).`, `المتغير ${M('X')} يأخذ القيم ${M(xs.map(sgn).join(', '))} باحتمالات ${M(cs.map(c=>fracStr(c,D)).join(', '))}. أوجد ${M('Var(X)')}.`),
             a:`<b>${fracStr(E2*D-E*E, D*D)}</b>`,                                   // Var = E[X²] − E[X]²
       s:steps(L('Use', 'نستخدم')+' '+M(`Var(X) = E(X${sup(2)}) &minus; [E(X)]${sup(2)}`),
               M(`E(X) = ${frac(xs.map((x,i)=>sgn(x*cs[i])).join(' + '), D)} = ${fracStr(E,D)}`),
@@ -1956,14 +1959,14 @@ export const G = {
   /* ---- Economic and Financial Mathematics (MATH 371) ---- */
   effectiveRate(d){
     const r=R(2,d===1?12:24), m=pick(d===1?[2,4]:[2,4,12]), name={2:'semi-annually',4:'quarterly',12:'monthly'}[m], i=r/100/m, eff=((1+i)**m-1)*100;
-    return {q:`Find the effective annual rate of ${r}% compounded ${name}.`, a:`<b>${+eff.toFixed(4)}%</b>`,
+    return {q:L(`Find the effective annual rate of ${r}% compounded ${name}.`, `أوجد المعدل السنوي الفعّال لمعدل ${M(r+'%')} يُركّب ${{2:'كل نصف سنة',4:'كل ربع سنة',12:'شهريًا'}[m]}.`), a:`<b>${+eff.toFixed(4)}%</b>`,
       s:steps(L('Effective rate:', 'المعدل الفعلي:')+' '+M(`r<sub>eff</sub> = (1 + ${frac('r','m')})${sup('m')} &minus; 1`)+', '+M(`m = ${m}`),
               M(`${frac(num(r/100),m)} = ${num(i,6)}`), M(`(1 + ${num(i,6)})${sup(m)} &minus; 1 = ${num((1+i)**m,6)} &minus; 1 = ${num((1+i)**m-1,6)}`),
               L('As a percentage:', 'كنسبة مئوية:')+' '+M(`${+eff.toFixed(4)}%`))};
   },
   annuityFV(d){
     const P=R(1,20)*100, r=R(2,d===1?6:10), n=R(2,d===1?5:15), i=r/100, g=(1+i)**n;
-    return {q:`$${P} is deposited at the end of each year for ${n} years at ${r}% compounded annually. Find the future value.`,
+    return {q:L(`$${P} is deposited at the end of each year for ${n} years at ${r}% compounded annually. Find the future value.`, `يُودَع مبلغ ${M('$'+P)} في نهاية كل سنة لمدة ${n} سنة بمعدل ${M(r+'%')} مركّب سنويًا. أوجد القيمة المستقبلية.`),
             a:`<b>$${(P*(g-1)/i).toFixed(2)}</b>`,
       s:steps(L('Future value of an ordinary annuity:', 'القيمة المستقبلية للدفعات العادية:')+' '+M(`FV = P${frac('(1 + i)'+sup('n')+' &minus; 1','i')}`),
               M(`(1 + ${num(i)})${sup(n)} = ${num(g,6)}`),
@@ -1988,7 +1991,7 @@ export const G = {
     // u(x) = c·x + λ∫₀¹ x t u(t) dt  ⇒  u(x) = kx with k = c + λk/3  ⇒  k = 3c / (3 − λ)
     const c=R(1,d===1?3:6); let l=nz(-6,6); while(l===3) l=nz(-6,6);
     const k=fracStr(3*c,3-l);
-    return {q:`Solve u(x) = ${c===1?'':c}x ${l<0?'&minus;':'+'} ${Math.abs(l)===1?'':Math.abs(l)}&int;<sub>0</sub><sup>1</sup> xt u(t) dt.`,
+    return {q:L(`Solve u(x) = ${c===1?'':c}x ${l<0?'&minus;':'+'} ${Math.abs(l)===1?'':Math.abs(l)}&int;<sub>0</sub><sup>1</sup> xt u(t) dt.`, `حل المعادلة التكاملية ${M(`u(x) = ${c===1?'':c}x ${l<0?'&minus;':'+'} ${Math.abs(l)===1?'':Math.abs(l)}&int;<sub>0</sub><sup>1</sup> xt u(t) dt`)}.`),
             a:`<b>u(x) = ${k==='1'?'':k==='&minus;1'?'&minus;':k}x</b>`,
       s:steps(L('The kernel is separable: x comes out of the integral. Let', 'النواة قابلة للفصل: x تخرج من التكامل. نضع')+' '+M('A = &int;<sub>0</sub><sup>1</sup> t u(t) dt')+', '+L('so', 'فيكون')+' '+M(`u(x) = (${c} ${l<0?'&minus;':'+'} ${Math.abs(l)}A)x = kx`),
               L('Substitute u(t) = kt into the definition of A:', 'نعوّض u(t) = kt في تعريف A:')+' '+M(`A = &int;<sub>0</sub><sup>1</sup> kt${sup(2)} dt = ${frac('k',3)}`),
@@ -2570,7 +2573,7 @@ export const G = {
   /* ---- Statistical Methods (STAT 302) ---- */
   zScore(d){
     const mu=R(10,60), sigma=pick([2,3,4,5]), k=nz(-3,3), x=mu+k*sigma;
-    return {q:`A data set has mean ${mu} and standard deviation ${sigma}. Find the z-score of ${x}.`, a:`<b>${k}</b>`,
+    return {q:L(`A data set has mean ${mu} and standard deviation ${sigma}. Find the z-score of ${x}.`, `مجموعة بيانات وسطها الحسابي ${M(mu)} وانحرافها المعياري ${M(sigma)}. أوجد الدرجة المعيارية ${M('z')} للقيمة ${M(x)}.`), a:`<b>${k}</b>`,
       s:steps(L('The z-score says how many standard deviations the value is from the mean:', 'الدرجة المعيارية تبيّن كم انحرافاً معيارياً تبعد القيمة عن الوسط:')+' '+M(`z = ${frac('x &minus; &mu;','&sigma;')}`),
               M(`z = ${frac(`${x} &minus; ${mu}`, sigma)} = ${frac(sgn(x-mu), sigma)} = ${sgn(k)}`),
               L(`The value is ${Math.abs(k)} standard deviation(s) ${k>0?'above':'below'} the mean.`, `القيمة ${k>0?'أعلى':'أقل'} من الوسط بمقدار ${M(Math.abs(k))} انحراف معياري.`))};
@@ -2579,20 +2582,20 @@ export const G = {
   /* ---- Principles of Financial Mathematics (MATH 321) ---- */
   simpleInterest(d){
     const P=R(1,20)*100, r=R(1,12), t=R(1,8);
-    return {q:`Find the simple interest on $${P} at ${r}% per year for ${t} years.`, a:`<b>$${P*r*t/100}</b>`,
+    return {q:L(`Find the simple interest on $${P} at ${r}% per year for ${t} years.`, `أوجد الفائدة البسيطة على مبلغ ${M('$'+P)} بمعدل ${M(r+'%')} سنويًا لمدة ${t} سنوات.`), a:`<b>$${P*r*t/100}</b>`,
       s:steps(L('Simple interest:', 'الفائدة البسيطة:')+' '+M('I = P &times; r &times; t')+' '+L('(r as a decimal).', '(r كعدد عشري).'),
               M(`I = ${P} &times; ${num(r/100)} &times; ${t} = ${num(P*r*t/100)}`))};
   },
   compoundInterest(d){
     const P=R(1,20)*100, r=R(2,10), t=R(2,d===3?8:5), A=P*Math.pow(1+r/100,t);
-    return {q:`$${P} is invested at ${r}% compounded annually for ${t} years. Find the amount.`, a:`<b>$${A.toFixed(2)}</b>`,
+    return {q:L(`$${P} is invested at ${r}% compounded annually for ${t} years. Find the amount.`, `استُثمر مبلغ ${M('$'+P)} بمعدل ${M(r+'%')} مركّب سنويًا لمدة ${t} سنوات. أوجد جملة المبلغ.`), a:`<b>$${A.toFixed(2)}</b>`,
       s:steps(L('Compound amount:', 'الجملة بالفائدة المركبة:')+' '+M(`A = P(1 + r)${sup('t')}`),
               M(`A = ${P}(1 + ${num(r/100)})${sup(t)} = ${P} &times; ${num(1+r/100)}${sup(t)}`),
               M(`${num(1+r/100)}${sup(t)} = ${num((1+r/100)**t,6)}`), M(`A = ${P} &times; ${num((1+r/100)**t,6)} &asymp; ${A.toFixed(2)}`))};
   },
   presentValue(d){
     const FV=R(5,40)*100, r=R(2,10), t=R(2,d===3?8:5), PV=FV/Math.pow(1+r/100,t);
-    return {q:`Find the present value of $${FV} due in ${t} years at ${r}% annual interest.`, a:`<b>$${PV.toFixed(2)}</b>`,
+    return {q:L(`Find the present value of $${FV} due in ${t} years at ${r}% annual interest.`, `أوجد القيمة الحالية لمبلغ ${M('$'+FV)} يُستحق بعد ${t} سنوات بمعدل فائدة سنوي ${M(r+'%')}.`), a:`<b>$${PV.toFixed(2)}</b>`,
       s:steps(L('Present value (discount the future amount):', 'القيمة الحالية (نخصم المبلغ المستقبلي):')+' '+M(`PV = ${frac('FV','(1 + r)'+sup('t'))}`),
               M(`(1 + ${num(r/100)})${sup(t)} = ${num((1+r/100)**t,6)}`), M(`PV = ${frac(FV, num((1+r/100)**t,6))} &asymp; ${PV.toFixed(2)}`))};
   },

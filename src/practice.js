@@ -33,6 +33,8 @@ export function mountPractice(root, cfg){
   const save = () => { const all=load(); all[cfg.key||'x']={ti:S.ti, d:S.d, right:S.right, total:S.total, streak:S.streak}; store(all); };
   if(cfg.standalone) applyLang();
 
+  // pure-math html (no bilingual text) always reads left to right, even on an Arabic page
+  const ltr=h=>String(h).includes('class="i18n')?'':' dir="ltr"';
   function applyLang(){ const r=document.documentElement; r.dataset.lang=S.lang; r.lang=S.lang==='ar'?'ar':'en'; r.dir=S.lang==='ar'?'rtl':'ltr'; }
   function newItem(){
     const topic = S.ti<0 ? cfg.topics[Math.floor(Math.random()*cfg.topics.length)] : cfg.topics[S.ti];
@@ -68,9 +70,9 @@ export function mountPractice(root, cfg){
         <div class="pr-chip">${nm(topic)}${topic.code?` · ${topic.code}`:''}
           ${INTRO[topic.t]?`<button class="pr-link" data-act="intro">${t('overview')} ${S.intro?'▴':'▾'}</button>`:''}</div>
         ${S.intro&&INTRO[topic.t]?`<div class="bk-intro"><div class="bk-introp">${L(INTRO[topic.t][0], INTRO[topic.t][1])}</div></div>`:''}
-        <div class="pr-q">${it.q}</div>
-        ${opts ? `<div class="pr-hint">${t('choose')}</div><div class="pr-opts">${opts.map((o,i)=>`<button data-opt="${i}" class="pr-opt${done?(o.ok?' ok':i===S.picked?' bad':' dim'):''}"${done?' disabled':''}><span class="pr-letter">${'ABCD'[i]}</span><span>${o.html}</span></button>`).join('')}</div>`
-               : `<div class="pr-self">${S.item.selfShown?`<div class="pr-ans"><b>${t('answer')}:</b> ${it.a}</div>${done?'':`<span>${t('self')}</span> <button data-act="yes">${t('yes')}</button> <button data-act="no">${t('no')}</button>`}`:`<button data-act="showans">${t('show')}</button>`}</div>`}
+        <div class="pr-q"${ltr(it.q)}>${it.q}</div>
+        ${opts ? `<div class="pr-hint">${t('choose')}</div><div class="pr-opts">${opts.map((o,i)=>`<button data-opt="${i}" class="pr-opt${done?(o.ok?' ok':i===S.picked?' bad':' dim'):''}"${done?' disabled':''}><span class="pr-letter">${'ABCD'[i]}</span><span${ltr(o.html)}>${o.html}</span></button>`).join('')}</div>`
+               : `<div class="pr-self">${S.item.selfShown?`<div class="pr-ans"><b>${t('answer')}:</b> <span${ltr(it.a)}>${it.a}</span></div>${done?'':`<span>${t('self')}</span> <button data-act="yes">${t('yes')}</button> <button data-act="no">${t('no')}</button>`}`:`<button data-act="showans">${t('show')}</button>`}</div>`}
         ${done&&opts?`<div class="pr-feedback ${opts[S.picked].ok?'ok':'bad'}">${t(opts[S.picked].ok?'right':'wrong')}</div>`:''}
         ${lis.length?`<div class="pr-steps"><div class="pr-solh">${t('solution')}</div>${S.shown?box.innerHTML:''}
           <div class="pr-stepbar">${S.shown<lis.length?`<button data-act="step">${t(S.shown?'next':'step')} (${S.shown}/${lis.length})</button><button class="pr-link" data-act="all">${t('all')}</button>`:''}</div></div>`:''}
