@@ -411,6 +411,68 @@
     .sections{max-height:30vh;overflow:auto}
   }
 
+  /* ---------- Official exam header, replace-question button, bubble sheet, blueprint ---------- */
+  .hdr-fields[hidden]{display:none}
+  .exam-extras{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;flex:1 1 100%}
+  .exam-extras textarea{flex:1 1 100%;min-height:42px;font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;resize:vertical}
+  .logo-row{display:flex;gap:6px;align-items:center}
+  #logoPrev{height:30px;max-width:80px;object-fit:contain;border:1px solid var(--line);border-radius:4px;background:#fff}
+  #logoPrev[hidden],#logoDel[hidden]{display:none}
+  .xh{border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:8px}
+  .xh-top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .xh-inst{flex:1 1 0;font-size:13px;line-height:1.6;min-width:0}
+  .xh-uni{font-weight:700;font-size:15px;color:var(--th-1)}
+  .xh-dept,.xh-by{color:var(--muted)}
+  .xh-logo{height:64px;max-width:150px;object-fit:contain;flex:0 0 auto}
+  .xh-meta{flex:1 1 0;font-size:12.5px;line-height:1.8;text-align:end;min-width:0}
+  .xh-meta b{font-weight:600}
+  .xh-blank{display:inline-block;min-width:70px;border-bottom:1px dotted var(--muted)}
+  .xh-title{text-align:center;margin-top:10px}
+  .xh-sub{text-align:center}
+  table.xh-student{width:100%;border-collapse:collapse;margin:10px 0 6px;font-size:13px}
+  table.xh-student th{white-space:nowrap;padding:6px 8px;background:var(--th-tint);border:1px solid var(--ink);font-weight:600;width:1%}
+  table.xh-student td{border:1px solid var(--ink);height:28px}
+  table.xh-student td.w{width:45%}
+  table.xh-student td.n{width:10%}
+  .xh-instr{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:6px 0;font-size:12.5px;background:var(--th-f8)}
+  .xh-instrh{font-weight:700;margin-bottom:2px}
+  .xh-instr ol{margin:0;padding-inline-start:20px;line-height:1.7}
+  .xh-instr .i18n>[lang="ar"]{margin-top:0}
+  table.xh-marks{border-collapse:collapse;margin:8px auto 0;font-size:12px;text-align:center}
+  table.xh-marks th,table.xh-marks td{border:1px solid var(--ink);padding:3px 8px;min-width:38px;height:22px}
+  table.xh-marks th{background:var(--th-tint);font-weight:600;white-space:nowrap}
+  .swap{flex:0 0 auto;margin-inline-start:auto;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--th-2);
+    font-size:14px;line-height:1;cursor:pointer;opacity:.35;transition:opacity .15s;padding:0;align-self:flex-start}
+  li:hover>.swap,.swap:focus-visible{opacity:1}
+  @media (hover:none){.swap{opacity:.75}}
+  ol.xparts .pm + .swap{margin-inline-start:6px}
+  .bubble-sheet{margin-top:26px;padding-top:16px;border-top:2px dashed var(--line)}
+  .bs-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .bs-head h3{margin:0;font-size:18px}
+  .bs-head span{color:var(--muted);font-size:12px}
+  .bs-hint{font-size:12px;color:var(--muted);margin:4px 0 10px}
+  .bs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 22px;margin-top:6px}
+  .bs-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--th-line);break-inside:avoid}
+  .bs-q{font-weight:700;font-size:12px;min-width:46px;white-space:nowrap}
+  .bs-bubs{display:flex;gap:7px}
+  .bub{width:21px;height:21px;border:1.4px solid var(--ink);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font:600 10px var(--font-ui);color:var(--muted)}
+  .bub.on{background:var(--ink);color:#fff}
+  .blueprint .sheet-title{text-align:center}
+  .blueprint .sheet-sub{text-align:center}
+  table.bp{width:100%;border-collapse:collapse;margin-top:14px;font-size:12.5px}
+  table.bp th,table.bp td{border:1px solid var(--ink);padding:5px 6px;text-align:center;vertical-align:middle}
+  table.bp thead th{background:var(--th-tint);font-weight:700}
+  table.bp td.bp-t{text-align:start;font-weight:600}
+  table.bp td.bp-q{font-size:11.5px}
+  table.bp tfoot td{font-weight:700;background:var(--th-f8)}
+  .clo{width:100%;min-width:56px;border:1px dashed var(--line);border-radius:4px;padding:3px 4px;font:inherit;text-align:center;background:transparent;color:inherit}
+  .bp-sum{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+  .bp-sum span{border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:12px}
+  .bp-sign{display:flex;justify-content:space-between;gap:40px;margin-top:44px;font-size:13px}
+  .bp-sign div{flex:1;border-top:1px solid var(--ink);padding-top:6px;text-align:center}
+  body.pdf-export .noprint{display:none!important}
+  body.pdf-export .clo{border:0}
+
   /* ---------- Print ---------- */
   @page{size:A4;margin:14mm 12mm}
   @page booklet{size:A4;margin:0}
@@ -432,4 +494,8 @@
     .bk-page:last-child{break-after:auto}
     .plot{background:none}
     ol.sols>li{break-inside:avoid}
+    .bubble-sheet{break-before:page;border-top:0;margin-top:0;padding-top:0}
+    .clo{border:0}
+    .clo::placeholder{color:transparent}
+    .bub.on,table.xh-student th,table.xh-marks th,table.bp thead th,.xh-instr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }

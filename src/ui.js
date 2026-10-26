@@ -107,12 +107,13 @@ function parseCustom(){
 const nEss = s => s.nEssay ?? (s.mc ? 0 : s.count);
 const nMc  = s => s.nMc ?? (s.mc ? s.count : 0);
 const sectionItems = s => [...genItems(s.topic, nEss(s), s.diff, false), ...genItems(s.topic, nMc(s), s.diff, true)];
+const tagUid = it => { if(!it.uid) it.uid='i'+Math.random().toString(36).slice(2,10); return it; };
 function genItems(topic, count, d, mc){
   const gen=G[topic]; const items=[];
   const seen=new Set();
   for(let i=0;i<count;i++){
     let it=gen(d); for(let k=0; k<20 && seen.has(it.q); k++) it=gen(d);   // avoid repeating a question (topics with few variants, e.g. proofs)
-    seen.add(it.q); if(mc) it.choices=buildChoices(it.a, gen, d); items.push(it);
+    seen.add(it.q); if(mc) it.choices=buildChoices(it.a, gen, d); items.push(tagUid(it));
   }
   return items;
 }
@@ -211,6 +212,7 @@ function setMode(mode){
   document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode===mode));
   document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !m.nQ);
   document.querySelectorAll('.book-only').forEach(n=>n.hidden = mode!=='booklet');
+  el('hdrFields').hidden = !(m.nQ || mode==='booklet');
   if(m.nQ){ el('nQ').value=m.nQ; el('marks').value=m.marks; }
   buildTopicList(true, wasBook!==!!m.book);           // entering / leaving the booklet modes resets the counts
   state.view='guide'; renderSections(); render();
@@ -307,7 +309,7 @@ function headerHTML(title, sub, total, vLabel){
       </div>
     </div>`;
 }
-function keyHTML(entries, vLabel, labeled){
+function keyHTML(entries, vLabel, labeled, bubbles){
   const keyMode=el('keyMode').value, withSteps=el('solMode').value==='steps';
   if(keyMode==='none'||!entries.length) return '';
   const ans=entries.map(e=>`<li dir="${dirFor(e.it.a)}">${labeled?`<span class="kl">${e.label}</span>`:''}${keyText(e.it)}</li>`).join('');
@@ -316,6 +318,7 @@ function keyHTML(entries, vLabel, labeled){
   return `<div class="keywrap ${keyMode==='same'?'same':''}" ${state.showKey?'':'hidden'}>
       <div class="key-head"><h3>${T('keyHead')}${vLabel?' &mdash; '+vLabel:''}</h3></div>
       <ol class="answers${labeled?' labeled':''}">${ans}</ol>
+      ${bubbles?`<div class="key-head sol-head"><h3>${T('bsKey')}</h3></div><div class="bs-grid">${bubbleRows(entries,true)}</div>`:''}
       ${sols?`<div class="key-head sol-head"><h3>${T('solHead')}</h3></div><ol class="sols${labeled?' labeled':''}">${sols}</ol>`:''}
     </div>`;
 }
@@ -335,7 +338,7 @@ function practiceHTML(parts, vLabel){
   const partsHtml=parts.map((p,pi)=>{
     const long=p.custom?false:(LONG.includes(p.topic)||p.topic.startsWith('proof_'));
     const lis=p.items.map((it,ii)=>{ const lbl=qLabel(pi, p.items.length>1?ii:-1); entries.push({it, label:lbl});
-      return `<li style="min-height:${sp}px"><span class="ql">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span></li>`; }).join('');
+      return `<li style="min-height:${sp}px"><span class="ql">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span>${swapBtn(it)}</li>`; }).join('');
     return `<div class="part"><ol class="problems labeled ${long?'single':''}">${lis}</ol></div>`;
   }).join('');
   const sub = multiPart
@@ -350,27 +353,108 @@ function practiceHTML(parts, vLabel){
 const AR_LETTERS='أبجدهوزحطيكلمنسعفصقرشتثخذضظغ';
 const partLetter = i => state.lang==='ar' ? AR_LETTERS[i] || i+1 : String.fromCharCode(65+i);
 const qLabel = (q, part) => `${state.lang==='ar'?'س':'Q'}${q+1}${part>=0?': '+partLetter(part):''}`;
-function examHTML(parts, vLabel){
-  const sp=SPACE[parseInt(el('spacing').value)||2], m=MODES[state.mode];
+const examTitle = parts => (el('title').value||'').trim() || T(MODES[state.mode].title)+courseSuffix(parts);
+function examGroups(parts){
   const flat=[]; parts.forEach(p=>p.items.forEach(it=>flat.push(it)));
-  const groups=groupItems(flat, Math.max(1,parseInt(el('nQ').value)||1));
-  const marks=Math.max(0,parseFloat(el('marks').value)||0), total=fmtMarks(marks*groups.length);
-  const title=(el('title').value||'').trim() || T(m.title)+courseSuffix(parts);
+  return { flat, groups:groupItems(flat, Math.max(1,parseInt(el('nQ').value)||1)), marks:Math.max(0,parseFloat(el('marks').value)||0) };
+}
+function examHTML(parts, vLabel){
+  const sp=SPACE[parseInt(el('spacing').value)||2];
+  const {flat, groups, marks}=examGroups(parts), total=fmtMarks(marks*groups.length);
+  const title=examTitle(parts), hasBubble=el('exBubble').checked && flat.some(it=>it.choices);
   const entries=[];
   const qs=groups.map((g,qi)=>{
     const pm=fmtMarks(marks/g.length);
     const lis=g.map((it,pi)=>{
       const lbl = qLabel(qi, g.length>1 ? pi : -1);
       entries.push({it, label:lbl});
-      return `<li style="min-height:${sp}px"><span class="pl">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span>${g.length>1?`<span class="pm">(${pm})</span>`:''}</li>`;
+      return `<li style="min-height:${sp}px"><span class="pl">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span>${g.length>1?`<span class="pm">(${pm})</span>`:''}${swapBtn(it)}</li>`;
     }).join('');
     return `<div class="xq"><div class="xq-head"><span>${qLabel(qi,-1)}</span><span class="mk">(${fmtMarks(marks)} ${T('marksW')})</span></div><ol class="xparts">${lis}</ol></div>`;
   }).join('');
   const sub=`${groups.length} ${T('qs')} &nbsp;·&nbsp; ${T('total')}: ${total} ${T('marksW')}`;
-  return `<div class="sheet">${headerHTML(title, sub, total, vLabel)}<div class="exam">${qs}</div>${keyHTML(entries, vLabel, true)}</div>`;
+  return `<div class="sheet">${officialHeadHTML(title, sub, groups.length, marks, vLabel, hasBubble)}<div class="exam">${qs}</div>`+
+    `${hasBubble?bubbleSheetHTML(entries, title, vLabel):''}${keyHTML(entries, vLabel, true, hasBubble)}</div>`;
 }
 
-/* --- worked examples / study booklet: every question followed by its worked solution --- */
+/* --- official exam header: institution, logo, term / date / duration, student boxes, instructions, marks table --- */
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const studentRow = () => `<table class="xh-student"><tr><th>${T('name')}</th><td class="w"></td><th>${T('stuId')}</th><td></td><th>${T('period')}</th><td class="n"></td></tr></table>`;
+const INSTR = {
+  exam:[['Answer all questions.', 'أجب عن جميع الأسئلة.'],
+        ['Show all your working: an answer without steps may not receive full marks.', 'اكتب خطوات الحل كاملة؛ فالإجابة دون خطوات قد لا تحصل على الدرجة كاملة.'],
+        ['Write clearly and box your final answers.', 'اكتب بخط واضح وضع الإجابة النهائية داخل إطار.'],
+        ['Mobile phones are not allowed; non-programmable calculators are allowed.', 'يُمنع استخدام الجوال، ويُسمح بالآلة الحاسبة غير القابلة للبرمجة.']],
+  hw:  [['Answer all questions.', 'أجب عن جميع الأسئلة.'], ['Show all your working.', 'اكتب خطوات الحل كاملة.'], ['Hand in your work before the due date.', 'سلّم الواجب قبل الموعد المحدد.']],
+  bubble:['Mark the multiple-choice answers on the answer sheet.', 'ظلّل إجابات أسئلة الاختيار من متعدد في ورقة الإجابة.'],
+};
+function instrHTML(hasBubble){
+  if(!el('exInstr').checked) return '';
+  const own=el('exInstrText').value.split('\n').map(x=>x.trim()).filter(Boolean);
+  const lines = own.length ? own.map(esc) : [...INSTR[state.mode==='hw'?'hw':'exam'], ...(hasBubble?[INSTR.bubble]:[])].map(([e,a])=>L(e,a));
+  return `<div class="xh-instr"><div class="xh-instrh">${T('instrHead')}</div><ol>${lines.map(x=>`<li>${x}</li>`).join('')}</ol></div>`;
+}
+function marksTableHTML(n, marks){
+  const out=[];
+  for(let a=0;a<n;a+=10){
+    const cols=[...Array(Math.min(n,a+10)-a)].map((_,k)=>a+k), last=a+10>=n;
+    out.push(`<table class="xh-marks"><tr><th>${T('question')}</th>${cols.map(i=>`<th>${qLabel(i,-1)}</th>`).join('')}${last?`<th>${T('total')}</th>`:''}</tr>`+
+      `<tr><th>${T('fullMark')}</th>${cols.map(()=>`<td>${fmtMarks(marks)}</td>`).join('')}${last?`<td><b>${fmtMarks(marks*n)}</b></td>`:''}</tr>`+
+      `<tr><th>${T('obtained')}</th>${cols.map(()=>'<td></td>').join('')}${last?'<td></td>':''}</tr></table>`);
+  }
+  return out.join('');
+}
+function officialHeadHTML(title, sub, nQ, marks, vLabel, hasBubble){
+  const v=id=>esc((el(id).value||'').trim()), uni=v('bkUni'), dept=v('exDept'), by=v('bkBy');
+  const today=new Date().toLocaleDateString(state.lang==='ar'?'ar':undefined);
+  const line=(k,val)=>`<div><b>${T(k)}:</b> ${val||'<span class="xh-blank"></span>'}</div>`;
+  return `<div class="xh">
+      <div class="xh-top">
+        <div class="xh-inst">${uni?`<div class="xh-uni">${uni}</div>`:''}${dept?`<div class="xh-dept">${dept}</div>`:''}${by?`<div class="xh-by">${T('exBy')}: ${by}</div>`:''}</div>
+        ${logo?`<img class="xh-logo" src="${logo}" alt="">`:''}
+        <div class="xh-meta">${line('bkTerm',v('bkTerm'))}${line('date',today)}${line('exTime',v('exTime'))}</div>
+      </div>
+      <h2 class="sheet-title xh-title">${title}</h2>
+      <div class="sheet-sub xh-sub">${sub}${vLabel?' &nbsp;·&nbsp; '+vLabel:''}</div>
+      ${studentRow()}${instrHTML(hasBubble)}${marksTableHTML(nQ, marks)}
+    </div>`;
+}
+
+/* --- bubble answer sheet for the multiple-choice items (and its filled-in grading key) --- */
+function bubbleRows(entries, key){
+  return entries.filter(e=>e.it.choices).map(e=>{ const k=e.it.choices.findIndex(c=>c.correct);
+    return `<div class="bs-row"><span class="bs-q">${e.label}</span><span class="bs-bubs" dir="ltr">${e.it.choices.map((c,i)=>
+      `<span class="bub${key&&i===k?' on':''}">${String.fromCharCode(65+i)}</span>`).join('')}</span></div>`; }).join('');
+}
+const bubbleSheetHTML = (entries, title, vLabel) => `<div class="bubble-sheet">
+    <div class="bs-head"><h3>${T('ansSheet')}</h3><span>${title}${vLabel?' &nbsp;·&nbsp; '+vLabel:''}</span></div>
+    ${studentRow()}<div class="bs-hint">${T('bsHint')}</div><div class="bs-grid">${bubbleRows(entries,false)}</div></div>`;
+
+/* --- table of specifications: topic × type × difficulty × marks × weight, with a CLO column the teacher fills in --- */
+function blueprintHTML(){
+  if(!MODES[state.mode].nQ || !el('exBlue').checked || !state.sheets[0] || !test.sections.length) return '';
+  const parts=state.sheets[0], {groups, marks}=examGroups(parts), where=new Map(), sep=state.lang==='ar'?'، ':', ';
+  groups.forEach((g,qi)=>g.forEach((it,pi)=>where.set(it, {label:qLabel(qi, g.length>1?pi:-1), m:marks/g.length})));
+  const total=marks*groups.length, byDiff={1:0,2:0,3:0}; let sE=0, sM=0;
+  const rows=parts.map((p,i)=>{
+    const ws=p.items.map(it=>where.get(it)).filter(Boolean), mk=ws.reduce((a,w)=>a+w.m,0);
+    const e=p.items.filter(it=>!it.choices).length, m=p.items.length-e; sE+=e; sM+=m; if(!p.custom) byDiff[p.diff]+=mk;
+    return `<tr><td>${i+1}</td><td class="bp-t">${partLabel(p)}</td><td>${p.custom?T('customShort'):esc(p.code||'')}</td><td>${e||'—'}</td><td>${m||'—'}</td>`+
+      `<td>${p.custom?'—':T(DIFF_KEY[p.diff])}</td><td class="bp-q">${ws.map(w=>w.label).join(sep)}</td><td>${fmtMarks(mk)}</td>`+
+      `<td>${total?fmtMarks(mk/total*100):0}%</td><td><input class="clo" data-clo="${i}" value="${esc((test.sections[i]||{}).clo||'')}" placeholder="CLO"></td></tr>`;
+  }).join('');
+  const pct=x=>total?fmtMarks(x/total*100):0;
+  return `<div class="sheet blueprint">
+    <h2 class="sheet-title">${T('blueHead')}</h2>
+    <div class="sheet-sub">${examTitle(parts)} &nbsp;·&nbsp; ${groups.length} ${T('qs')} &nbsp;·&nbsp; ${T('total')}: ${fmtMarks(total)} ${T('marksW')}</div>
+    <table class="bp"><thead><tr><th>#</th><th>${T('bpTopic')}</th><th>${T('course')}</th><th>${T('essay')}</th><th>${T('mcType')}</th><th>${T('difficulty')}</th><th>${T('bpQs')}</th><th>${T('fullMark')}</th><th>${T('bpWeight')}</th><th>${T('bpClo')}</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td colspan="3">${T('total')}</td><td>${sE}</td><td>${sM}</td><td></td><td></td><td>${fmtMarks(total)}</td><td>100%</td><td></td></tr></tfoot></table>
+    <div class="bp-sum">${[1,2,3].map(d=>`<span>${T(DIFF_KEY[d])}: <b>${pct(byDiff[d])}%</b></span>`).join('')}</div>
+    <div class="bp-sign"><div>${T('exBy')}</div><div>${T('bpHead')}</div></div>
+  </div>`;
+}
+
 const introHTML = t => INTRO[t] ? `<div class="bk-intro"><div class="bk-introh">${T('overview')}</div><div class="bk-introp">${L(INTRO[t][0], INTRO[t][1])}</div></div>` : '';
 const exampleHTML = (it, ii) => `<div class="bk-ex bk-block" data-ii="${ii}">
     <div class="bk-exh"><span>${T('example')} ${ii+1}</span></div>
@@ -574,8 +658,21 @@ function updateTotal(){
 }
 const guideStats = () => { const all=CURRICULUM.flatMap(l=>l.courses), t=new Set(all.flatMap(c=>c.topics));
   return { courses:all.filter(c=>c.topics.length).length, topics:[...t].filter(x=>!x.startsWith('proof_')).length, proofs:[...t].filter(x=>x.startsWith('proof_')).length }; };
+let secOf=new Map();
+const swapBtn = it => { const s=secOf.get(it.uid); return s && !s.custom && !isProof(s.topic)
+  ? `<button class="swap noprint" type="button" data-swap="${it.uid}" title="${T('swapQ')}" aria-label="${T('swapQ')}">&#8635;</button>` : ''; };
+/* replace one question with a fresh one of the same topic, difficulty and type, in every version */
+function swapItem(uid){
+  const s=test.sections.find(x=>!x.custom && x.items.some(it=>it.uid===uid)); if(!s) return;
+  const old=s.items.find(it=>it.uid===uid), used=new Set(s.items.map(it=>it.q));
+  let fresh; for(let k=0;k<25;k++){ fresh=genItems(s.topic,1,s.diff,!!old.choices)[0]; if(!used.has(fresh.q)) break; }
+  const put=arr=>{ const i=arr.findIndex(it=>it.uid===uid); if(i>=0) arr[i]=fresh; };
+  put(s.items); state.sheets.forEach(parts=>parts.forEach(p=>put(p.items)));
+  render();
+}
 function render(){
   updateTotal();
+  secOf=new Map(); test.sections.forEach(s=>s.items.forEach(it=>secOf.set(tagUid(it).uid, s)));
   if(state.view!=='output'){ el('out').innerHTML=guideHTML(state.view==='welcome'?'welcome':state.mode, guideStats(), test.sections.length>0); return; }
   if(!test.sections.length){
     el('out').innerHTML=`<div class="sheet"><div class="sheet-sub" style="text-align:center;padding:48px 0">${T('emptyTest')}</div></div>`;
@@ -585,7 +682,7 @@ function render(){
   if(MODES[state.mode].app){ appView(); return; }
   const multi=state.sheets.length>1, draw=state.mode==='practice'?practiceHTML:examHTML;
   el('out').innerHTML=state.sheets.map((parts,v)=>
-    draw(parts, multi?`${T('version')} ${String.fromCharCode(65+v)}`:'')).join('')+tablesPageHTML();
+    draw(parts, multi?`${T('version')} ${String.fromCharCode(65+v)}`:'')).join('')+blueprintHTML()+tablesPageHTML();
 }
 
 /* ---------------- Interactive practice app ---------------- */
@@ -714,7 +811,7 @@ async function exportPDF(){
         jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}, pagebreak:{mode:['css'], before:['.bk-page + .bk-page']} }).from(book).outputPdf('blob')
       : h2p().set({ margin:[10,10,12,10], image:{type:'jpeg',quality:0.96},
       html2canvas:{scale:2, useCORS:true, backgroundColor:'#ffffff'}, jsPDF:{unit:'mm', format:'a4', orientation:'portrait'},
-      pagebreak:{mode:['css','legacy'], before:['.sheet + .sheet','.tables-page','.keywrap:not(.same)'], avoid:['.xq','ol.problems li','ol.sols>li','table','.plot']} })
+      pagebreak:{mode:['css','legacy'], before:['.sheet + .sheet','.tables-page','.keywrap:not(.same)','.bubble-sheet'], avoid:['.xq','ol.problems li','ol.sols>li','table','.plot']} })
       .from(el('out')).outputPdf('blob'));
     document.body.classList.remove('pdf-export');
     await saveFile(fileBase()+'.pdf', blob);
@@ -749,6 +846,7 @@ function applyPayload(s, showKey){
   document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode===state.mode));
   document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !MODES[state.mode].nQ);
   document.querySelectorAll('.book-only').forEach(n=>n.hidden = state.mode!=='booklet');
+  el('hdrFields').hidden = !(MODES[state.mode].nQ || state.mode==='booklet');
   if(s.nQ) el('nQ').value=s.nQ; if(s.marks) el('marks').value=s.marks;
   state.view='output'; buildTopicList(true); buildVersions(); renderSections(); render();
 }
@@ -776,6 +874,29 @@ function importTest(file){
 }
 
 
+/* ---------------- Header details + logo (remembered on this device) ---------------- */
+const HDR_KEY='mtb_hdr', HDR_TXT=['bkUni','exDept','bkBy','bkTerm','exTime','exInstrText'], HDR_CHK=['exInstr','exBubble','exBlue'];
+let logo='';
+function saveHdr(){
+  const o={logo}; HDR_TXT.forEach(id=>o[id]=el(id).value); HDR_CHK.forEach(id=>o[id]=el(id).checked);
+  try{ localStorage.setItem(HDR_KEY, JSON.stringify(o)); }catch(e){}
+}
+function loadHdr(){
+  let o={}; try{ o=JSON.parse(localStorage.getItem(HDR_KEY)||'{}'); }catch(e){}
+  HDR_TXT.forEach(id=>{ if(typeof o[id]==='string') el(id).value=o[id]; });
+  HDR_CHK.forEach(id=>{ if(typeof o[id]==='boolean') el(id).checked=o[id]; });
+  logo=typeof o.logo==='string'?o.logo:''; showLogo();
+}
+function showLogo(){ el('logoPrev').hidden=el('logoDel').hidden=!logo; if(logo) el('logoPrev').src=logo; }
+function pickLogo(file){                                // scaled down to 160 px high so it stays small enough to remember
+  const r=new FileReader();
+  r.onload=()=>{ const img=new Image();
+    img.onload=()=>{ const h=Math.min(160,img.naturalHeight||160), w=Math.max(1,Math.round((img.naturalWidth||h)*h/(img.naturalHeight||h))), c=document.createElement('canvas');
+      c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h); logo=c.toDataURL('image/png'); showLogo(); saveHdr(); render(); };
+    img.src=r.result; };
+  r.readAsDataURL(file);
+}
+
 /* ---------------- Init (call after DOM is ready) ---------------- */
 export function init(){
 el('lang').onchange=e=>setLang(e.target.value);
@@ -797,7 +918,13 @@ el('spacing').onchange=render;
 el('keyMode').onchange=render;
 el('solMode').onchange=()=>{ if(el('solMode').value==='steps') state.showKey=true; render(); };
 el('title').oninput=render;
-['bkUni','bkBy','bkTerm'].forEach(id=>el(id).oninput=render);
+HDR_TXT.forEach(id=>el(id).oninput=()=>{ saveHdr(); render(); });
+HDR_CHK.forEach(id=>el(id).onchange=()=>{ saveHdr(); render(); });
+el('logoBtn').onclick=()=>el('logoFile').click();
+el('logoFile').onchange=e=>{ if(e.target.files[0]){ pickLogo(e.target.files[0]); e.target.value=''; } };
+el('logoDel').onclick=()=>{ logo=''; showLogo(); saveHdr(); render(); };
+el('out').addEventListener('click', e=>{ const b=e.target.closest('[data-swap]'); if(b) swapItem(b.dataset.swap); });
+el('out').addEventListener('input', e=>{ const t=e.target; if(t.dataset && t.dataset.clo!==undefined){ const s=test.sections[+t.dataset.clo]; if(s) s.clo=t.value; t.setAttribute('value', t.value); } });
 window.addEventListener('resize', fitBook);
 if(document.fonts){                                     // re-measure the booklet pages whenever a web font finishes loading
   let t=0; const again=()=>{ clearTimeout(t); t=setTimeout(()=>{ if(isBook()) render(); }, 60); };
@@ -817,6 +944,8 @@ buildLevelSelect(); el('bLevel').value='all'; buildCourseSelect(); buildTopicLis
 document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode==='practice'));
 document.querySelectorAll('.exam-only').forEach(n=>n.hidden=true);
 document.querySelectorAll('.book-only').forEach(n=>n.hidden=true);
+el('hdrFields').hidden=true;
+loadHdr();
 // open on the welcome page; nothing is generated until Run
 state.view='welcome'; render();
 applyLang();
