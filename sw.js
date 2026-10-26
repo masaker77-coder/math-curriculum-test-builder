@@ -4,7 +4,7 @@
 const CACHE = 'mtb-v1';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './src/styles.css',
   './src/main.js', './src/ui.js', './src/generators.js', './src/helpers.js', './src/viz.js', './src/proofs.js', './src/intros.js',
-  './src/curriculum.js', './src/i18n.js', './src/cover.js', './src/practice.js', './src/answer.js', './src/bundle.js', './src/guide.js',
+  './src/curriculum.js', './src/i18n.js', './src/cover.js', './src/practice.js', './src/answer.js', './src/bundle.js', './src/guide.js', './src/export.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/favicon-32.png'];
 
 self.addEventListener('install', e => {

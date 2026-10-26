@@ -7,6 +7,7 @@ import { coverArt } from './cover.js';
 import { mountPractice } from './practice.js';
 import { guideHTML } from './guide.js';
 import { bundle } from './bundle.js';
+import { wordDoc, moodleXML, blackboardTXT } from './export.js';
 import { LANGS, tr, pickLang } from './i18n.js';
 
 /* ============================ UI WIRING (Test Builder) ============================ */
@@ -785,7 +786,7 @@ async function saveFile(filename, data){
   a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
 const fileBase = () => (((el('title').value||'').trim() || (document.querySelector('.sheet-title')||{}).textContent || 'math-test')
-  .replace(/[\\/:*?"<>|]+/g,'').replace(/\s+/g,'-').slice(0,80) || 'math-test');
+  .replace(/[\\/:*?"<>|]+/g,'').replace(/[\s—–·•]+/g,'-').replace(/-{2,}/g,'-').replace(/^-|-$/g,'').slice(0,80) || 'math-test');   // a dash like — makes browsers drop the name
 const FONTS_CSS='https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap';
 function printableHTML(){
   const css=[...document.styleSheets].map(ss=>{ try{ return [...ss.cssRules].map(r=>r.cssText).join('\n'); }catch(e){ return ''; } }).join('\n');
@@ -794,7 +795,29 @@ function printableHTML(){
     `<link rel="stylesheet" href="${FONTS_CSS}"><style>${css}</style><style>body{display:block!important;height:auto!important;overflow:visible!important}.wrap{height:auto!important;overflow:visible!important}</style></head>`+
     `<body><div class="wrap">${el('out').innerHTML}</div><script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script></body></html>`;
 }
-function flashNote(msg){ el('sections').insertAdjacentHTML('afterbegin',`<div class="sections-empty note" style="color:#c0392b">${msg}</div>`); setTimeout(renderSections,6000); }
+function flashNote(msg, ok){ el('sections').insertAdjacentHTML('afterbegin',`<div class="sections-empty note" style="color:${ok?'#0a7a4b':'#c0392b'}">${msg}</div>`); setTimeout(renderSections,ok?9000:6000); }
+
+/* ---------------- Export: Word, Moodle XML, Blackboard ---------------- */
+function exportItems(){
+  const parts=state.sheets[0]||[], out=[];
+  if(MODES[state.mode].nQ){
+    const {groups, marks}=examGroups(parts), partOf=new Map(); parts.forEach(p=>p.items.forEach(it=>partOf.set(it,p)));
+    groups.forEach((g,qi)=>g.forEach((it,pi)=>out.push({name:`${qLabel(qi, g.length>1?pi:-1)} — ${partLabel(partOf.get(it))}`, it, marks:marks/g.length})));
+  } else parts.forEach((p,pi)=>p.items.forEach((it,ii)=>out.push({name:`${qLabel(pi, p.items.length>1?ii:-1)} — ${partLabel(p)}`, it, marks:1})));
+  return out;
+}
+async function doExport(kind){
+  const sel=el('exportAs');
+  if(state.view!=='output' || !test.sections.length || MODES[state.mode].app){ sel.value=''; flashNote(T('exportEmpty')); return; }
+  sel.disabled=true;
+  try{
+    if(kind==='word') await saveFile(fileBase()+'.doc', new Blob([await wordDoc(el('out'), {title:fileBase(), lang:state.lang})], {type:'application/msword'}));
+    else if(kind==='moodle') await saveFile(fileBase()+'-moodle.xml', new Blob([await moodleXML(exportItems(), {category:fileBase()})], {type:'application/xml'}));
+    else await saveFile(fileBase()+'-blackboard.txt', new Blob([await blackboardTXT(exportItems())], {type:'text/plain;charset=utf-8'}));
+    flashNote(T(kind==='word'?'wordNote':kind==='moodle'?'moodleNote':'bbNote'), true);
+  }catch(e){ if(!(e && e.code==='declined')) flashNote(T('exportFailed')); }
+  finally{ sel.disabled=false; sel.value=''; }
+}
 async function exportPDF(){
   const btn=el('pdfBtn'), label=btn.textContent; btn.disabled=true; btn.textContent=T('makingPdf');
   if(state.lang!=='en'){
@@ -909,6 +932,7 @@ el('clearSections').onclick=()=>{ test.sections=[]; state.view='guide'; buildVer
 el('addCustom').onclick=addCustomPart;
 el('print').onclick=()=>{ if(inFrame()) exportPDF(); else window.print(); };
 el('pdfBtn').onclick=exportPDF;
+el('exportAs').onchange=e=>{ if(e.target.value) doExport(e.target.value); };
 el('toggleKey').onclick=()=>{ state.showKey=!state.showKey; render(); };
 el('versions').onchange=()=>{ buildVersions(); render(); };
 el('nQ').oninput=render;
