@@ -60,7 +60,7 @@ const T = key => tr(key, state.lang);
 const topicLabel = t => pickLang(TOPIC_LABELS[t]||t, TOPIC_LABELS_AR[t], state.lang);
 const courseTitle = c => pickLang(c.title, c.ar, state.lang);
 const levelName = l => pickLang(l.level, l.ar, state.lang);
-const isBilingual = html => String(html).includes('class="i18n"');
+const isBilingual = html => String(html).includes('class="i18n');
 // generated text with Arabic in it reads right-to-left in Arabic mode; plain math stays left-to-right
 const dirFor = html => state.lang==='ar' && isBilingual(html) ? 'rtl' : 'ltr';
 const LANG_KEY='mtb_lang';

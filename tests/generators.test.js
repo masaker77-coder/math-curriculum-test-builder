@@ -7,7 +7,7 @@ import { G } from '../src/generators.js';
 import { CURRICULUM } from '../src/curriculum.js';
 
 /* ---- helpers for parsing the HTML the generators emit ---- */
-const plain = h => String(h)
+const plain = h => enOnly(h)
   .replace(/&minus;/g, '-').replace(/&times;/g, '×').replace(/&rarr;/g, '→').replace(/−/g, '-')
   .replace(/<sup>(-?\d+)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
 const fact = n => { let r = 1; for (let i = 2; i <= n; i++) r *= i; return r; };
@@ -419,7 +419,7 @@ test('MATH 234 — |A×B| and counting functions (brute force)', () => {
 
 test('MATH 234 — logical statements', () => {
   for (const d of DIFFS) times(200, () => {
-    const o = G.logicEval(d), m = o.q.match(/p = ([TF]), q = ([TF]), r = ([TF]), evaluate (.*)\.$/);
+    const o = G.logicEval(d), m = enOnly(o.q).match(/p = ([TF]), q = ([TF]), r = ([TF]), evaluate (.*)\.<\/span>/);
     const js = m[4].replace(/&and;/g, '&&').replace(/&or;/g, '||').replace(/&not;/g, '!');
     const v = new Function('p', 'q', 'r', `return ${js};`)(m[1] === 'T', m[2] === 'T', m[3] === 'T');
     assert.equal(plain(o.a), v ? 'T' : 'F');
@@ -585,7 +585,7 @@ test('MATH 383 — sequence limits and geometric series', () => {
     const [, num, den] = o.q.match(/<span class="n">(.*?)<\/span><span class="d">(.*?)<\/span>/).map(s => plain(s).replace(/\s/g, ''));
     close(fval(o.a), coefOf(num, 'n') / coefOf(den, 'n'));
     o = G.geometricSeries(d);
-    const a = ints(plain(o.q))[0], r = fval(o.q.split('ratio ')[1]);
+    const a = ints(plain(o.q))[0], r = fval(enOnly(o.q).split('ratio ')[1]);
     let s = 0, term = a; for (let i = 0; i < 4000; i++) { s += term; term *= r; }
     close(fval(o.a), s, 1e-6);
   });
@@ -637,14 +637,14 @@ test('MATH 344 — generators, permutation order, group orders, index', () => {
     let o = G.groupGenerators(d), n = +o.q.match(/<sub>(\d+)<\/sub>/)[1];
     assert.equal(val(o.a), phi(n));
     o = G.permutationOrder(d);
-    const cyc = [...o.q.matchAll(/\(([\d ]+)\)/g)].map(m => m[1].split(' ').map(Number));
+    const cyc = [...enOnly(o.q).matchAll(/\(([\d ]+)\)/g)].map(m => m[1].split(' ').map(Number));
     const deg = +o.q.match(/S<sub>(\d+)/)[1], perm = Array.from({ length: deg + 1 }, (_, i) => i);
     assert.equal(new Set(cyc.flat()).size, cyc.flat().length, 'cycles must be disjoint');
     for (const c of cyc) c.forEach((x, i) => { perm[x] = c[(i + 1) % c.length]; });
     let k = 1, cur = perm.slice(); while (cur.some((x, i) => x !== i)) { cur = cur.map(x => perm[x]); k++; }
     assert.equal(val(o.a), k);
     o = G.groupOrder(d); n = +o.q.match(/<sub>(\d+)<\/sub>/)[1];
-    const want = /^Find the order of S/.test(o.q) ? fact(n) : /^Find the order of A/.test(o.q) ? fact(n) / 2 : 2 * n;
+    const want = /^Find the order of S/.test(plain(o.q)) ? fact(n) : /^Find the order of A/.test(plain(o.q)) ? fact(n) / 2 : 2 * n;
     assert.equal(val(o.a), want);
     o = G.lagrangeIndex(d); const [GG, H] = ints(plain(o.q));
     assert.equal(val(o.a) * H, GG);
@@ -774,7 +774,7 @@ test('STAT 212/312 — binomial probabilities', () => {
 test('STAT 312 — expected value and variance of a discrete distribution', () => {
   for (const d of DIFFS) times(200, () => {
     for (const name of ['expectedValue', 'varianceDiscrete']) {
-      const o = G[name](d), xs = plain(o.q).match(/values (.*?) with/)[1].split(', ').map(Number), ps = fracs(o.q);
+      const o = G[name](d), xs = plain(o.q).match(/values (.*?) with/)[1].split(', ').map(Number), ps = fracs(enOnly(o.q));
       assert.equal(xs.length, ps.length); close(ps.reduce((a, b) => a + b, 0), 1);
       const E = xs.reduce((s, x, i) => s + x * ps[i], 0), V = xs.reduce((s, x, i) => s + (x - E) ** 2 * ps[i], 0);
       close(fval(o.a), name === 'expectedValue' ? E : V);
