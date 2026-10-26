@@ -18,7 +18,7 @@ const TXT = {
   hint:['💡 Hint','💡 تلميح'],
   overview:['Overview','شرح مبسط'], score:['Score','النتيجة'], streak:['Streak','متتالية'], reset:['Reset','تصفير'],
   answer:['Answer','الإجابة'], show:['Show the answer','أظهر الإجابة'], self:['Did you get it right?','هل كانت إجابتك صحيحة؟'], yes:['Yes','نعم'], no:['No','لا'],
-  solution:['Solution','الحل'],
+  solution:['Solution','الحل'], rights:['All rights reserved','جميع الحقوق محفوظة'],
   tPractice:['Practice','تدريب'], tQuiz:['Timed quiz','اختبار بوقت'], tReview:['My mistakes','أخطائي'], tProgress:['My progress','تقدمي'],
   ansMode:['Answer by','طريقة الإجابة'], mc:['Multiple choice','اختيار من متعدد'], typed:['Typing the answer','كتابة الإجابة'],
   typeHere:['Type your answer…','اكتب إجابتك…'], check:['Check','تحقق'],
@@ -218,7 +218,7 @@ export function mountPractice(root, cfg){
       </div>
       <div class="pr-tabs">${[['practice','tPractice'],['quiz','tQuiz'],['review','tReview'],['progress','tProgress']].map(([k,l])=>
         `<button data-tab="${k}" class="${S.tab===k?'on':''}">${t(l)}${k==='review'&&S.mistakes.length?` <span class="pr-count">${S.mistakes.length}</span>`:''}</button>`).join('')}</div>
-      ${view}</div>`;
+      ${view}<div class="pr-copy">© 2026 د. محمد عبد السلام — ${t('rights')}</div></div>`;
     wire();
     if(S.tab==='quiz' && Q && !Q.done) tick();
   }

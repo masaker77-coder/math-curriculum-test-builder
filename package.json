@@ -7,5 +7,5 @@
     "test": "node --test",
     "dev": "python3 -m http.server 8731"
   },
-  "license": "MIT"
+  "license": "SEE LICENSE IN LICENSE"
 }
