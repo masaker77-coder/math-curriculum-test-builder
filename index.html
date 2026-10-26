@@ -79,12 +79,24 @@
     <div class="hint" data-i18n="partsHint">If there are more items than questions, each question is split into parts (a), (b), …</div>
   </div>
 
-  <!-- Booklet cover details -->
-  <div class="controls book-only" style="margin-top:12px">
-    <div class="hint" data-i18n="bookletInfo">Cover page details (optional)</div>
+  <!-- Header details: booklet cover / official exam header (remembered on this device) -->
+  <div class="controls hdr-fields" id="hdrFields" style="margin-top:12px">
+    <div class="hint book-only" data-i18n="bookletInfo">Cover page details (optional)</div>
+    <div class="hint exam-only" data-i18n="examInfo">Exam header details (optional)</div>
     <div class="field" style="flex:1 1 180px"><label for="bkUni" data-i18n="bkUni">University / college</label><input type="text" id="bkUni"></div>
+    <div class="field exam-only" style="flex:1 1 150px"><label for="exDept" data-i18n="exDept">Department</label><input type="text" id="exDept"></div>
     <div class="field" style="flex:1 1 150px"><label for="bkBy" data-i18n="bkBy">Prepared by</label><input type="text" id="bkBy"></div>
     <div class="field" style="flex:1 1 150px"><label for="bkTerm" data-i18n="bkTerm">Semester / year</label><input type="text" id="bkTerm"></div>
+    <div class="field exam-only" style="flex:1 1 110px"><label for="exTime" data-i18n="exTime">Duration</label><input type="text" id="exTime" data-i18n-ph="exTimePh" placeholder="e.g. 2 hours"></div>
+    <div class="field exam-only logo-field"><span class="lbl" data-i18n="logo">Logo</span>
+      <span class="logo-row"><button class="btn ghost" id="logoBtn" type="button" data-i18n="logoPick">Choose image</button><img id="logoPrev" alt="" hidden><button class="btn ghost" id="logoDel" type="button" hidden>&times;</button></span>
+      <input type="file" id="logoFile" accept="image/*" hidden></div>
+    <div class="exam-only exam-extras">
+      <label class="chk"><input type="checkbox" id="exInstr" checked> <span data-i18n="exInstr">Instructions box</span></label>
+      <label class="chk"><input type="checkbox" id="exBubble"> <span data-i18n="exBubble">Bubble answer sheet for multiple choice</span></label>
+      <label class="chk"><input type="checkbox" id="exBlue"> <span data-i18n="exBlue">Table of specifications (exam blueprint)</span></label>
+      <textarea id="exInstrText" rows="2" data-i18n-ph="exInstrPh" placeholder="One instruction per line (leave empty for the default instructions)"></textarea>
+    </div>
   </div>
 
   <!-- Whole-test output options -->
