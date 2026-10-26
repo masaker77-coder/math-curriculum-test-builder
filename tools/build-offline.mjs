@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import { bundle } from '../src/bundle.js';
 
 const root = new URL('../', import.meta.url), read = p => fs.readFileSync(new URL(p, root), 'utf8');
-const order = ['helpers', 'viz', 'proofs', 'intros', 'curriculum', 'i18n', 'cover', 'generators', 'answer', 'practice', 'bundle', 'guide', 'ui', 'main'];
+const order = ['helpers', 'viz', 'proofs', 'intros', 'curriculum', 'i18n', 'cover', 'generators', 'answer', 'practice', 'bundle', 'guide', 'export', 'ui', 'main'];
 const src = Object.fromEntries(order.map(n => [n, read(`src/${n}.js`)]));
 const appOnly = ['helpers', 'viz', 'proofs', 'intros', 'generators', 'answer', 'practice'];        // what the practice-app download needs
 const forBundle = { ...src, ui: src.ui.replace(/import\.meta\.url/g, 'document.baseURI') };
