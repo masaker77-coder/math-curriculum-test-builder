@@ -17,13 +17,15 @@ function enOnly(html){
   }
   return out;
 }
-const ENT={ minus:'-', pi:'π', radic:'√', deg:'°', le:'≤', ge:'≥', lt:'<', gt:'>', infin:'∞', cup:'∪', cap:'∩', lang:'(', rang:')',
+const ENT={ minus:'-', pi:'π', Prime:"''", plusmn:'±', isin:'∈', sum:'∑', int:'∫', part:'∂', rArr:'⇒', mu:'μ', tau:'τ', sigma:'σ', alpha:'α', beta:'β', Delta:'Δ', nabla:'∇', Vert:'‖', radic:'√', deg:'°', le:'≤', ge:'≥', lt:'<', gt:'>', infin:'∞', cup:'∪', cap:'∩', lang:'(', rang:')',
   times:'×', middot:'·', asymp:'≈', lambda:'λ', kappa:'κ', chi:'χ', nbsp:' ', equiv:'≡', rarr:'→', prime:"'", amp:'&', theta:'θ', ne:'≠' };
 export function answerText(html){
-  return enOnly(html)
+  let s=enOnly(html)
     .replace(/&radic;<span style="border-top[^"]*">([\s\S]*?)<\/span>/g, '√($1)')
-    .replace(/<span class="frac"><span class="n">([\s\S]*?)<\/span><span class="d">([\s\S]*?)<\/span><\/span>/g, '($1)/($2)')
-    .replace(/<sup>([^<]*)<\/sup>/g, (_, p)=>/^-?\w+$/.test(p.replace(/&minus;/g,'-')) ? '^'+p : `^(${p})`)
+    .replace(/<span class="frac"><span class="n">([\s\S]*?)<\/span><span class="d">([\s\S]*?)<\/span><\/span>/g, '($1)/($2)');
+  // powers, innermost first: a single number or letter stays bare (x^2), anything longer gets brackets (e^(-3x))
+  for(let k=0; k<5 && /<sup>/.test(s); k++) s=s.replace(/<sup>([^<]*)<\/sup>/g, (_, p)=>/^(\d+(\.\d+)?|[a-zA-Z])$/.test(p) ? '^'+p : `^(${p})`);
+  return s
     .replace(/<\/?sub>/g, '').replace(/<[^>]+>/g, '')
     .replace(/&(#\d+|[a-zA-Z]+);/g, (m, e)=> e[0]==='#' ? String.fromCodePoint(+e.slice(1)) : ENT[e] ?? m)
     .replace(/[−–]/g, '-').replace(/\s+/g, ' ').trim();
@@ -111,6 +113,10 @@ export function answerSpec(html){
   if(!t) return null;
   if(/^(yes|no)\b/i.test(t)) return {kind:'word', v:/^yes/i.test(t)?'yes':'no'};
   if(/^undefined$/i.test(t)) return {kind:'word', v:'undefined'};
+  if(/^(converges|diverges)$/i.test(t)) return {kind:'word', v:t.toLowerCase()};
+  if(/^[IVXLCDM]+$/.test(t)) return {kind:'word', v:t.toLowerCase()};             // a Roman numeral
+  const eg=/^\((\d+)\)\/\((\d+)\) = ((?:\(1\)\/\(\d+\)(?: \+ )?)+)$/.exec(t);          // Egyptian fractions: a/b = 1/x + 1/y + …
+  if(eg) return {kind:'unit', v:+eg[1]/+eg[2], dens:[...eg[3].matchAll(/\(1\)\/\((\d+)\)/g)].map(m=>+m[1])};
   if(t==='∅') return {kind:'word', v:'empty'};
   const dbl=/^(.*=\s*)?(\S+) \(double\)$/.exec(t);                                 // a repeated root: 9 or 9, 9
   if(dbl && isNum(dbl[2])) return {kind:'num', v:dbl[2], dbl:true};
@@ -162,6 +168,7 @@ function sameList(us, es, ordered){
 const WORDS={ yes:['yes','y','نعم','ن','اي','أي'], no:['no','n','لا'], true:['t','true','صح','صواب','ص','صحيح'], false:['f','false','خطأ','خطا','خ','خاطئ'],
   even:['even','زوجية','زوجي'], odd:['odd','فردية','فردي'], neither:['neither','ليست زوجية ولا فردية','لا زوجية ولا فردية','لا هذا ولا ذاك'],
   undefined:['undefined','غير معرفة','غير معرّفة','غير معرف','غير معرّف'], empty:['∅','{}','{ }','empty','phi','فارغة','خالية','المجموعة الخالية'],
+  converges:['converges','convergent','converge','متقاربة','تتقارب','متقارب'], diverges:['diverges','divergent','diverge','متباعدة','تتباعد','متباعد'],
   independent:['independent','مستقلان','مستقل','مستقلة'], dependent:['dependent','not independent','غير مستقلين','غير مستقل','غير مستقلان','غير مستقلة'] };
 
 /* true / false; spec must not be null */
@@ -176,7 +183,7 @@ export function checkAnswer(input, spec){
     }
     case 'list': {
       if(spec.matrix){ const us=s.replace(/[\[\]{}()]/g,' ').split(/[\s,;|]+/).filter(Boolean); return sameList(us, spec.vals, true); }
-      if(spec.set) s=s.replace(/^\{|\}$/g,'');
+      if(spec.set) s=rhs(s).replace(/^\{|\}$/g,'');
       const us=(spec.vals.length===2 && /^\d+\s*:\s*\d+$/.test(s)) ? s.split(':') : splitTop(s, ',;').map(rhs);
       return sameList(us.map(x=>x.trim()), spec.vals, spec.ordered);
     }
@@ -185,9 +192,14 @@ export function checkAnswer(input, spec){
       const parts=splitTop(s, '∪');
       if(parts.length!==spec.ivs.length) return false;
       return spec.ivs.every((iv,i)=>{ const m=/^([(\[])(.*)([)\]])$/.exec(parts[i].trim()); if(!m) return false;
-        if(spec.brackets && (m[1]!==iv.l || m[3]!==iv.r)) return false;
+        if((spec.brackets || /[\[\]]/.test(s)) && (m[1]!==iv.l || m[3]!==iv.r)) return false;
         const ends=splitTop(m[2], ','); if(ends.length!==iv.ends.length) return false;
         return ends.every((e,j)=>{ const x=iv.ends[j]; return /∞/.test(x) ? e.replace(/\+/,'')===x.replace(/\+/,'') : sameNum(e,x); }); });
+    }
+    case 'unit': {                                                                   // distinct unit fractions adding up to the value
+      const terms=rhs(s).split('+').map(x=>x.trim()), dens=terms.map(x=>{ const m=/^\(?1\)?\s*\/\s*\(?(\d+)\)?$/.exec(x); return m ? +m[1] : NaN; });
+      if(!dens.every(Number.isFinite) || new Set(dens).size!==dens.length) return false;
+      return Math.abs(dens.reduce((a,x)=>a+1/x,0)-spec.v) < 1e-12;
     }
     case 'ineq': {
       let m=/^x\s*([≤≥<>])\s*(.+)$/.exec(s);
