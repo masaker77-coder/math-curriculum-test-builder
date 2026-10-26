@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Math Curriculum Test Builder</title>
+<meta name="theme-color" content="#102a5c">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
@@ -151,6 +153,7 @@
   /* ---------- Language: English / عربي / both ---------- */
   .topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:10px}
   .topbar h1{margin:0}
+  .install-btn[hidden]{display:none}
   .langf select{min-width:150px}
   html[data-lang="en"] .i18n>[lang="ar"], html[data-lang="ar"] .i18n>[lang="en"]{display:none}
   .i18n>[lang="en"] .i18n>[lang="ar"], .i18n>[lang="ar"] .i18n>[lang="en"]{display:none}   /* nested text follows its parent */
@@ -570,6 +573,7 @@
 <div class="toolbar noprint">
   <div class="topbar">
     <h1 data-i18n="appTitle">Math Test Builder</h1>
+    <button class="btn ghost install-btn" id="installBtn" type="button" hidden data-i18n="install">Install app</button>
     <div class="field langf">
       <label for="lang" data-i18n="language">Language</label>
       <select id="lang"><option value="en">English</option><option value="ar">عربي</option><option value="both">English + عربي</option></select>
@@ -2396,6 +2400,7 @@ const UI = {
   bpWeight:     ['Weight', 'الوزن النسبي'],
   bpClo:        ['Learning outcome (CLO)', 'مخرج التعلم (CLO)'],
   bpHead:       ['Head of department', 'رئيس القسم'],
+  install:      ['⬇ Install app', '⬇ تثبيت التطبيق'],
   swapQ:        ['Replace this question', 'استبدال هذا السؤال'],
   examplesCol:  ['Examples', 'الأمثلة'],
   topicsW:      ['topics', 'موضوع'],
@@ -6741,6 +6746,16 @@ return { init };
 __m['main'] = (() => {
 const { init } = __m['ui'];
 init();
+
+/* installable app (PWA): works offline once opened, only when served as a site of its own (not inside a frame) */
+const isTop = (() => { try{ return window.self===window.top; }catch(e){ return false; } })();
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && isTop)
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+let installEvt=null;
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); installEvt=e; const b=document.getElementById('installBtn'); if(b) b.hidden=false; });
+document.getElementById('installBtn')?.addEventListener('click', async ()=>{
+  if(!installEvt) return; installEvt.prompt(); await installEvt.userChoice.catch(()=>{}); installEvt=null; document.getElementById('installBtn').hidden=true;
+});
 
 return {  };
 })();

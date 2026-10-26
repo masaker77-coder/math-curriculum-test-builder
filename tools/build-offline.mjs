@@ -12,6 +12,7 @@ const forBundle = { ...src, ui: src.ui.replace(/import\.meta\.url/g, 'document.b
 const js = `window.__APP_SRC = ${JSON.stringify(Object.fromEntries(appOnly.map(n => [n, src[n]])))};\n` + bundle(forBundle, order);
 const html = read('index.html')
   .replace(/<link rel="stylesheet" href="src\/styles\.css">/, () => `<style>\n${read('src/styles.css')}\n</style>`)
+  .replace(/<link rel="(manifest|icon|apple-touch-icon)"[^>]*>\n/g, '')              // the installable-app links only work on the website
   .replace(/<script type="module" src="src\/main\.js"><\/script>/, () => `<script>\n${js.replace(/<\/script/gi, '<\\/script')}\n</script>`);
 if (html.includes('src/main.js') || html.includes('src/styles.css')) throw new Error('index.html layout changed: update the build');
 fs.mkdirSync(new URL('dist/', root), { recursive: true });
