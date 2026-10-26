@@ -105,8 +105,8 @@ function parseCustom(){
 }
 /* generate the items for one section */
 /* a topic's items: its essay questions first, then its multiple-choice ones */
-const nEss = s => s.nEssay ?? (s.mc ? 0 : s.count);
-const nMc  = s => s.nMc ?? (s.mc ? s.count : 0);
+const nEss = s => s.nEssay!=null ? s.nEssay : (s.mc ? 0 : s.count);
+const nMc  = s => s.nMc!=null ? s.nMc : (s.mc ? s.count : 0);
 const sectionItems = s => [...genItems(s.topic, nEss(s), s.diff, false), ...genItems(s.topic, nMc(s), s.diff, true)];
 const tagUid = it => { if(!it.uid) it.uid='i'+Math.random().toString(36).slice(2,10); return it; };
 function genItems(topic, count, d, mc){
@@ -650,7 +650,7 @@ function tablesPageHTML(){
   if(!el('fullTables').checked) return '';
   const need=new Set(); test.sections.forEach(s=>(TOPIC_TABLES[s.topic]||[]).forEach(t=>need.add(t)));
   if(!need.size) return '';
-  const html=['z','t','f'].filter(t=>need.has(t)).map(t=>FULL[t] ||= ({z:zFullHTML, t:tFullHTML, f:fFullHTML})[t]()).join('');
+  const html=['z','t','f'].filter(t=>need.has(t)).map(t=>FULL[t] || (FULL[t]=({z:zFullHTML, t:tFullHTML, f:fFullHTML})[t]())).join('');
   return `<div class="sheet tables-page"><h2>${T('tablesHead')}</h2>${html}</div>`;
 }
 function updateTotal(){
@@ -771,7 +771,7 @@ document.addEventListener('keydown',e=>{
 const PDF_LIB='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
 let pdfLib=null;
 function loadPdfLib(){
-  return pdfLib ||= new Promise((res,rej)=>{
+  return pdfLib = pdfLib || new Promise((res,rej)=>{
     if(window.html2pdf) return res(window.html2pdf);
     const sc=document.createElement('script'); sc.src=PDF_LIB;
     sc.onload=()=>res(window.html2pdf); sc.onerror=()=>{ pdfLib=null; rej(new Error('pdf library did not load')); };
