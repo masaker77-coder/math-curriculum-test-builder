@@ -2599,6 +2599,395 @@ export const G = {
       s:steps(L('Present value (discount the future amount):', 'القيمة الحالية (نخصم المبلغ المستقبلي):')+' '+M(`PV = ${frac('FV','(1 + r)'+sup('t'))}`),
               M(`(1 + ${num(r/100)})${sup(t)} = ${num((1+r/100)**t,6)}`), M(`PV = ${frac(FV, num((1+r/100)**t,6))} &asymp; ${PV.toFixed(2)}`))};
   },
+
+  /* ---- Probability Theory (STAT 212) ---- */
+  probUnion(d){
+    let pa, pb, pab;
+    do{ pa=R(15,80); pb=R(10,70); pab=R(Math.max(0,pa+pb-100), Math.min(pa,pb)); }while(pab===0 && d>1);
+    const P=v=>num(v/100,2), un=pa+pb-pab;
+    if(d===3) return {q:L(`P(A) = ${P(pa)}, P(B) = ${P(pb)} and P(A &cup; B) = ${P(un)}. Find P(A &cap; B).`, `إذا كان ${M(`P(A) = ${P(pa)}, P(B) = ${P(pb)}`)} و ${M(`P(A &cup; B) = ${P(un)}`)} فأوجد ${M('P(A &cap; B)')}.`), a:`<b>${P(pab)}</b>`,
+      s:steps(L('Addition rule:', 'قانون الجمع:')+' '+M('P(A &cup; B) = P(A) + P(B) &minus; P(A &cap; B)'),
+              L('Solve for the intersection:', 'نحل لإيجاد التقاطع:')+' '+M('P(A &cap; B) = P(A) + P(B) &minus; P(A &cup; B)'), M(`P(A &cap; B) = ${P(pa)} + ${P(pb)} &minus; ${P(un)} = ${P(pab)}`))};
+    return {q:L(`P(A) = ${P(pa)}, P(B) = ${P(pb)} and P(A &cap; B) = ${P(pab)}. Find P(A &cup; B).`, `إذا كان ${M(`P(A) = ${P(pa)}, P(B) = ${P(pb)}`)} و ${M(`P(A &cap; B) = ${P(pab)}`)} فأوجد ${M('P(A &cup; B)')}.`), a:`<b>${P(un)}</b>`,
+      s:steps(L('Addition rule: the intersection is counted twice in P(A) + P(B), so subtract it once.', 'قانون الجمع: التقاطع محسوب مرتين في P(A) + P(B) فنطرحه مرة واحدة.'),
+              M('P(A &cup; B) = P(A) + P(B) &minus; P(A &cap; B)'), M(`P(A &cup; B) = ${P(pa)} + ${P(pb)} &minus; ${P(pab)} = ${P(un)}`))};
+  },
+  bayesTheorem(d){
+    const p=pick(d===1?[40,50,60]:[20,25,30,35,40,45,55,60,65,70,75]), a=R(1,d===1?5:9), b=R(1,d===1?5:9), q=100-p;
+    const num1=p*a, den=p*a+q*b, [n,m]=reduceFrac(num1,den);
+    return {q:L(`Machine A makes ${p}% of the items and machine B the rest. ${a}% of A's items and ${b}% of B's items are defective. An item chosen at random is defective. Find the probability that it was made by machine A.`,
+                `تنتج الآلة A نسبة ${M(p+'%')} من القطع والآلة B الباقي. نسبة المعيب ${M(a+'%')} من إنتاج A و ${M(b+'%')} من إنتاج B. اختيرت قطعة عشوائياً فوُجدت معيبة، أوجد احتمال أنها من إنتاج الآلة A.`),
+            a:`<b>${fracStr(n,m)}</b>`,
+      s:steps(L('Let D = defective. The data: ', 'نرمز للمعيب بـ D. المعطيات: ')+M(`P(A) = ${num(p/100)}, P(B) = ${num(q/100)}, P(D|A) = ${num(a/100)}, P(D|B) = ${num(b/100)}`),
+              L('Total probability:', 'الاحتمال الكلي:')+' '+M(`P(D) = P(A)P(D|A) + P(B)P(D|B) = ${num(p/100)}(${num(a/100)}) + ${num(q/100)}(${num(b/100)}) = ${num(den/10000,4)}`),
+              L("Bayes' theorem:", 'مبرهنة بايز:')+' '+M(`P(A|D) = ${frac('P(A)P(D|A)','P(D)')} = ${frac(num(num1/10000,4), num(den/10000,4))} = ${fracStr(n,m)}${m>1?` &asymp; ${num(n/m,4)}`:''}`))};
+  },
+  poissonProb(d){
+    const lam=pick(d===1?[1,2]:d===2?[1,2,3,4]:[1.5,2.5,3,4,5]), k=R(0,d===1?3:5), p=Math.exp(-lam)*lam**k/factorial(k);
+    return {q:L(`X has a Poisson distribution with mean &lambda; = ${lam}. Find P(X = ${k}) (4 decimal places).`, `المتغير ${M('X')} يتبع توزيع بواسون بمتوسط ${M('&lambda; = '+lam)}. أوجد ${M(`P(X = ${k})`)} (لأربعة أرقام عشرية).`),
+            a:`<b>${num(p,4)}</b>`,
+      s:steps(L('Poisson probability:', 'احتمال بواسون:')+' '+M(`P(X = k) = ${frac('e<sup>&minus;&lambda;</sup> &lambda;<sup>k</sup>','k!')}`),
+              M(`P(X = ${k}) = ${frac(`e<sup>&minus;${lam}</sup> &times; ${lam}<sup>${k}</sup>`, `${k}!`)} = ${frac(`${num(Math.exp(-lam),6)} &times; ${num(lam**k,4)}`, factorial(k))}`),
+              M(`P(X = ${k}) &asymp; ${num(p,4)}`))};
+  },
+
+  /* ---- Financial mathematics (MATH 321, MATH 371) ---- */
+  annuityPV(d){
+    const P=R(2,30)*100, r=R(2,d===1?8:12), n=R(3,d===1?6:20), i=r/100, PV=P*(1-(1+i)**-n)/i;
+    return {q:L(`Find the present value of an annuity of $${P} paid at the end of each year for ${n} years at ${r}% compounded annually.`, `أوجد القيمة الحالية لدفعات سنوية قدرها ${M('$'+P)} تُدفع في نهاية كل سنة لمدة ${n} سنة بمعدل ${M(r+'%')} مركّب سنوياً.`),
+            a:`<b>$${PV.toFixed(2)}</b>`,
+      s:steps(L('Present value of an ordinary annuity:', 'القيمة الحالية للدفعات العادية:')+' '+M(`PV = P ${frac(`1 &minus; (1 + i)<sup>&minus;n</sup>`,'i')}`),
+              M(`(1 + ${num(i)})<sup>&minus;${n}</sup> = ${num((1+i)**-n,6)}`),
+              M(`PV = ${P} &times; ${frac(`1 &minus; ${num((1+i)**-n,6)}`, num(i))} = ${P} &times; ${num((1-(1+i)**-n)/i,6)} &asymp; ${PV.toFixed(2)}`))};
+  },
+  loanPayment(d){
+    const monthly=d===3, Lo=R(5,60)*1000, r=R(3,12), yrs=R(2,d===1?5:10), m=monthly?12:1, i=r/100/m, n=yrs*m, pay=Lo*i/(1-(1+i)**-n);
+    return {q:L(`A loan of $${Lo} is repaid by equal ${monthly?'monthly':'annual'} payments over ${yrs} years at ${r}% ${monthly?'compounded monthly':'per year'}. Find the payment.`,
+                `قرض قدره ${M('$'+Lo)} يُسدَّد بدفعات ${monthly?'شهرية':'سنوية'} متساوية خلال ${yrs} سنوات بمعدل ${M(r+'%')} ${monthly?'مركّب شهرياً':'سنوياً'}. أوجد قيمة الدفعة.`),
+            a:`<b>$${pay.toFixed(2)}</b>`,
+      s:steps(L('Amortization (the loan is the present value of the payments):', 'الاستهلاك (القرض هو القيمة الحالية للدفعات):')+' '+M(`R = L ${frac('i','1 &minus; (1 + i)<sup>&minus;n</sup>')}`),
+              M(`i = ${monthly?`${frac(num(r/100),12)} = `:''}${num(i,6)}, &nbsp; n = ${n}`),
+              M(`(1 + i)<sup>&minus;${n}</sup> = ${num((1+i)**-n,6)}`),
+              M(`R = ${Lo} &times; ${frac(num(i,6), `1 &minus; ${num((1+i)**-n,6)}`)} &asymp; ${pay.toFixed(2)}`))};
+  },
+  continuousCompound(d){
+    const P=R(1,30)*100, r=R(2,d===1?8:12), t=R(1,d===1?5:15), A=P*Math.exp(r/100*t);
+    return {q:L(`$${P} is invested at ${r}% compounded continuously for ${t} years. Find the amount.`, `استُثمر مبلغ ${M('$'+P)} بمعدل ${M(r+'%')} مركّب تركيباً مستمراً لمدة ${t} سنوات. أوجد جملة المبلغ.`),
+            a:`<b>$${A.toFixed(2)}</b>`,
+      s:steps(L('Continuous compounding:', 'التركيب المستمر:')+' '+M('A = Pe<sup>rt</sup>'),
+              M(`rt = ${num(r/100)} &times; ${t} = ${num(r/100*t,4)}`), M(`A = ${P}e<sup>${num(r/100*t,4)}</sup> = ${P} &times; ${num(Math.exp(r/100*t),6)} &asymp; ${A.toFixed(2)}`))};
+  },
+
+  /* ---- Ordinary differential equations (MATH 333) ---- */
+  linearFirstOrder(d){
+    const a=R(1,d===1?3:5), m=R(d===1?0:-4,5), b=a*m, c=nz(d===1?1:-6,6), y0=m+c;
+    const sol=`${m?m+' ':''}${m?(c<0?'&minus; ':'+ '):(c<0?'&minus;':'')}${Math.abs(c)===1?'':Math.abs(c)}e<sup>&minus;${a===1?'':a}x</sup>`;
+    return {q:L(`Solve the initial value problem:`, `حل مسألة القيمة الابتدائية:`)+'<br>'+align([[`y&prime;${term(a,'y')}`,'=',b],['y(0)','=',y0]], true),
+            a:`<b>y = ${sol}</b>`,
+      s:steps(L('Linear equation y′ + ay = b: the integrating factor is ', 'معادلة خطية y′ + ay = b: عامل التكامل هو ')+M(`&mu; = e<sup>${a===1?'':a}x</sup>`),
+              M(`(y e<sup>${a===1?'':a}x</sup>)&prime; = ${b}e<sup>${a===1?'':a}x</sup> &rArr; y e<sup>${a===1?'':a}x</sup> = ${frac(b,a)}e<sup>${a===1?'':a}x</sup> + C`),
+              M(`y = ${sgn(m)} + Ce<sup>&minus;${a===1?'':a}x</sup>`),
+              L('Use the initial condition:', 'نستخدم الشرط الابتدائي:')+' '+M(`y(0) = ${m} + C = ${y0} &rArr; C = ${c}`), M(`y = ${sol}`))};
+  },
+  separableODE(d){
+    const h=nz(d===1?1:-2,3), k=2*h, y0=nz(d===1?1:-5,6);
+    const ex=`${h===1?'':h===-1?'&minus;':sgn(h)}x<sup>2</sup>`;
+    return {q:L(`Solve the initial value problem:`, `حل مسألة القيمة الابتدائية:`)+'<br>'+align([['y&prime;','=',`${sgn(k)}xy`],['y(0)','=',y0]], true),
+            a:`<b>y = ${y0===1?'':y0===-1?'&minus;':sgn(y0)}e<sup>${ex}</sup></b>`,
+      s:steps(L('Separate the variables:', 'نفصل المتغيرات:')+' '+M(`${frac('dy','y')} = ${k}x dx`),
+              L('Integrate both sides:', 'نكامل الطرفين:')+' '+M(`ln|y| = ${h===1?'':sgn(h)}x<sup>2</sup> + C &rArr; y = Ae<sup>${ex}</sup>`),
+              L('Use the initial condition:', 'نستخدم الشرط الابتدائي:')+' '+M(`y(0) = A = ${y0}`), M(`y = ${y0===1?'':y0===-1?'&minus;':sgn(y0)}e<sup>${ex}</sup>`))};
+  },
+  odeGeneral(d){
+    const kind=d===1?'real':pick(d===2?['real','double']:['real','double','complex']);
+    let b, c, roots, sol;
+    const ex=r=>`e<sup>${r===1?'':r===-1?'&minus;':sgn(r)}x</sup>`;
+    if(kind==='real'){ let r1, r2; do{ r1=R(-5,5); r2=R(-5,5); }while(r1===r2); b=-(r1+r2); c=r1*r2;
+      const lo=Math.min(r1,r2), hi=Math.max(r1,r2);
+      roots=`r = ${sgn(lo)}, ${sgn(hi)}`; sol=`y = C<sub>1</sub>${lo?ex(lo):''} + C<sub>2</sub>${hi?ex(hi):''}`; }
+    else if(kind==='double'){ const r=nz(-4,4); b=-2*r; c=r*r; roots=`r = ${sgn(r)} (${Li('double','مكرر')})`; sol=`y = (C<sub>1</sub> + C<sub>2</sub>x)${ex(r)}`; }
+    else { const al=R(-3,3), be=R(1,4); b=-2*al; c=al*al+be*be; roots=`r = ${al?sgn(al)+' ':''}&plusmn; ${be===1?'':be}i`;
+      sol=`y = ${al?ex(al):''}(C<sub>1</sub>cos ${be===1?'':be}x + C<sub>2</sub>sin ${be===1?'':be}x)`; }
+    const eq=`y&Prime;${term(b,'y&prime;')}${term(c,'y')} = 0`;
+    return {q:L(`Find the general solution of ${eq}.`, `أوجد الحل العام للمعادلة ${M(eq)}.`), a:`<b>${sol}</b>`,
+      s:steps(L('Try y = eʳˣ: the characteristic equation is', 'نجرب y = eʳˣ فتكون المعادلة المميزة')+' '+M(`r<sup>2</sup>${term(b,'r')}${term(c,'')} = 0`),
+              L('Its roots:', 'جذورها:')+' '+M(roots),
+              kind==='real' ? L('Two different real roots: y = C₁e^{r₁x} + C₂e^{r₂x}.', 'جذران حقيقيان مختلفان: y = C₁e^{r₁x} + C₂e^{r₂x}.')
+                : kind==='double' ? L('A repeated root r: y = (C₁ + C₂x)eʳˣ.', 'جذر مكرر r: y = (C₁ + C₂x)eʳˣ.')
+                : L('Complex roots α ± βi: y = e^{αx}(C₁cos βx + C₂sin βx).', 'جذران مركبان α ± βi: y = e^{αx}(C₁cos βx + C₂sin βx).'),
+              M(sol))};
+  },
+
+  /* ---- Partial differential equations (MATH 315) ---- */
+  dalembertValue(d){
+    const c=R(1,d===1?2:4), a=nz(-3,3), b=R(-4,4), k=d===3?nz(-3,3):0, x0=R(-3,3), t0=R(1,3);
+    const f=`${lead(a,'x'+sup(2))}${term(b,'x')}`, u=a*(x0*x0+c*c*t0*t0)+b*x0+k*t0;
+    const fx=x=>a*x*x+b*x, p=x0+c*t0, m=x0-c*t0;
+    return {q:L(`u<sub>tt</sub> = ${c*c===1?'':c*c}u<sub>xx</sub>, &nbsp;u(x, 0) = ${f}, &nbsp;u<sub>t</sub>(x, 0) = ${k}. Use d'Alembert's formula to find u(${x0}, ${t0}).`,
+                `${M(`u<sub>tt</sub> = ${c*c===1?'':c*c}u<sub>xx</sub>`)}، ${M(`u(x, 0) = ${f}`)}، ${M(`u<sub>t</sub>(x, 0) = ${k}`)}. استخدم صيغة دالمبير لإيجاد ${M(`u(${x0}, ${t0})`)}.`),
+            a:`<b>${sgn(u)}</b>`,
+      s:steps(L("d'Alembert's formula:", 'صيغة دالمبير:')+' '+M(`u(x, t) = ${frac('f(x + ct) + f(x &minus; ct)',2)} + ${frac(1,'2c')}&int;<sub>x&minus;ct</sub><sup>x+ct</sup> g(s) ds`)+', '+M(`c = ${c}`),
+              M(`x + ct = ${p}, &nbsp; x &minus; ct = ${m}`),
+              M(`${frac(`f(${p}) + f(${m})`,2)} = ${frac(`${fx(p)} + ${sgn(fx(m))}`,2)} = ${num((fx(p)+fx(m))/2)}`),
+              k ? M(`${frac(1,2*c)}&int;<sub>${m}</sub><sup>${p}</sup> ${k} ds = ${frac(1,2*c)} &times; ${k} &times; ${p-m} = ${k*t0}`) : L('g = 0, so the integral term is zero.', 'g = 0 فيكون حد التكامل صفراً.'),
+              M(`u(${x0}, ${t0}) = ${sgn(u)}`))};
+  },
+  dirichletEigen(d){
+    const Lx=pick(d===1?[1,'&pi;']:[1,2,3,'&pi;']), n=R(1,d===1?3:5), pi=Lx==='&pi;';
+    const ans = pi ? `${n*n}` : (()=>{ const [p,q]=reduceFrac(n*n, Lx*Lx); return `${q===1?(p===1?'':p):frac(p,q)}&pi;<sup>2</sup>`; })();
+    return {q:L(`Find the eigenvalue &lambda;<sub>${n}</sub> of X&Prime; + &lambda;X = 0, X(0) = X(${Lx}) = 0.`, `أوجد القيمة الذاتية ${M('&lambda;<sub>'+n+'</sub>')} للمسألة ${M(`X&Prime; + &lambda;X = 0, X(0) = X(${Lx}) = 0`)}.`),
+            a:`<b>${ans}</b>`,
+      s:steps(L('For λ > 0, X = A cos √λ x + B sin √λ x; X(0) = 0 gives A = 0.', 'عندما λ > 0 يكون X = A cos √λ x + B sin √λ x؛ والشرط X(0) = 0 يعطي A = 0.'),
+              L('X(L) = 0 with B ≠ 0 needs sin(√λ L) = 0, so √λ L = nπ:', 'الشرط X(L) = 0 مع B ≠ 0 يتطلب sin(√λ L) = 0 أي √λ L = nπ:')+' '+M(`&lambda;<sub>n</sub> = (${frac('n&pi;','L')})<sup>2</sup>`),
+              M(`&lambda;<sub>${n}</sub> = (${Lx===1?`${n===1?'':n}&pi;`:frac(`${n===1?'':n}&pi;`, Lx)})<sup>2</sup> = ${ans}`)+', '+M(`X<sub>${n}</sub> = sin ${pi?(n===1?'':n)+'x':Lx===1?`${n===1?'':n}&pi;x`:frac(`${n===1?'':n}&pi;x`, Lx)}`))};
+  },
+  fourierSineCoef(d){
+    const k=R(1,d===1?1:5), n=R(1,d===1?4:9), odd=n%2===1;
+    const [p,q]=reduceFrac(4*k, n), ans = odd ? frac(p, `${q===1?'':q}&pi;`) : '0';
+    return {q:L(`f(x) = ${k} on (0, &pi;). Find the Fourier sine coefficient b<sub>${n}</sub>.`, `${M(`f(x) = ${k}`)} على ${M('(0, &pi;)')}. أوجد معامل فورييه الجيبي ${M('b<sub>'+n+'</sub>')}.`),
+            a:`<b>${ans}</b>`,
+      s:steps(L('Sine coefficients on (0, π):', 'معاملات الجيب على (0, π):')+' '+M(`b<sub>n</sub> = ${frac(2,'&pi;')}&int;<sub>0</sub><sup>&pi;</sup> f(x) sin nx dx`),
+              M(`b<sub>${n}</sub> = ${frac(2,'&pi;')}&int;<sub>0</sub><sup>&pi;</sup> ${k} sin ${n===1?'':n}x dx = ${frac(2*k,`${n===1?'':n}&pi;`)}(1 &minus; cos ${n===1?'':n}&pi;)`),
+              L(`cos ${n}π = ${odd?'−1':'1'}, so`, `cos ${n}π = ${odd?'−1':'1'} إذن`)+' '+M(`b<sub>${n}</sub> = ${odd?`${frac(4*k,`${n===1?'':n}&pi;`)}${n===1&&k===1?'':` = ${ans}`}`:'0'}`))};
+  },
+
+  /* ---- Real analysis (MATH 383, MATH 331) ---- */
+  supInf(d){
+    const fam=d===1?0:pick([0,1]), a=R(-3,3), b=nz(d===1?1:-4,4);
+    let set, sup0, inf0, why;
+    if(fam===0){ set=`{${a?sgn(a)+' ':''}${b<0?'&minus;':a?'+':''} ${frac(Math.abs(b),'n')} : n &isin; &#8469;}`;
+      sup0 = b>0 ? a+b : a; inf0 = b>0 ? a : a+b;
+      why = b>0 ? L(`The terms decrease from ${a+b} (n = 1) towards ${a}: the largest is the first, and they approach ${a} without reaching it.`, `الحدود تتناقص من ${a+b} (عند n = 1) نحو ${a}: أكبرها الحد الأول، وتقترب من ${a} دون أن تبلغه.`)
+                : L(`The terms increase from ${a+b} (n = 1) towards ${a}: the smallest is the first, and they approach ${a} without reaching it.`, `الحدود تتزايد من ${a+b} (عند n = 1) نحو ${a}: أصغرها الحد الأول، وتقترب من ${a} دون أن تبلغه.`); }
+    else { const B=Math.abs(b); set=`{${a?sgn(a)+' + ':''}${frac(`${B===1?'':B}(&minus;1)<sup>n</sup>`,'n')} : n &isin; &#8469;}`;
+      sup0 = a+B/2; inf0 = a-B;
+      why = L(`Odd n give values below ${a}, the smallest at n = 1: ${a-B}; even n give values above ${a}, the largest at n = 2: ${num(a+B/2)}.`, `القيم عند n فردي أقل من ${a} وأصغرها عند n = 1 وهو ${a-B}، وعند n زوجي أكبر من ${a} وأكبرها عند n = 2 وهو ${num(a+B/2)}.`); }
+    const S=v=>Number.isInteger(v)?sgn(v):fracStr(Math.round(v*2),2);
+    return {q:L(`Find sup S and inf S for S = ${set}.`, `أوجد ${M('sup S')} و ${M('inf S')} للمجموعة ${M('S = '+set)}.`), a:`<b>sup S = ${S(sup0)}, inf S = ${S(inf0)}</b>`,
+      s:steps(L('Write out the first terms:', 'نكتب الحدود الأولى:')+' '+M([1,2,3,4].map(n=>fam===0?fracStr(a*n+b,n):fracStr(a*n+Math.abs(b)*(n%2?-1:1),n)).join(', ')+', …'),
+              why, M(`sup S = ${S(sup0)}, &nbsp; inf S = ${S(inf0)}`))};
+  },
+  ratioTestLimit(d){
+    const c=R(2,d===1?3:6), kind=pick(d===1?['exp-fact','poly-exp']:['exp-fact','poly-exp','fact-exp','exp-poly']), k=R(1,3);
+    const T={ 'exp-fact':[frac(`${c}<sup>n</sup>`,'n!'), `${frac(c,'n + 1')} &rarr; 0`, '0'],
+              'poly-exp':[frac(`n<sup>${k}</sup>`,`${c}<sup>n</sup>`), `(${frac('n + 1','n')})<sup>${k}</sup> &middot; ${frac(1,c)} &rarr; ${frac(1,c)}`, frac(1,c)],
+              'fact-exp':[frac('n!',`${c}<sup>n</sup>`), `${frac('n + 1',c)} &rarr; &infin;`, '&infin;'],
+              'exp-poly':[frac(`${c}<sup>n</sup>`,`n<sup>${k}</sup>`), `${c}(${frac('n','n + 1')})<sup>${k}</sup> &rarr; ${c}`, `${c}`] }[kind];
+    const conv = kind==='exp-fact'||kind==='poly-exp';
+    return {q:L(`Use the ratio test on &sum; a<sub>n</sub> with a<sub>n</sub> = ${T[0]}: find L = lim |a<sub>n+1</sub>/a<sub>n</sub>|.`, `استخدم اختبار النسبة للمتسلسلة ${M('&sum; a<sub>n</sub>')} حيث ${M('a<sub>n</sub> = '+T[0])}: أوجد ${M('L = lim |a<sub>n+1</sub>/a<sub>n</sub>|')}.`),
+            a:`<b>L = ${T[2]}</b>`,
+      s:steps(L('Form the ratio of consecutive terms and simplify:', 'نكوّن نسبة حدين متتاليين ونبسطها:')+' '+M(`${frac('a<sub>n+1</sub>','a<sub>n</sub>')} = ${T[1]}`),
+              M(`L = ${T[2]}`), conv ? L('L < 1, so the series converges.', 'L < 1 إذن المتسلسلة متقاربة.') : L('L > 1, so the series diverges.', 'L > 1 إذن المتسلسلة متباعدة.'))};
+  },
+  pSeriesTest(d){
+    const ps=d===1?[[1,1],[2,1],[3,1]]:[[1,1],[2,1],[3,1],[1,2],[3,2],[5,2],[2,3],[4,3],[5,4],[3,4]], [pn,pd]=pick(ps), c=d===3?R(2,9):1, p=pn/pd;
+    const pw = pd===1 ? (pn===1?'':sup(pn)) : sup(`${pn}/${pd}`);
+    const conv=p>1;
+    return {q:L(`Does &sum;<sub>n=1</sub><sup>&infin;</sup> ${frac(c,`n${pw}`)} converge or diverge?`, `هل المتسلسلة ${M(`&sum;<sub>n=1</sub><sup>&infin;</sup> ${frac(c,`n${pw}`)}`)} متقاربة أم متباعدة؟`),
+            a:`<b>${conv?Li('Converges','متقاربة'):Li('Diverges','متباعدة')}</b>`,
+      s:steps(L('A p-series ∑ 1/nᵖ converges exactly when p > 1 (a constant factor does not change this).', 'متسلسلة p أي ∑ 1/nᵖ تتقارب إذا وفقط إذا كان p > 1 (والعامل الثابت لا يغيّر ذلك).'),
+              M(`p = ${pd===1?pn:frac(pn,pd)}${pd===1?'':` = ${num(p,3)}`}`), conv ? L('p > 1: converges.', 'p > 1: متقاربة.') : L(p===1?'p = 1 (the harmonic series): diverges.':'p ≤ 1: diverges.', p===1?'p = 1 (المتسلسلة التوافقية): متباعدة.':'p ≤ 1: متباعدة.'))};
+  },
+
+  /* ---- Topology (MATH 473) ---- */
+  intervalTopology(d){
+    const a=R(-5,2), b=a+R(2,5), lc=pick(['[','(']), rc=pick([']',')']), pt=d===1?null:pick([b+R(1,3), a-R(1,3)]);
+    const ask=pick(d===1?['int','cl']:['int','cl','bd']);
+    const A=`${lc}${sgn(a)}, ${sgn(b)}${rc}${pt!==null?` &cup; {${sgn(pt)}}`:''}`;
+    const ans = ask==='int' ? `(${sgn(a)}, ${sgn(b)})` : ask==='cl' ? `[${sgn(a)}, ${sgn(b)}]${pt!==null?` &cup; {${sgn(pt)}}`:''}` : `{${[a,b,pt].filter(x=>x!==null).sort((x,y)=>x-y).map(sgn).join(', ')}}`;
+    const nm={int:['interior','الداخلية','int A'], cl:['closure','الانغلاق','cl A'], bd:['boundary','الحدود','&part;A']}[ask];
+    return {q:L(`In &#8477; with the usual topology, A = ${A}. Find the ${nm[0]} ${nm[2]}.`, `في ${M('&#8477;')} بالتبولوجيا المعتادة، ${M('A = '+A)}. أوجد ${nm[1]} ${M(nm[2])}.`),
+            a:`<b>${nm[2]} = ${ans}</b>`,
+      s:steps(L('Interior: the points with a whole open interval inside A — the end points and isolated points are not interior.', 'الداخلية: النقاط التي توجد حولها فترة مفتوحة كاملة داخل A — نقاط الطرفين والنقاط المعزولة ليست داخلية.'),
+              L('Closure: A together with its limit points (the end points of the interval).', 'الانغلاق: A مع نقاط نهايتها (طرفا الفترة).'),
+              L('Boundary: closure minus interior.', 'الحدود: الانغلاق مطروحاً منه الداخلية.'), M(`${nm[2]} = ${ans}`))};
+  },
+  metricDistances(d){
+    const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17]]), sx=pick([1,-1]), sy=pick([1,-1]), sw=Math.random()<0.5;
+    const dx=sw?t[1]:t[0], dy=sw?t[0]:t[1], x1=R(-5,5), y1=R(-5,5), x2=x1+sx*dx, y2=y1+sy*dy;
+    return {q:L(`P = (${x1}, ${y1}), Q = (${x2}, ${y2}). Find d<sub>1</sub>(P, Q), d<sub>2</sub>(P, Q) and d<sub>&infin;</sub>(P, Q).`, `${M(`P = (${x1}, ${y1}), Q = (${x2}, ${y2})`)}. أوجد ${M('d<sub>1</sub>(P, Q)')} و ${M('d<sub>2</sub>(P, Q)')} و ${M('d<sub>&infin;</sub>(P, Q)')}.`),
+            a:`<b>d<sub>1</sub> = ${dx+dy}, d<sub>2</sub> = ${t[2]}, d<sub>&infin;</sub> = ${Math.max(dx,dy)}</b>`,
+      s:steps(M(`|x<sub>1</sub> &minus; x<sub>2</sub>| = ${dx}, &nbsp; |y<sub>1</sub> &minus; y<sub>2</sub>| = ${dy}`),
+              L('Taxicab metric (sum):', 'المقياس المنهاتني (المجموع):')+' '+M(`d<sub>1</sub> = ${dx} + ${dy} = ${dx+dy}`),
+              L('Euclidean metric:', 'المقياس الإقليدي:')+' '+M(`d<sub>2</sub> = ${sq(`${dx}<sup>2</sup> + ${dy}<sup>2</sup>`)} = ${t[2]}`),
+              L('Maximum metric:', 'مقياس القيمة العظمى:')+' '+M(`d<sub>&infin;</sub> = max(${dx}, ${dy}) = ${Math.max(dx,dy)}`))};
+  },
+  metricBall(d){
+    if(d>1 && Math.random()<0.5){                                   // discrete metric
+      const r=pick([0.5,1,1.5,2]), big=r>1;
+      return {q:L(`X = {a, b, c, d} with the discrete metric. Find the open ball B(a, ${r}).`, `${M('X = {a, b, c, d}')} مع المقياس المتقطع. أوجد الكرة المفتوحة ${M(`B(a, ${r})`)}.`),
+              a:`<b>B(a, ${r}) = ${big?'{a, b, c, d}':'{a}'}</b>`,
+        s:steps(L('In the discrete metric d(x, y) = 1 for x ≠ y and d(x, x) = 0.', 'في المقياس المتقطع d(x, y) = 1 عندما x ≠ y و d(x, x) = 0.'),
+                big ? L(`Every point is at distance ≤ 1 &lt; ${r} from a, so the ball is all of X.`, `كل نقطة تبعد عن a مسافة ≤ 1 &lt; ${r} فالكرة هي X كلها.`) : L(`Only a itself is at distance &lt; ${r} from a.`, `النقطة a وحدها تبعد عن a مسافة أقل من ${r}.`),
+                M(`B(a, ${r}) = ${big?'{a, b, c, d}':'{a}'}`))};
+    }
+    const x0=R(-6,6), r=R(1,d===1?3:6);
+    return {q:L(`In &#8477; with d(x, y) = |x &minus; y|, find the open ball B(${x0}, ${r}).`, `في ${M('&#8477;')} مع ${M('d(x, y) = |x &minus; y|')}، أوجد الكرة المفتوحة ${M(`B(${x0}, ${r})`)}.`),
+            a:`<b>(${sgn(x0-r)}, ${sgn(x0+r)})</b>`,
+      s:steps(M(`B(${x0}, ${r}) = {x : |x &minus; ${x0}| &lt; ${r}}`), M(`${sgn(x0-r)} &lt; x &lt; ${sgn(x0+r)}`), M(`B(${x0}, ${r}) = (${sgn(x0-r)}, ${sgn(x0+r)})`))};
+  },
+
+  /* ---- Differential geometry (MATH 475) ---- */
+  helixTorsion(d){
+    const r=R(1,d===1?3:8), c=nz(-5,5), ct=`${c===1?'':c===-1?'&minus;':sgn(c)}t`;
+    return {q:L(`Find the torsion of the helix r(t) = (${r} cos t, ${r} sin t, ${ct}).`, `أوجد الالتواء للولب ${M(`r(t) = (${r} cos t, ${r} sin t, ${ct})`)}.`),
+            a:`<b>&tau; = ${fracStr(c, r*r+c*c)}</b>`,
+      s:steps(L('For r(t) = (a cos t, a sin t, bt) the torsion is constant:', 'للولب r(t) = (a cos t, a sin t, bt) يكون الالتواء ثابتاً:')+' '+M(`&tau; = ${frac('b','a<sup>2</sup> + b<sup>2</sup>')}`),
+              L('(It comes from τ = (r′ × r″)·r‴ / |r′ × r″|², with r′ × r″ = (ab sin t, −ab cos t, a²) and r‴ = (a sin t, −a cos t, 0).)', '(وينتج من τ = (r′ × r″)·r‴ / |r′ × r″|² حيث r′ × r″ = (ab sin t, −ab cos t, a²) و r‴ = (a sin t, −a cos t, 0).)'),
+              M(`&tau; = ${frac(c, `${r}<sup>2</sup> + ${c<0?`(${c})`:c}<sup>2</sup>`)} = ${fracStr(c, r*r+c*c)}`))};
+  },
+  curveArcLength(d){
+    if(d===1 || Math.random()<0.5){
+      const v=pick([[1,2,2,3],[2,3,6,7],[1,4,8,9],[4,4,7,9],[2,6,9,11],[6,6,7,11]]).map((x,i)=>i<3&&Math.random()<0.5?-x:x), T=R(1,d===1?3:6), p=[R(-3,3),R(-3,3),R(-3,3)];
+      const comp=(p0,a)=>`${p0?sgn(p0)+' ':''}${a<0?'&minus; ':p0?'+ ':''}${Math.abs(a)===1?'':Math.abs(a)}t`;
+      return {q:L(`Find the length of r(t) = (${comp(p[0],v[0])}, ${comp(p[1],v[1])}, ${comp(p[2],v[2])}) for 0 &le; t &le; ${T}.`, `أوجد طول المنحنى ${M(`r(t) = (${comp(p[0],v[0])}, ${comp(p[1],v[1])}, ${comp(p[2],v[2])})`)} حيث ${M(`0 &le; t &le; ${T}`)}.`),
+              a:`<b>${v[3]*T}</b>`,
+        s:steps(L('Arc length:', 'طول القوس:')+' '+M('s = &int;<sub>a</sub><sup>b</sup> |r&prime;(t)| dt'),
+                M(`r&prime;(t) = (${v.slice(0,3).map(sgn).join(', ')}), &nbsp; |r&prime;(t)| = ${sq(v.slice(0,3).map(x=>x*x).join(' + '))} = ${v[3]}`),
+                M(`s = &int;<sub>0</sub><sup>${T}</sup> ${v[3]} dt = ${v[3]*T}`))};
+    }
+    const Rr=R(2,9), th=pick([['&pi;/2',1,2],['&pi;',1,1],['&pi;/3',1,3],['2&pi;',2,1],['3&pi;/2',3,2]]), [nn,dd]=reduceFrac(Rr*th[1], th[2]);
+    const ans=`${dd===1?(nn===1?'':nn):frac(nn,dd)}&pi;`;
+    return {q:L(`Find the length of the arc r(t) = (${Rr} cos t, ${Rr} sin t) for 0 &le; t &le; ${th[0]}.`, `أوجد طول القوس ${M(`r(t) = (${Rr} cos t, ${Rr} sin t)`)} حيث ${M(`0 &le; t &le; ${th[0]}`)}.`),
+            a:`<b>${ans}</b>`,
+      s:steps(M(`r&prime;(t) = (&minus;${Rr} sin t, ${Rr} cos t), &nbsp; |r&prime;(t)| = ${Rr}`), M(`s = &int;<sub>0</sub><sup>${th[0]}</sup> ${Rr} dt = ${Rr} &times; ${th[0]} = ${ans}`))};
+  },
+  unitTangent(d){
+    const t=pick([[3,4,5],[5,12,13],[8,15,17],[6,8,10]]), r=t[0], c=t[1]*pick([1,-1]), helix=d>1 && Math.random()<0.6;
+    if(helix){ const n=t[2];
+      return {q:L(`Find the unit tangent vector T(0) of r(t) = (${r} cos t, ${r} sin t, ${c}t).`, `أوجد متجه المماس الوحدي ${M('T(0)')} للمنحنى ${M(`r(t) = (${r} cos t, ${r} sin t, ${c}t)`)}.`),
+              a:`<b>T(0) = &lang;0, ${fracStr(r,n)}, ${fracStr(c,n)}&rang;</b>`,
+        s:steps(M(`r&prime;(t) = (&minus;${r} sin t, ${r} cos t, ${c})`), M(`r&prime;(0) = &lang;0, ${r}, ${sgn(c)}&rang;, &nbsp; |r&prime;(0)| = ${sq(`${r*r} + ${c*c}`)} = ${n}`),
+                M(`T(0) = ${frac('r&prime;(0)','|r&prime;(0)|')} = &lang;0, ${fracStr(r,n)}, ${fracStr(c,n)}&rang;`))};
+    }
+    const a=t[0]*pick([1,-1]), b=t[1]*pick([1,-1]), n=t[2], x0=R(-3,3), y0=R(-3,3);
+    const comp=(p0,k)=>`${p0?sgn(p0)+' ':''}${k<0?'&minus; ':p0?'+ ':''}${Math.abs(k)}t`;
+    return {q:L(`Find the unit tangent vector T of the line r(t) = (${comp(x0,a)}, ${comp(y0,b)}).`, `أوجد متجه المماس الوحدي ${M('T')} للمستقيم ${M(`r(t) = (${comp(x0,a)}, ${comp(y0,b)})`)}.`),
+            a:`<b>T = &lang;${fracStr(a,n)}, ${fracStr(b,n)}&rang;</b>`,
+      s:steps(M(`r&prime;(t) = &lang;${sgn(a)}, ${sgn(b)}&rang;, &nbsp; |r&prime;(t)| = ${sq(`${a*a} + ${b*b}`)} = ${n}`), M(`T = ${frac('r&prime;(t)','|r&prime;(t)|')} = &lang;${fracStr(a,n)}, ${fracStr(b,n)}&rang;`))};
+  },
+
+  /* ---- Computational methods for ODEs (MATH 342) ---- */
+  rk4Step(d){
+    const a=R(-2,2), b=nz(-2,2), h=pick(d===1?[0.1]:[0.1,0.2,0.5]), x0=R(0,1), y0=R(-2,3), f=(x,y)=>a*x+b*y;
+    const k1=f(x0,y0), k2=f(x0+h/2,y0+h*k1/2), k3=f(x0+h/2,y0+h*k2/2), k4=f(x0+h,y0+h*k3), y1=y0+h/6*(k1+2*k2+2*k3+k4), N=v=>num(v,6);
+    const fx=`${a?lead(a,'x'):''}${a?term(b,'y'):lead(b,'y')}`;
+    return {q:L(`Use one step of the fourth-order Runge–Kutta method with h = ${h} to approximate y(${num(x0+h)}):`, `استخدم خطوة واحدة من طريقة رونج–كوتا من الرتبة الرابعة بخطوة ${M('h = '+h)} لتقريب ${M(`y(${num(x0+h)})`)}:`)+'<br>'+
+              align([['y&prime;','=',fx],[`y(${x0})`,'=',y0]], true),
+            a:`<b>${N(y1)}</b>`,
+      s:steps(L('RK4:', 'رونج–كوتا الرابعة:')+' '+M(`y<sub>1</sub> = y<sub>0</sub> + ${frac('h',6)}(k<sub>1</sub> + 2k<sub>2</sub> + 2k<sub>3</sub> + k<sub>4</sub>)`),
+              M(`k<sub>1</sub> = f(${x0}, ${y0}) = ${N(k1)}`), M(`k<sub>2</sub> = f(${num(x0+h/2)}, ${N(y0+h*k1/2)}) = ${N(k2)}`),
+              M(`k<sub>3</sub> = f(${num(x0+h/2)}, ${N(y0+h*k2/2)}) = ${N(k3)}`), M(`k<sub>4</sub> = f(${num(x0+h)}, ${N(y0+h*k3)}) = ${N(k4)}`),
+              M(`y<sub>1</sub> = ${y0} + ${frac(h,6)}(${N(k1)} + 2(${N(k2)}) + 2(${N(k3)}) + ${N(k4)}) &asymp; ${N(y1)}`))};
+  },
+  taylorSecond(d){
+    const a=R(-2,2), b=nz(-2,2), h=pick(d===1?[0.1]:[0.1,0.2,0.5]), x0=R(0,1), y0=nz(-2,3);
+    const f=a*x0+b*y0, f2=a+b*f, y1=y0+h*f+h*h/2*f2, N=v=>num(v,6), fx=`${a?lead(a,'x'):''}${a?term(b,'y'):lead(b,'y')}`;
+    return {q:L(`Use one step of Taylor's method of order 2 with h = ${h} to approximate y(${num(x0+h)}):`, `استخدم خطوة واحدة من طريقة تايلور من الرتبة الثانية بخطوة ${M('h = '+h)} لتقريب ${M(`y(${num(x0+h)})`)}:`)+'<br>'+
+              align([['y&prime;','=',fx],[`y(${x0})`,'=',y0]], true),
+            a:`<b>${N(y1)}</b>`,
+      s:steps(L('Taylor order 2:', 'تايلور من الرتبة الثانية:')+' '+M(`y<sub>1</sub> = y<sub>0</sub> + hy&prime;<sub>0</sub> + ${frac('h<sup>2</sup>',2)}y&Prime;<sub>0</sub>`),
+              L('Differentiate the equation:', 'نشتق المعادلة:')+' '+M(`y&Prime; = ${a}${term(b,'y&prime;')}`),
+              M(`y&prime;<sub>0</sub> = ${a}(${x0}) ${b<0?'&minus;':'+'} ${Math.abs(b)}(${y0}) = ${N(f)}, &nbsp; y&Prime;<sub>0</sub> = ${a} ${b<0?'&minus;':'+'} ${Math.abs(b)}(${N(f)}) = ${N(f2)}`),
+              M(`y<sub>1</sub> = ${y0} + ${h}(${N(f)}) + ${frac(`${h}<sup>2</sup>`,2)}(${N(f2)}) = ${N(y1)}`))};
+  },
+  midpointStep(d){
+    const a=R(-2,2), b=nz(-2,2), h=pick(d===1?[0.5]:[0.25,0.5]), x0=R(0,1), y0=R(-2,3), f=(x,y)=>a*x+b*y, N=v=>num(v,6);
+    const k1=f(x0,y0), ym=y0+h/2*k1, k2=f(x0+h/2,ym), y1=y0+h*k2, fx=`${a?lead(a,'x'):''}${a?term(b,'y'):lead(b,'y')}`;
+    return {q:L(`Use one step of the midpoint method with h = ${h} to approximate y(${num(x0+h)}):`, `استخدم خطوة واحدة من طريقة النقطة الوسطى بخطوة ${M('h = '+h)} لتقريب ${M(`y(${num(x0+h)})`)}:`)+'<br>'+
+              align([['y&prime;','=',fx],[`y(${x0})`,'=',y0]], true),
+            a:`<b>${N(y1)}</b>`,
+      s:steps(L('Midpoint method: take the slope at the middle of the step.', 'طريقة النقطة الوسطى: نأخذ الميل عند منتصف الخطوة.')+' '+M(`y<sub>1</sub> = y<sub>0</sub> + h f(x<sub>0</sub> + ${frac('h',2)}, y<sub>0</sub> + ${frac('h',2)}k<sub>1</sub>)`),
+              M(`k<sub>1</sub> = f(${x0}, ${y0}) = ${N(k1)}`), M(`y<sub>0</sub> + ${frac('h',2)}k<sub>1</sub> = ${N(ym)}, &nbsp; k<sub>2</sub> = f(${num(x0+h/2)}, ${N(ym)}) = ${N(k2)}`),
+              M(`y<sub>1</sub> = ${y0} + ${h}(${N(k2)}) = ${N(y1)}`))};
+  },
+
+  /* ---- Integral equations (MATH 416) ---- */
+  volterraSolve(d){
+    const lam=nz(-3,3), c=nz(d===1?1:-4,5);
+    if(d===3){ const B=lam*nz(-2,2), A=c, k=B/lam, C0=A+k;                 // u = A + Bx + λ∫u: u′ = B + λu, u(0) = A
+      const ans=`${C0===1?'':C0===-1?'&minus;':sgn(C0)}e<sup>${lam===1?'':lam===-1?'&minus;':sgn(lam)}x</sup> ${k<0?'+':'&minus;'} ${Math.abs(k)}`;
+      const Bx=`${B<0?'&minus;':'+'} ${Math.abs(B)===1?'':Math.abs(B)}x`, E=`e<sup>${lam===1?'':lam===-1?'&minus;':sgn(lam)}x</sup>`;
+      return {q:L(`Solve the Volterra equation u(x) = ${sgn(A)} ${Bx} ${lam<0?'&minus;':'+'} ${Math.abs(lam)===1?'':Math.abs(lam)}&int;<sub>0</sub><sup>x</sup> u(t) dt.`,
+                  `حل معادلة فولتيرا ${M(`u(x) = ${sgn(A)} ${Bx} ${lam<0?'&minus;':'+'} ${Math.abs(lam)===1?'':Math.abs(lam)}&int;<sub>0</sub><sup>x</sup> u(t) dt`)}.`),
+              a:`<b>u(x) = ${C0?ans:sgn(-k)}</b>`,
+        s:steps(L('Differentiate (Leibniz rule):', 'نشتق (قاعدة لايبنتز):')+' '+M(`u&prime;(x) = ${sgn(B)} ${lam<0?'&minus;':'+'} ${Math.abs(lam)===1?'':Math.abs(lam)}u(x)`)+', '+L('and x = 0 gives', 'وعند x = 0')+' '+M(`u(0) = ${sgn(A)}`),
+                L('Linear ODE: u = Ce^{λx} − B/λ.', 'معادلة خطية: u = Ce^{λx} − B/λ.')+' '+M(`u = C${E} ${k<0?'+':'&minus;'} ${Math.abs(k)}`),
+                M(`u(0) = C ${k<0?'+':'&minus;'} ${Math.abs(k)} = ${A} &rArr; C = ${C0}`), M(`u(x) = ${C0?ans:sgn(-k)}`))};
+    }
+    const ans=`${c===1?'':c===-1?'&minus;':sgn(c)}e<sup>${lam===1?'':lam===-1?'&minus;':sgn(lam)}x</sup>`;
+    return {q:L(`Solve the Volterra equation u(x) = ${c} ${lam<0?'&minus;':'+'} ${Math.abs(lam)===1?'':Math.abs(lam)}&int;<sub>0</sub><sup>x</sup> u(t) dt.`, `حل معادلة فولتيرا ${M(`u(x) = ${c} ${lam<0?'&minus;':'+'} ${Math.abs(lam)===1?'':Math.abs(lam)}&int;<sub>0</sub><sup>x</sup> u(t) dt`)}.`),
+            a:`<b>u(x) = ${ans}</b>`,
+      s:steps(L('Differentiate both sides:', 'نشتق الطرفين:')+' '+M(`u&prime;(x) = ${lam}u(x)`), L('Put x = 0 in the equation:', 'نعوض x = 0 في المعادلة:')+' '+M(`u(0) = ${c}`),
+              M(`u(x) = u(0)e<sup>${lam}x</sup> = ${ans}`))};
+  },
+  kernelEigen(d){
+    const m=R(d===1?1:0,d===1?1:3), a=R(1,d===1?1:5), [p,q]=reduceFrac(2*m+1, a);
+    const K=`${a===1?'':a}${m===0?'':m===1?'xt':`x<sup>${m}</sup>t<sup>${m}</sup>`}`||'1';
+    return {q:L(`Find the eigenvalue &lambda; of u(x) = &lambda;&int;<sub>0</sub><sup>1</sup> ${K||'1'} u(t) dt.`, `أوجد القيمة الذاتية ${M('&lambda;')} للمعادلة ${M(`u(x) = &lambda;&int;<sub>0</sub><sup>1</sup> ${K||'1'} u(t) dt`)}.`),
+            a:`<b>&lambda; = ${fracStr(p,q)}</b>`,
+      s:steps(L('The kernel is separable, so u has the form', 'النواة منفصلة، فيكون الحل على الصورة')+' '+M(`u(x) = A${m===0?'':m===1?'x':`x<sup>${m}</sup>`}`),
+              L('Substitute:', 'نعوض:')+' '+M(`A${m===0?'':m===1?'x':`x<sup>${m}</sup>`} = &lambda;${a===1?'':a}A${m===0?'':m===1?'x':`x<sup>${m}</sup>`}&int;<sub>0</sub><sup>1</sup> t<sup>${2*m}</sup> dt = &lambda;${a===1?'':a}A${m===0?'':m===1?'x':`x<sup>${m}</sup>`} &middot; ${2*m+1===1?'1':frac(1,2*m+1)}`),
+              L('A ≠ 0, so', 'وبما أن A ≠ 0 فإن')+' '+M(`1 = ${frac(`${a===1?'':a}&lambda;`, 2*m+1)} &rArr; &lambda; = ${fracStr(p,q)}`))};
+  },
+
+  /* ---- Functional analysis (MATH 432) ---- */
+  vectorProjection(d){
+    const n=d===1?2:3; let u, v;
+    do{ u=Array.from({length:n},()=>R(-3,3)); v=Array.from({length:n},()=>R(-4,4)); }while(!u.some(Boolean) || !v.some(Boolean));
+    const uv=u.reduce((s,x,i)=>s+x*v[i],0), uu=u.reduce((s,x)=>s+x*x,0), P=u.map(x=>fracStr(uv*x,uu));
+    return {q:L(`Find the orthogonal projection of v = ${vec(v)} onto u = ${vec(u)}.`, `أوجد الإسقاط العمودي للمتجه ${M('v = '+vec(v))} على ${M('u = '+vec(u))}.`),
+            a:`<b>&lang;${P.join(', ')}&rang;</b>`,
+      s:steps(L('Projection onto u:', 'الإسقاط على u:')+' '+M(`proj<sub>u</sub>v = ${frac('&lang;v, u&rang;','&lang;u, u&rang;')}u`),
+              M(`&lang;v, u&rang; = ${uv}, &nbsp; &lang;u, u&rang; = ${uu}`), M(`proj<sub>u</sub>v = ${fracStr(uv,uu)}${vec(u)} = &lang;${P.join(', ')}&rang;`))};
+  },
+  gramSchmidt2(d){
+    const n=d===1?2:3; let v1, v2;
+    do{ v1=Array.from({length:n},()=>R(-3,3)); v2=Array.from({length:n},()=>R(-4,4)); }
+    while(!v1.some(Boolean) || v1.every((x,i)=>x*v2[(i+1)%n]===v2[i]*v1[(i+1)%n]));     // independent
+    const d12=v1.reduce((s,x,i)=>s+x*v2[i],0), d11=v1.reduce((s,x)=>s+x*x,0), w=v2.map((x,i)=>fracStr(x*d11-d12*v1[i], d11));
+    return {q:L(`Apply the Gram–Schmidt process to v<sub>1</sub> = ${vec(v1)}, v<sub>2</sub> = ${vec(v2)}: find the orthogonal vector u<sub>2</sub> (with u<sub>1</sub> = v<sub>1</sub>).`,
+                `طبّق عملية جرام–شميت على ${M(`v<sub>1</sub> = ${vec(v1)}, v<sub>2</sub> = ${vec(v2)}`)}: أوجد المتجه العمودي ${M('u<sub>2</sub>')} (مع ${M('u<sub>1</sub> = v<sub>1</sub>')}).`),
+            a:`<b>u<sub>2</sub> = &lang;${w.join(', ')}&rang;</b>`,
+      s:steps(M(`u<sub>2</sub> = v<sub>2</sub> &minus; ${frac('&lang;v<sub>2</sub>, u<sub>1</sub>&rang;','&lang;u<sub>1</sub>, u<sub>1</sub>&rang;')}u<sub>1</sub>`),
+              M(`&lang;v<sub>2</sub>, u<sub>1</sub>&rang; = ${d12}, &nbsp; &lang;u<sub>1</sub>, u<sub>1</sub>&rang; = ${d11}`),
+              M(`u<sub>2</sub> = ${vec(v2)} &minus; ${fracStr(d12,d11)}${vec(v1)} = &lang;${w.join(', ')}&rang;`),
+              L('Check: ⟨u₂, u₁⟩ = 0.', 'تحقق: ⟨u₂, u₁⟩ = 0.'))};
+  },
+
+  /* ---- History of mathematics (MATH 318) ---- */
+  romanNumerals(d){
+    const n=R(d===1?1:40, d===1?50:d===2?500:3999), V=[[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+    let k=n; const parts=[]; for(const [v,s] of V) while(k>=v){ parts.push([v,s]); k-=v; }
+    const rom=parts.map(p=>p[1]).join('');
+    if(d>1 && Math.random()<0.5) return {q:L(`Write the Roman numeral ${rom} in our (Hindu–Arabic) numerals.`, `اكتب العدد الروماني ${M(rom)} بالأرقام الهندية–العربية.`), a:`<b>${n}</b>`,
+      s:steps(L('Values: I = 1, V = 5, X = 10, L = 50, C = 100, D = 500, M = 1000; a smaller symbol before a larger one is subtracted (IV = 4, XC = 90, CM = 900).', 'القيم: I = 1، V = 5، X = 10، L = 50، C = 100، D = 500، M = 1000؛ والرمز الأصغر قبل الأكبر يُطرح (IV = 4، XC = 90، CM = 900).'),
+              M(parts.map(p=>`${p[1]} = ${p[0]}`).join(', ')), M(`${parts.map(p=>p[0]).join(' + ')} = ${n}`))};
+    return {q:L(`Write ${n} in Roman numerals.`, `اكتب العدد ${n} بالأرقام الرومانية.`), a:`<b>${rom}</b>`,
+      s:steps(L('Split the number into thousands, hundreds, tens and units, using IV, IX, XL, XC, CD, CM for 4s and 9s.', 'نجزّئ العدد إلى آلاف ومئات وعشرات وآحاد، ونستخدم IV و IX و XL و XC و CD و CM للأربعات والتسعات.'),
+              M(`${n} = ${parts.map(p=>p[0]).join(' + ')}`), M(`${parts.map(p=>p[1]).join(' + ')} = ${rom}`))};
+  },
+  babylonian(d){
+    const k=d===1?2:3, digits=Array.from({length:k},(_,i)=>i===0?R(1,d===1?10:30):R(0,59)), n=digits.reduce((s,x)=>s*60+x,0);
+    const expand=digits.map((x,i)=>{ const p=k-1-i; return p===0?`${x}`:`${x} &times; ${p===1?'60':'60'+sup(p)}`; }).join(' + ');
+    if(d>1 && Math.random()<0.5){
+      const st=[]; let m=n; const ds=[]; while(m>0){ st.push(M(`${m} = 60 &times; ${Math.floor(m/60)} + ${m%60}`)); ds.unshift(m%60); m=Math.floor(m/60); }
+      return {q:L(`Write ${n} in the Babylonian base-60 system as (digits separated by commas).`, `اكتب العدد ${n} بالنظام البابلي الستيني (أرقام مفصولة بفواصل).`),
+              a:`<b>(${ds.join(', ')})</b>`,
+        s:steps(L('Divide by 60 repeatedly; the remainders are the base-60 digits, last one first.', 'نقسم على 60 مرة بعد مرة؛ البواقي هي الأرقام الستينية بدءاً من الأخير.'), ...st, M(`${n} = (${ds.join(', ')})<sub>60</sub>`))};
+    }
+    return {q:L(`The Babylonian (base-60) number (${digits.join(', ')})<sub>60</sub> — write it in base 10.`, `العدد البابلي الستيني ${M(`(${digits.join(', ')})<sub>60</sub>`)} — اكتبه بالنظام العشري.`),
+            a:`<b>${n}</b>`,
+      s:steps(L('Each place is worth 60 times the place to its right: 1, 60, 3600, …', 'كل منزلة تساوي 60 ضعف المنزلة التي على يمينها: 1، 60، 3600، …'),
+              M(`${expand}`), M(`= ${digits.map((x,i)=>x*60**(k-1-i)).join(' + ')} = ${n}`))};
+  },
+  egyptianFraction(d){
+    let a, b, terms;
+    for(let t=0;t<500;t++){ b=R(3,d===1?8:d===2?12:19); a=R(2,b-1); if(gcd(a,b)!==1) continue;
+      terms=[]; let x=a, y=b; while(x>0 && terms.length<5){ const c=Math.ceil(y/x); terms.push(c); [x,y]=[x*c-y, y*c]; const g=gcd(x,y)||1; x/=g; y/=g; }
+      if(x===0 && terms.length>=2 && terms.length<=(d===1?2:3) && Math.max(...terms)<=(d===3?2000:400)) break; }
+    const sum=terms.map(c=>frac(1,c)).join(' + ');
+    const st=[]; let x=a, y=b; for(const c of terms){ const [nx,ny]=reduceFrac(x*c-y, y*c);
+      st.push(L(`The largest unit fraction ≤ ${M(frac(x,y))} is ${M(frac(1,c))}`, `أكبر كسر وحدة لا يتجاوز ${M(frac(x,y))} هو ${M(frac(1,c))}`)+(nx?' '+M(`${frac(x,y)} &minus; ${frac(1,c)} = ${frac(nx,ny)}`):'')); [x,y]=[nx,ny]; }
+    return {q:L(`Write ${frac(a,b)} as a sum of different unit fractions (Egyptian fractions) using the greedy method.`, `اكتب ${M(frac(a,b))} مجموعاً لكسور وحدة مختلفة (كسور مصرية) بالطريقة الجشعة.`),
+            a:`<b>${frac(a,b)} = ${sum}</b>`,
+      s:steps(L('Greedy (Fibonacci) method: repeatedly take the largest unit fraction 1/c with c = ⌈denominator ÷ numerator⌉.', 'الطريقة الجشعة (فيبوناتشي): نأخذ كل مرة أكبر كسر وحدة 1/c حيث c = ⌈المقام ÷ البسط⌉.'),
+              ...st, M(`${frac(a,b)} = ${sum}`))};
+  },
+  euclidAlgorithm(d){
+    let a, b; do{ const g=R(1,d===1?9:d===2?25:60); a=g*R(2,d===1?12:40); b=g*R(2,d===1?12:40); if(a<b) [a,b]=[b,a]; }while(a===b || a%b===0);
+    const st=[]; let x=a, y=b; while(y){ st.push(M(`${x} = ${Math.floor(x/y)} &times; ${y} + ${x%y}`)); [x,y]=[y,x%y]; }
+    return {q:L(`Use Euclid's algorithm to find gcd(${a}, ${b}).`, `استخدم خوارزمية إقليدس لإيجاد ${M(`gcd(${a}, ${b})`)}.`), a:`<b>${x}</b>`,
+      s:steps(L('Divide the larger number by the smaller and keep the remainder: gcd(a, b) = gcd(b, a mod b).', 'نقسم العدد الأكبر على الأصغر ونأخذ الباقي: gcd(a, b) = gcd(b, a mod b).'), ...st,
+              L('The last non-zero remainder is the gcd:', 'آخر باقٍ غير صفري هو القاسم المشترك الأكبر:')+' '+M(`gcd(${a}, ${b}) = ${x}`))};
+  },
+  sieveCount(d){
+    const n=d===1?pick([20,25,30]):d===2?pick([40,50,60]):pick([70,80,90,100]), pr=[]; for(let k=2;k<=n;k++) if(isPrimeN(k)) pr.push(k);
+    const lim=Math.floor(Math.sqrt(n)), base=pr.filter(p=>p<=lim);
+    return {q:L(`Use the sieve of Eratosthenes to find how many primes are ≤ ${n}.`, `استخدم غربال إراتوستينس لإيجاد عدد الأعداد الأولية التي لا تزيد على ${n}.`), a:`<b>${pr.length}</b>`,
+      s:steps(L(`List 2, 3, …, ${n}. Cross out the multiples of each prime p with p² ≤ ${n}:`, `نكتب الأعداد 2، 3، …، ${n}، ونشطب مضاعفات كل عدد أولي p حيث p² ≤ ${n}:`)+' '+M(base.join(', ')),
+              L('The numbers left are the primes:', 'الأعداد المتبقية هي الأعداد الأولية:')+' '+M(pr.join(', ')), L('How many:', 'عددها:')+' '+M(pr.length))};
+  },
 };
 
 /* proof topics: one per formula (proof_quadFormula, proof_sampleSizeMeanPf, …), each always proves that formula */
