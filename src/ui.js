@@ -602,7 +602,9 @@ async function downloadApp(){
   const btn=el('appDl'), label=btn.textContent; btn.disabled=true; btn.textContent='…';
   try{
     const names=['helpers','viz','proofs','intros','generators','practice'], src={};
-    await Promise.all(names.map(async n=>{ const r=await fetch(new URL(`./${n}.js`, import.meta.url)); if(!r.ok) throw new Error(n); src[n]=await r.text(); }));
+    await Promise.all(names.map(async n=>{
+      if(window.__APP_SRC && window.__APP_SRC[n]){ src[n]=window.__APP_SRC[n]; return; }   // offline single-file build carries its sources
+      const r=await fetch(new URL(`./${n}.js`, import.meta.url)); if(!r.ok) throw new Error(n); src[n]=await r.text(); }));
     const css=[...document.styleSheets].map(ss=>{ try{ return [...ss.cssRules].map(r=>r.cssText).join('\n'); }catch(e){ return ''; } }).join('\n');
     const cfg={...appConfig(), lang:state.lang==='en'?'en':'ar', standalone:true}, ar=cfg.lang==='ar';
     const html=`<!doctype html><html lang="${ar?'ar':'en'}" dir="${ar?'rtl':'ltr'}" data-lang="${cfg.lang}"><head><meta charset="utf-8">`+
