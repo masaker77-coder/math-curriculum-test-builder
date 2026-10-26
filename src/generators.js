@@ -38,31 +38,56 @@ function sampleText(kind, n, xb, sg){
        : kind==='s' ? [`A random sample of n = ${n} has mean x̄ = ${xb} and standard deviation s = ${sg} (σ unknown).`, `عينة عشوائية حجمها ${M('n = '+n)} متوسطها ${M('x̄ = '+xb)} وانحرافها المعياري ${M('s = '+sg)} (${M('σ')} مجهولة).`]
        : [`A random sample of n = ${n} from a normal population has x̄ = ${xb} and s = ${sg} (σ unknown).`, `عينة عشوائية حجمها ${M('n = '+n)} من مجتمع طبيعي متوسطها ${M('x̄ = '+xb)} و ${M('s = '+sg)} (${M('σ')} مجهولة).`];
 }
+/* raw data (small whole numbers) with its mean and sample standard deviation, and the steps that compute them */
+function rawSample(n, center, spread){
+  let xs; do{ xs=Array.from({length:n},()=>center+R(-spread,spread)); }while(new Set(xs).size<3);
+  const sum=xs.reduce((a,x)=>a+x,0), xb=sum/n, ss=xs.reduce((a,x)=>a+(x-xb)**2,0);
+  return {xs, sum, xb, ss, sd:Math.sqrt(ss/(n-1))};
+}
+const rawSteps = ({xs, sum, xb, ss, sd}) => [
+  L(`Sample mean: ${M(`x&#772; = &Sigma;x / n = ${sum} / ${xs.length} = ${num(xb,4)}`)}`, `متوسط العينة: ${M(`x&#772; = &Sigma;x / n = ${sum} / ${xs.length} = ${num(xb,4)}`)}`),
+  L(`Sample standard deviation: ${M(`s = &radic;(&Sigma;(x &minus; x&#772;)${sup(2)} / (n &minus; 1)) = &radic;(${num(ss,4)} / ${xs.length-1}) = ${num(sd,4)}`)}`,
+    `الانحراف المعياري للعينة: ${M(`s = &radic;(&Sigma;(x &minus; x&#772;)${sup(2)} / (n &minus; 1)) = &radic;(${num(ss,4)} / ${xs.length-1}) = ${num(sd,4)}`)}`)];
+const rawText = xs => [`The values of a random sample of n = ${xs.length} from a normal population are: ${xs.join(', ')}.`,
+  `قيم عينة عشوائية حجمها ${M('n = '+xs.length)} من مجتمع طبيعي هي: ${M(xs.join(', '))}.`];
+const RAW_N = [8, 10, 12, 15];                                          // df = 7, 9, 11, 14 are rows of the t table
 function ciMean(d, kind){
-  const conf=pick(d===1?[95]:[90,95,99]), a2=CONF_A2[conf], n=kind==='t'?pick([9,16,25]):pick([36,49,64,81,100]), rn=Math.sqrt(n), df=n-1;
-  const cv=kind==='t'?tCrit(a2,df):zCrit(a2), sg=R(2,d===3?30:15), xb=R(20,90)+(d>1?R(0,9)/10:0), sym=kind==='z'?'&sigma;':'s';
-  const E=cv*sg/rn, lo=xb-E, hi=xb+E, cs=kind==='t'?`t<sub>&alpha;/2, ${df}</sub>`:'z<sub>&alpha;/2</sub>', [en,ar]=sampleText(kind,n,xb,sg);
+  const conf=pick(d===1?[95]:[90,95,99]), a2=CONF_A2[conf], raw=kind==='t' && d>1 && Math.random()<0.5;
+  let n, xb, sg, en, ar, pre=[];
+  if(raw){ const sm=rawSample(pick(RAW_N), R(12,90), R(2,d===3?9:5)); n=sm.xs.length; xb=sm.xb; sg=sm.sd; [en,ar]=rawText(sm.xs); pre=rawSteps(sm); }
+  else { n=kind==='t'?pick([9,16,25]):pick([36,49,64,81,100]); sg=R(2,d===3?30:15); xb=R(20,90)+(d>1?R(0,9)/10:0); [en,ar]=sampleText(kind,n,xb,sg); }
+  const rn=Math.sqrt(n), df=n-1, cv=kind==='t'?tCrit(a2,df):zCrit(a2), sym=kind==='z'?'&sigma;':'s', X=num(xb,4), S=num(sg,4);
+  const E=cv*sg/rn, lo=xb-E, hi=xb+E, cs=kind==='t'?`t<sub>&alpha;/2, ${df}</sub>`:'z<sub>&alpha;/2</sub>', RN=Number.isInteger(rn)?rn:num(rn,4);
   return {q:L(`${en} Find a ${conf}% confidence interval for μ.`, `${ar} أوجد فترة ثقة ${M(conf+'%')} للمتوسط ${M('μ')}.`),
     a:`<b>(${num(lo,3)}, ${num(hi,3)})</b>`,
-    s:steps(
+    s:steps(...pre,
       L(`${CASE[kind].en}: ${M(`x&#772; &plusmn; ${cs} &middot; ${sym}/&radic;n`)}`, `${CASE[kind].ar}: ${M(`x&#772; &plusmn; ${cs} &middot; ${sym}/&radic;n`)}`),
-      L(`α = ${num(1-conf/100,2)}, α/2 = ${a2}${kind==='t'?`, df = ${df}`:''} ⇒ ${M(`${kind==='t'?'t':'z'} = ${cv.toFixed(3)}`)} (table)`, `${M(`α = ${num(1-conf/100,2)}, α/2 = ${a2}`)}${kind==='t'?`، ${M('df = '+df)}`:''} ⇐ ${M(`${kind==='t'?'t':'z'} = ${cv.toFixed(3)}`)} (من الجدول)`)
+      L(`Confidence ${conf}% ⇒ α = ${num(1-conf/100,2)}, α/2 = ${a2}${kind==='t'?`, df = ${df}`:''} ⇒ ${M(`${kind==='t'?'t':'z'} = ${cv.toFixed(3)}`)} (table)`,
+        `الثقة ${M(conf+'%')} ⇐ ${M(`α = ${num(1-conf/100,2)}, α/2 = ${a2}`)}${kind==='t'?`، ${M('df = '+df)}`:''} ⇐ ${M(`${kind==='t'?'t':'z'} = ${cv.toFixed(3)}`)} (من الجدول)`)
         +(kind==='t'?tTableHTML(a2,df):zTableHTML(a2)),
-      L(`Margin of error: ${M(`E = ${cv.toFixed(3)} &times; ${sg} / &radic;${n} = ${cv.toFixed(3)} &times; ${sg} / ${rn} = ${num(E,3)}`)}`, `هامش الخطأ: ${M(`E = ${cv.toFixed(3)} &times; ${sg} / &radic;${n} = ${num(E,3)}`)}`),
-      L(`Interval: ${M(`${xb} &plusmn; ${num(E,3)} = (${num(lo,3)}, ${num(hi,3)})`)}`, `الفترة: ${M(`${xb} &plusmn; ${num(E,3)} = (${num(lo,3)}, ${num(hi,3)})`)}`)+distPlot({crit:cv, kind:'ci', df:kind==='t'?df:undefined}))};
+      L(`Margin of error: ${M(`E = ${cv.toFixed(3)} &times; ${S} / &radic;${n} = ${cv.toFixed(3)} &times; ${S} / ${RN} = ${num(E,3)}`)}`, `هامش الخطأ: ${M(`E = ${cv.toFixed(3)} &times; ${S} / &radic;${n} = ${num(E,3)}`)}`),
+      L(`Interval: ${M(`${X} &plusmn; ${num(E,3)} = (${num(lo,3)}, ${num(hi,3)})`)}`, `الفترة: ${M(`${X} &plusmn; ${num(E,3)} = (${num(lo,3)}, ${num(hi,3)})`)}`)+distPlot({crit:cv, kind:'ci', df:kind==='t'?df:undefined}))};
 }
+/* hypotheses written as in the course: H₀ with =, ≤ or ≥ and the alternative Hₐ */
+const H0S={two:'=', right:'&le;', left:'&ge;'}, HAS={two:'&ne;', right:'&gt;', left:'&lt;'};
+const CLAIM={two:['changed from','تغيّر عن'], right:['is greater than','أكبر من'], left:['is less than','أقل من']};
+const hyp = (par, tail, v) => align([[`H<sub>0</sub>: ${par}`, H0S[tail], v], [`H<sub>a</sub>: ${par}`, HAS[tail], v]]);
 function testMean(d, kind){
-  const alpha=pick(d===1?[0.05]:[0.05,0.01,0.10]), tail=pick(d===1?['two']:['two','right','left']);
-  const n=kind==='t'?pick([9,16,25]):pick([36,49,64,100]), rn=Math.sqrt(n), df=n-1, se=pick([0.5,1,2]), sg=se*rn, mu0=R(20,90);
-  const a=tail==='two'?alpha/2:alpha, cv=kind==='t'?tCrit(a,df):zCrit(a), sym=kind==='t'?'t':'z';
-  let k; do{ k=R(-7,7)/2; }while(Math.abs(Math.abs(k)-cv)<0.1);                         // statistic value; never on the boundary
-  const xb=+(mu0+k*se).toFixed(2), reject=tail==='two'?Math.abs(k)>cv:tail==='right'?k>cv:k<-cv, H1={two:'&ne;',right:'&gt;',left:'&lt;'}[tail];
-  const [en,ar]=sampleText(kind,n,xb,sg), sd=kind==='z'?'&sigma;':'s';
-  return {q:L(`${en} Test at α = ${alpha}:`, `${ar} اختبر عند ${M(`α = ${alpha}`)}:`)+'<br>'+align([['H₀: μ','=',mu0],['H₁: μ',H1,mu0]]),
+  const alpha=pick(d===1?[0.05]:[0.05,0.01,0.10]), tail=pick(d===1?['two']:['two','right','left']), raw=kind==='t' && d>1 && Math.random()<0.5;
+  let n, xb, sg, mu0, k, en, ar, pre=[], cv, df;
+  for(let tries=0;;tries++){
+    if(raw){ const sm=rawSample(pick(RAW_N), R(20,200), R(3,12)); n=sm.xs.length; xb=sm.xb; sg=sm.sd; mu0=Math.round(xb)+R(-4,4); [en,ar]=rawText(sm.xs); pre=rawSteps(sm); k=(xb-mu0)/(sg/Math.sqrt(n)); }
+    else { n=kind==='t'?pick([9,16,25]):pick([36,49,64,100]); const se=pick([0.5,1,2]); sg=se*Math.sqrt(n); mu0=R(20,90); k=R(-7,7)/2; xb=+(mu0+k*se).toFixed(2); [en,ar]=sampleText(kind,n,xb,sg); }
+    df=n-1; cv=kind==='t'?tCrit(tail==='two'?alpha/2:alpha,df):zCrit(tail==='two'?alpha/2:alpha);
+    if(Math.abs(Math.abs(k)-cv)>=0.1 || tries>200) break;                 // never on the boundary
+  }
+  const a=tail==='two'?alpha/2:alpha, rn=Math.sqrt(n), RN=Number.isInteger(rn)?rn:num(rn,4), sym=kind==='t'?'t':'z', sd=kind==='z'?'&sigma;':'s';
+  const reject=tail==='two'?Math.abs(k)>cv:tail==='right'?k>cv:k<-cv;
+  return {q:L(`${en} Test the hypothesis that the mean ${CLAIM[tail][0]} ${mu0} (with α = ${alpha}).`, `${ar} اختبر الفرضية بأن المتوسط ${CLAIM[tail][1]} ${M(mu0)} (عند ${M(`α = ${alpha}`)}).`)+'<br>'+hyp('μ', tail, mu0),
     a:`<b>${sym} = ${num(k,3)}; ${decision(reject)}</b>`,
-    s:steps(
-      L(`Hypotheses: ${M(`H₀: μ = ${mu0}`)}, ${M(`H₁: μ ${H1} ${mu0}`)} (${tailName(tail).en}); ${CASE[kind].en}`, `الفرضيات: ${M(`H₀: μ = ${mu0}`)}، ${M(`H₁: μ ${H1} ${mu0}`)} (${tailName(tail).ar})؛ ${CASE[kind].ar}`),
-      L(`Test statistic: ${M(`${sym} = (x&#772; &minus; μ₀)/(${sd}/&radic;n) = (${xb} &minus; ${mu0})/(${sg}/${rn}) = ${num(k,3)}`)}`, `إحصاءة الاختبار: ${M(`${sym} = (x&#772; &minus; μ₀)/(${sd}/&radic;n) = (${xb} &minus; ${mu0})/(${sg}/${rn}) = ${num(k,3)}`)}`),
+    s:steps(...pre,
+      L(`Hypotheses: ${M(`H<sub>0</sub>: μ ${H0S[tail]} ${mu0}`)}, ${M(`H<sub>a</sub>: μ ${HAS[tail]} ${mu0}`)} (${tailName(tail).en}); ${CASE[kind].en}`, `الفرضيات: ${M(`H<sub>0</sub>: μ ${H0S[tail]} ${mu0}`)}، ${M(`H<sub>a</sub>: μ ${HAS[tail]} ${mu0}`)} (${tailName(tail).ar})؛ ${CASE[kind].ar}`),
+      L(`Test statistic: ${M(`${sym} = (x&#772; &minus; μ₀)/(${sd}/&radic;n) = (${num(xb,4)} &minus; ${mu0})/(${num(sg,4)}/${RN}) = ${num(k,3)}`)}`, `إحصاءة الاختبار: ${M(`${sym} = (x&#772; &minus; μ₀)/(${sd}/&radic;n) = (${num(xb,4)} &minus; ${mu0})/(${num(sg,4)}/${RN}) = ${num(k,3)}`)}`),
       critStep(tail, alpha, cv, sym, kind==='t'?df:undefined)+(kind==='t'?tTableHTML(a,df):zTableHTML(a)),
       decisionStep(reject, tail, k, cv, sym)+distPlot({crit:cv, kind:tail, stat:k, df:kind==='t'?df:undefined}))};
 }
@@ -2080,9 +2105,12 @@ export const G = {
   ciMeanS(d){ return ciMean(d,'s'); },          // σ unknown, large sample (n ≥ 30)
   ciMeanT(d){ return ciMean(d,'t'); },          // σ unknown, small sample from a normal population
   ciProportion(d){
-    const conf=pick(d===1?[95]:[90,95,99]), a2=CONF_A2[conf], z=zCrit(a2), n=pick([100,200,400,500]), x=R(Math.round(n*0.15),Math.round(n*0.85)), p=x/n;
+    const conf=pick(d===1?[95]:[90,95,99]), a2=CONF_A2[conf], z=zCrit(a2), n=pick(d===1?[100,200,400,500]:[100,150,190,200,250,400,500]), x=R(Math.round(n*0.15),Math.round(n*0.85)), p=x/n;
     const se=Math.sqrt(p*(1-p)/n), E=z*se, lo=p-E, hi=p+E;
-    return {q:L(`In a sample of n = ${n}, ${x} have the characteristic. Find a ${conf}% confidence interval for the proportion p.`,
+    const yn=d>1 && Math.random()<0.5;
+    return {q:yn ? L(`Find a ${conf}% confidence interval for the population proportion P(Yes): n = ${n} {Yes = ${x}, No = ${n-x}}.`,
+                     `أوجد فترة ثقة ${M(conf+'%')} لنسبة المجتمع ${M('P(Yes)')}: ${M(`n = ${n} {Yes = ${x}, No = ${n-x}}`)}.`)
+                 : L(`In a sample of n = ${n}, ${x} have the characteristic. Find a ${conf}% confidence interval for the proportion p.`,
                 `في عينة حجمها ${M('n = '+n)} يوجد ${M(x)} يحملون الصفة. أوجد فترة ثقة ${M(conf+'%')} للنسبة ${M('p')}.`),
       a:`<b>(${num(lo,4)}, ${num(hi,4)})</b>`,
       s:steps(
@@ -2104,9 +2132,9 @@ export const G = {
         L(`${M(`n = (${z.toFixed(3)} &times; ${sg} / ${E})${sup(2)} = ${num(raw,3)}`)} → round <b>up</b> ⇒ ${M(`n = ${n}`)}`, `${M(`n = (${z.toFixed(3)} &times; ${sg} / ${E})${sup(2)} = ${num(raw,3)}`)} ← نقرّب <b>للأعلى</b> ⇐ ${M(`n = ${n}`)}`))};
   },
   sampleSizeProp(d){
-    const conf=pick(d===1?[95]:[90,95,99]), a2=CONF_A2[conf], z=zCrit(a2), E=pick([0.02,0.03,0.04,0.05]), known=d>1&&Math.random()<0.6, p=known?pick([0.1,0.2,0.3,0.4,0.6]):0.5;
+    const conf=pick(d===1?[95]:[90,95,99]), a2=CONF_A2[conf], z=zCrit(a2), E=pick(d===1?[0.02,0.03,0.04,0.05]:[0.01,0.02,0.03,0.04,0.05]), known=d>1&&Math.random()<0.6, p=known?pick([0.1,0.2,0.3,0.35,0.4,0.6,0.67,0.75]):0.5;
     const raw=z*z*p*(1-p)/(E*E), n=Math.ceil(raw-1e-9);
-    return {q:L(`Find the sample size needed to estimate a proportion within E = ${E} with ${conf}% confidence${known?` if a prior estimate is p = ${p}`:' (no prior estimate)'}.`,
+    return {q:L(`Find the sample size necessary to estimate the proportion to be within E = ${E} with ${conf}% confidence${known?`, if p is thought to be approximately p = ${p}`:' (no prior estimate)'}.`,
                 `أوجد حجم العينة اللازم لتقدير نسبة بخطأ ${M('E = '+E)} وبثقة ${M(conf+'%')}${known?` إذا كان التقدير المسبق ${M('p = '+p)}`:' (لا يوجد تقدير مسبق)'}.`),
       a:`<b>n = ${n}</b>`,
       s:steps(
@@ -2120,41 +2148,73 @@ export const G = {
   testMeanS(d){ return testMean(d,'s'); },
   testMeanT(d){ return testMean(d,'t'); },
   testProportion(d){
-    const [p0,n]=pick([[0.5,100],[0.5,400],[0.2,100],[0.2,400],[0.1,900],[0.4,600]]), alpha=pick(d===1?[0.05]:[0.05,0.01,0.10]), tail=pick(d===1?['two']:['two','right','left']);
+    const p0=pick(d===1?[0.5,0.2,0.4]:[0.1,0.2,0.21,0.25,0.3,0.4,0.5,0.6]), n=pick(d===1?[100,400]:[100,200,400,500,600,900]), alpha=pick(d===1?[0.05]:[0.05,0.01,0.10]), tail=pick(d===1?['two']:['two','right','left']);
     const se=Math.sqrt(p0*(1-p0)/n), cv=zCrit(tail==='two'?alpha/2:alpha);
     let x, z; do{ x=Math.round(n*(p0+R(-30,30)/10*se)); z=(x/n-p0)/se; }while(Math.abs(Math.abs(z)-cv)<0.05 || x<=0 || x>=n);
-    const reject = tail==='two'?Math.abs(z)>cv : tail==='right'?z>cv : z<-cv, H1={two:'&ne;',right:'&gt;',left:'&lt;'}[tail];
-    return {q:L(`In n = ${n} trials there are ${x} successes. Test at α = ${alpha}:`,
-                `في ${M('n = '+n)} محاولة كان عدد النجاحات ${M(x)}. اختبر عند ${M(`α = ${alpha}`)}:`)+'<br>'+align([['H₀: p','=',p0],['H₁: p',H1,p0]]),
+    const reject = tail==='two'?Math.abs(z)>cv : tail==='right'?z>cv : z<-cv;
+    return {q:L(`In a sample of n = ${n}, ${x} have the characteristic. Test the hypothesis that the proportion ${CLAIM[tail][0]} ${p0} (with α = ${alpha}).`,
+                `في عينة حجمها ${M('n = '+n)} يوجد ${M(x)} يحملون الصفة. اختبر الفرضية بأن النسبة ${CLAIM[tail][1]} ${M(p0)} (عند ${M(`α = ${alpha}`)}).`)+'<br>'+hyp('P', tail, p0),
       a:`<b>z = ${num(z,3)}; ${decision(reject)}</b>`,
       s:steps(
-        L(`Hypotheses: ${M(`H₀: p = ${p0}`)}, ${M(`H₁: p ${H1} ${p0}`)} (${tailName(tail).en})`, `الفرضيات: ${M(`H₀: p = ${p0}`)}، ${M(`H₁: p ${H1} ${p0}`)} (${tailName(tail).ar})`),
-        L(`Test statistic: ${M(`z = (p&#770; &minus; p₀) / &radic;(p₀(1 &minus; p₀)/n) = (${num(x/n,4)} &minus; ${p0}) / ${num(se,4)} = ${num(z,3)}`)}`, `إحصاءة الاختبار: ${M(`z = (p&#770; &minus; p₀) / &radic;(p₀(1 &minus; p₀)/n) = (${num(x/n,4)} &minus; ${p0}) / ${num(se,4)} = ${num(z,3)}`)}`),
+        L(`Hypotheses: ${M(`H<sub>0</sub>: P ${H0S[tail]} ${p0}`)}, ${M(`H<sub>a</sub>: P ${HAS[tail]} ${p0}`)} (${tailName(tail).en})`, `الفرضيات: ${M(`H<sub>0</sub>: P ${H0S[tail]} ${p0}`)}، ${M(`H<sub>a</sub>: P ${HAS[tail]} ${p0}`)} (${tailName(tail).ar})`),
+        L(`Test statistic: ${M(`z = (p&#770; &minus; P₀) / &radic;(P₀(1 &minus; P₀)/n) = (${num(x/n,4)} &minus; ${p0}) / ${num(se,4)} = ${num(z,3)}`)}`, `إحصاءة الاختبار: ${M(`z = (p&#770; &minus; P₀) / &radic;(P₀(1 &minus; P₀)/n) = (${num(x/n,4)} &minus; ${p0}) / ${num(se,4)} = ${num(z,3)}`)}`),
         critStep(tail, alpha, cv)+zTableHTML(tail==='two'?alpha/2:alpha),
         decisionStep(reject, tail, z, cv)+distPlot({crit:cv, kind:tail, stat:z}))};
   },
   anovaTable(d){
-    const k=pick([3,4]), ni=pick(k===3?[3,4,5,6]:[3,4,5]), N=k*ni, df1=k-1, df2=N-k, cv=fCrit(df1,df2);
-    let msb, mse, F; do{ mse=R(2,d===1?10:20); msb=R(1,mse*8); F=msb/mse; }while(Math.abs(F-cv)<0.15);
-    const ssb=msb*df1, sse=mse*df2, sst=ssb+sse, reject=F>cv, giveSST=d>1&&Math.random()<0.5;
+    const alpha=pick(d===1?[0.05]:[0.10,0.05,0.01]), exam=d>1 && Math.random()<0.5;     // exam: a partly filled table as in the course's final
+    let k, df1, df2, N, ni;
+    if(exam){ k=pick([3,4,5]); df2=R(2*k, 30); N=df2+k; }
+    else { k=pick([3,4,5]); ni=pick(k===3?[3,4,5,6]:k===4?[3,4,5]:[3,4,5,6,7]); N=k*ni; df2=N-k; }
+    df1=k-1; const cv=fCrit(df1,df2,alpha);
+    let msb, mse, F; do{ mse=R(1,d===1?10:20); msb=R(1,mse*8); F=msb/mse; }while(Math.abs(F-cv)<0.15);
+    const ssb=msb*df1, sse=mse*df2, sst=ssb+sse, reject=F>cv, giveSST=exam || (d>1&&Math.random()<0.5);
+    const names = exam ? [Li('Treatment','المعالجات'), Li('Error','الخطأ'), Li('Total','الكلي')] : [Li('Between','بين المجموعات'), Li('Within','داخل المجموعات'), Li('Total','الكلي')];
     const row=(src,ss,df,ms,f)=>`<tr><th>${src}</th><td>${ss}</td><td>${df}</td><td>${ms}</td><td>${f}</td></tr>`;
-    const head=`<tr><th>${Li('Source','المصدر')}</th><th>SS</th><th>df</th><th>MS</th><th>F</th></tr>`;
-    const tq=`<table class="anova">${head}${row(Li('Between','بين المجموعات'),ssb,'?','?','?')}${row(Li('Within','داخل المجموعات'),giveSST?'?':sse,'?','?','')}${row(Li('Total','الكلي'),giveSST?sst:'?','?','','')}</table>`;
-    const ta=`<table class="anova">${head}${row(Li('Between','بين المجموعات'),ssb,df1,msb,num(F,3))}${row(Li('Within','داخل المجموعات'),sse,df2,mse,'')}${row(Li('Total','الكلي'),sst,N-1,'','')}</table>`;
+    const head=`<tr><th>${exam?'ANOVA':Li('Source','المصدر')}</th><th>SS</th><th>${exam?'d. f.':'df'}</th><th>${exam?'Mean':'MS'}</th><th>F${exam?'<sub>Calc</sub>':''}</th></tr>`;
+    const tq = exam ? `<table class="anova">${head}${row(names[0],ssb,df1,'','')}${row(names[1],'','','','')}${row(names[2],sst,N-1,'','')}</table>`
+                    : `<table class="anova">${head}${row(names[0],ssb,'?','?','?')}${row(names[1],giveSST?'?':sse,'?','?','')}${row(names[2],giveSST?sst:'?','?','','')}</table>`;
+    const ta=`<table class="anova">${head}${row(names[0],ssb,df1,msb,num(F,3))}${row(names[1],sse,df2,mse,'')}${row(names[2],sst,N-1,'','')}</table>`;
     const xm=Math.max(cv,F)+1.5, fx=t=>fPdf(t,df1,df2); let ym=0; for(let i=1;i<=100;i++) ym=Math.max(ym,fx(xm*i/100));
     const g=plot({x:[0,xm], y:[0,Math.min(ym*1.15,1.2)], curves:[{f:fx}], fills:[{f:fx,a:cv,b:xm,cls:'rej'}], vlines:[{x:cv,label:'F = '+cv}], points:[{x:F,y:0,label:'F = '+num(F,2),cls:'stat'}]});
-    return {q:L(`One-way ANOVA with k = ${k} groups of ${ni} observations each (N = ${N}). Complete the table and test equality of the means at α = 0.05.`,
-                `تحليل تباين أحادي: ${M('k = '+k)} مجموعات في كل منها ${M(ni)} مشاهدات (${M('N = '+N)}). أكمل الجدول واختبر تساوي المتوسطات عند ${M('α = 0.05')}.`)+tq,
-      a:`<b>F = ${num(F,3)}; ${decision(reject)}</b>`+ta,
+    const mus=[...Array(k).keys()].map(i=>`μ<sub>${i+1}</sub>`).join(' = ');
+    const q = exam
+      ? L(`Test the following hypothesis (for α = ${alpha}):`, `اختبر الفرضية التالية (عند ${M(`α = ${alpha}`)}):`)+'<br>'+align([['H<sub>0</sub>:', '', mus], ['H<sub>a</sub>:', '', Li('not all μ’s are equal','ليست كل المتوسطات متساوية')]])+tq
+      : L(`One-way ANOVA with k = ${k} groups of ${ni} observations each (N = ${N}). Complete the table and test equality of the means at α = ${alpha}.`,
+          `تحليل تباين أحادي: ${M('k = '+k)} مجموعات في كل منها ${M(ni)} مشاهدات (${M('N = '+N)}). أكمل الجدول واختبر تساوي المتوسطات عند ${M(`α = ${alpha}`)}.`)+tq;
+    return {q, a:`<b>F = ${num(F,3)}; ${decision(reject)}</b>`+ta,
       s:steps(
-        L(`Degrees of freedom: ${M(`df₁ = k &minus; 1 = ${df1}`)}, ${M(`df₂ = N &minus; k = ${df2}`)}, ${M(`total = N &minus; 1 = ${N-1}`)}`, `درجات الحرية: ${M(`df₁ = k &minus; 1 = ${df1}`)}، ${M(`df₂ = N &minus; k = ${df2}`)}، ${M(`الكلي = N &minus; 1 = ${N-1}`)}`),
-        giveSST ? L(`${M(`SSW = SST &minus; SSB = ${sst} &minus; ${ssb} = ${sse}`)}`, `${M(`SSW = SST &minus; SSB = ${sst} &minus; ${ssb} = ${sse}`)}`)
-                : L(`${M(`SST = SSB + SSW = ${ssb} + ${sse} = ${sst}`)}`, `${M(`SST = SSB + SSW = ${ssb} + ${sse} = ${sst}`)}`),
-        L(`${M(`MSB = SSB/df₁ = ${ssb}/${df1} = ${msb}`)}, ${M(`MSW = SSW/df₂ = ${sse}/${df2} = ${mse}`)}`, `${M(`MSB = SSB/df₁ = ${ssb}/${df1} = ${msb}`)}، ${M(`MSW = SSW/df₂ = ${sse}/${df2} = ${mse}`)}`),
-        L(`${M(`F = MSB/MSW = ${msb}/${mse} = ${num(F,3)}`)}`, `${M(`F = MSB/MSW = ${msb}/${mse} = ${num(F,3)}`)}`),
-        L(`Critical value ${M(`F<sub>0.05</sub>(${df1}, ${df2}) = ${cv}`)} (table)`, `القيمة الحرجة ${M(`F<sub>0.05</sub>(${df1}, ${df2}) = ${cv}`)} (من الجدول)`)+fTableHTML(df1,df2),
-        L(`${M(`F = ${num(F,3)} ${reject?'&gt;':'&lt;'} ${cv}`)} ⇒ ${decision(reject)} — ${reject?'the group means are not all equal.':'no evidence that the means differ.'}`,
+        exam ? L(`Degrees of freedom: ${M(`df<sub>error</sub> = df<sub>total</sub> &minus; df<sub>treatment</sub> = ${N-1} &minus; ${df1} = ${df2}`)}`, `درجات الحرية: ${M(`df<sub>error</sub> = df<sub>total</sub> &minus; df<sub>treatment</sub> = ${N-1} &minus; ${df1} = ${df2}`)}`)
+             : L(`Degrees of freedom: ${M(`df₁ = k &minus; 1 = ${df1}`)}, ${M(`df₂ = N &minus; k = ${df2}`)}, ${M(`total = N &minus; 1 = ${N-1}`)}`, `درجات الحرية: ${M(`df₁ = k &minus; 1 = ${df1}`)}، ${M(`df₂ = N &minus; k = ${df2}`)}، ${M(`الكلي = N &minus; 1 = ${N-1}`)}`),
+        giveSST ? L(`${M(`SSE = SST &minus; SSB = ${sst} &minus; ${ssb} = ${sse}`)}`, `${M(`SSE = SST &minus; SSB = ${sst} &minus; ${ssb} = ${sse}`)}`)
+                : L(`${M(`SST = SSB + SSE = ${ssb} + ${sse} = ${sst}`)}`, `${M(`SST = SSB + SSE = ${ssb} + ${sse} = ${sst}`)}`),
+        L(`Mean squares: ${M(`MSB = SSB/df₁ = ${ssb}/${df1} = ${msb}`)}, ${M(`MSE = SSE/df₂ = ${sse}/${df2} = ${mse}`)}`, `متوسطات المربعات: ${M(`MSB = SSB/df₁ = ${ssb}/${df1} = ${msb}`)}، ${M(`MSE = SSE/df₂ = ${sse}/${df2} = ${mse}`)}`),
+        L(`${M(`F = MSB/MSE = ${msb}/${mse} = ${num(F,3)}`)}`, `${M(`F = MSB/MSE = ${msb}/${mse} = ${num(F,3)}`)}`),
+        L(`Critical value ${M(`F<sub>${alpha}</sub>(${df1}, ${df2}) = ${cv}`)} (F table for α = ${alpha})`, `القيمة الحرجة ${M(`F<sub>${alpha}</sub>(${df1}, ${df2}) = ${cv}`)} (جدول F عند ${M(`α = ${alpha}`)})`)+fTableHTML(df1,df2,alpha),
+        L(`${M(`F = ${num(F,3)} ${reject?'&gt;':'&lt;'} ${cv}`)} ⇒ ${decision(reject)} — ${reject?'the means are not all equal.':'no evidence that the means differ.'}`,
           `${M(`F = ${num(F,3)} ${reject?'&gt;':'&lt;'} ${cv}`)} ⇐ ${decision(reject)} — ${reject?'المتوسطات ليست كلها متساوية.':'لا دليل على اختلاف المتوسطات.'}`)+g)};
+  },
+  pearsonR(d){
+    const n=d===1?R(5,6):d===2?R(6,8):R(8,10), b=pick([1,-1])*R(1,3), a0=R(5,20);
+    let xs, ys, r;
+    do{ xs=Array.from({length:n},()=>R(2,30)); ys=xs.map(x=>a0+Math.round(b*x/2)+R(-6,6));
+      const mx=xs.reduce((s,x)=>s+x,0)/n, my=ys.reduce((s,y)=>s+y,0)/n, sxy=xs.reduce((s,x,i)=>s+(x-mx)*(ys[i]-my),0), sxx=xs.reduce((s,x)=>s+(x-mx)**2,0), syy=ys.reduce((s,y)=>s+(y-my)**2,0);
+      r=sxy/Math.sqrt(sxx*syy); }while(!Number.isFinite(r) || new Set(xs).size<3);
+    const S=a=>a.reduce((s,v)=>s+v,0), Sx=S(xs), Sy=S(ys), Sxx=S(xs.map(x=>x*x)), Syy=S(ys.map(y=>y*y)), Sxy=S(xs.map((x,i)=>x*ys[i]));
+    const num1=n*Sxy-Sx*Sy, den1=n*Sxx-Sx*Sx, den2=n*Syy-Sy*Sy;
+    const strength = Math.abs(r)>=0.8?['strong','قوي']:Math.abs(r)>=0.5?['moderate','متوسط']:['weak','ضعيف'], sign=r>=0?['positive','طردي']:['negative','عكسي'];
+    const tab=`<table class="stbl"><tr><th>x</th>${xs.map(x=>`<td>${x}</td>`).join('')}<td class="hl">${Sx}</td></tr><tr><th>y</th>${ys.map(y=>`<td>${y}</td>`).join('')}<td class="hl">${Sy}</td></tr>`+
+      `<tr><th>x${sup(2)}</th>${xs.map(x=>`<td>${x*x}</td>`).join('')}<td class="hl">${Sxx}</td></tr><tr><th>y${sup(2)}</th>${ys.map(y=>`<td>${y*y}</td>`).join('')}<td class="hl">${Syy}</td></tr>`+
+      `<tr><th>xy</th>${xs.map((x,i)=>`<td>${x*ys[i]}</td>`).join('')}<td class="hl">${Sxy}</td></tr></table>`;
+    return {q:L(`The table gives two variables x and y for ${n} individuals. Calculate the correlation coefficient r between x and y.`, `يبين الجدول قيم متغيرين ${M('x')} و ${M('y')} لعدد ${n} أفراد. احسب معامل الارتباط ${M('r')} بين ${M('x')} و ${M('y')}.`)+
+              `<table class="stbl"><tr><th>x</th>${xs.map(x=>`<td>${x}</td>`).join('')}</tr><tr><th>y</th>${ys.map(y=>`<td>${y}</td>`).join('')}</tr></table>`,
+            a:`<b>r = ${num(r,4)}</b>`,
+      s:steps(L('Pearson correlation coefficient:', 'معامل ارتباط بيرسون:')+' '+M(`r = ${frac('n&Sigma;xy &minus; &Sigma;x&Sigma;y', `&radic;[n&Sigma;x${sup(2)} &minus; (&Sigma;x)${sup(2)}][n&Sigma;y${sup(2)} &minus; (&Sigma;y)${sup(2)}]`)}`),
+              L('Sums (last column):', 'المجاميع (العمود الأخير):')+tab,
+              M(`n&Sigma;xy &minus; &Sigma;x&Sigma;y = ${n}(${Sxy}) &minus; (${Sx})(${Sy}) = ${num1}`),
+              M(`n&Sigma;x${sup(2)} &minus; (&Sigma;x)${sup(2)} = ${n}(${Sxx}) &minus; ${Sx}${sup(2)} = ${den1}, &nbsp; n&Sigma;y${sup(2)} &minus; (&Sigma;y)${sup(2)} = ${n}(${Syy}) &minus; ${Sy}${sup(2)} = ${den2}`),
+              M(`r = ${frac(num1, `&radic;(${den1} &times; ${den2})`)} = ${num(r,4)}`),
+              L(`A ${strength[0]} ${sign[0]} correlation.`, `ارتباط ${sign[1]} ${strength[1]}.`))};
   },
 
   /* ================= MATH 442 — Computational Methods for PDEs (FDM: exact, approximate, error) ================= */

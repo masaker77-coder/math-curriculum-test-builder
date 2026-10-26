@@ -139,62 +139,107 @@ export function betaI(x,a,b){
   const bt=Math.exp(lnGamma(a+b)-lnGamma(a)-lnGamma(b)+a*Math.log(x)+b*Math.log(1-x));
   return x<(a+1)/(a+b+2) ? bt*betacf(a,b,x)/a : 1-bt*betacf(b,a,1-x)/b;
 }
-/* upper 5% point of F(d1, d2) */
-export function fQuantile05(d1,d2){
-  const upper=x=>1-betaI(d1*x/(d1*x+d2), d1/2, d2/2); let lo=0, hi=1000;
-  for(let i=0;i<100;i++){ const m=(lo+hi)/2; if(upper(m)>0.05) lo=m; else hi=m; }
+/* regularized lower incomplete gamma P(a, x) (series / continued fraction), for the F table's ∞ row */
+function gammaP(a,x){
+  if(x<=0) return 0;
+  const g=Math.exp(-x+a*Math.log(x)-lnGamma(a));
+  if(x<a+1){ let sum=1/a, term=1/a; for(let n=1;n<500;n++){ term*=x/(a+n); sum+=term; if(term<sum*1e-16) break; } return sum*g; }
+  let b=x+1-a, c=1e300, d=1/b, h=d;
+  for(let i=1;i<500;i++){ const an=-i*(i-a); b+=2; d=an*d+b; if(Math.abs(d)<1e-300) d=1e-300; c=b+an/c; if(Math.abs(c)<1e-300) c=1e-300; d=1/d; const del=d*c; h*=del; if(Math.abs(del-1)<1e-16) break; }
+  return 1-g*h;
+}
+/* upper-α point of F(d1, d2); d2 = Infinity gives the χ²(d1)/d1 point */
+export function fQuantile(alpha, d1, d2){
+  const upper = d2===Infinity ? x=>1-gammaP(d1/2, d1*x/2) : x=>1-betaI(d1*x/(d1*x+d2), d1/2, d2/2);
+  let lo=0, hi=5000;
+  for(let i=0;i<120;i++){ const m=(lo+hi)/2; if(upper(m)>alpha) lo=m; else hi=m; }
   return (lo+hi)/2;
 }
+export const fQuantile05 = (d1,d2) => fQuantile(0.05, d1, d2);
 
-/* t table: upper-tail areas (columns) × degrees of freedom 1..30 (the z row is df = ∞) */
+/* The course's t table, exactly as printed (Shaqra University, STAT 302): columns by cumulative probability /
+   one-tail area / two-tail area / confidence level; rows df = 1…30, 40, 60, 80, 100, 1000 and Z. Values are kept as
+   printed (12.71, 31.82 …) so the solutions use the same numbers the students read. */
+export const T_CUM  = ['.50','.75','.80','.85','.90','.95','.975','.99','.995','.999','.9995'];
+export const T_ONE  = [0.50, 0.25, 0.20, 0.15, 0.10, 0.05, 0.025, 0.01, 0.005, 0.001, 0.0005];
+export const T_TWO  = ['1.00','0.50','0.40','0.30','0.20','0.10','0.05','0.02','0.01','0.002','0.001'];
+const T_ONE_S = ['0.50','0.25','0.20','0.15','0.10','0.05','0.025','0.01','0.005','0.001','0.0005'];   // as printed
+export const T_CONF = ['0%','50%','60%','70%','80%','90%','95%','98%','99%','99.8%','99.9%'];
+const T_ROWS = `1 0.000 1.000 1.376 1.963 3.078 6.314 12.71 31.82 63.66 318.31 636.62
+2 0.000 0.816 1.061 1.386 1.886 2.920 4.303 6.965 9.925 22.327 31.599
+3 0.000 0.765 0.978 1.250 1.638 2.353 3.182 4.541 5.841 10.215 12.924
+4 0.000 0.741 0.941 1.190 1.533 2.132 2.776 3.747 4.604 7.173 8.610
+5 0.000 0.727 0.920 1.156 1.476 2.015 2.571 3.365 4.032 5.893 6.869
+6 0.000 0.718 0.906 1.134 1.440 1.943 2.447 3.143 3.707 5.208 5.959
+7 0.000 0.711 0.896 1.119 1.415 1.895 2.365 2.998 3.499 4.785 5.408
+8 0.000 0.706 0.889 1.108 1.397 1.860 2.306 2.896 3.355 4.501 5.041
+9 0.000 0.703 0.883 1.100 1.383 1.833 2.262 2.821 3.250 4.297 4.781
+10 0.000 0.700 0.879 1.093 1.372 1.812 2.228 2.764 3.169 4.144 4.587
+11 0.000 0.697 0.876 1.088 1.363 1.796 2.201 2.718 3.106 4.025 4.437
+12 0.000 0.695 0.873 1.083 1.356 1.782 2.179 2.681 3.055 3.930 4.318
+13 0.000 0.694 0.870 1.079 1.350 1.771 2.160 2.650 3.012 3.852 4.221
+14 0.000 0.692 0.868 1.076 1.345 1.761 2.145 2.624 2.977 3.787 4.140
+15 0.000 0.691 0.866 1.074 1.341 1.753 2.131 2.602 2.947 3.733 4.073
+16 0.000 0.690 0.865 1.071 1.337 1.746 2.120 2.583 2.921 3.686 4.015
+17 0.000 0.689 0.863 1.069 1.333 1.740 2.110 2.567 2.898 3.646 3.965
+18 0.000 0.688 0.862 1.067 1.330 1.734 2.101 2.552 2.878 3.610 3.922
+19 0.000 0.688 0.861 1.066 1.328 1.729 2.093 2.539 2.861 3.579 3.883
+20 0.000 0.687 0.860 1.064 1.325 1.725 2.086 2.528 2.845 3.552 3.850
+21 0.000 0.686 0.859 1.063 1.323 1.721 2.080 2.518 2.831 3.527 3.819
+22 0.000 0.686 0.858 1.061 1.321 1.717 2.074 2.508 2.819 3.505 3.792
+23 0.000 0.685 0.858 1.060 1.319 1.714 2.069 2.500 2.807 3.485 3.768
+24 0.000 0.685 0.857 1.059 1.318 1.711 2.064 2.492 2.797 3.467 3.745
+25 0.000 0.684 0.856 1.058 1.316 1.708 2.060 2.485 2.787 3.450 3.725
+26 0.000 0.684 0.856 1.058 1.315 1.706 2.056 2.479 2.779 3.435 3.707
+27 0.000 0.684 0.855 1.057 1.314 1.703 2.052 2.473 2.771 3.421 3.690
+28 0.000 0.683 0.855 1.056 1.313 1.701 2.048 2.467 2.763 3.408 3.674
+29 0.000 0.683 0.854 1.055 1.311 1.699 2.045 2.462 2.756 3.396 3.659
+30 0.000 0.683 0.854 1.055 1.310 1.697 2.042 2.457 2.750 3.385 3.646
+40 0.000 0.681 0.851 1.050 1.303 1.684 2.021 2.423 2.704 3.307 3.551
+60 0.000 0.679 0.848 1.045 1.296 1.671 2.000 2.390 2.660 3.232 3.460
+80 0.000 0.678 0.846 1.043 1.292 1.664 1.990 2.374 2.639 3.195 3.416
+100 0.000 0.677 0.845 1.042 1.290 1.660 1.984 2.364 2.626 3.174 3.390
+1000 0.000 0.675 0.842 1.037 1.282 1.646 1.962 2.330 2.581 3.098 3.300
+Z 0.000 0.674 0.842 1.036 1.282 1.645 1.960 2.326 2.576 3.090 3.291`;
+export const T_PRINTED = Object.fromEntries(T_ROWS.split('\n').map(l=>{ const [k,...v]=l.trim().split(/\s+/); return [k, v]; }));   // df (or 'Z') → printed strings
+export const T_DFS = Object.keys(T_PRINTED).filter(k=>k!=='Z').map(Number);
+/* the levels used in the course: α = 0.10, 0.05, 0.01 (tests) and 90%, 95%, 99% (intervals) need these one-tail areas */
 export const T_ALPHAS = [0.10, 0.05, 0.025, 0.01, 0.005];
-export const T_TABLE = {
-  1:[3.078,6.314,12.706,31.821,63.657], 2:[1.886,2.920,4.303,6.965,9.925], 3:[1.638,2.353,3.182,4.541,5.841],
-  4:[1.533,2.132,2.776,3.747,4.604], 5:[1.476,2.015,2.571,3.365,4.032], 6:[1.440,1.943,2.447,3.143,3.707],
-  7:[1.415,1.895,2.365,2.998,3.499], 8:[1.397,1.860,2.306,2.896,3.355], 9:[1.383,1.833,2.262,2.821,3.250],
-  10:[1.372,1.812,2.228,2.764,3.169], 11:[1.363,1.796,2.201,2.718,3.106], 12:[1.356,1.782,2.179,2.681,3.055],
-  13:[1.350,1.771,2.160,2.650,3.012], 14:[1.345,1.761,2.145,2.624,2.977], 15:[1.341,1.753,2.131,2.602,2.947],
-  16:[1.337,1.746,2.120,2.583,2.921], 17:[1.333,1.740,2.110,2.567,2.898], 18:[1.330,1.734,2.101,2.552,2.878],
-  19:[1.328,1.729,2.093,2.539,2.861], 20:[1.325,1.725,2.086,2.528,2.845], 21:[1.323,1.721,2.080,2.518,2.831],
-  22:[1.321,1.717,2.074,2.508,2.819], 23:[1.319,1.714,2.069,2.500,2.807], 24:[1.318,1.711,2.064,2.492,2.797],
-  25:[1.316,1.708,2.060,2.485,2.787], 26:[1.315,1.706,2.056,2.479,2.779], 27:[1.314,1.703,2.052,2.473,2.771],
-  28:[1.313,1.701,2.048,2.467,2.763], 29:[1.311,1.699,2.045,2.462,2.756], 30:[1.310,1.697,2.042,2.457,2.750],
-  40:[1.303,1.684,2.021,2.423,2.704], 60:[1.296,1.671,2.000,2.390,2.660], 120:[1.289,1.658,1.980,2.358,2.617],
-};
-export const Z_ROW = [1.282, 1.645, 1.960, 2.326, 2.576];
-export const zCrit = alpha => Z_ROW[T_ALPHAS.indexOf(alpha)];
-export const tCrit = (alpha, df) => T_TABLE[df][T_ALPHAS.indexOf(alpha)];
+const col = a => T_ONE.indexOf(a);
+export const T_TABLE = Object.fromEntries(T_DFS.map(df=>[df, T_ALPHAS.map(a=>+T_PRINTED[df][col(a)])]));
+export const Z_ROW = T_ALPHAS.map(a=>+T_PRINTED.Z[col(a)]);
+export const zCrit = alpha => +T_PRINTED.Z[col(alpha)];
+export const tCrit = (alpha, df) => +T_PRINTED[df][col(alpha)];
+const shown = (row, a) => T_PRINTED[row][col(a)];                       // a value exactly as printed
 
-/* F table, α = 0.05: rows df2 = 2..20, columns df1 = 1..6 */
-export const F_TABLE_05 = {
-  2:[18.51,19.00,19.16,19.25,19.30,19.33], 3:[10.13,9.55,9.28,9.12,9.01,8.94], 4:[7.71,6.94,6.59,6.39,6.26,6.16],
-  5:[6.61,5.79,5.41,5.19,5.05,4.95], 6:[5.99,5.14,4.76,4.53,4.39,4.28], 7:[5.59,4.74,4.35,4.12,3.97,3.87],
-  8:[5.32,4.46,4.07,3.84,3.69,3.58], 9:[5.12,4.26,3.86,3.63,3.48,3.37], 10:[4.96,4.10,3.71,3.48,3.33,3.22],
-  11:[4.84,3.98,3.59,3.36,3.20,3.09], 12:[4.75,3.89,3.49,3.26,3.11,3.00], 13:[4.67,3.81,3.41,3.18,3.03,2.92],
-  14:[4.60,3.74,3.34,3.11,2.96,2.85], 15:[4.54,3.68,3.29,3.06,2.90,2.79], 16:[4.49,3.63,3.24,3.01,2.85,2.74],
-  17:[4.45,3.59,3.20,2.96,2.81,2.70], 18:[4.41,3.55,3.16,2.93,2.77,2.66], 19:[4.38,3.52,3.13,2.90,2.74,2.63],
-  20:[4.35,3.49,3.10,2.87,2.71,2.60],
-};
-export const fCrit = (df1, df2) => F_TABLE_05[df2][df1-1];
+/* F tables for α = 0.10, 0.05, 0.01, laid out like the course's F table: columns df₁ = 1…10, 12, 15; rows df₂ = 1…30, 40, 60, 120, ∞ */
+export const F_ALPHAS = [0.10, 0.05, 0.01];
+export const F_DF1 = [1,2,3,4,5,6,7,8,9,10,12,15];
+export const F_DF2 = [...Array(30).keys()].map(i=>i+1).concat([40,60,120,Infinity]);
+const F_CACHE = {};
+export const fCrit = (df1, df2, alpha=0.05) => F_CACHE[`${alpha},${df1},${df2}`] ??= +fQuantile(alpha, df1, df2).toFixed(5);
+const dfName = v => v===Infinity ? '&infin;' : v;
 
-const fmt3 = v => v.toFixed(3);
-/* excerpt of the z table (the t table's ∞ row) with the used cell highlighted */
-export function zTableHTML(alpha){
-  const head=T_ALPHAS.map(a=>`<th>${a}</th>`).join('');
-  const row=Z_ROW.map((v,i)=>`<td${T_ALPHAS[i]===alpha?' class="hl"':''}>${fmt3(v)}</td>`).join('');
-  return `<table class="stbl"><caption>${L('z table — upper-tail area α','جدول z — المساحة في الذيل الأيمن α')}</caption><tr><th>α</th>${head}</tr><tr><th>z<sub>α</sub></th>${row}</tr></table>`;
+/* excerpt of the course t table with the cell used highlighted: the five columns the course uses and the rows next to df
+   (for z the Z row); the header rows give one-tail and two-tail areas and the bottom row the confidence level */
+function tExcerpt(alpha, rows, hlRow){
+  const cs=T_ALPHAS.map(col);
+  const head=(lbl, arr)=>`<tr><th>${lbl}</th>${cs.map(i=>`<th${T_ONE[i]===alpha?' class="hl"':''}>${arr[i]}</th>`).join('')}</tr>`;
+  return `<table class="stbl ttab"><caption>${L('t table (Z row at the bottom) — the value used is highlighted','جدول t (وفي آخره صف Z) — القيمة المستخدمة مظللة')}</caption>`+
+    head('cum. prob', T_CUM.map(c=>`t<sub>${c}</sub>`))+head('one-tail', T_ONE_S)+head('two-tails', T_TWO)+
+    rows.map(r=>`<tr${r==='Z'?' class="zrow"':/^(6|7|8|9|10|16|17|18|19|20|26|27|28|29|30)$/.test(r)?' class="band"':''}><th>${r==='Z'?'<i>Z</i>':r}</th>${cs.map(i=>`<td${r===hlRow&&T_ONE[i]===alpha?' class="hl"':''}>${T_PRINTED[r][i]}</td>`).join('')}</tr>`).join('')+
+    `<tr class="conf"><th></th>${cs.map(i=>`<td>${T_CONF[i]}</td>`).join('')}</tr><tr class="conf"><th></th><td colspan="${cs.length}">${L('Confidence Level','مستوى الثقة')}</td></tr></table>`;
 }
+export const zTableHTML = alpha => tExcerpt(alpha, ['1000','Z'], 'Z');
 export function tTableHTML(alpha, df){
-  const head=T_ALPHAS.map(a=>`<th>${a}</th>`).join(''), rows=[];
-  for(let r=Math.max(1,df-2);r<=Math.min(30,df+2);r++) if(T_TABLE[r])
-    rows.push(`<tr><th>${r}</th>${T_TABLE[r].map((v,i)=>`<td${r===df&&T_ALPHAS[i]===alpha?' class="hl"':''}>${fmt3(v)}</td>`).join('')}</tr>`);
-  return `<table class="stbl"><caption>${L('t table — upper-tail area α, df = n − 1','جدول t — المساحة في الذيل الأيمن α، درجات الحرية n − 1')}</caption><tr><th>df \\ α</th>${head}</tr>${rows.join('')}</table>`;
+  const i=T_DFS.indexOf(df), rows=T_DFS.slice(Math.max(0,i-2), i+3).map(String);
+  return tExcerpt(alpha, rows, String(df));
 }
-export function fTableHTML(df1, df2){
-  const head=[1,2,3,4,5,6].map(c=>`<th>${c}</th>`).join(''), rows=[];
-  for(let r=Math.max(2,df2-2);r<=Math.min(20,df2+2);r++)
-    rows.push(`<tr><th>${r}</th>${F_TABLE_05[r].map((v,i)=>`<td${r===df2&&i+1===df1?' class="hl"':''}>${v.toFixed(2)}</td>`).join('')}</tr>`);
-  return `<table class="stbl"><caption>${L('F table, α = 0.05 — columns df₁ (between), rows df₂ (within)','جدول F عند α = 0.05 — الأعمدة df₁ (بين المجموعات) والصفوف df₂ (داخل المجموعات)')}</caption><tr><th>df₂ \\ df₁</th>${head}</tr>${rows.join('')}</table>`;
+export function fTableHTML(df1, df2, alpha=0.05){
+  const ci=F_DF1.indexOf(df1), ri=F_DF2.indexOf(df2), cols=F_DF1.slice(Math.max(0,ci-2), ci+3), rows=F_DF2.slice(Math.max(0,ri-2), ri+3);
+  return `<table class="stbl"><caption>${L(`F table for α = ${alpha} — columns df₁ (between / treatment), rows df₂ (within / error)`,`جدول F عند α = ${alpha} — الأعمدة df₁ (بين المجموعات / المعالجات) والصفوف df₂ (داخل المجموعات / الخطأ)`)}</caption>`+
+    `<tr><th>df₂ \\ df₁</th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`+
+    rows.map(r=>`<tr><th>${dfName(r)}</th>${cols.map(c=>`<td${r===df2&&c===df1?' class="hl"':''}>${fCrit(c,r,alpha)}</td>`).join('')}</tr>`).join('')+`</table>`;
 }
 
 /* ---- full tables for the printable "Statistical tables" page ---- */
@@ -203,22 +248,20 @@ export function zFullHTML(){
   for(let r=0;r<=34;r++){ const z0=r/10;
     rows.push(`<tr><th>${z0.toFixed(1)}</th>${cols.map(c=>`<td>${Phi(z0+c/100).toFixed(4)}</td>`).join('')}</tr>`); }
   return `<table class="stbl full"><caption>${L('Standard normal table: Φ(z) = P(Z ≤ z), z ≥ 0 (use Φ(−z) = 1 − Φ(z))','جدول التوزيع الطبيعي المعياري: Φ(z) = P(Z ≤ z) لقيم z ≥ 0 (استخدم Φ(−z) = 1 − Φ(z))')}</caption>
-    <tr><th>z</th>${cols.map(c=>`<th>.0${c}</th>`).join('')}</tr>${rows.join('')}</table>
-    <table class="stbl"><caption>${L('Critical values z<sub>α</sub> (upper-tail area α)','القيم الحرجة z<sub>α</sub> (المساحة في الذيل الأيمن α)')}</caption>
-    <tr><th>α</th>${T_ALPHAS.map(a=>`<th>${a}</th>`).join('')}</tr><tr><th>z<sub>α</sub></th>${Z_ROW.map(v=>`<td>${v.toFixed(3)}</td>`).join('')}</tr></table>`;
+    <tr><th>z</th>${cols.map(c=>`<th>.0${c}</th>`).join('')}</tr>${rows.join('')}</table>`;
 }
+/* the course t table in full, as printed (rows 6–10, 16–20, 26–30 and Z shaded) */
 export function tFullHTML(){
-  const rows=Object.keys(T_TABLE).map(Number).map(r=>`<tr><th>${r}</th>${T_TABLE[r].map(v=>`<td>${v.toFixed(3)}</td>`).join('')}</tr>`);
-  rows.push(`<tr><th>∞</th>${Z_ROW.map(v=>`<td>${v.toFixed(3)}</td>`).join('')}</tr>`);
-  return `<table class="stbl full"><caption>${L('t distribution: critical values t<sub>α, df</sub> (upper-tail area α)','توزيع t: القيم الحرجة t<sub>α, df</sub> (المساحة في الذيل الأيمن α)')}</caption>
-    <tr><th>df \\ α</th>${T_ALPHAS.map(a=>`<th>${a}</th>`).join('')}</tr>${rows.join('')}</table>`;
+  const head=(lbl, arr)=>`<tr><th>${lbl}</th>${arr.map(v=>`<th>${v}</th>`).join('')}</tr>`;
+  const band=r=>/^(6|7|8|9|10|16|17|18|19|20|26|27|28|29|30|Z)$/.test(r);
+  return `<table class="stbl full ttab"><caption>${L('t table (critical values; the Z row gives z)','جدول t (القيم الحرجة؛ وصف Z يعطي قيم z)')}</caption>`+
+    head('cum. prob', T_CUM.map(c=>`t<sub>${c}</sub>`))+head('one-tail', T_ONE_S)+head('two-tails', T_TWO)+`<tr><th>df</th>${T_ONE.map(()=>'<th></th>').join('')}</tr>`+
+    Object.keys(T_PRINTED).sort((a,b)=>(a==='Z')-(b==='Z')||a-b).map(r=>`<tr${band(r)?' class="band"':''}><th>${r==='Z'?'<i>Z</i>':r}</th>${T_PRINTED[r].map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')+
+    `<tr class="conf"><th></th>${T_CONF.map(v=>`<td>${v}</td>`).join('')}</tr><tr class="conf"><th></th><td colspan="${T_CONF.length}">${L('Confidence Level','مستوى الثقة')}</td></tr></table>`;
 }
-export const F_FULL_DF2 = [...Array(30).keys()].map(i=>i+1).concat([40,60,120]);
-export function fFullHTML(){
-  const d1s=[...Array(10).keys()].map(i=>i+1);
-  const rows=F_FULL_DF2.map(d2=>`<tr><th>${d2}</th>${d1s.map(d1=>{ const v=fQuantile05(d1,d2); return `<td>${v>=100?v.toFixed(1):v.toFixed(2)}</td>`; }).join('')}</tr>`);
-  return `<table class="stbl full"><caption>${L('F distribution, α = 0.05: columns df₁ (numerator), rows df₂ (denominator)','توزيع F عند α = 0.05: الأعمدة df₁ (البسط) والصفوف df₂ (المقام)')}</caption>
-    <tr><th>df₂ \\ df₁</th>${d1s.map(c=>`<th>${c}</th>`).join('')}</tr>${rows.join('')}</table>`;
+export function fFullHTML(alphas=F_ALPHAS){
+  return alphas.map(a=>`<table class="stbl full ftab"><caption>${L(`F table for α = ${a}: columns df₁ (numerator), rows df₂ (denominator)`,`جدول F عند α = ${a}: الأعمدة df₁ (البسط) والصفوف df₂ (المقام)`)}</caption>
+    <tr><th>df₂ \\ df₁</th>${F_DF1.map(c=>`<th>${c}</th>`).join('')}</tr>${F_DF2.map(r=>`<tr><th>${dfName(r)}</th>${F_DF1.map(c=>`<td>${fCrit(c,r,a)}</td>`).join('')}</tr>`).join('')}</table>`).join('');
 }
 
 /* bell curve (normal or t) with shaded regions: kind 'ci' shades the middle, 'two'/'right'/'left' shade rejection tails */

@@ -77,6 +77,7 @@ export const TOPIC_LABELS = {
   vectorNorms:'Vector norms (1, 2, ∞)', operatorNormDiag:'Operator norm (diagonal)', l2InnerProduct:'L² inner product',
   simpleInterest:'Simple interest', compoundInterest:'Compound interest', presentValue:'Present value',
   probUnion:'Addition rule P(A ∪ B)', bayesTheorem:'Bayes\' theorem', poissonProb:'Poisson distribution', annuityPV:'Present value of an annuity', loanPayment:'Loan payments (amortization)', continuousCompound:'Continuous compounding', linearFirstOrder:'First-order linear equations', separableODE:'Separable equations', odeGeneral:'General solution (constant coefficients)', dalembertValue:'D\'Alembert\'s solution', dirichletEigen:'Eigenvalues X″ + λX = 0', fourierSineCoef:'Fourier sine coefficients', supInf:'Supremum and infimum', ratioTestLimit:'Ratio test', pSeriesTest:'p-series', intervalTopology:'Interior, closure, boundary in ℝ', metricDistances:'Metrics d₁, d₂, d∞', metricBall:'Open balls', helixTorsion:'Torsion of a helix', curveArcLength:'Arc length of curves', unitTangent:'Unit tangent vector', rk4Step:'Runge–Kutta (RK4)', taylorSecond:'Taylor\'s method (order 2)', midpointStep:'Midpoint method', volterraSolve:'Volterra equations', kernelEigen:'Eigenvalues of separable kernels', vectorProjection:'Orthogonal projection', gramSchmidt2:'Gram–Schmidt process', romanNumerals:'Roman numerals', babylonian:'Babylonian base-60 numbers', egyptianFraction:'Egyptian fractions', euclidAlgorithm:'Euclid\'s algorithm', sieveCount:'Sieve of Eratosthenes',
+  pearsonR:'Correlation coefficient r',
 };
 /* Arabic display names (interface language: عربي) */
 export const TOPIC_LABELS_AR = {
@@ -139,12 +140,13 @@ export const TOPIC_LABELS_AR = {
   fdSecondX:'الفروق المحدودة للمشتقة الثانية uₓₓ', fdSecondT:'الفروق المحدودة للمشتقة الثانية uₜₜ', fdmOdeUx:'حل معادلة عادية في uₓ', fdmOdeUt:'حل معادلة عادية في uₜ',
   fdmOdeUxx:'حل معادلة عادية في uₓₓ', fdmOdeUtt:'حل معادلة عادية في uₜₜ', fdmAdvection:'حل معادلة جزئية في uₜ و uₓ', fdmFamous:'معادلة جزئية مشهورة (الحرارة / الموجة)',
   probUnion:'قانون الجمع P(A ∪ B)', bayesTheorem:'مبرهنة بايز', poissonProb:'توزيع بواسون', annuityPV:'القيمة الحالية للدفعات', loanPayment:'أقساط القروض (الاستهلاك)', continuousCompound:'التركيب المستمر', linearFirstOrder:'المعادلات الخطية من الرتبة الأولى', separableODE:'المعادلات القابلة للفصل', odeGeneral:'الحل العام (معاملات ثابتة)', dalembertValue:'حل دالمبير', dirichletEigen:'القيم الذاتية X″ + λX = 0', fourierSineCoef:'معاملات فورييه الجيبية', supInf:'الحد الأعلى الأصغر والحد الأدنى الأكبر', ratioTestLimit:'اختبار النسبة', pSeriesTest:'متسلسلة p', intervalTopology:'الداخلية والانغلاق والحدود في ℝ', metricDistances:'المقاييس d₁ و d₂ و d∞', metricBall:'الكرات المفتوحة', helixTorsion:'التواء اللولب', curveArcLength:'طول قوس المنحنى', unitTangent:'متجه المماس الوحدي', rk4Step:'طريقة رونج–كوتا (RK4)', taylorSecond:'طريقة تايلور (الرتبة الثانية)', midpointStep:'طريقة النقطة الوسطى', volterraSolve:'معادلات فولتيرا', kernelEigen:'القيم الذاتية للنوى المنفصلة', vectorProjection:'الإسقاط العمودي', gramSchmidt2:'عملية جرام–شميت', romanNumerals:'الأرقام الرومانية', babylonian:'الأعداد البابلية الستينية', egyptianFraction:'الكسور المصرية', euclidAlgorithm:'خوارزمية إقليدس', sieveCount:'غربال إراتوستينس',
+  pearsonR:'معامل الارتباط r',
 };
 /* statistical tables a topic's questions are read from (for the optional full-tables page) */
 for(const id in PROOFS){ const [en, ar]=proofLabel(PROOFS[id]); TOPIC_LABELS[proofKey(id)]=en; TOPIC_LABELS_AR[proofKey(id)]=ar; }
 export const TOPIC_TABLES = {
-  ciMeanZ:['z'], ciMeanS:['z'], ciMeanT:['t'], ciProportion:['z'], sampleSizeMean:['z'], sampleSizeProp:['z'],
-  testMeanZ:['z'], testMeanS:['z'], testMeanT:['t'], testProportion:['z'], anovaTable:['f'], bivariateNormal:['z'],
+  ciMeanZ:['t'], ciMeanS:['t'], ciMeanT:['t'], ciProportion:['t'], sampleSizeMean:['t'], sampleSizeProp:['t'],     // z values come from the t table's Z row
+  testMeanZ:['t'], testMeanS:['t'], testMeanT:['t'], testProportion:['t'], anovaTable:['f'], bivariateNormal:['z'],
 };
 /* Mathematics study plan (Shaqra University, BSc Mathematics, 130 credit hours):
    level -> courses (code, title, topics), Level 1..8 in plan order, then the electives, then service courses for other departments.
@@ -171,7 +173,7 @@ export const CURRICULUM = [
     { code:'MATH 244', title:'Linear Algebra', ar:'جبر خطي', topics:['matrixAdd','matrixMultiply','determinant2','systems','determinant3','transpose','scalarMultiply','trace','inverse2','matVec','dotProduct','eigenvalues2'] },
   ]},
   { level:'Level 5', ar:'المستوى الخامس', courses:[
-    { code:'STAT 302', title:'Statistical Methods', ar:'الطرق الإحصائية', topics:['ciMeanZ','ciMeanS','ciMeanT','ciProportion','sampleSizeMean','sampleSizeProp','testMeanZ','testMeanS','testMeanT','testProportion','anovaTable','meanMedianMode','zScore'] },
+    { code:'STAT 302', title:'Statistical Methods', ar:'الطرق الإحصائية', topics:['ciMeanZ','ciMeanS','ciMeanT','ciProportion','sampleSizeMean','sampleSizeProp','testMeanZ','testMeanS','testMeanT','testProportion','anovaTable','meanMedianMode','zScore','pearsonR'] },
     { code:'MATH 321', title:'Principles of Financial Mathematics', ar:'مبادئ الرياضيات المالية', topics:['simpleInterest','compoundInterest','presentValue','percentOf','effectiveRate','annuityFV','annuityPV','loanPayment','continuousCompound'] },
     { code:'MATH 333', title:'Ordinary Differential Equations', ar:'المعادلات التفاضلية العادية', topics:['charRoots','expGrowth','ivpPolynomial','eulerStep','linearFirstOrder','separableODE','odeGeneral'] },
     { code:'MATH 353', title:'Numerical Analysis', ar:'التحليل العددي', topics:['newtonSqrt','linearInterp','bisectionStep','trapezoidRule','eulerStep','absoluteError'] },

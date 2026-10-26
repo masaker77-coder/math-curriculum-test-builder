@@ -835,7 +835,7 @@ test('curriculum — plan levels in order, every listed topic has a generator an
 });
 
 /* ================= Worked solutions: MATH 130, STAT 302, MATH 442 ================= */
-import { T_TABLE, T_ALPHAS, Z_ROW, F_TABLE_05, normPdf, tPdf, fPdf } from '../src/viz.js';
+import { T_TABLE, T_ALPHAS, Z_ROW, T_PRINTED, T_ONE, T_DFS, fCrit, F_ALPHAS, F_DF1, F_DF2, normPdf, tPdf, fPdf } from '../src/viz.js';
 const E = html => plain(enOnly(String(html).replace(/<br>/g, ' '))).replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();          // English text only
 const lin = (s, v) => coefOf(s.replace(/\s/g, ''), v);
 const constOf = s => +(s.replace(/\s/g, '').match(/([+-]\d+)$/) || [0, 0])[1];
@@ -844,20 +844,26 @@ const upperT = (c, v) => 0.5 - simpson(u => tPdf(u, v), 0, c, 4000);
 const upperF = (c, d1, d2) => 1 - simpson(u => fPdf(u * u, d1, d2) * 2 * u, 1e-9, Math.sqrt(c), 20000);   // x = u² removes the F(1,·) singularity
 const zQ = a => Z_ROW[T_ALPHAS.indexOf(+a.toFixed(4))];
 const tQ = (a, v) => T_TABLE[v][T_ALPHAS.indexOf(+a.toFixed(4))];
-const fQ = (d1, d2) => F_TABLE_05[d2][d1 - 1];
+const fQ = (d1, d2, a = 0.05) => fCrit(d1, d2, a);
 const NEW = ['linearEquation', 'inequalityGraph', 'linearSystem2', 'quadraticEquation', 'logExp', 'determinant2', 'matrixAdd', 'matrixMultiply',
   'derivative', 'integral', 'ciMeanZ', 'ciMeanS', 'ciMeanT', 'ciProportion', 'sampleSizeMean', 'sampleSizeProp', 'testMeanZ', 'testMeanS',
   'testMeanT', 'testProportion', 'anovaTable', 'pdeClassify', 'fdSchemeClassify', 'fdFirstX', 'fdFirstT', 'fdSecondX', 'fdSecondT',
   'fdmOdeUx', 'fdmOdeUt', 'fdmOdeUxx', 'fdmOdeUtt', 'fdmAdvection', 'fdmFamous'];
 
-test('printed z, t and F tables match the distributions', () => {
-  // a printed value c is right when its tail area is α up to the table's rounding (half a unit in the last digit × density)
-  T_ALPHAS.forEach((a, i) => { const c = Z_ROW[i]; assert.ok(Math.abs(0.5 - simpson(normPdf, 0, c, 2000) - a) <= normPdf(c) * 0.0006, `z ${a}`); });
-  for (const v of Object.keys(T_TABLE).map(Number)) T_ALPHAS.forEach((a, i) => {
-    const c = T_TABLE[v][i]; assert.ok(Math.abs(upperT(c, v) - a) <= tPdf(c, v) * 0.0006, `t ${a}, df ${v}: ${c} has tail ${upperT(c, v)}`); });
-  for (const d2 of Object.keys(F_TABLE_05).map(Number)) F_TABLE_05[d2].forEach((c, i) => {
-    const tol = (c >= 10 ? 0.006 : 0.0051) * fPdf(c, i + 1, d2);
-    assert.ok(Math.abs(upperF(c, i + 1, d2) - 0.05) <= tol, `F(${i + 1}, ${d2}) = ${c} has tail ${upperF(c, i + 1, d2)}`); });
+test('the course t table (as printed) and the F tables match the distributions', () => {
+  // a printed value c is right when its tail area is α up to its own rounding (half a unit in its last digit × density)
+  for (const row of Object.keys(T_PRINTED)) T_PRINTED[row].forEach((str, i) => {
+    const c = +str, a = T_ONE[i], half = 0.5 * 10 ** -(str.split('.')[1] || '').length + 2e-4;
+    const tail = row === 'Z' ? 0.5 - simpson(normPdf, 0, c, 4000) : upperT(c, +row), dens = row === 'Z' ? normPdf(c) : tPdf(c, +row);
+    assert.ok(Math.abs(tail - a) <= dens * half + 1e-9, `t table row ${row}, one-tail ${a}: ${str} has tail ${tail}`);
+  });
+  assert.deepEqual(T_DFS, [...Array(30).keys()].map(i => i + 1).concat([40, 60, 80, 100, 1000]));
+  for (const a of F_ALPHAS) for (const d1 of [1, 2, 3, 4, 6, 10, 15]) for (const d2 of [2, 5, 10, 17, 30, 60]) {
+    const c = fQ(d1, d2, a); assert.ok(Math.abs(upperF(c, d1, d2) - a) <= 2e-5 * Math.max(1, fPdf(c, d1, d2)) + 1e-5, `F_${a}(${d1}, ${d2}) = ${c}`);
+  }
+  // the ∞ row and a few values of the course's printed F table for α = 0.10
+  assert.equal(fQ(1, Infinity, 0.10), 2.70554); assert.equal(fQ(2, Infinity, 0.10), 2.30259); assert.equal(fQ(15, Infinity, 0.10), 1.48714);
+  assert.equal(fQ(1, 1, 0.10), 39.86346); assert.equal(fQ(4, 30, 0.10), 2.14223); assert.equal(fQ(12, 120, 0.10), 1.6012);
 });
 
 test('worked solutions: steps present, graphs and tables well-formed, both languages', () => {
@@ -907,8 +913,12 @@ test('MATH 130 — quadratic equations and logarithms/exponents', () => {
   });
 });
 
-const parseSample = q => ({ n: +q.match(/n = (\d+)/)[1], xb: +q.match(/x̄ = (\d+(?:\.\d+)?)/)[1],
-  sd: +(q.match(/σ = (\d+(?:\.\d+)?)/) || q.match(/s = (\d+(?:\.\d+)?)/))[1] });
+const parseSample = q => {
+  const raw = q.match(/population are: ([\d, ]+)\./);
+  if (raw) { const xs = raw[1].split(', ').map(Number), n = xs.length, xb = xs.reduce((a, x) => a + x, 0) / n;
+    return { n, xb, sd: Math.sqrt(xs.reduce((a, x) => a + (x - xb) ** 2, 0) / (n - 1)) }; }
+  return { n: +q.match(/n = (\d+)/)[1], xb: +q.match(/x̄ = (\d+(?:\.\d+)?)/)[1], sd: +(q.match(/σ = (\d+(?:\.\d+)?)/) || q.match(/s = (\d+(?:\.\d+)?)/))[1] };
+};
 test('STAT 302 — confidence intervals for a mean (z, z with s, t) and a proportion', () => {
   for (const d of DIFFS) times(60, () => {
     for (const t of ['ciMeanZ', 'ciMeanS', 'ciMeanT']) {
@@ -917,8 +927,9 @@ test('STAT 302 — confidence intervals for a mean (z, z with s, t) and a propor
       const crit = t === 'ciMeanT' ? tQ((1 - conf / 100) / 2, n - 1) : zQ((1 - conf / 100) / 2);
       const [lo, hi] = plain(o.a).match(/\(([-\d.]+), ([-\d.]+)\)/).slice(1).map(Number);
       close((lo + hi) / 2, xb, 0.002); close((hi - lo) / 2, crit * sd / Math.sqrt(n), 0.01);
+      assert.ok([90, 95, 99].includes(conf), `confidence ${conf}`);
     }
-    const o = G.ciProportion(d), q = E(o.q), n = +q.match(/n = (\d+)/)[1], x = +q.match(/, (\d+) have/)[1], conf = +q.match(/(\d+)% confidence/)[1];
+    const o = G.ciProportion(d), q = E(o.q), n = +q.match(/n = (\d+)/)[1], x = +(q.match(/, (\d+) have/) || q.match(/Yes = (\d+)/))[1], conf = +q.match(/(\d+)% confidence/)[1];
     const p = x / n, [lo, hi] = plain(o.a).match(/\(([-\d.]+), ([-\d.]+)\)/).slice(1).map(Number);
     close((lo + hi) / 2, p, 0.0002); close((hi - lo) / 2, zQ((1 - conf / 100) / 2) * Math.sqrt(p * (1 - p) / n), 0.0005);
   });
@@ -941,33 +952,57 @@ test('STAT 302 — hypothesis tests for a mean (z, z with s, t) and a proportion
   for (const d of DIFFS) times(60, () => {
     for (const t of ['testMeanZ', 'testMeanS', 'testMeanT']) {
       const o = G[t](d), q = E(o.q), { n, xb, sd } = parseSample(q);
-      const mu0 = +q.match(/H₀: μ = (\d+(?:\.\d+)?)/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1];
-      const tail = q.includes('&ne;') ? '≠' : q.match(/H₁: μ (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
+      const mu0 = +q.match(/H0: μ (?:=|&le;|&ge;) (\d+(?:\.\d+)?)/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1];
+      const tail = q.includes('&ne;') ? '≠' : q.match(/Ha: μ (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
+      assert.ok([0.01, 0.05, 0.1].includes(alpha)); assert.ok(q.includes(tail === '≠' ? 'H0: μ = ' : tail === '>' ? 'H0: μ &le; ' : 'H0: μ &ge; '));
       const stat = (xb - mu0) / (sd / Math.sqrt(n)), a = tail === '≠' ? alpha / 2 : alpha;
       const crit = t === 'testMeanT' ? tQ(a, n - 1) : zQ(a);
       close(+plain(o.a).match(/[zt] = ([-\d.]+)/)[1], stat, 0.002);
       assert.equal(/Do not reject/.test(E(o.a)), !dec(stat, crit, tail));
     }
     const o = G.testProportion(d), q = E(o.q);
-    const p0 = +q.match(/H₀: p = (\d+(?:\.\d+)?)/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1], x = +q.match(/there are (\d+) successes/)[1], n = +q.match(/n = (\d+) trials/)[1];
-    const tail = q.includes('&ne;') ? '≠' : q.match(/H₁: p (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
+    const p0 = +q.match(/H0: P (?:=|&le;|&ge;) (\d+(?:\.\d+)?)/)[1], alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1], x = +q.match(/, (\d+) have/)[1], n = +q.match(/n = (\d+),/)[1];
+    const tail = q.includes('&ne;') ? '≠' : q.match(/Ha: P (&gt;|&lt;)/)[1] === '&gt;' ? '>' : '<';
+    assert.ok([0.01, 0.05, 0.1].includes(alpha));
     const stat = (x / n - p0) / Math.sqrt(p0 * (1 - p0) / n);
     close(+plain(o.a).match(/z = ([-\d.]+)/)[1], stat, 0.002);
     assert.equal(/Do not reject/.test(E(o.a)), !dec(stat, zQ(tail === '≠' ? alpha / 2 : alpha), tail));
   });
 });
 
-test('STAT 302 — ANOVA table completion and F test', () => {
+test('STAT 302 — ANOVA table completion and F test (α = 0.10, 0.05, 0.01)', () => {
   for (const d of DIFFS) times(100, () => {
-    const o = G.anovaTable(d), q = E(o.q), k = +q.match(/k = (\d+)/)[1], N = +q.match(/N = (\d+)/)[1];
-    const cells = [...o.q.matchAll(/<tr><th>.*?<\/th>(.*?)<\/tr>/g)].slice(1).map(m => [...m[1].matchAll(/<td>(.*?)<\/td>/g)].map(c => c[1]));
-    const ssb = +cells[0][0], sse = cells[1][0] === '?' ? +cells[2][0] - ssb : +cells[1][0];
-    const F = (ssb / (k - 1)) / (sse / (N - k));
-    close(+plain(o.a).match(/F = (\d+(?:\.\d+)?)/)[1], F, 0.001);
-    assert.equal(/Do not reject/.test(E(o.a)), !(F > fQ(k - 1, N - k)));
-    const done = [...o.a.matchAll(/<td>(.*?)<\/td>/g)].map(c => c[1]);
-    assert.deepEqual(done.slice(0, 3).map(Number), [ssb, k - 1, ssb / (k - 1)]);
+    const o = G.anovaTable(d), q = E(o.q), alpha = +q.match(/α = (\d+(?:\.\d+)?)/)[1];
+    assert.ok([0.01, 0.05, 0.1].includes(alpha));
+    const rows = [...o.a.matchAll(/<tr><th>.*?<\/th>(.*?)<\/tr>/g)].slice(1).map(m => [...m[1].matchAll(/<td>(.*?)<\/td>/g)].map(c => c[1]));
+    const [ssb, df1, msb] = rows[0].map(Number), [sse, df2, mse] = rows[1].map(Number), [sst, dft] = rows[2].map(Number);
+    assert.equal(sst, ssb + sse); assert.equal(dft, df1 + df2); assert.equal(msb, ssb / df1); assert.equal(mse, sse / df2);
+    const F = msb / mse; close(+plain(o.a).match(/F = (\d+(?:\.\d+)?)/)[1], F, 0.001);
+    assert.ok(F_DF2.includes(df2) && F_DF1.includes(df1), `df (${df1}, ${df2}) must be in the F table`);
+    assert.equal(/Do not reject/.test(E(o.a)), !(F > fQ(df1, df2, alpha)));
+    // what the question gives must be enough: SSB and SST (or SSE) and enough to get the df
+    const given = [...o.q.matchAll(/<td>(.*?)<\/td>/g)].map(c => c[1]).filter(x => x !== '' && x !== '?').map(Number);
+    assert.ok(given.includes(ssb) && (given.includes(sst) || given.includes(sse)));
   });
+});
+
+test('STAT 302 — correlation coefficient r', () => {
+  for (const d of DIFFS) times(100, () => {
+    const o = G.pearsonR(d), rows = [...o.q.matchAll(/<tr><th>[xy]<\/th>(.*?)<\/tr>/g)].map(m => [...m[1].matchAll(/<td>(.*?)<\/td>/g)].map(c => +c[1]));
+    const [xs, ys] = rows, n = xs.length, mx = xs.reduce((a, x) => a + x, 0) / n, my = ys.reduce((a, y) => a + y, 0) / n;
+    const sxy = xs.reduce((a, x, i) => a + (x - mx) * (ys[i] - my), 0), sxx = xs.reduce((a, x) => a + (x - mx) ** 2, 0), syy = ys.reduce((a, y) => a + (y - my) ** 2, 0);
+    close(+plain(o.a).match(/r = ([-\d.]+)/)[1], sxy / Math.sqrt(sxx * syy), 6e-5);
+  });
+});
+
+test('STAT 302 — only α = 1%, 5%, 10% and confidence 90%, 95%, 99%; t values come from the course table rows', () => {
+  for (const t of ['ciMeanZ', 'ciMeanS', 'ciMeanT', 'ciProportion', 'sampleSizeMean', 'sampleSizeProp', 'testMeanZ', 'testMeanS', 'testMeanT', 'testProportion', 'anovaTable'])
+    for (const d of DIFFS) times(80, () => {
+      const q = E(G[t](d).q), c = q.match(/(\d+)% confidence/), a = q.match(/α = (\d+(?:\.\d+)?)/);
+      if (c) assert.ok(['90', '95', '99'].includes(c[1]), `${t}: ${c[1]}%`);
+      if (a) assert.ok(['0.01', '0.05', '0.1', '0.10'].includes(a[1]), `${t}: α = ${a[1]}`);
+    });
+  for (const d of DIFFS) times(80, () => { const o = G.testMeanT(d), m = E(o.s).match(/df = (\d+)/); assert.ok(T_DFS.includes(+m[1])); });
 });
 
 const fdmAns = o => { const m = E(o.a).match(/exact = ([-\d.]+); approx\. ≈ ([-\d.]+); error = (\d+(?:\.\d+)?)/); return m.slice(1).map(Number); };
@@ -1045,9 +1080,9 @@ test('exam layout — items are split into N questions with parts, in order, non
 });
 
 test('full statistical tables: computed F points match the printed F table; Φ is accurate', async () => {
-  const { fQuantile05, Phi, F_TABLE_05 } = await import('../src/viz.js');
-  for (const d2 of Object.keys(F_TABLE_05).map(Number)) F_TABLE_05[d2].forEach((c, i) =>
-    assert.ok(Math.abs(fQuantile05(i + 1, d2) - c) < 0.0051, `F(${i + 1}, ${d2})`));
+  const { fQuantile05, Phi } = await import('../src/viz.js');
+  for (const [d1, d2, c] of [[1, 10, 4.96], [2, 12, 3.89], [3, 20, 3.10], [4, 9, 3.63], [6, 15, 2.79]])      // standard α = 0.05 values
+    assert.ok(Math.abs(fQuantile05(d1, d2) - c) < 0.0051, `F(${d1}, ${d2})`);
   for (const z of [0, 0.5, 1, 1.645, 1.96, 2.576, 3.4]) close(Phi(z), 0.5 + simpson(normPdf, 0, z, 4000), 1e-9);
   close(Phi(-1.96), 1 - Phi(1.96), 1e-12);
 });
