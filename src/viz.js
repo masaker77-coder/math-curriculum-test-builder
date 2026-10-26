@@ -217,7 +217,11 @@ export const F_ALPHAS = [0.10, 0.05, 0.01];
 export const F_DF1 = [1,2,3,4,5,6,7,8,9,10,12,15];
 export const F_DF2 = [...Array(30).keys()].map(i=>i+1).concat([40,60,120,Infinity]);
 const F_CACHE = {};
-export const fCrit = (df1, df2, alpha=0.05) => F_CACHE[`${alpha},${df1},${df2}`] ??= +fQuantile(alpha, df1, df2).toFixed(5);
+export function fCrit(df1, df2, alpha=0.05){
+  const key=`${alpha},${df1},${df2}`;
+  if(!(key in F_CACHE)) F_CACHE[key]=+fQuantile(alpha, df1, df2).toFixed(5);
+  return F_CACHE[key];
+}
 const dfName = v => v===Infinity ? '&infin;' : v;
 
 /* excerpt of the course t table with the cell used highlighted: the five columns the course uses and the rows next to df

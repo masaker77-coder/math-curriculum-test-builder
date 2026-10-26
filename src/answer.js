@@ -27,7 +27,7 @@ export function answerText(html){
   for(let k=0; k<5 && /<sup>/.test(s); k++) s=s.replace(/<sup>([^<]*)<\/sup>/g, (_, p)=>/^(\d+(\.\d+)?|[a-zA-Z])$/.test(p) ? '^'+p : `^(${p})`);
   return s
     .replace(/<\/?sub>/g, '').replace(/<[^>]+>/g, '')
-    .replace(/&(#\d+|[a-zA-Z]+);/g, (m, e)=> e[0]==='#' ? String.fromCodePoint(+e.slice(1)) : ENT[e] ?? m)
+    .replace(/&(#\d+|[a-zA-Z]+);/g, (m, e)=> e[0]==='#' ? String.fromCodePoint(+e.slice(1)) : (e in ENT ? ENT[e] : m))
     .replace(/[−–]/g, '-').replace(/\s+/g, ' ').trim();
 }
 

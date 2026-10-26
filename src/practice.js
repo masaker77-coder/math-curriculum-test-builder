@@ -48,7 +48,7 @@ const MAX_MISTAKES=30;
 export function mountPractice(root, cfg){
   const S = { lang:cfg.lang||'ar', tab:'practice', ti:cfg.topics.length>1?-1:0, d:2, ans:'mc', item:null, picked:-1, shown:0, intro:false,
     stats:{}, mistakes:[], best:0, qn:10, qmin:10, ...load()[cfg.key||'x'] };
-  S.right ??= 0; S.total ??= 0; S.streak ??= 0;
+  for(const k of ['right','total','streak']) if(S[k]==null) S[k]=0;
   if(S.ti>=cfg.topics.length) S.ti=0;
   const topicIds=new Set(cfg.topics.map(o=>o.t));
   S.mistakes=(S.mistakes||[]).filter(m=>topicIds.has(m.t));

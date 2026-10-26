@@ -143,6 +143,10 @@
   .topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:10px}
   .topbar h1{margin:0}
   .install-btn[hidden]{display:none}
+  .boot-note{margin:12px;padding:14px 16px;border:2px solid #c0392b;border-radius:10px;background:#fdecea;color:#7a1f15;font:15px/1.8 var(--font-ui);text-align:right}
+  .boot-note[hidden]{display:none}
+  .boot-note span{display:block;text-align:left;font-size:13px;margin-top:6px;color:#8a3a30}
+  .boot-note .boot-err{display:block;text-align:left;font-size:11px;color:#a55;margin-top:4px}
   .export-sel{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--th-2);color:var(--th-2);background:#fff;border-radius:8px;padding:7px 10px;cursor:pointer}
   .langf select{min-width:150px}
   html[data-lang="en"] .i18n>[lang="ar"], html[data-lang="ar"] .i18n>[lang="en"]{display:none}

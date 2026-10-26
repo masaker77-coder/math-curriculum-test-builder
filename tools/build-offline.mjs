@@ -13,8 +13,9 @@ const js = `window.__APP_SRC = ${JSON.stringify(Object.fromEntries(appOnly.map(n
 const html = read('index.html')
   .replace(/<link rel="stylesheet" href="src\/styles\.css">/, () => `<style>\n${read('src/styles.css')}\n</style>`)
   .replace(/<link rel="(manifest|icon|apple-touch-icon)"[^>]*>\n/g, '')              // the installable-app links only work on the website
+  .replace(/<script src="src\/compat\.js"><\/script>/, () => `<script>\n${read('src/compat.js')}\n</script>`)
   .replace(/<script type="module" src="src\/main\.js"><\/script>/, () => `<script>\n${js.replace(/<\/script/gi, '<\\/script')}\n</script>`);
-if (html.includes('src/main.js') || html.includes('src/styles.css')) throw new Error('index.html layout changed: update the build');
+if (html.includes('src/main.js') || html.includes('src/styles.css') || html.includes('src/compat.js')) throw new Error('index.html layout changed: update the build');
 fs.mkdirSync(new URL('dist/', root), { recursive: true });
 fs.writeFileSync(new URL('dist/math-test-builder-offline.html', root), html);
 console.log(`dist/math-test-builder-offline.html  ${(html.length / 1024).toFixed(0)} KB`);
