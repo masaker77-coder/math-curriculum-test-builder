@@ -110,7 +110,7 @@ export const UI = {
   titleMid:     ['Midterm Exam', 'اختبار فصلي'],
   titleFinal:   ['Final Exam', 'اختبار نهائي'],
   allCourses:   ['All courses', 'جميع المقررات'],
-  addSel:       ['+ Add selected topics', '+ أضف المواضيع المحددة'],
+  addSel:       ['▶ Run', '▶ تنفيذ'],
   clearAll:     ['Clear test', 'مسح الاختبار'],
   selectAll:    ['Select all', 'تحديد الكل'],
   count:        ['Items', 'عدد الأسئلة'],

@@ -5,6 +5,7 @@ import { zFullHTML, tFullHTML, fFullHTML, L } from './viz.js';
 import { INTRO } from './intros.js';
 import { coverArt } from './cover.js';
 import { mountPractice } from './practice.js';
+import { guideHTML } from './guide.js';
 import { bundle } from './bundle.js';
 import { LANGS, tr, pickLang } from './i18n.js';
 
@@ -12,7 +13,7 @@ import { LANGS, tr, pickLang } from './i18n.js';
 const el = id => document.getElementById(id);
 const DIFF_KEY = ['', 'easy', 'medium', 'hard'];
 let test  = { sections: [] };   // each: {topic, code, title, titleAr, count, diff, mc, custom?, items:[...]}
-let state = { sheets: [], showKey: false, lang: 'en', mode: 'practice' };
+let state = { sheets: [], showKey: false, lang: 'en', mode: 'practice', view: 'welcome' };   // view: welcome | guide | output
 const SPACE = {1:30, 2:46, 3:72};
 /* assessment presets: number of questions and marks per question */
 const MODES = {
@@ -188,6 +189,7 @@ function addSelected(replace){
   if(!picks.length){ el('sections').innerHTML=`<div class="sections-empty" style="color:#c0392b">${T('tickTopic')}</div>`; setTimeout(renderSections,1800); return false; }
   if(replace) test.sections=[];
   picks.forEach(p=>test.sections.push(sectionFor(p.topic, p.essay, p.mc)));
+  state.view='output';
   el('topicList').querySelectorAll('.tchk').forEach(ch=>{ ch.checked=false; ch.closest('.trow').classList.remove('on'); });
   buildVersions(); renderSections(); render(); return true;
 }
@@ -203,46 +205,49 @@ function topUp(n){
   let total=test.sections.reduce((k,x)=>k+x.items.length,0), i=0;
   while(total<n){ const sec=gen[i++%gen.length]; sec.items.push(...genItems(sec.topic,1,sec.diff,false)); sec.nEssay=nEss(sec)+1; sec.nMc=nMc(sec); sec.count++; total++; }
 }
+/* choosing a mode shows its guide; nothing is generated until Run */
 function setMode(mode){
   const wasBook=isBook(); state.mode=mode; const m=MODES[mode];
   document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode===mode));
   document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !m.nQ);
   document.querySelectorAll('.book-only').forEach(n=>n.hidden = mode!=='booklet');
+  if(m.nQ){ el('nQ').value=m.nQ; el('marks').value=m.marks; }
   buildTopicList(true, wasBook!==!!m.book);           // entering / leaving the booklet modes resets the counts
-  if(m.app){ if(checkedTopics().length) addSelected(true); }
-  else if(m.book){                                      // the same topics become worked examples (essay only)
-    if(checkedTopics().length) addSelected(true);
-    else test.sections.forEach(s=>{ if(s.custom) return; const k=isProof(s.topic)?1:m.count; s.nEssay=k; s.nMc=0; s.count=k; s.items=sectionItems(s); });
+  state.view='guide'; renderSections(); render();
+}
+/* Run: build the chosen output from the ticked topics (or from the topics already in the test) */
+function execute(){
+  const m=MODES[state.mode];
+  if(checkedTopics().length) addSelected(true);
+  else if(!test.sections.length){
+    if(m.nQ) autoPick(m.nQ);
+    else { addSelected(true); return; }                 // shows "tick at least one topic"
   }
-  else if(m.nQ){
-    el('nQ').value=m.nQ; el('marks').value=m.marks;
-    if(checkedTopics().length) addSelected(true);
-    else if(!test.sections.length) autoPick(m.nQ);
-    topUp(m.nQ);
-  }
-  buildTopicList(true); buildVersions(); renderSections(); render();
+  else if(m.book) test.sections.forEach(s=>{ if(s.custom) return; const k=isProof(s.topic)?1:m.count; s.nEssay=k; s.nMc=0; s.count=k; s.items=sectionItems(s); });
+  if(m.nQ) topUp(Math.max(1,parseInt(el('nQ').value)||m.nQ));
+  state.view='output'; buildTopicList(true); buildVersions(); renderSections(); render();
 }
 function addCustomPart(){
   const items=parseCustom();
   if(!items.length){ const d=el('custom').closest('details'); if(d) d.open=true; el('custom').focus(); return; }
-  test.sections.push({custom:true, label:'Custom questions', count:items.length, items});
+  test.sections.push({custom:true, label:'Custom questions', count:items.length, items}); state.view='output';
   buildVersions(); renderSections(); render();
 }
-function removeSection(i){ test.sections.splice(i,1); buildVersions(); renderSections(); render(); }
+function removeSection(i){ test.sections.splice(i,1); state.view=test.sections.length?'output':'guide'; buildVersions(); renderSections(); render(); }
 function regenSection(i){
   const s=test.sections[i]; if(s.custom) return;
-  s.items=sectionItems(s);
+  s.items=sectionItems(s); state.view='output';
   buildVersions(); render();
 }
 function moveSection(i,dir){
   const j=i+dir; if(j<0||j>=test.sections.length) return;
-  [test.sections[i],test.sections[j]]=[test.sections[j],test.sections[i]];
+  [test.sections[i],test.sections[j]]=[test.sections[j],test.sections[i]]; state.view='output';
   buildVersions(); renderSections(); render();
 }
 function dupSection(i){
   const s=test.sections[i];
   const copy = s.custom ? {...s, items:s.items.slice()} : {...s, items:sectionItems(s)};
-  test.sections.splice(i+1,0,copy); buildVersions(); renderSections(); render();
+  test.sections.splice(i+1,0,copy); state.view='output'; buildVersions(); renderSections(); render();
 }
 const partLabel = s => s.custom ? T('customPart') : topicLabel(s.topic);
 const partCourse = s => s.custom ? T('customShort') : (s.code&&s.code!=='(prep)'?s.code+' · ':'')+pickLang(s.title, s.titleAr, state.lang);
@@ -567,8 +572,11 @@ function updateTotal(){
   const n=test.sections.reduce((k,s)=>k+s.items.length,0), q=Math.min(Math.max(1,parseInt(el('nQ').value)||1), n||1);
   el('totalMarks').textContent=fmtMarks((parseFloat(el('marks').value)||0)*q);
 }
+const guideStats = () => { const all=CURRICULUM.flatMap(l=>l.courses), t=new Set(all.flatMap(c=>c.topics));
+  return { courses:all.filter(c=>c.topics.length).length, topics:[...t].filter(x=>!x.startsWith('proof_')).length, proofs:[...t].filter(x=>x.startsWith('proof_')).length }; };
 function render(){
   updateTotal();
+  if(state.view!=='output'){ el('out').innerHTML=guideHTML(state.view==='welcome'?'welcome':state.mode, guideStats(), test.sections.length>0); return; }
   if(!test.sections.length){
     el('out').innerHTML=`<div class="sheet"><div class="sheet-sub" style="text-align:center;padding:48px 0">${T('emptyTest')}</div></div>`;
     return;
@@ -742,7 +750,7 @@ function applyPayload(s, showKey){
   document.querySelectorAll('.exam-only').forEach(n=>n.hidden = !MODES[state.mode].nQ);
   document.querySelectorAll('.book-only').forEach(n=>n.hidden = state.mode!=='booklet');
   if(s.nQ) el('nQ').value=s.nQ; if(s.marks) el('marks').value=s.marks;
-  buildVersions(); renderSections(); render();
+  state.view='output'; buildTopicList(true); buildVersions(); renderSections(); render();
 }
 function doSave(){
   const name=(el('saveName').value||'').trim(); if(!name){ el('saveName').focus(); return; }
@@ -775,8 +783,8 @@ document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>setMode(b.dataset.mo
 el('bLevel').onchange=()=>{ buildCourseSelect(); buildTopicList(false); };
 el('bCourse').onchange=()=>buildTopicList(false);
 el('bSearch').oninput=runSearch;
-el('addSection').onclick=()=>addSelected(false);
-el('clearSections').onclick=()=>{ test.sections=[]; buildVersions(); renderSections(); render(); };
+el('addSection').onclick=execute;
+el('clearSections').onclick=()=>{ test.sections=[]; state.view='guide'; buildVersions(); renderSections(); render(); };
 el('addCustom').onclick=addCustomPart;
 el('print').onclick=()=>{ if(inFrame()) exportPDF(); else window.print(); };
 el('pdfBtn').onclick=exportPDF;
@@ -809,7 +817,7 @@ buildLevelSelect(); el('bLevel').value='all'; buildCourseSelect(); buildTopicLis
 document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('on', b.dataset.mode==='practice'));
 document.querySelectorAll('.exam-only').forEach(n=>n.hidden=true);
 document.querySelectorAll('.book-only').forEach(n=>n.hidden=true);
-// start with a small sample so the page shows something
-const first=el('topicList').querySelector('.tchk'); if(first){ first.checked=true; addSelected(false); }
+// open on the welcome page; nothing is generated until Run
+state.view='welcome'; render();
 applyLang();
 }
