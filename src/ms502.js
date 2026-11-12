@@ -627,4 +627,156 @@ lesson('502',30,[
     ['≈ 2 × 10^{−14}  vs  ≈ 2 × 10^{−2}','≈ 2 × 10^{−2}  vs  ≈ 2 × 10^{−2}','≈ 10^{−3}  vs  ≈ 10^{−6}']),
 ]);
 
+/* ---- 502 · Unit 4 (lessons 31–40): shape preservation ---- */
+lesson('502',31,[
+  ['`B_n f` agrees with f at both ends, and its end slopes are difference quotients of f:','`B_n f` تطابق f عند الطرفين، وميلاها عند الطرفين خوارج قسمة فروق لـ f:'],
+  '(B_n f)(0) = f(0),   (B_n f)(1) = f(1),   (B_n f)′(0) = n[f(#f{1}{n}) − f(0)],   (B_n f)′(1) = n[f(1) − f(1 − #f{1}{n})]',
+  ['As n grows the end slopes tend to `f′(0)` and `f′(1)`. This end-point behaviour is what makes Bernstein (Bézier) curves easy to control: the first and last coefficients fix the ends, the next ones fix the tangents.','وبزيادة n يقترب الميلان من `f′(0)` و `f′(1)`. وهذا السلوك عند الطرفين هو ما يجعل منحنيات بيرنشتاين (بيزييه) سهلة التحكم: المعاملان الأول والأخير يثبّتان الطرفين، والتاليان يثبّتان المماسين.'],
+],[
+  Q('Compute `(B_4 f)′(0)` for `f = x^2`.','احسب `(B_4 f)′(0)` للدالة `f = x^2`.','#f{1}{4}',
+    ['4[f(#f{1}{4}) − f(0)] = 4·#f{1}{16}'], ['0','#f{1}{2}','1']),
+  Q('Compute `(B_2 f)′(0)` for `f = sin(πx)` and compare with `f′(0) = π`.','احسب `(B_2 f)′(0)` للدالة `f = sin(πx)` وقارن بـ `f′(0) = π`.','2',
+    ['2[sin(#f{π}{2}) − sin 0] = 2', ['With n = 100: `100 sin(0.01π) ≈ 3.1411`, close to π.','ومع n = 100: `100 sin(0.01π) ≈ 3.1411` قريب من π.']], ['π','1','0']),
+  Q('Compute `(B_3 f)′(1)` for `f = x^3`.','احسب `(B_3 f)′(1)` للدالة `f = x^3`.','#f{19}{9}',
+    ['3[1 − (#f{2}{3})^3] = 3·#f{19}{27} = #f{19}{9}', ['The exact slope is 3.','والميل المضبوط 3.']], ['3','#f{1}{9}','#f{8}{9}']),
+  Q('Does `B_n f(1/2) = f(1/2)` hold for `f = x^2`?','هل `B_n f(1/2) = f(1/2)` للدالة `f = x^2`؟',['No: `B_n f(1/2) = 1/4 + 1/(4n)`','لا: `B_n f(1/2) = 1/4 + 1/(4n)`'],
+    ['x^2 + #f{x(1 − x)}{n} = #f{1}{4} + #f{1}{4n}'], [['Yes','نعم']]),
+]);
+
+lesson('502',32,[
+  ['If f is non-decreasing on [0, 1], so is `B_n f`. The reason is the derivative formula:','إذا كانت f غير متناقصة على [0, 1] فكذلك `B_n f`. والسبب صيغة المشتقة:'],
+  '(B_n f)′(x) = n Σ_{i=0}^{n−1} [f(#f{i + 1}{n}) − f(#f{i}{n})] B_{i,n−1}(x)',
+  ['All differences are ≥ 0 and all basis functions are ≥ 0, so the derivative is ≥ 0. Interpolation does not have this property: an interpolant of monotone data can oscillate.','كل الفروق ≥ 0 وكل الدوال الأساسية ≥ 0 فالمشتقة ≥ 0. والاستكمال لا يملك هذه الخاصية: استكمال بيانات مطّردة قد يتذبذب.'],
+],[
+  Q('Find the derivative coefficients of `B_2 f` for `f = #r{x}`.','أوجد معاملات مشتقة `B_2 f` للدالة `f = #r{x}`.','(1.4142,  0.5858)',
+    ['f(0), f(#f{1}{2}), f(1) = 0, 0.7071, 1', '2(0.7071 − 0),   2(1 − 0.7071)'], ['(0.7071,  0.2929)','(1.4142,  −0.5858)','(0,  1)']),
+  Q('Is `B_2 #r{x}` increasing on [0, 1]?','هل `B_2 #r{x}` متزايدة على [0, 1]؟',['Yes: both derivative coefficients are positive','نعم: معاملا المشتقة موجبان'],
+    ['(B_2 f)′ = 1.4142 B_{0,1} + 0.5858 B_{1,1} > 0'], [['No','لا']]),
+  Q('Compute `B_1 f` for `f = (x − 1/2)^2`. What does it show?','احسب `B_1 f` للدالة `f = (x − 1/2)^2`. ماذا يبيّن؟','B_1 f = #f{1}{4}',
+    ['f(0)(1 − x) + f(1)x = #f{1}{4}(1 − x) + #f{1}{4}x', ['A non-monotone f can give a monotone (here constant) `B_n f`: the converse of the theorem is false.','الدالة غير المطّردة قد تعطي `B_n f` مطّردة (ثابتة هنا): عكس النظرية غير صحيح.']],
+    ['B_1 f = (x − #f{1}{2})^2','B_1 f = x','B_1 f = 0']),
+  Q('If f is non-increasing, what can be said about `B_n f`?','إذا كانت f غير متزايدة فماذا يقال عن `B_n f`؟',['`B_n f` is non-increasing','`B_n f` غير متزايدة'],
+    [['All differences are ≤ 0, so the derivative is ≤ 0.','كل الفروق ≤ 0 فالمشتقة ≤ 0.']], [['`B_n f` is increasing','`B_n f` متزايدة'],['Nothing','لا شيء']]),
+]);
+
+lesson('502',33,[
+  ['Convexity is preserved too. The second derivative is built from second differences:','والتحدب محفوظ أيضاً. المشتقة الثانية مبنية من الفروق الثانية:'],
+  '(B_n f)″(x) = n(n − 1) Σ_{i=0}^{n−2} Δ^2 f(#f{i}{n}) B_{i,n−2}(x)',
+  ['If f is convex, all second differences are ≥ 0, so `B_n f` is convex. Moreover `B_n f ≥ f` for convex f (Jensen’s inequality for the binomial weights), and `B_n f ≤ f` for concave f.','إذا كانت f محدبة فكل الفروق الثانية ≥ 0 فتكون `B_n f` محدبة. وفوق ذلك `B_n f ≥ f` للدالة المحدبة (متباينة ينسن للأوزان ذات الحدين)، و `B_n f ≤ f` للمقعرة.'],
+],[
+  Q('Check `B_n f ≥ f` for `f = x^2`.','تحقق من `B_n f ≥ f` للدالة `f = x^2`.','B_n f − f = #f{x(1 − x)}{n} ≥ 0',
+    [['On [0, 1] both x and 1 − x are ≥ 0.','على [0, 1] كل من x و 1 − x غير سالب.']], ['B_n f − f = 0','B_n f − f = −#f{x(1 − x)}{n}','B_n f − f = #f{x^2}{n}']),
+  Q('Compute the second difference of `f = |x − 1/2|` at the nodes of degree 2.','احسب الفرق الثاني للدالة `f = |x − 1/2|` عند عقد الدرجة 2.','Δ^2 f(0) = 1',
+    ['f(0) − 2f(#f{1}{2}) + f(1) = #f{1}{2} − 0 + #f{1}{2} = 1', ['So `(B_2 f)″ = 2·1 = 2 > 0`: convex, as f is.','إذن `(B_2 f)″ = 2·1 = 2 > 0`: محدبة كما f.']], ['Δ^2 f(0) = 0','Δ^2 f(0) = −1','Δ^2 f(0) = #f{1}{2}']),
+  Q('Compare `B_2 #r{x}` with `#r{x}` at x = 1/4.','قارن `B_2 #r{x}` بـ `#r{x}` عند x = 1/4.','0.3277 < 0.5',
+    ['B_2 #r{x}(#f{1}{4}) = 0.7071·2·#f{1}{4}·#f{3}{4} + #f{1}{16} = 0.2652 + 0.0625', ['`#r{x}` is concave, so `B_n f ≤ f`.','`#r{x}` مقعرة فيكون `B_n f ≤ f`.']], ['0.3277 > 0.5','0.5 = 0.5','0.7071 > 0.5']),
+  Q('A polynomial has Bernstein coefficients `(4, 1, 0, 1, 4)`. Is it convex?','كثيرة حدود معاملاتها في بيرنشتاين `(4, 1, 0, 1, 4)`. هل هي محدبة؟',['Yes: the second differences `(2, 2, 2)` are positive','نعم: الفروق الثانية `(2, 2, 2)` موجبة'],
+    ['Δc = (−3, −1, 1, 3),   Δ^2 c = (2, 2, 2)'], [['No','لا'],['Only on [0, 1/2]','على [0, 1/2] فقط']]),
+]);
+
+lesson('502',34,[
+  ['The Bernstein form is variation diminishing: a polynomial cannot oscillate more than its coefficients. Precisely, the number of zeros of `p = Σ c_i B_{i,n}` in `(0, 1)` is at most the number of sign changes in `(c_0, …, c_n)`:','صيغة بيرنشتاين تنقص التغير: كثيرة الحدود لا تتذبذب أكثر من معاملاتها. وبدقة: عدد جذور `p = Σ c_i B_{i,n}` في `(0, 1)` لا يزيد على عدد تغيرات الإشارة في `(c_0, …, c_n)`:'],
+  'Z_{(0,1)}(p) ≤ S^{−}(c_0, c_1, …, c_n)',
+  ['(it is Descartes’ rule of signs after the change `y = x/(1 − x)`). Applied to `f − ℓ` for any straight line ℓ, it says that `B_n f` crosses any line at most as often as f does.','(وهي قاعدة ديكارت للإشارات بعد التحويل `y = x/(1 − x)`). وبتطبيقها على `f − ℓ` لأي مستقيم ℓ نجد أن `B_n f` تقطع أي مستقيم بعدد مرات لا يزيد على ما تقطعه f.'],
+],[
+  Q('At most how many zeros in `(0, 1)` does `p` with coefficients `(1, −2, 3, −1)` have?','على الأكثر كم جذراً في `(0, 1)` لكثيرة الحدود p ذات المعاملات `(1, −2, 3, −1)`؟','3',
+    ['+,  −,  +,  −', ['Three sign changes.','ثلاثة تغيرات في الإشارة.']], ['4','2','1']),
+  Q('Does `p` with coefficients `(2, 1, 1, 3)` have a zero in `(0, 1)`?','هل لكثيرة الحدود p ذات المعاملات `(2, 1, 1, 3)` جذر في `(0, 1)`؟',['No: there are no sign changes','لا: لا توجد تغيرات في الإشارة'],
+    [['Also `p ≥ min c_i = 1 > 0`.','وأيضاً `p ≥ min c_i = 1 > 0`.']], [['Yes, one','نعم، جذر واحد'],['Yes, three','نعم، ثلاثة']]),
+  Q('Count the sign changes of `(1, −1, −1, 1)` and find the zeros of `p = Σ c_i B_{i,3}`.','عدّ تغيرات الإشارة في `(1, −1, −1, 1)` وأوجد جذور `p = Σ c_i B_{i,3}`.','x = #f{3 ∓ #r{3}}{6}',
+    ['p = (1 − x)^3 − 3x(1 − x)^2 − 3x^2(1 − x) + x^3 = 1 − 6x + 6x^2', 'x = #f{3 ∓ #r{3}}{6} = 0.2113,  0.7887', ['Two sign changes and exactly two zeros: the bound is attained.','تغيران في الإشارة وجذران تماماً: الحد يتحقق.']],
+    ['x = #f{1}{2}','x = #f{1}{3},  #f{2}{3}','x = 0,  1']),
+  Q('How many times can `B_n f` cross the line `y = 0.5` if f crosses it once?','كم مرة يمكن أن تقطع `B_n f` المستقيم `y = 0.5` إذا قطعته f مرة واحدة؟',['At most once','مرة واحدة على الأكثر'],
+    [['Apply the rule to `f − 0.5`: its samples `f(i/n) − 0.5` change sign at most once.','نطبّق القاعدة على `f − 0.5`: عيناتها `f(i/n) − 0.5` تغير إشارتها مرة واحدة على الأكثر.']], [['At most n times','n مرة على الأكثر'],['Twice','مرتين']]),
+]);
+
+lesson('502',35,[
+  ['For a curve `P(t) = Σ P_i B_{i,n}(t)` with control points `P_i`, the curve lies in the convex hull of the control points, because each point of the curve is a weighted average with non-negative weights summing to 1. For a function graph the control points are `(i/n, c_i)`.',
+   'للمنحنى `P(t) = Σ P_i B_{i,n}(t)` بنقاط تحكم `P_i` يقع المنحنى داخل الغلاف المحدب لنقاط التحكم، لأن كل نقطة منه متوسط موزون بأوزان غير سالبة مجموعها 1. ولمنحنى الدالة تكون نقاط التحكم `(i/n, c_i)`.'],
+  'min_i c_i ≤ p(x) ≤ max_i c_i',
+  ['The hull gives cheap bounds (used to find intersections or zeros by subdivision), but they can be pessimistic: the curve usually stays well inside.','والغلاف يعطي حدوداً رخيصة (تُستخدم لإيجاد التقاطعات أو الجذور بالتقسيم)، لكنها قد تكون متشائمة: المنحنى يبقى عادةً بعيداً داخلها.'],
+],[
+  Q('For `c = (0, 4, 0)`, compare the hull bound with the true maximum of p.','للمعاملات `c = (0, 4, 0)` قارن حد الغلاف بالقيمة العظمى الحقيقية لـ p.','4  vs  2',
+    ['p = 4·2x(1 − x) = 8x(1 − x),   max = p(#f{1}{2}) = 2', ['The bound is twice too large.','الحد أكبر مرتين.']], ['4  vs  4','2  vs  2','4  vs  1']),
+  Q('A quadratic Bézier curve has control points (0, 0), (1, 2), (2, 0). Find its highest point.','منحنى بيزييه تربيعي نقاط تحكمه (0, 0) و (1, 2) و (2, 0). أوجد أعلى نقطة فيه.','(1, 1)',
+    ['x(t) = 2t,   y(t) = 2·2t(1 − t) = 4t(1 − t)', 't = #f{1}{2}:   (1, 1)'], ['(1, 2)','(1, 0.5)','(2, 0)']),
+  Q('Bound `p = Σ c_i B_{i,3}` on [0, 1] for `c = (1, 3, 2, 5)`.','أوجد حدين لـ `p = Σ c_i B_{i,3}` على [0, 1] للمعاملات `c = (1, 3, 2, 5)`.','1 ≤ p(x) ≤ 5',
+    ['min c_i = 1,   max c_i = 5'], ['2 ≤ p(x) ≤ 3','1 ≤ p(x) ≤ 11','0 ≤ p(x) ≤ 5']),
+  Q('Is every point of the convex hull reached by the curve?','هل يصل المنحنى إلى كل نقطة في الغلاف المحدب؟',['No: the curve lies inside the hull but is only a curve','لا: المنحنى داخل الغلاف لكنه منحنى فقط'],
+    [['It touches the hull only at the end control points (and along edges in degenerate cases).','يلمس الغلاف عند نقطتي التحكم الطرفيتين فقط (وعلى الأضلاع في الحالات المنحلة).']], [['Yes','نعم']]),
+]);
+
+lesson('502',36,[
+  ['Bernstein polynomials approximate derivatives too (simultaneous approximation): if `f ∈ C^k[0, 1]` then `(B_n f)^{(k)} → f^{(k)}` uniformly. For example','كثيرات بيرنشتاين تقرّب المشتقات أيضاً (التقريب الآني): إذا كانت `f ∈ C^k[0, 1]` فإن `(B_n f)^{(k)} → f^{(k)}` بانتظام. فمثلاً'],
+  '(B_n x^2)′ = 2x + #f{1 − 2x}{n},     (B_n x^2)″ = 2 − #f{2}{n}',
+  ['This is unusual: interpolants generally approximate derivatives worse than values. The price is again the slow rate `O(1/n)`.','وهذا غير معتاد: الاستكمالات عموماً تقرّب المشتقات أسوأ من القيم. والثمن مرة أخرى المعدل البطيء `O(1/n)`.'],
+],[
+  Q('Compute `(B_n x^2)′(0)`.','احسب `(B_n x^2)′(0)`.','#f{1}{n}',
+    ['2·0 + #f{1 − 0}{n}'], ['0','#f{2}{n}','2']),
+  Q('Compute `(B_10 x^2)″`.','احسب `(B_10 x^2)″`.','1.8',
+    ['2 − #f{2}{10} = 1.8'], ['2','0.2','1.98']),
+  Q('Compute `(B_3 x^3)′(0)`.','احسب `(B_3 x^3)′(0)`.','#f{1}{9}',
+    ['3[f(#f{1}{3}) − f(0)] = 3·#f{1}{27}'], ['0','#f{1}{3}','#f{1}{27}']),
+  Q('If `f ∈ C^1[0, 1]`, what happens to `max |(B_n f)′ − f′|` as n → ∞?','إذا كانت `f ∈ C^1[0, 1]` فماذا يحدث لـ `max |(B_n f)′ − f′|` عندما n → ∞؟','→ 0',
+    [['`(B_n f)′` is n times the differences of f, which are mean values of `f′`, averaged by the basis of degree n − 1.','`(B_n f)′` هي n مضروبة في فروق f، وهي قيم متوسطة لـ `f′` تُوزَن بأساس الدرجة n − 1.']], ['→ ∞','→ 1','→ f′(0)']),
+]);
+
+lesson('502',37,[
+  ['What happens if `B_n` is applied again and again for a fixed n? For `f = x^2`:','ماذا يحدث إذا طُبّق `B_n` مراراً مع n ثابتة؟ للدالة `f = x^2`:'],
+  'B_n^m x^2 = x^2 + x(1 − x)[1 − (1 − #f{1}{n})^m]   →   x   (m → ∞)',
+  ['In general `B_n^m f → B_1 f = f(0)(1 − x) + f(1)x`, the chord through the end values (Kelisky and Rivlin): each iteration smooths a little more, until only the straight line through the fixed ends is left.','وعموماً `B_n^m f → B_1 f = f(0)(1 − x) + f(1)x`، الوتر المار بقيمتي الطرفين (كليسكي وريفلين): كل تكرار ينعّم أكثر قليلاً حتى لا يبقى إلا المستقيم المار بالطرفين الثابتين.'],
+],[
+  Q('Compute `B_2^2 x^2` at x = 1/2.','احسب `B_2^2 x^2` عند x = 1/2.','0.4375',
+    ['#f{1}{4} + #f{1}{4}[1 − (#f{1}{2})^2] = 0.25 + 0.1875'], ['0.375','0.25','0.5']),
+  Q('What is `lim_{m→∞} B_n^m x^2`?','ما `lim_{m→∞} B_n^m x^2`؟','x',
+    ['(1 − #f{1}{n})^m → 0  ⇒  x^2 + x(1 − x) = x'], ['x^2','0','#f{1}{2}']),
+  Q('What is `lim_{m→∞} B_n^m f` for `f = sin(πx)`?','ما `lim_{m→∞} B_n^m f` للدالة `f = sin(πx)`؟','0',
+    ['B_1 f = f(0)(1 − x) + f(1)x = 0'], ['sin(πx)','x','1']),
+  Q('Compute `B_2 x^2`, then apply `B_2` to it, using node values.','احسب `B_2 x^2` ثم طبّق عليها `B_2` باستخدام القيم العقدية.','B_2^2 x^2 = #f{3x + x^2}{4}',
+    ['g = B_2 x^2 = #f{x + x^2}{2}:   g(0) = 0,   g(#f{1}{2}) = #f{3}{8},   g(1) = 1', 'B_2 g = #f{3}{8}·2x(1 − x) + x^2 = #f{3x}{4} + #f{x^2}{4}', ['At x = 1/2: `3/8 + 1/16 = 0.4375`.','عند x = 1/2: `3/8 + 1/16 = 0.4375`.']],
+    ['B_2^2 x^2 = #f{x + x^2}{2}','B_2^2 x^2 = x','B_2^2 x^2 = #f{x + 3x^2}{4}']),
+]);
+
+lesson('502',38,[
+  ['`B_n` maps `Π_n` into itself, and on `Π_n` it has the eigenvalues','`B_n` يحوّل `Π_n` إلى نفسه، وقيمه الذاتية على `Π_n`'],
+  'λ_k = #f{n!}{(n − k)! n^k} = (1 − #f{1}{n})(1 − #f{2}{n}) ⋯ (1 − #f{k − 1}{n}),   k = 0, …, n',
+  ['with an eigenfunction of degree exactly k. So `λ_0 = λ_1 = 1` (constants and lines are reproduced), `λ_2 = 1 − 1/n` with eigenfunction `x(1 − x)`, and the others are smaller. Since `λ_k^m → 0` for k ≥ 2, the iterates keep only the linear part: this proves the limit of the previous lesson.',
+   'ولكل منها دالة ذاتية درجتها k تماماً. إذن `λ_0 = λ_1 = 1` (الثوابت والمستقيمات تُستعاد)، و `λ_2 = 1 − 1/n` بدالة ذاتية `x(1 − x)`، والبقية أصغر. وبما أن `λ_k^m → 0` عند k ≥ 2 فإن التكرارات لا تُبقي إلا الجزء الخطي: وهذا برهان نهاية الدرس السابق.'],
+],[
+  Q('Find `λ_2` for n = 4.','أوجد `λ_2` عند n = 4.','#f{3}{4}',['1 − #f{1}{4}'],['#f{1}{4}','1','#f{1}{2}']),
+  Q('Find `λ_3` for n = 3.','أوجد `λ_3` عند n = 3.','#f{2}{9}',['#f{3!}{0!·3^3} = #f{6}{27}'],['#f{1}{3}','#f{2}{3}','1']),
+  Q('Check that `x(1 − x)` is an eigenfunction of `B_n` with eigenvalue `1 − 1/n`.','تحقق أن `x(1 − x)` دالة ذاتية لـ `B_n` بالقيمة الذاتية `1 − 1/n`.',['Verified: `B_n(x − x^2) = (1 − 1/n)(x − x^2)`','تحقق: `B_n(x − x^2) = (1 − 1/n)(x − x^2)`'],
+    ['B_n x − B_n x^2 = x − x^2 − #f{x(1 − x)}{n}'], [['We get `B_n(x − x^2) = x − x^2`','نجد `B_n(x − x^2) = x − x^2`']]),
+  Q('Find `λ_4` for n = 4.','أوجد `λ_4` عند n = 4.','#f{3}{32}',['#f{4!}{0!·4^4} = #f{24}{256}'],['#f{1}{4}','#f{3}{8}','#f{1}{256}']),
+]);
+
+lesson('502',39,[
+  ['Bernstein polynomials are expectations. If `S_n` counts the successes in n independent trials with success probability x, then `P(S_n = i) = B_{i,n}(x)` and','كثيرات بيرنشتاين توقعات. إذا كان `S_n` عدد النجاحات في n محاولة مستقلة احتمال النجاح في كل منها x، فإن `P(S_n = i) = B_{i,n}(x)` و'],
+  '(B_n f)(x) = E[f(#f{S_n}{n})],   E[#f{S_n}{n}] = x,   Var(#f{S_n}{n}) = #f{x(1 − x)}{n}',
+  ['The identities `B_n x = x` and `B_n x^2 = x^2 + x(1 − x)/n` are just the mean and the second moment of a binomial proportion, and Bernstein’s proof is the weak law of large numbers.','والمتطابقتان `B_n x = x` و `B_n x^2 = x^2 + x(1 − x)/n` هما متوسط نسبة ذي الحدين وعزمها الثاني، وبرهان بيرنشتاين هو قانون الأعداد الكبيرة الضعيف.'],
+],[
+  Q('With x = 0.4, find `P(S_3 = 2)`.','مع x = 0.4 أوجد `P(S_3 = 2)`.','0.288',['B_{2,3}(0.4) = 3·0.16·0.6'],['0.096','0.432','0.16']),
+  Q('Find the variance of `S_100/100` at x = 0.5.','أوجد تباين `S_100/100` عند x = 0.5.','0.0025',['#f{0.5·0.5}{100}'],['0.25','0.05','0.025']),
+  Q('Find `P(S_4 = 4)` at x = 1/2.','أوجد `P(S_4 = 4)` عند x = 1/2.','#f{1}{16}',['B_{4,4}(#f{1}{2}) = (#f{1}{2})^4'],['#f{1}{4}','#f{4}{16}','#f{6}{16}']),
+  Q('Express `B_n x^2` as a moment of `S_n/n`.','عبّر عن `B_n x^2` بوصفه عزماً لـ `S_n/n`.','E[(#f{S_n}{n})^2] = x^2 + #f{x(1 − x)}{n}',
+    ['E[Y^2] = Var(Y) + (E Y)^2'], ['E[#f{S_n}{n}] = x','Var(#f{S_n}{n}) = x^2','E[S_n^2] = nx']),
+]);
+
+lesson('502',40,[
+  ['Three case studies show the typical behaviour of `B_n f`:','ثلاث دراسات حالة تبيّن السلوك المعتاد لـ `B_n f`:'],
+  ['A kink, `|x − 1/2|`: the error at the corner is about `#r{1/(2πn)}` (0.1875 for n = 4, 0.0398 for n = 100), i.e. `O(n^{−1/2})`. Smooth functions, `e^x` and `sin(πx)`: the error follows Voronovskaya, `O(1/n)` (for example `B_100 sin(πx)(1/2) = 0.98774`). Monotone or convex data: the shape is kept exactly.',
+   'زاوية `|x − 1/2|`: الخطأ عند الزاوية نحو `#r{1/(2πn)}` (0.1875 عند n = 4 و 0.0398 عند n = 100) أي `O(n^{−1/2})`. الدوال الملساء `e^x` و `sin(πx)`: الخطأ يتبع فورونوفسكايا `O(1/n)` (مثلاً `B_100 sin(πx)(1/2) = 0.98774`). والبيانات المطّردة أو المحدبة: يُحفظ الشكل تماماً.'],
+  ['The lesson: choose `B_n f` when shape matters more than accuracy (design, monotone data, probability), and least squares or collocation in the Bernstein basis when accuracy matters.','والدرس: اختر `B_n f` حين يكون الشكل أهم من الدقة (التصميم والبيانات المطّردة والاحتمالات)، والمربعات الصغرى أو التجميع بأساس بيرنشتاين حين تكون الدقة أهم.'],
+],[
+  Q('Compute `B_4 f(1/2)` for `f = |x − 1/2|`.','احسب `B_4 f(1/2)` للدالة `f = |x − 1/2|`.','#f{3}{16} = 0.1875',
+    ['f(#f{i}{4}) = #f{1}{2}, #f{1}{4}, 0, #f{1}{4}, #f{1}{2},   B_{i,4}(#f{1}{2}) = #f{1}{16}, #f{4}{16}, #f{6}{16}, #f{4}{16}, #f{1}{16}', '#f{1}{16}(#f{1}{2} + 1 + 0 + 1 + #f{1}{2}) = #f{3}{16}'],
+    ['0','#f{1}{4}','#f{1}{8}']),
+  Q('How large must n be for `|B_n e^x − e^x| ≤ 10^{−3}` at x = 0.5, by Voronovskaya?','كم يجب أن تكون n لكي `|B_n e^x − e^x| ≤ 10^{−3}` عند x = 0.5 بحسب فورونوفسكايا؟','n ≈ 206',
+    ['#f{0.25·e^{0.5}}{2n} ≤ 10^{−3}  ⇒  n ≥ #f{0.4122}{0.002} ≈ 206'], ['n ≈ 21','n ≈ 2061','n ≈ 412']),
+  Q('Estimate the corner error of `B_n |x − 1/2|` for n = 400.','قدّر خطأ الزاوية لـ `B_n |x − 1/2|` عند n = 400.','≈ 0.020',
+    ['#r{#f{1}{2π·400}} ≈ #r{0.000398} ≈ 0.020', ['Four times more terms only halve the error at a kink.','أربعة أضعاف الحدود تنصّف الخطأ فقط عند الزاوية.']], ['≈ 0.0025','≈ 0.0398','≈ 0.0001']),
+  Q('Which method suits monotone data where overshoot is not allowed?','أي طريقة تناسب بيانات مطّردة لا يُسمح فيها بالتجاوز؟',['`B_n f` (it preserves monotonicity and stays within the data range)','`B_n f` (تحفظ الاطراد وتبقى ضمن مدى البيانات)'],
+    [['Interpolation can overshoot; the Bernstein operator cannot.','الاستكمال قد يتجاوز، أما مؤثر بيرنشتاين فلا.']], [['High-degree interpolation at equally spaced points','الاستكمال عالي الدرجة بنقاط متساوية التباعد'],['Least squares with many terms','المربعات الصغرى بحدود كثيرة']]),
+]);
+
 export const MS502 = true;
