@@ -11,7 +11,7 @@ const AR = /[؀-ۿ]/;
 const ticks = s => (String(s).match(/`/g) || []).length % 2 === 0;
 const pairs = x => Array.isArray(x) && x.length === 2 && typeof x[0] === 'string' && typeof x[1] === 'string';
 // lessons written so far in each course: the count may only grow
-const WRITTEN = { 501: 5, 502: 5, 503: 5, 504: 5, 505: 5, 506: 5, 507: 100, 508: 5, 509: 5 };
+const WRITTEN = { 501: 100, 502: 5, 503: 5, 504: 5, 505: 5, 506: 5, 507: 100, 508: 5, 509: 5 };
 
 test('nine courses, each a road map of 10 units and 100 lessons, listed in the curriculum', () => {
   assert.deepEqual(MS_COURSES.map(c => c.code),
@@ -68,6 +68,20 @@ test('lesson content: bilingual text, balanced math marks, answers, steps and di
         assert.ok(q.w.length >= 1 && new Set(q.w.map(key2)).size === q.w.length, `${where}: wrong answers`);
         assert.ok(!q.w.some(x => key2(x) === key2(q.a)), `${where}: a wrong answer equals the answer`);
       }
+    }
+  }
+});
+
+// a plain math string is shown as it is in both languages, so it must not carry English words
+const MATHWORD = /^(sinh|cosh|tanh|sign|sgn|gcd|lcm|log|max|min|exp|erf|erfc|arg|det|diag|span|dim|deg|mod|sup|inf|lim|cond|rank|trace|const|Var|Cov)$/;
+test('plain math strings carry no English words (they are shown unchanged in Arabic)', () => {
+  for (const [key, le] of Object.entries(MS_LESSONS)) {
+    const strs = [...le.x.filter(e => typeof e === 'string')];
+    for (const q of le.q) strs.push(...[q.a, ...q.s, ...(q.w || [])].filter(e => typeof e === 'string'));
+    for (const s of strs) {
+      if (s[0] === '$') continue;                                                     // a block of code
+      const bad = (s.replace(/#[frm]\{/g, '{').match(/[A-Za-z]{4,}/g) || []).filter(x => !MATHWORD.test(x));
+      assert.equal(bad.length, 0, `${key}: "${bad.join(', ')}" in ${s.slice(0, 80)}`);
     }
   }
 });

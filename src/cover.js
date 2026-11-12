@@ -3,6 +3,10 @@
 
 /* which family of motif a topic belongs to (first matching rule wins) */
 const FAMILIES = [
+  ['pde',      /^ms50[18]_/],                 // master's lessons: spectral methods, fractional PDEs
+  ['matrix',   /^ms50[456]_/],                //   Mathematica, Python, MATLAB
+  ['series',   /^ms509_/],                    //   wavelets
+  ['calculus', /^ms50[237]_/],                //   Bernstein functions, Jacobi polynomials, fractional calculus
   ['stats',    /^(ci|test|sampleSize|anova|zScore|meanMedianMode|binomial|joint|marginal|conditional|correlation|independence|sumOfRV|bivariate|multinomial|expectedValue|variance|probability|combinations|permutations)/],
   ['or',       /^(lp|simplex)/],
   ['tree',     /^decision/],
