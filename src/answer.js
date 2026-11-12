@@ -215,7 +215,9 @@ export function checkAnswer(input, spec){
       if(spec.withC && !hasC) return false;
       if(spec.factored && !b.includes('(')) return false;
       if(!spec.factored && /\)\s*\(/.test(b)) return false;                        // "expand" answers must be expanded
-      const xs=[-1.7,-0.6,0.45,1.3,2.2], d=xs.map(x=>evaluate(b,x)-evaluate(spec.v,x));
+      const xs=[-1.7,-0.6,0.45,1.3,2.2].filter(x=>Number.isFinite(evaluate(spec.v,x)));   // skip points where the expected answer itself is undefined, e.g. (1 + x)^(1/2) at −1.7
+      if(xs.length<3) return false;
+      const d=xs.map(x=>evaluate(b,x)-evaluate(spec.v,x));
       if(!d.every(Number.isFinite)) return false;
       const off=spec.withC ? d[0] : 0;
       return d.every((x,i)=>Math.abs(x-off) <= 1e-7*Math.max(1,Math.abs(evaluate(spec.v,xs[i]))));

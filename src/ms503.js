@@ -1160,4 +1160,115 @@ lesson('503',90,[
   Q('Which choice is the safe default when nothing special is known?','أي اختيار هو الافتراضي الآمن حين لا يُعرف شيء خاص؟','α = β = 0',[['Legendre: simplest matrices and good interpolation.','ليجندر: أبسط المصفوفات واستكمال جيد.']],['α = β = 2','α = 1,   β = 0','α = β = −0.9']),
 ]);
 
+/* ---- 503 · Unit 10 (lessons 91–100): advanced topics and research ---- */
+lesson('503',91,[
+  ['Generalized Jacobi functions extend the family to negative integer parameters by putting the weight into the function (Guo, Shen and Wang):','دوال جاكوبي المعممة تمدّ العائلة إلى وسائط صحيحة سالبة بوضع الوزن داخل الدالة (قوو وشين ووانغ):'],
+  'J_n^{(−k,−l)}(x) = (1 − x)^k (1 + x)^l P_{n−k−l}^{(k,l)}(x),     n ≥ k + l',
+  ['They vanish to order k at x = 1 and to order l at x = −1, so they satisfy boundary conditions automatically. The case `(−1, −1)` is the basis `(1 − x^2)P_{n−2}^{(1,1)}` of Lessons 59 and 81.','وهي تنعدم من الرتبة k عند x = 1 ومن الرتبة l عند x = −1 فتحقق الشروط الحدية تلقائياً. والحالة `(−1, −1)` هي الأساس `(1 − x^2)P_{n−2}^{(1,1)}` في الدرسين 59 و 81.'],
+],[
+  Q('Write `J_2^{(−1,−1)}`.','اكتب `J_2^{(−1,−1)}`.','1 − x^2',['(1 − x)(1 + x)P_0^{(1,1)}'],['x^2 − 1','(1 − x^2)x','1']),
+  Q('Write `J_3^{(−1,−1)}`.','اكتب `J_3^{(−1,−1)}`.','2x(1 − x^2)',['(1 − x^2)P_1^{(1,1)},   P_1^{(1,1)} = 2x'],['x(1 − x^2)','2x','(1 − x^2)^2']),
+  Q('Which conditions does `J_n^{(−2,−2)}` satisfy at x = ±1?','أي الشروط تحققها `J_n^{(−2,−2)}` عند x = ±1؟','u(±1) = u′(±1) = 0',['(1 − x^2)^2 P_{n−4}^{(2,2)}'],['u(±1) = 0','u′(±1) = 0','u″(±1) = 0']),
+  Q('What is the lowest n allowed for `J_n^{(−2,−2)}`?','ما أصغر n مسموح لـ `J_n^{(−2,−2)}`؟','4',['n ≥ k + l = 2 + 2'],['2','0','3']),
+]);
+
+lesson('503',92,[
+  ['Jacobi poly-fractonomials (Zayernouri and Karniadakis) put a fractional power of the weight into the function:','كثيرات جاكوبي الكسرية (poly-fractonomials) لزايرنوري وكارنياداكيس تضع قوة كسرية من الوزن داخل الدالة:'],
+  '{}^{(1)}𝒫_n^{μ}(x) = (1 + x)^{μ} P_{n−1}^{(−μ,μ)}(x),     {}_{−1}D_x^{μ}[{}^{(1)}𝒫_n^{μ}] = #f{Γ(n + μ)}{Γ(n)} P_{n−1}(x)',
+  ['So their Riemann–Liouville derivative of order μ is a Legendre polynomial: the fractional derivative of the basis is known exactly. They are orthogonal with the weight `(1 − x)^{−μ}(1 + x)^{−μ}`.','فمشتقتها لريمان–ليوفيل من الرتبة μ كثيرة ليجندر: المشتقة الكسرية للأساس معلومة بالضبط. وهي متعامدة بالوزن `(1 − x)^{−μ}(1 + x)^{−μ}`.'],
+],[
+  Q('Write `{}^{(1)}𝒫_1^{μ}`.','اكتب `{}^{(1)}𝒫_1^{μ}`.','(1 + x)^{μ}',['P_0^{(−μ,μ)} = 1'],['(1 − x)^{μ}','1','(1 + x)^{−μ}']),
+  Q('Check the derivative formula for n = 1.','تحقق من صيغة المشتقة عند n = 1.','Γ(1 + μ)',['{}_{−1}D_x^{μ}(1 + x)^{μ} = #f{Γ(μ + 1)}{Γ(1)}(1 + x)^0'],['Γ(μ)','1','μ']),
+  Q('Write `{}^{(1)}𝒫_2^{1/2}` (`P_1^{(a,b)} = (a + 1) + (a + b + 2)(x − 1)/2`).','اكتب `{}^{(1)}𝒫_2^{1/2}` (`P_1^{(a,b)} = (a + 1) + (a + b + 2)(x − 1)/2`).','(x − #f{1}{2})(1 + x)^{1/2}',['P_1^{(−1/2,1/2)} = #f{1}{2} + (x − 1) = x − #f{1}{2}'],['(x + #f{1}{2})(1 + x)^{1/2}','x(1 + x)^{1/2}','(x − #f{1}{2})(1 − x)^{1/2}']),
+  Q('Find `{}_{−1}D_x^{1/2}[{}^{(1)}𝒫_2^{1/2}]`.','أوجد `{}_{−1}D_x^{1/2}[{}^{(1)}𝒫_2^{1/2}]`.','#f{3#r{π}}{4}x',['#f{Γ(5/2)}{Γ(2)}P_1(x),   Γ(#f{5}{2}) = #f{3#r{π}}{4}'],['#f{#r{π}}{2}x','#f{3#r{π}}{4}','#f{3}{4}x']),
+]);
+
+lesson('503',93,[
+  ['The poly-fractonomials are the eigenfunctions of a fractional Sturm–Liouville problem of order 2μ, built from a left and a right fractional derivative of order μ. Its eigenvalues are explicit:','كثيرات جاكوبي الكسرية هي الدوال الذاتية لمسألة شتورم–ليوفيل كسرية من الرتبة 2μ مبنية من مشتقة كسرية يسرى وأخرى يمنى من الرتبة μ. وقيمها الذاتية صريحة:'],
+  'λ_n = #f{Γ(n + μ)}{Γ(n − μ)},   n = 1, 2, …,     λ_n ~ n^{2μ}',
+  ['As μ → 1 they become `n(n − 1)`, the classical second-order growth. Expanding in eigenfunctions diagonalizes the operator, which is the fractional analogue of the Legendre–Galerkin method.','وعندما μ → 1 تصبح `n(n − 1)` وهو النمو الكلاسيكي من الرتبة الثانية. والنشر بالدوال الذاتية يقطّر المؤثر، وهذا نظير كسري لطريقة ليجندر–جاليركن.'],
+],[
+  Q('Find `λ_1` for μ = 1/2.','أوجد `λ_1` عند μ = 1/2.','#f{1}{2}',['#f{Γ(3/2)}{Γ(1/2)} = #f{#r{π}/2}{#r{π}}'],['1','#f{3}{2}','2']),
+  Q('Find `λ_2` for μ = 1/2.','أوجد `λ_2` عند μ = 1/2.','#f{3}{2}',['#f{Γ(5/2)}{Γ(3/2)} = #f{3}{2}'],['#f{1}{2}','2','#f{5}{2}']),
+  Q('Show that `λ_n = n − 1/2` for μ = 1/2.','بيّن أن `λ_n = n − 1/2` عند μ = 1/2.','#f{Γ(n + 1/2)}{Γ(n − 1/2)} = n − #f{1}{2}',['Γ(z + 1) = zΓ(z),   z = n − #f{1}{2}'],['#f{Γ(n + 1/2)}{Γ(n − 1/2)} = n','#f{Γ(n + 1/2)}{Γ(n − 1/2)} = n + #f{1}{2}','#f{Γ(n + 1/2)}{Γ(n − 1/2)} = #r{n}']),
+  Q('How do the eigenvalues grow for μ = 0.8?','كيف تنمو القيم الذاتية عند μ = 0.8؟','λ_n ~ n^{1.6}',['2μ = 1.6'],['λ_n ~ n^{0.8}','λ_n ~ n^2','λ_n ~ e^{n}']),
+]);
+
+lesson('503',94,[
+  ['Problems on `[0, ∞)` can be mapped to `[−1, 1)` and solved with Jacobi polynomials. The algebraic map with scale L is','المسائل على `[0, ∞)` يمكن تحويلها إلى `[−1, 1)` وحلها بكثيرات جاكوبي. والتحويل الجبري بالمقياس L هو'],
+  'x = L#f{1 + ξ}{1 − ξ},     ξ = #f{x − L}{x + L}',
+  ['Half of a symmetric set of nodes falls in `[0, L]`, so L controls the resolution. The mapped functions decay algebraically at infinity; the resulting rational Jacobi functions suit solutions with algebraic decay, while Laguerre functions suit exponential decay.','ونصف مجموعة عقد متماثلة يقع في `[0, L]` فيتحكم L في الدقة. والدوال المحوّلة تتناقص جبرياً عند اللانهاية، فتلائم دوال جاكوبي الكسرية الناتجة الحلول ذات التناقص الجبري، بينما تلائم دوال لاغير التناقص الأسي.'],
+],[
+  Q('Map ξ = 0 with L = 2.','حوّل ξ = 0 مع L = 2.','x = 2',['2·#f{1}{1}'],['x = 0','x = 1','x = 4']),
+  Q('Map ξ = 1/2 with L = 1.','حوّل ξ = 1/2 مع L = 1.','x = 3',['#f{3/2}{1/2}'],['x = 2','x = #f{1}{3}','x = 1.5']),
+  Q('Find ξ for x = 3 and L = 1.','أوجد ξ عند x = 3 و L = 1.','ξ = #f{1}{2}',['#f{3 − 1}{3 + 1}'],['ξ = #f{1}{3}','ξ = 2','ξ = #f{3}{4}']),
+  Q('With a symmetric set of nodes, how many lie in `x ≤ L`?','مع مجموعة عقد متماثلة كم منها يقع في `x ≤ L`؟',['Half of them','نصفها'],['x ≤ L  ⇔  ξ ≤ 0'],[['All of them','كلها'],['None','ولا واحدة']]),
+]);
+
+lesson('503',95,[
+  ['Error estimates for Jacobi projections are naturally stated in non-uniformly weighted Sobolev spaces: each derivative carries its own weight `ω^{α+m,β+m} = (1 − x)^{α+m}(1 + x)^{β+m}`:','تقديرات الخطأ لإسقاطات جاكوبي تُصاغ طبيعياً في فضاءات سوبوليف ذات الأوزان غير المنتظمة: كل مشتقة تحمل وزنها `ω^{α+m,β+m} = (1 − x)^{α+m}(1 + x)^{β+m}`:'],
+  '‖u − π_N u‖_{ω^{α,β}} ≤ C N^{−m} ‖∂_x^m u‖_{ω^{α+m,β+m}}',
+  ['The growing weight vanishes at the ends, so functions with end singularities can still have a finite norm and a good rate. Doubling N divides the bound by `2^m`.','والوزن المتزايد ينعدم عند الطرفين، فيمكن أن يكون للدوال ذات الانفرادات الطرفية معيار منته ومعدل جيد. ومضاعفة N تقسم الحد على `2^m`.'],
+],[
+  Q('By what factor does the bound fall when N is doubled with m = 4?','بأي عامل يصغر الحد عند مضاعفة N مع m = 4؟','16',['2^4'],['4','8','2']),
+  Q('With `C = 1` and m = 3, which N gives `10^{−6}`?','مع `C = 1` و m = 3 أي N يعطي `10^{−6}`؟','N = 100',['N^{−3} = 10^{−6}'],['N = 1000','N = 10','N = 10^6']),
+  Q('Which weight appears with m = 2, α = β = 0?','أي وزن يظهر مع m = 2 و α = β = 0؟','(1 − x^2)^2',['(1 − x)^2(1 + x)^2'],['1 − x^2','1','(1 − x^2)^{−2}']),
+  Q('For `u = #r{1 − x}`, `∫ (u′)^2 dx` is infinite. Is `‖u′‖_{ω^{1,1}}` (m = 1, α = β = 0) finite?','للدالة `u = #r{1 − x}` يكون `∫ (u′)^2 dx` لانهائياً. هل `‖u′‖_{ω^{1,1}}` (m = 1 و α = β = 0) منتهٍ؟',['Yes: the weight `1 − x^2` cancels the singular factor `(1 − x)^{−1}`','نعم: الوزن `1 − x^2` يلغي العامل الشاذ `(1 − x)^{−1}`'],['∫_{−1}^{1} (1 − x)(1 + x)·#f{1}{4}(1 − x)^{−1} dx = #f{1}{4}∫_{−1}^{1}(1 + x) dx = #f{1}{2}'],[['Because u is smooth','لأن u ملساء'],['It is infinite','بل لانهائي']]),
+]);
+
+lesson('503',96,[
+  ['Conditioning decides how many digits survive. Collocation matrices for the first and second derivatives have condition numbers growing like `N^2` and `N^4`; Galerkin matrices in a good basis are far better:','الحالة العددية تحدد عدد الأرقام التي تبقى. مصفوفات التجميع للمشتقتين الأولى والثانية تنمو أعداد حالتها مثل `N^2` و `N^4`، بينما مصفوفات جاليركن في أساس جيد أفضل بكثير:'],
+  'φ_k = P_k − P_{k+2}:     ⟨φ_j′, φ_k′⟩ = (4k + 6) δ_{jk}',
+  ['After diagonal scaling the stiffness matrix becomes the identity. Rule of thumb: about `log_{10} κ` digits are lost in a solve.','وبعد التحجيم القطري تصبح مصفوفة الجساءة المحايدة. وقاعدة تقريبية: يُفقد قرابة `log_{10} κ` رقماً في الحل.'],
+],[
+  Q('Estimate `κ(D^{(2)})` for N = 64.','قدّر `κ(D^{(2)})` عند N = 64.','≈ 1.7 × 10^7',['64^4 = 16 777 216'],['≈ 4096','≈ 64','≈ 2.8 × 10^{14}']),
+  Q('About how many digits are lost with that condition number?','كم رقماً يُفقد تقريباً مع عدد الحالة ذلك؟','≈ 7',['log_{10}(1.7 × 10^7) ≈ 7.2'],['≈ 16','≈ 4','≈ 1']),
+  Q('Find `⟨φ_1′, φ_1′⟩` for `φ_1 = P_1 − P_3`.','أوجد `⟨φ_1′, φ_1′⟩` للدالة `φ_1 = P_1 − P_3`.','10',['4·1 + 6'],['6','14','4']),
+  Q('What is the condition number of the Galerkin stiffness matrix after diagonal scaling?','ما عدد حالة مصفوفة جساءة جاليركن بعد التحجيم القطري؟','1',[['It becomes the identity.','تصبح المحايدة.']],['N^2','N^4','N']),
+]);
+
+lesson('503',97,[
+  ['Coefficients in one family can be converted to another by connection coefficients. For example, Legendre to Chebyshev:','يمكن تحويل المعاملات من عائلة إلى أخرى بمعاملات الربط. فمثلاً من ليجندر إلى تشيبيشيف:'],
+  'P_2 = #f{3}{4}T_2 + #f{1}{4}T_0,     P_3 = #f{5}{8}T_3 + #f{3}{8}T_1',
+  ['A direct conversion costs `O(N^2)`; fast algorithms (via asymptotic expansions and the FFT, for example by Hale and Townsend) cost about `O(N (log N)^2)`. Chebyshev coefficients themselves come from values in `O(N log N)` by the FFT.','والتحويل المباشر يكلف `O(N^2)`، والخوارزميات السريعة (عبر المفكوكات التقاربية و FFT، مثل خوارزمية هيل وتاونسند) تكلف قرابة `O(N (log N)^2)`. ومعاملات تشيبيشيف نفسها تُحسب من القيم بتكلفة `O(N log N)` بالتحويل FFT.'],
+],[
+  Q('Check `P_2 = (3/4)T_2 + (1/4)T_0`.','تحقق من `P_2 = (3/4)T_2 + (1/4)T_0`.','#f{3x^2 − 1}{2}',['#f{3}{4}(2x^2 − 1) + #f{1}{4} = #f{3}{2}x^2 − #f{1}{2}'],['#f{3x^2 + 1}{2}','3x^2 − 1','#f{3x^2 − 1}{4}']),
+  Q('Express `P_1^{(1,0)} = (3x + 1)/2` in Legendre polynomials.','عبّر عن `P_1^{(1,0)} = (3x + 1)/2` بكثيرات ليجندر.','#f{3}{2}P_1 + #f{1}{2}P_0',['P_1 = x'],['3P_1 + P_0','#f{1}{2}P_1 + #f{3}{2}P_0','P_1 + P_0']),
+  Q('Find the coefficient of `T_1` in `P_3`.','أوجد معامل `T_1` في `P_3`.','#f{3}{8}',['x^3 = #f{3T_1 + T_3}{4}','#f{5}{2}·#f{3}{4} − #f{3}{2} = #f{3}{8}'],['#f{5}{8}','−#f{3}{2}','#f{15}{8}']),
+  Q('How does the cost of converting 10 000 coefficients compare, direct versus fast?','كيف تقارن تكلفة تحويل 10 000 معامل، المباشر مقابل السريع؟','N^2 = 10^8,   N(log_2 N)^2 ≈ 1.8 × 10^6',['log_2 10^4 ≈ 13.3,   13.3^2 ≈ 177'],['N^2 = 10^4,   N(log_2 N)^2 ≈ 10^4','N^2 = 10^8,   N(log_2 N)^2 ≈ 10^8','N^2 = 10^{12},   N(log_2 N)^2 ≈ 10^8']),
+]);
+
+lesson('503',98,[
+  ['The standard commands for Jacobi polynomials, nodes and weights:','الأوامر المعتادة لكثيرات جاكوبي وعقدها وأوزانها:'],
+  '$# Python (SciPy)\nfrom scipy.special import eval_jacobi, roots_jacobi\nv = eval_jacobi(n, a, b, x)\nx, w = roots_jacobi(n, a, b)\n\n% MATLAB (Symbolic Math Toolbox)\nv = jacobiP(n, a, b, x)\n\n(* Mathematica *)\nv = JacobiP[n, a, b, x]',
+  ['``roots_jacobi`` returns the Gauss–Jacobi nodes and weights on `[−1, 1]` for the weight `(1 − x)^{a}(1 + x)^{b}`; map them to `[0, 1]` with `t = (x + 1)/2` and `w^* = w/2^{a+b+1}` (Lesson 67).','تعيد ``roots_jacobi`` عقد جاوس–جاكوبي وأوزانها على `[−1, 1]` للوزن `(1 − x)^{a}(1 + x)^{b}`، وتُنقل إلى `[0, 1]` بـ `t = (x + 1)/2` و `w^* = w/2^{a+b+1}` (الدرس 67).'],
+],[
+  Q('What does ``eval_jacobi(1, 1, 0, 1.0)`` return?','ماذا تعيد ``eval_jacobi(1, 1, 0, 1.0)``؟','$2.0',[['`P_1^{(1,0)}(1) = C(2, 1) = 2`.','`P_1^{(1,0)}(1) = C(2, 1) = 2`.']],['$1.0','$0.5','$3.0']),
+  Q('What does ``roots_jacobi(1, 1, 0)`` return?','ماذا تعيد ``roots_jacobi(1, 1, 0)``؟',['The node −1/3 and the weight 2','العقدة −1/3 والوزن 2'],[['The zero of `(3x + 1)/2` and `h_0 = 2`.','جذر `(3x + 1)/2` و `h_0 = 2`.']],[['The node 1/3 and the weight 1','العقدة 1/3 والوزن 1'],['The node 0 and the weight 2','العقدة 0 والوزن 2']]),
+  Q('Write the Mathematica command for `P_3^{(1,2)}(x)`.','اكتب أمر Mathematica لـ `P_3^{(1,2)}(x)`.','$JacobiP[3, 1, 2, x]',[['The order is n, α, β, x.','الترتيب n ثم α ثم β ثم x.']],['$JacobiP[x, 3, 1, 2]','$Jacobi[3, 1, 2, x]','$JacobiP[3, 2, 1, x]']),
+  Q('What does ``eval_jacobi(2, 1, 1, 1.0)`` return?','ماذا تعيد ``eval_jacobi(2, 1, 1, 1.0)``؟','$3.0',[['`P_2^{(1,1)}(1) = C(3, 2) = 3`.','`P_2^{(1,1)}(1) = C(3, 2) = 3`.']],['$1.0','$2.0','$6.0']),
+]);
+
+lesson('503',99,[
+  ['Reproducing a research paper is the best test of understanding. A practical order: (1) re-derive every formula on small cases by hand; (2) code the method and reproduce one table exactly; (3) measure the convergence rate yourself; (4) list every discrepancy and decide whether it is a typo or a real error.','إعادة إنتاج بحث علمي أفضل اختبار للفهم. والترتيب العملي: (1) أعد اشتقاق كل صيغة على حالات صغيرة يدوياً، (2) برمج الطريقة وأعد إنتاج جدول واحد بالضبط، (3) قِس معدل التقارب بنفسك، (4) دوّن كل اختلاف وقرر هل هو خطأ مطبعي أم خطأ حقيقي.'],
+  'p ≈ #f{log(e_N / e_{2N})}{log 2},     ρ ≈ (#f{e_N}{e_{N+k}})^{1/k}',
+  ['The first formula gives an algebraic order p (error `~ N^{−p}`), the second a spectral rate ρ (error `~ ρ^{−N}`). An algebraic rate shows up as a straight line on a log–log plot, a spectral rate as a straight line on a semi-log plot.','الصيغة الأولى تعطي رتبة جبرية p (الخطأ `~ N^{−p}`) والثانية معدلاً طيفياً ρ (الخطأ `~ ρ^{−N}`). والمعدل الجبري يظهر خطاً مستقيماً في رسم لوغاريتمي–لوغاريتمي، والمعدل الطيفي خطاً مستقيماً في رسم نصف لوغاريتمي.'],
+],[
+  Q('Errors `10^{−3}` at N and `6.25 × 10^{−5}` at 2N. Find p.','الأخطاء `10^{−3}` عند N و `6.25 × 10^{−5}` عند 2N. أوجد p.','4',['#f{10^{−3}}{6.25 × 10^{−5}} = 16 = 2^4'],['16','2','3']),
+  Q('Errors `10^{−2}` at N = 4 and `10^{−6}` at N = 12. Find ρ.','الأخطاء `10^{−2}` عند N = 4 و `10^{−6}` عند N = 12. أوجد ρ.','≈ 3.16',['(10^4)^{1/8} = 10^{0.5}'],['≈ 10','≈ 100','≈ 1.78']),
+  Q('On which plot is a spectral rate a straight line?','في أي رسم يكون المعدل الطيفي خطاً مستقيماً؟',['Semi-log: log of the error against N','نصف لوغاريتمي: لوغاريتم الخطأ مقابل N'],['log e_N ≈ log C − N log ρ'],[['Log–log','لوغاريتمي–لوغاريتمي'],['Linear','خطي']]),
+  Q('A formula in a paper fails your hand check for n = 1. What is the first step?','صيغة في بحث تفشل في تحققك اليدوي عند n = 1. ما الخطوة الأولى؟',['Recheck your own calculation and the paper’s definitions, then test another small case','أعد فحص حسابك وتعريفات البحث ثم اختبر حالة صغيرة أخرى'],[['Most discrepancies are notation or normalization differences.','معظم الاختلافات فروق في الرموز أو التطبيع.']],[['Conclude that the paper is wrong','استنتج أن البحث خاطئ'],['Ignore it','تجاهلها']]),
+]);
+
+lesson('503',100,[
+  ['Capstone project. Solve the time-fractional diffusion equation with a known solution and report the convergence:','المشروع الختامي. حل معادلة الانتشار الكسرية الزمنية بحل معلوم وقدّم تقرير التقارب:'],
+  'D_t^{1/2}u = u_{xx} + f,   0 < x < 1,   0 < t ≤ 1,     u = (t + t^{3/2}) sin(πx)',
+  ['Use a Legendre (or Jacobi) basis in x that vanishes at both ends, fractional Jacobi functions in t with a suitable λ, the integrated form with `I^{(μ)}`, and Kronecker products for the system. Report the error in both N and M, and explain each observed rate.','استخدم في x أساس ليجندر (أو جاكوبي) ينعدم عند الطرفين، وفي t دوال جاكوبي الكسرية مع λ مناسبة، والصيغة التكاملية مع `I^{(μ)}`، وضروب كرونيكر للنظام. وقدّم الخطأ بدلالة N و M معاً وفسّر كل معدل تلاحظه.'],
+],[
+  Q('Choose λ.','اختر λ.','λ = #f{1}{2}',['gcd(1, #f{3}{2}, #f{1}{2})'],['λ = 1','λ = #f{3}{2}','λ = #f{1}{4}']),
+  Q('With λ = 1/2, which M makes the time part exact?','مع λ = 1/2 أي M يجعل الجزء الزمني مضبوطاً؟','M = 3',['t + t^{3/2} = s^2 + s^3'],['M = 2','M = 1','M = 6']),
+  Q('How many unknowns for N = 8, M = 4?','كم مجهولاً عند N = 8 و M = 4؟','45',['(N + 1)(M + 1) = 9·5'],['32','40','36']),
+  Q('With M ≥ 3, how should the error behave as N grows?','مع M ≥ 3 كيف يجب أن يسلك الخطأ عندما يكبر N؟',['Spectrally (exponentially), since only `sin(πx)` is approximated','طيفياً (أسياً)، لأن `sin(πx)` وحدها تُقرَّب'],[['The time part is exact, so the error comes from x only.','الجزء الزمني مضبوط فالخطأ من x فقط.']],[['Like `N^{−1/2}`','مثل `N^{−1/2}`'],['It stays constant','يبقى ثابتاً']]),
+]);
+
 export const MS503 = true;
