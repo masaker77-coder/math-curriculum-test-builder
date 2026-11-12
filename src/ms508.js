@@ -591,4 +591,225 @@ lesson('508',40,[
   Q('Why do series methods appear in so many papers despite their limits?','لماذا تظهر الطرق التسلسلية في بحوث كثيرة رغم حدودها؟',['They give closed-form approximations with little computation','تعطي تقريبات بصيغة مغلقة بقليل من الحساب'],[['But they should be compared with a reliable numerical solution.','لكن يجب مقارنتها بحل عددي موثوق.']],[['They are always more accurate','دائماً أدق'],['They need no theory','لا تحتاج نظرية']]),
 ]);
 
+/* ---- 508 · Unit 5 (lessons 41–50): stability;  Unit 6 (lessons 51–60): time-stepping methods ---- */
+lesson('508',41,[
+  ['Matignon’s theorem: the linear system `^CD^{α}X = AX` (0 < α ≤ 1) is asymptotically stable if and only if every eigenvalue λ of A satisfies','نظرية ماتينيون: النظام الخطي `^CD^{α}X = AX` (0 < α ≤ 1) مستقر تقاربياً إذا وفقط إذا حققت كل قيمة ذاتية λ للمصفوفة A'],
+  '|arg λ| > #f{απ}{2}',
+  ['For α = 1 this is the classical condition Re λ < 0. For α < 1 the stable sector is larger: eigenvalues with positive real part can still be stable. The solutions then decay like `t^{−α}`, not exponentially.','وعند α = 1 هذا هو الشرط الكلاسيكي Re λ < 0. وعند α < 1 يكون القطاع المستقر أوسع: فقيم ذاتية جزؤها الحقيقي موجب قد تبقى مستقرة. والحلول حينها تتناقص مثل `t^{−α}` لا أسياً.'],
+],[
+  Q('Is λ = i stable for α = 1/2?','هل λ = i مستقرة عند α = 1/2؟',['Yes: `|arg i| = π/2 > π/4`','نعم: `|arg i| = π/2 > π/4`'],['#f{απ}{2} = #f{π}{4}'],[['No','لا'],['Only for t < 1','فقط عند t < 1']]),
+  Q('For which α is λ = 1 + i stable?','لأي α تكون λ = 1 + i مستقرة؟','α < #f{1}{2}',['arg(1 + i) = #f{π}{4} > #f{απ}{2}'],['α < 1','α > #f{1}{2}',['never','أبداً']]),
+  Q('Reduce the condition to α = 1.','اختصر الشرط إلى α = 1.','Re λ < 0',['|arg λ| > #f{π}{2}'],['Re λ > 0','|λ| < 1','Im λ = 0']),
+  Q('Is `A = #m{1, −2 ;; 2, 1}` stable for α = 0.6?','هل `A = #m{1, −2 ;; 2, 1}` مستقرة عند α = 0.6؟',['Yes: `λ = 1 ± 2i`, `|arg λ| ≈ 1.107 > 0.6·π/2 ≈ 0.942`','نعم: `λ = 1 ± 2i` و `|arg λ| ≈ 1.107 > 0.6·π/2 ≈ 0.942`'],['tan^{−1} 2 ≈ 1.107'],[['No: Re λ > 0','لا: Re λ > 0'],['It cannot be decided','لا يمكن الحكم']]),
+]);
+
+lesson('508',42,[
+  ['Mittag-Leffler stability is the fractional analogue of exponential stability: the solution satisfies','استقرار ميتاج–ليفلر هو النظير الكسري للاستقرار الأسي: يحقق الحل'],
+  '‖x(t)‖ ≤ [m(x_0) E_{α}(−λt^{α})]^{b},     λ > 0,   b > 0,   m(0) = 0',
+  ['It implies asymptotic stability with the algebraic rate `t^{−αb}`. Linear systems that satisfy Matignon’s condition are Mittag-Leffler stable.','وهو يقتضي الاستقرار التقاربي بالمعدل الجبري `t^{−αb}`. والنظم الخطية التي تحقق شرط ماتينيون مستقرة بمعنى ميتاج–ليفلر.'],
+],[
+  Q('With b = 1, what decay rate does Mittag-Leffler stability give for large t?','مع b = 1 أي معدل تناقص يعطيه استقرار ميتاج–ليفلر لـ t الكبيرة؟','~ t^{−α}',['E_{α}(−λt^{α}) ~ #f{t^{−α}}{λΓ(1 − α)}'],['~ e^{−λt}','~ t^{−1}','~ e^{−t^{α}}']),
+  Q('Reduce Mittag-Leffler stability to α = 1.','اختصر استقرار ميتاج–ليفلر إلى α = 1.',['Exponential stability: `‖x‖ ≤ [m(x_0)e^{−λt}]^{b}`','الاستقرار الأسي: `‖x‖ ≤ [m(x_0)e^{−λt}]^{b}`'],['E_1(−λt) = e^{−λt}'],[['Lyapunov stability only','استقرار ليابونوف فقط'],['No stability','لا استقرار']]),
+  Q('Why is `m(0) = 0` required?','لماذا يُشترط `m(0) = 0`؟',['So that the zero initial value gives the zero solution','حتى تعطي القيمة الابتدائية الصفرية الحل الصفري'],[['The bound then shrinks with `‖x_0‖`.','فيصغر الحد مع `‖x_0‖`.']],[['For convergence of E_α','لتقارب E_α'],['It is not','ليس شرطاً']]),
+  Q('Which is faster for large t: Mittag-Leffler decay or exponential decay?','أيهما أسرع لـ t الكبيرة: تناقص ميتاج–ليفلر أم التناقص الأسي؟',['Exponential decay','التناقص الأسي'],[['`t^{−α}` decays more slowly than any `e^{−ct}`.','`t^{−α}` يتناقص أبطأ من أي `e^{−ct}`.']],[['Mittag-Leffler decay','تناقص ميتاج–ليفلر'],['They are the same','متماثلان']]),
+]);
+
+lesson('508',43,[
+  ['Lyapunov’s method extends to Caputo derivatives with the inequality (for differentiable x, 0 < α ≤ 1)','طريقة ليابونوف تمتد إلى مشتقات كابوتو بالمتباينة (لـ x قابلة للاشتقاق، 0 < α ≤ 1)'],
+  '#f{1}{2} ^CD^{α}x^2(t) ≤ x(t) ^CD^{α}x(t)',
+  ['So with `V = x^2`: if `x ^CD^{α}x ≤ −λx^2` then `^CD^{α}V ≤ −2λV`, and comparison gives `V ≤ V(0)E_{α}(−2λt^{α})`, Mittag-Leffler stability. No product rule holds for fractional derivatives, which is why inequalities of this kind are needed.','فمع `V = x^2`: إذا كان `x ^CD^{α}x ≤ −λx^2` فإن `^CD^{α}V ≤ −2λV`، والمقارنة تعطي `V ≤ V(0)E_{α}(−2λt^{α})` أي استقرار ميتاج–ليفلر. ولا تصح قاعدة الضرب للمشتقات الكسرية، ولهذا نحتاج متباينات من هذا النوع.'],
+],[
+  Q('For `^CD^{α}x = −x − x^3`, bound `x ^CD^{α}x`.','لـ `^CD^{α}x = −x − x^3` قدّر `x ^CD^{α}x`.','x ^CD^{α}x = −x^2 − x^4 ≤ −x^2',[['So λ = 1.','فيكون λ = 1.']],['x ^CD^{α}x ≥ 0','x ^CD^{α}x = x^2','x ^CD^{α}x = −x^3']),
+  Q('What bound does this give for `x(t)^2`?','أي حد يعطيه هذا لـ `x(t)^2`؟','x(t)^2 ≤ x_0^2 E_{α}(−2t^{α})',['^CD^{α}V ≤ −2V'],['x(t)^2 ≤ x_0^2 e^{−2t}','x(t)^2 ≤ x_0^2','x(t)^2 ≤ E_{α}(−t^{α})']),
+  Q('Why can’t one write `^CD^{α}(x^2) = 2x ^CD^{α}x`?','لماذا لا يمكن كتابة `^CD^{α}(x^2) = 2x ^CD^{α}x`؟',['The product (chain) rule does not hold for fractional derivatives','قاعدة الضرب (السلسلة) لا تصح للمشتقات الكسرية'],[['Only the inequality above holds.','تصح المتباينة أعلاه فقط.']],[['It can','يمكن'],['Because x is not smooth','لأن x ليست ملساء']]),
+  Q('Check the inequality for `x = t` with α = 1/2 at t = 1.','تحقق من المتباينة لـ `x = t` مع α = 1/2 عند t = 1.','#f{1}{2}·#f{8}{3#r{π}} ≈ 0.752  ≤  1·#f{2}{#r{π}} ≈ 1.128',['^CD^{1/2}t^2 = #f{8}{3#r{π}}t^{3/2},   ^CD^{1/2}t = #f{2}{#r{π}}t^{1/2}'],['0.752 ≥ 1.128','1 ≤ 1','0 ≤ 0']),
+]);
+
+lesson('508',44,[
+  ['The long-time behaviour of the relaxation solution follows from the asymptotic expansion of the Mittag-Leffler function:','السلوك طويل المدى لحل الاسترخاء يأتي من المفكوك التقاربي لدالة ميتاج–ليفلر:'],
+  'E_{α}(−z) = Σ_{k=1}^{K} #f{(−1)^{k+1}}{Γ(1 − kα)} z^{−k} + O(z^{−K−1}),     z → ∞',
+  ['The leading term `z^{−1}/Γ(1 − α)` gives the algebraic decay. It is the tool for evaluating `E_{α}` at large arguments, where the power series fails (Lesson 38).','والحد الأول `z^{−1}/Γ(1 − α)` يعطي التناقص الجبري. وهو الأداة لحساب `E_{α}` عند المتغيرات الكبيرة حيث تفشل متسلسلة القوى (الدرس 38).'],
+],[
+  Q('Approximate `E_{1/2}(−10)` by the leading term.','قرّب `E_{1/2}(−10)` بالحد الأول.','#f{1}{10#r{π}} ≈ 0.05642',['#f{z^{−1}}{Γ(1/2)},   z = 10'],['≈ 0.1','≈ e^{−10}','≈ 0.5']),
+  Q('The exact value is `e^{100}erfc(10) ≈ 0.05614`. What is the relative error of the leading term?','القيمة المضبوطة `e^{100}erfc(10) ≈ 0.05614`. ما الخطأ النسبي للحد الأول؟','≈ 0.5 %',['#f{0.05642 − 0.05614}{0.05614}'],['≈ 5 %','≈ 0.05 %','≈ 50 %']),
+  Q('Why does the leading term vanish for α = 1?','لماذا ينعدم الحد الأول عند α = 1؟','#f{1}{Γ(0)} = 0',[['Every term has `1/Γ(1 − k)` = 0: the decay of `e^{−z}` is faster than any power.','كل حد فيه `1/Γ(1 − k)` = 0: تناقص `e^{−z}` أسرع من أي قوة.']],['Γ(0) = 1','#f{1}{Γ(0)} = 1','Γ(1) = 0']),
+  Q('Where should the asymptotic expansion be used instead of the power series?','أين يجب استخدام المفكوك التقاربي بدل متسلسلة القوى؟',['For large arguments z, where the series suffers cancellation','للمتغيرات z الكبيرة حيث تعاني المتسلسلة من الإلغاء'],[['Good codes switch between the two.','الأكواد الجيدة تنتقل بين الاثنين.']],[['For small z','لـ z الصغيرة'],['Never','أبداً']]),
+]);
+
+lesson('508',45,[
+  ['For a nonlinear system `^CD^{α}x = f(x)` an equilibrium x* satisfies `f(x*) = 0`. It is locally asymptotically stable if the eigenvalues of the Jacobian `J = f′(x*)` satisfy Matignon’s condition:','للنظام غير الخطي `^CD^{α}x = f(x)` تحقق نقطة الاتزان x* الشرط `f(x*) = 0`. وتكون مستقرة تقاربياً محلياً إذا حققت القيم الذاتية للجاكوبي `J = f′(x*)` شرط ماتينيون:'],
+  '|arg λ(J)| > #f{απ}{2}',
+  ['Unlike ordinary equations, a fractional system cannot have non-constant periodic solutions, and equilibria with Re λ > 0 can be stable for small α.','وبخلاف المعادلات العادية لا يمكن أن يكون للنظام الكسري حلول دورية غير ثابتة، ونقاط الاتزان مع Re λ > 0 قد تكون مستقرة لـ α الصغيرة.'],
+],[
+  Q('Find the equilibria of `^CD^{α}x = x(1 − x)`.','أوجد نقاط اتزان `^CD^{α}x = x(1 − x)`.','x* = 0,   x* = 1',['x(1 − x) = 0'],[['x* = 1 only','x* = 1 فقط'],'x* = −1, 1','x* = #f{1}{2}']),
+  Q('Which of them is stable?','أيها مستقرة؟','x* = 1',['f′(1) = 1 − 2 = −1,   f′(0) = 1'],['x* = 0',['both','كلاهما'],['neither','لا شيء منهما']]),
+  Q('For a real eigenvalue λ < 0, is the equilibrium stable for every α ∈ (0, 1]?','لقيمة ذاتية حقيقية λ < 0 هل تكون نقطة الاتزان مستقرة لكل α ∈ (0, 1]؟',['Yes: `|arg λ| = π > απ/2`','نعم: `|arg λ| = π > απ/2`'],[['The sector condition always holds on the negative axis.','شرط القطاع يتحقق دائماً على المحور السالب.']],[['Only for α < 1/2','فقط عند α < 1/2'],['No','لا']]),
+  Q('Can a fractional system have a non-constant periodic solution?','هل يمكن أن يكون للنظام الكسري حل دوري غير ثابت؟',['No: the memory of the Caputo derivative excludes exact periodicity','لا: ذاكرة مشتقة كابوتو تمنع الدورية الدقيقة'],[['Solutions may still oscillate and decay.','قد تتذبذب الحلول وتتناقص مع ذلك.']],[['Yes, always','نعم دائماً'],['Only for α < 1','فقط عند α < 1']]),
+]);
+
+lesson('508',46,[
+  ['A fractional SIR model replaces the time derivatives by Caputo derivatives of order α:','النموذج الكسري SIR يستبدل المشتقات الزمنية بمشتقات كابوتو من الرتبة α:'],
+  '^CD^{α}S = −β^{α}SI,     ^CD^{α}I = β^{α}SI − γ^{α}I,     ^CD^{α}R = γ^{α}I',
+  ['The rates are raised to the power α so that both sides have units of `time^{−α}`. The sum `S + I + R` is conserved, the basic reproduction number is still `R_0 = β/γ`, and the memory slows the epidemic’s rise and fall.','والمعدلات مرفوعة للأس α حتى يكون للطرفين وحدات `time^{−α}`. والمجموع `S + I + R` محفوظ، ورقم التكاثر الأساسي يبقى `R_0 = β/γ`، والذاكرة تبطئ صعود الوباء وهبوطه.'],
+],[
+  Q('Show that `S + I + R` is constant.','أثبت أن `S + I + R` ثابت.','^CD^{α}(S + I + R) = 0',['−β^{α}SI + β^{α}SI − γ^{α}I + γ^{α}I = 0'],['^CD^{α}(S + I + R) = −γ^{α}I','S + I + R = e^{−t}','S + I + R = 1 + t']),
+  Q('Why are the rates written as `β^{α}` and `γ^{α}`?','لماذا تُكتب المعدلات `β^{α}` و `γ^{α}`؟',['So that the units match: `^CD^{α}` has units of `time^{−α}`','حتى تتطابق الوحدات: `^CD^{α}` وحدتها `time^{−α}`'],[['β itself has units of `time^{−1}`.','و β نفسها وحدتها `time^{−1}`.']],[['To make the model nonlinear','لجعل النموذج غير خطي'],['By convention only','اصطلاحاً فقط']]),
+  Q('Give `R_0` for β = 0.3, γ = 0.1.','أعط `R_0` عند β = 0.3 و γ = 0.1.','3',['#f{β}{γ}'],['0.03','#f{1}{3}','0.2']),
+  Q('When does I grow at the start (S ≈ 1)?','متى تنمو I في البداية (S ≈ 1)؟','β > γ  (R_0 > 1)',['β^{α} − γ^{α} > 0'],['β < γ',['always','دائماً'],['never','أبداً']]),
+]);
+
+lesson('508',47,[
+  ['Fractional versions of chaotic systems (Lorenz, Chen, Rössler) can stay chaotic for orders below 1. A necessary condition for chaos with commensurate order α is that some unstable saddle-focus eigenvalue λ violates Matignon’s condition:','النسخ الكسرية من النظم الفوضوية (لورنز وتشن ورسلر) قد تبقى فوضوية لرتب أقل من 1. وشرط لازم للفوضى برتبة متساوية α أن تخالف قيمة ذاتية غير مستقرة من نوع سرج–بؤرة λ شرط ماتينيون:'],
+  'α > #f{2}{π} tan^{−1}#f{|Im λ|}{Re λ}',
+  ['Below this threshold every equilibrium is stable and chaos cannot occur. Numerical studies of such systems need long times and therefore cheap memory treatment (Lesson 60).','وتحت هذه العتبة تكون كل نقاط الاتزان مستقرة ولا يمكن أن تحدث الفوضى. والدراسات العددية لهذه النظم تحتاج أزمنة طويلة فتحتاج معالجة رخيصة للذاكرة (الدرس 60).'],
+],[
+  Q('Compute the threshold for λ = 1 + 2i.','احسب العتبة لـ λ = 1 + 2i.','α > 0.705',['#f{2}{π}tan^{−1} 2 = #f{2}{π}·1.107'],['α > 0.5','α > 0.352','α > 1']),
+  Q('Below the threshold, what happens to that equilibrium?','تحت العتبة ماذا يحدث لنقطة الاتزان تلك؟',['It becomes stable: `|arg λ| > απ/2`','تصبح مستقرة: `|arg λ| > απ/2`'],[['So no chaos near it.','فلا فوضى قربها.']],[['It becomes unstable','تصبح غير مستقرة'],['Nothing changes','لا يتغير شيء']]),
+  Q('Is the condition sufficient for chaos?','هل الشرط كافٍ للفوضى؟',['No, only necessary','لا، لازم فقط'],[['Chaos must be confirmed by simulation, for example Lyapunov exponents.','يجب تأكيد الفوضى بالمحاكاة مثل أسس ليابونوف.']],[['Yes','نعم'],['It is neither','ليس هذا ولا ذاك']]),
+  Q('Why do long simulations of fractional systems cost so much?','لماذا تكلف المحاكاة الطويلة للنظم الكسرية كثيراً؟',['Every step uses the whole history: `O(N^2)` work for N steps','كل خطوة تستخدم التاريخ كله: عمل `O(N^2)` لـ N خطوة'],[['Fast methods reduce this.','الطرق السريعة تقلل ذلك.']],[['Because α < 1','لأن α < 1'],['They do not','لا تكلف']]),
+]);
+
+lesson('508',48,[
+  ['A delay fractional equation `^CD^{α}y(t) = f(t, y(t), y(t − τ))` needs a history function `y(t) = φ(t)` on `[−τ, 0]`. The method of steps solves it interval by interval; on the first interval the delayed term is known and the equation has no delay:','المعادلة الكسرية ذات التأخير `^CD^{α}y(t) = f(t, y(t), y(t − τ))` تحتاج دالة تاريخ `y(t) = φ(t)` على `[−τ, 0]`. وطريقة الخطوات تحلها مجالاً مجالاً، وعلى المجال الأول يكون الحد المتأخر معلوماً فلا تأخير في المعادلة:'],
+  '0 ≤ t ≤ τ:     ^CD^{α}y = f(t, y, φ(t − τ))',
+  ['Delays can destabilize systems that are stable without delay; the stability region depends on α, τ and the coefficients. Note that the Caputo memory starts at t = 0, so the history enters only through the delayed term.','والتأخيرات قد تُخل باستقرار نظم مستقرة دونه، ومنطقة الاستقرار تعتمد على α و τ والمعاملات. ولاحظ أن ذاكرة كابوتو تبدأ عند t = 0 فيدخل التاريخ عبر الحد المتأخر فقط.'],
+],[
+  Q('Solve `^CD^{α}y = −y(t − 1)`, `φ ≡ 1`, on [0, 1].','حل `^CD^{α}y = −y(t − 1)` مع `φ ≡ 1` على [0, 1].','y = 1 − #f{t^{α}}{Γ(α + 1)}',['^CD^{α}y = −1,   y(0) = 1'],['y = E_{α}(−t^{α})','y = 1','y = 1 − t^{α}']),
+  Q('What is `y(1)` for α = 1/2?','ما `y(1)` عند α = 1/2؟','1 − #f{2}{#r{π}} ≈ −0.128',['Γ(#f{3}{2}) = #f{#r{π}}{2}'],['≈ 0.4276','≈ 0','≈ 0.5']),
+  Q('What data does a delay equation need besides y(0)?','أي معطيات تحتاجها معادلة التأخير غير y(0)؟',['The history `φ(t)` on `[−τ, 0]`','التاريخ `φ(t)` على `[−τ, 0]`'],[['An initial function, not just a value.','دالة ابتدائية لا قيمة فقط.']],[['y′(0)','y′(0)'],['Nothing','لا شيء']]),
+  Q('Why does the method of steps work?','لماذا تعمل طريقة الخطوات؟',['On each interval of length τ the delayed term is already known','على كل مجال طوله τ يكون الحد المتأخر معلوماً مسبقاً'],[['So each step is an equation without delay.','فكل خطوة معادلة دون تأخير.']],[['Because τ is small','لأن τ صغير'],['It does not','لا تعمل']]),
+]);
+
+lesson('508',49,[
+  ['A boundary-value problem with `1 < α ≤ 2`: `^CD^{α}y = f`, `y(0) = 0`, `y(1) = 0`. Integrate and fix the free constant from the right boundary:','مسألة القيم الحدية مع `1 < α ≤ 2`: `^CD^{α}y = f` و `y(0) = 0` و `y(1) = 0`. كامل وحدد الثابت الحر من الحد الأيمن:'],
+  'y = D^{−α}f + c t,     c = −(D^{−α}f)(1)',
+  ['For f = −1 and α = 3/2: `y = (t − t^{3/2})/Γ(5/2)`. Fractional Sturm–Liouville problems, `−^{RL}D_{1−}^{α/2}(p ^CD_{0+}^{α/2}y) + qy = λwy`, combine a left and a right derivative and have real eigenvalues and orthogonal eigenfunctions (Course 503, Lesson 93).','ولـ f = −1 و α = 3/2: `y = (t − t^{3/2})/Γ(5/2)`. ومسائل شتورم–ليوفيل الكسرية `−^{RL}D_{1−}^{α/2}(p ^CD_{0+}^{α/2}y) + qy = λwy` تجمع مشتقة يسرى وأخرى يمنى ولها قيم ذاتية حقيقية ودوال ذاتية متعامدة (المقرر 503، الدرس 93).'],
+],[
+  Q('Check `y = (t − t^{3/2})/Γ(5/2)` at t = 1.','تحقق من `y = (t − t^{3/2})/Γ(5/2)` عند t = 1.','y(1) = 0',['1 − 1 = 0'],['y(1) = 1','y(1) = #f{1}{Γ(5/2)}','y(1) = −1']),
+  Q('Compute `y(1/4)`.','احسب `y(1/4)`.','≈ 0.0940',['#f{0.25 − 0.125}{1.3293}'],['≈ 0.125','≈ 0.25','≈ 0.0470']),
+  Q('Why does the term ct not change the equation?','لماذا لا يغيّر الحد ct المعادلة؟','^CD^{3/2}t = 0',['#f{d^2}{dt^2}t = 0'],['^CD^{3/2}t = 1','^CD^{3/2}t = t^{−1/2}','^CD^{3/2}t = #f{1}{Γ(1/2)}']),
+  Q('Verify `^CD^{3/2}y = −1` for that y.','تحقق من `^CD^{3/2}y = −1` لتلك y.','−#f{1}{Γ(5/2)}^CD^{3/2}t^{3/2} = −#f{Γ(5/2)}{Γ(5/2)Γ(1)} = −1',['^CD^{3/2}t^{3/2} = #f{Γ(5/2)}{Γ(1)}'],['+1','0','−#f{1}{Γ(5/2)}']),
+]);
+
+lesson('508',50,[
+  ['Worked problems for Unit 5: Matignon’s sector, asymptotics, equilibria and models.','مسائل محلولة للوحدة 5: قطاع ماتينيون والسلوك التقاربي ونقاط الاتزان والنماذج.'],
+  '|arg λ| > #f{απ}{2},     E_{α}(−z) ≈ #f{1}{zΓ(1 − α)}',
+],[
+  Q('Is `A = #m{0, 1 ;; −1, 0}` stable for α = 0.9?','هل `A = #m{0, 1 ;; −1, 0}` مستقرة عند α = 0.9؟',['Yes: `λ = ±i`, `π/2 > 0.45π`','نعم: `λ = ±i` و `π/2 > 0.45π`'],[['For α = 1 the solutions only rotate.','عند α = 1 تدور الحلول فقط.']],[['No','لا'],['Only for α = 1','فقط عند α = 1']]),
+  Q('Find the largest α for which `λ = 1 + i#r{3}` is stable.','أوجد أكبر α تكون عندها `λ = 1 + i#r{3}` مستقرة.','α < #f{2}{3}',['arg λ = #f{π}{3} > #f{απ}{2}'],['α < #f{1}{3}','α < 1','α < #f{1}{2}']),
+  Q('Estimate `E_{0.8}(−100)`.','قدّر `E_{0.8}(−100)`.','#f{1}{100Γ(0.2)} ≈ 0.0022',['Γ(0.2) ≈ 4.591'],['≈ e^{−100}','≈ 0.01','≈ 0.22']),
+  Q('For `^CD^{α}x = −x + x^2`, which equilibrium is stable?','لـ `^CD^{α}x = −x + x^2` أي نقطة اتزان مستقرة؟','x* = 0',['f′(0) = −1,   f′(1) = 1'],['x* = 1',['both','كلاهما'],['neither','لا شيء منهما']]),
+]);
+
+lesson('508',51,[
+  ['The fractional Euler (rectangle) method approximates the Volterra form with f frozen on each subinterval. On a uniform mesh `t_n = nh`:','طريقة أويلر الكسرية (المستطيل) تقرّب صيغة فولتيرا مع تثبيت f على كل مجال جزئي. وعلى شبكة منتظمة `t_n = nh`:'],
+  'y_{n+1} = ψ_0 + #f{h^{α}}{Γ(α + 1)} Σ_{j=0}^{n} b_{n,j} f(t_j, y_j),     b_{n,j} = (n + 1 − j)^{α} − (n − j)^{α}',
+  ['The weights come from integrating the kernel exactly over each subinterval. The method is explicit and of order 1 for smooth f; for the non-smooth solutions of fractional equations its observed order at fixed t is also about 1 (for `^CD^{1/2}y = −y`: errors 2.0, 1.0, 0.50, 0.25 × 10^{−3} for N = 40, …, 320).','والأوزان تأتي من تكامل النواة بالضبط على كل مجال جزئي. والطريقة صريحة ومن الرتبة 1 للدوال f الملساء، ولحلول المعادلات الكسرية غير الملساء تكون رتبتها الملاحظة عند t ثابتة نحو 1 أيضاً (لـ `^CD^{1/2}y = −y`: الأخطاء 2.0 و 1.0 و 0.50 و 0.25 × 10^{−3} لـ N = 40 حتى 320).'],
+],[
+  Q('Write the first step `y_1`.','اكتب الخطوة الأولى `y_1`.','y_1 = ψ_0 + #f{h^{α}}{Γ(α + 1)} f(t_0, ψ_0)',['n = 0:   b_{0,0} = 1'],['y_1 = ψ_0 + h f(t_0, ψ_0)','y_1 = ψ_0 + h^{α} f(t_0, ψ_0)','y_1 = #f{h^{α}}{Γ(α)} f(t_0, ψ_0)']),
+  Q('Compute `b_{1,0}` and `b_{1,1}` for α = 1/2.','احسب `b_{1,0}` و `b_{1,1}` عند α = 1/2.','#r{2} − 1 ≈ 0.414,   1',['b_{1,0} = 2^{1/2} − 1^{1/2},   b_{1,1} = 1^{1/2} − 0'],['1,   1','0.5,   0.5','#r{2},   1']),
+  Q('What is the observed order from the errors above?','ما الرتبة الملاحظة من الأخطاء أعلاه؟','≈ 1',['#f{2.0}{1.0} = 2 = 2^1'],['≈ 2','≈ 0.5','≈ 1.5']),
+  Q('Reduce the method to α = 1.','اختصر الطريقة إلى α = 1.','y_{n+1} = ψ_0 + h Σ_{j=0}^{n} f(t_j, y_j)',[['`b_{n,j} = 1`: explicit Euler in sum form.','`b_{n,j} = 1`: أويلر الصريحة بصيغة المجموع.']],['y_{n+1} = y_n + h^2 f_n','y_{n+1} = h f_n','y_{n+1} = ψ_0']),
+]);
+
+lesson('508',52,[
+  ['The Grünwald–Letnikov formula generalizes backward differences:','صيغة جرونفالد–ليتنيكوف تعمم الفروق الخلفية:'],
+  'D^{α}y(t_n) ≈ h^{−α} Σ_{j=0}^{n} w_j y_{n−j},     w_j = (−1)^j C(α, j),     w_0 = 1,   w_j = (1 − #f{α + 1}{j}) w_{j−1}',
+  ['It approximates the Riemann–Liouville derivative with order 1; for Caputo subtract the initial value: apply it to `y − y(0)`. The recurrence for the weights is cheap and stable.','وهي تقرّب مشتقة ريمان–ليوفيل بالرتبة 1، ولكابوتو اطرح القيمة الابتدائية: طبّقها على `y − y(0)`. وعلاقة التكرار للأوزان رخيصة ومستقرة.'],
+],[
+  Q('Compute `w_1, w_2, w_3` for α = 1/2.','احسب `w_1, w_2, w_3` عند α = 1/2.','−0.5,   −0.125,   −0.0625',['w_1 = (1 − 1.5)·1,   w_2 = (1 − 0.75)(−0.5),   w_3 = (1 − 0.5)(−0.125)'],['0.5,   0.125,   0.0625','−0.5,   0.25,   −0.125','−1,   0.5,   −0.25']),
+  Q('What are the weights for α = 1?','ما الأوزان عند α = 1؟','1,   −1,   0,   0, …',['C(1, j) = 0  (j ≥ 2)'],['1,   1,   1, …','1,   −1,   1,   −1, …','1,   −0.5,   0, …']),
+  Q('How is GL turned into a Caputo approximation?','كيف تتحول GL إلى تقريب لكابوتو؟','D^{α}(y − y(0))',['^CD^{α}y = ^{RL}D^{α}(y − y(0))'],['D^{α}y + y(0)','D^{α}y·y(0)','D^{−α}y']),
+  Q('What is the order of the GL approximation for smooth functions?','ما رتبة تقريب GL للدوال الملساء؟','1',[['Shifted or weighted versions reach order 2.','النسخ المزاحة أو الموزونة تبلغ الرتبة 2.']],['2','α','2 − α']),
+]);
+
+lesson('508',53,[
+  ['The L1 scheme approximates y by a piecewise linear function and integrates the Caputo kernel exactly:','مخطط L1 يقرّب y بدالة خطية مجزأة ويكامل نواة كابوتو بالضبط:'],
+  '^CD^{α}y(t_n) ≈ #f{h^{−α}}{Γ(2 − α)} Σ_{k=0}^{n−1} b_k (y_{n−k} − y_{n−k−1}),     b_k = (k + 1)^{1−α} − k^{1−α}',
+  ['For smooth y it has order `2 − α`. For `^CD^{1/2}y = −y` (solution `E_{1/2}(−t^{1/2})`, singular at 0) the observed order at t = 1 on a uniform mesh drops to about 1: errors 1.83, 0.90, 0.44, 0.22 × 10^{−3} for N = 40, …, 320.','وللدوال الملساء y رتبته `2 − α`. ولـ `^CD^{1/2}y = −y` (الحل `E_{1/2}(−t^{1/2})` الشاذ عند 0) تنخفض الرتبة الملاحظة عند t = 1 على شبكة منتظمة إلى نحو 1: الأخطاء 1.83 و 0.90 و 0.44 و 0.22 × 10^{−3} لـ N = 40 حتى 320.'],
+],[
+  Q('Compute `b_0, b_1, b_2` for α = 1/2.','احسب `b_0, b_1, b_2` عند α = 1/2.','1,   0.414,   0.318',['b_k = #r{k + 1} − #r{k}'],['1,   0.5,   0.333','1,   1,   1','0.5,   0.25,   0.125']),
+  Q('What is the order of L1 for smooth solutions with α = 0.3?','ما رتبة L1 للحلول الملساء مع α = 0.3؟','1.7',['2 − α'],['0.3','2','1']),
+  Q('What order is observed for `E_{1/2}(−t^{1/2})` on a uniform mesh?','أي رتبة تُلاحظ لـ `E_{1/2}(−t^{1/2})` على شبكة منتظمة؟','≈ 1',['#f{1.83}{0.90} ≈ 2'],['1.5','0.5','2']),
+  Q('Why does the order drop?','لماذا تنخفض الرتبة؟',['The solution is not smooth at t = 0, so the linear interpolation is poor on the first intervals','الحل ليس أملس عند t = 0 فيكون الاستكمال الخطي سيئاً على المجالات الأولى'],[['Graded meshes (Lesson 58) fix this.','الشبكات المتدرجة (الدرس 58) تعالج ذلك.']],[['Rounding error','خطأ التقريب'],['The weights are wrong','الأوزان خاطئة']]),
+]);
+
+lesson('508',54,[
+  ['The Adams–Bashforth–Moulton method of Diethelm, Ford and Freed: an explicit fractional Euler predictor, then a trapezoidal corrector on the Volterra form:','طريقة آدامز–باشفورث–مولتون لديتلم وفورد وفريد: متنبئ أويلر كسري صريح ثم مصحح شبه منحرف على صيغة فولتيرا:'],
+  'y_{n+1}^{P} = ψ_0 + #f{h^{α}}{Γ(α + 1)} Σ_{j=0}^{n} b_{n,j}f_j',
+  'y_{n+1} = ψ_0 + #f{h^{α}}{Γ(α + 2)}(f(t_{n+1}, y_{n+1}^{P}) + Σ_{j=0}^{n} a_{j,n+1}f_j)',
+  ['Its order is `min(2, 1 + α)` for smooth solutions, lower for the usual non-smooth ones. It is the standard general-purpose method, implemented for example in Garrappa’s ``fde12`` for MATLAB.','ورتبتها `min(2, 1 + α)` للحلول الملساء وأقل للحلول غير الملساء المعتادة. وهي الطريقة القياسية العامة، ومطبقة مثلاً في ``fde12`` لـ Garrappa في MATLAB.'],
+],[
+  Q('What is the order of ABM for smooth solutions with α = 0.5?','ما رتبة ABM للحلول الملساء مع α = 0.5؟','1.5',['min(2, 1 + 0.5)'],['2','0.5','1']),
+  Q('And with α = 1.5?','ومع α = 1.5؟','2',['min(2, 2.5)'],['2.5','1.5','1']),
+  Q('What role does the predictor play?','ما دور المتنبئ؟',['It supplies `y_{n+1}` to evaluate f in the implicit corrector without solving an equation','يوفر `y_{n+1}` لحساب f في المصحح الضمني دون حل معادلة'],[['One predictor and one corrector per step.','متنبئ ومصحح واحد لكل خطوة.']],[['It gives the final answer','يعطي الجواب النهائي'],['It halves the step','ينصّف الخطوة']]),
+  Q('Reduce the corrector to α = 1 with one step.','اختصر المصحح إلى α = 1 بخطوة واحدة.','y_1 = ψ_0 + #f{h}{2}(f_0 + f(t_1, y_1^{P}))',[['Heun’s method.','طريقة هيون.']],['y_1 = ψ_0 + hf_0','y_1 = ψ_0 + h f(t_1, y_1^{P})','y_1 = ψ_0 + #f{h}{6}(f_0 + 4f_1 + f_2)']),
+]);
+
+lesson('508',55,[
+  ['Product integration methods approximate only the smooth part f of the Volterra integrand by a polynomial on each subinterval and integrate it exactly against the singular kernel:','طرق التكامل الضربي تقرّب الجزء الأملس f فقط من مكامل فولتيرا بكثيرة حدود على كل مجال جزئي وتكاملها بالضبط مع النواة الشاذة:'],
+  '∫_{t_j}^{t_{j+1}} (t_n − s)^{α−1} f(s) ds ≈ ∫_{t_j}^{t_{j+1}} (t_n − s)^{α−1} p_j(s) ds',
+  ['Constant `p_j` gives the fractional Euler method, linear `p_j` the trapezoidal (ABM) corrector, quadratic `p_j` higher orders. The kernel integrals are explicit powers, so the weights are exact.','و `p_j` الثابتة تعطي طريقة أويلر الكسرية، والخطية مصحح شبه المنحرف (ABM)، والتربيعية رتباً أعلى. وتكاملات النواة قوى صريحة فتكون الأوزان مضبوطة.'],
+],[
+  Q('Compute `∫_0^h (h − s)^{α−1} ds`.','احسب `∫_0^h (h − s)^{α−1} ds`.','#f{h^{α}}{α}',['[−#f{(h − s)^{α}}{α}]_0^h'],['h^{α}','#f{h^{α−1}}{α − 1}','h']),
+  Q('Which product integration rule gives the fractional Euler method?','أي قاعدة تكامل ضربي تعطي طريقة أويلر الكسرية؟',['A constant `p_j = f(t_j, y_j)` on each subinterval','`p_j = f(t_j, y_j)` ثابتة على كل مجال جزئي'],[['The rectangle rule.','قاعدة المستطيل.']],[['A linear p_j','p_j خطية'],['A spline','شريحة']]),
+  Q('Why integrate the kernel exactly instead of using Gauss quadrature on the whole integrand?','لماذا تُكامل النواة بالضبط بدل تربيع جاوس على المكامل كله؟',['The kernel is singular at s = t; ordinary rules would converge slowly','النواة شاذة عند s = t، والقواعد العادية تتقارب ببطء'],[['Only the smooth factor is approximated.','العامل الأملس وحده يُقرَّب.']],[['It is faster','أسرع'],['Gauss is not allowed','جاوس غير مسموح']]),
+  Q('What does a linear `p_j` give?','ماذا تعطي `p_j` الخطية؟',['The trapezoidal corrector of the ABM method','مصحح شبه المنحرف في طريقة ABM'],[['Order up to `1 + α` for smooth f.','رتبة حتى `1 + α` للدوال f الملساء.']],[['The fractional Euler method','طريقة أويلر الكسرية'],['The L1 scheme','مخطط L1']]),
+]);
+
+lesson('508',56,[
+  ['Lubich’s fractional linear multistep methods take the generating polynomial of a classical method and raise it to the power α. From BDF1 (backward Euler) one gets the GL weights:','طرق لوبيش الخطية الكسرية متعددة الخطوات تأخذ كثيرة الحدود المولدة لطريقة كلاسيكية وترفعها للأس α. ومن BDF1 (أويلر الخلفي) نحصل على أوزان GL:'],
+  '(1 − ζ)^{α} = Σ_j w_j ζ^j,     BDF2:   (#f{3}{2} − 2ζ + #f{1}{2}ζ^2)^{α}',
+  ['The order of the classical method carries over for smooth solutions. Starting weights (a few extra terms near t = 0) correct the loss of order caused by the non-smooth terms `t^{kα}`.','ورتبة الطريقة الكلاسيكية تنتقل للحلول الملساء. وأوزان البدء (بضعة حدود إضافية قرب t = 0) تصحح فقدان الرتبة الناتج عن الحدود غير الملساء `t^{kα}`.'],
+],[
+  Q('Expand `(1 − ζ)^{1/2}` to second order.','انشر `(1 − ζ)^{1/2}` حتى الرتبة الثانية.','1 − #f{1}{2}ζ − #f{1}{8}ζ^2',[['The GL weights of Lesson 52.','أوزان GL في الدرس 52.']],['1 + #f{1}{2}ζ + #f{1}{8}ζ^2','1 − ζ + ζ^2','1 − #f{1}{2}ζ + #f{1}{8}ζ^2']),
+  Q('Which classical method generates the GL weights?','أي طريقة كلاسيكية تولّد أوزان GL؟',['BDF1 (backward Euler)','BDF1 (أويلر الخلفي)'],['1 − ζ'],['BDF2',['the trapezoidal rule','قاعدة شبه المنحرف'],['Runge–Kutta 4','رونج–كوتا 4']]),
+  Q('What order does the BDF2-based method reach for smooth solutions?','أي رتبة تبلغها الطريقة المبنية على BDF2 للحلول الملساء؟','2',[['The order of BDF2 carries over.','رتبة BDF2 تنتقل.']],['1','α','2 − α']),
+  Q('What are starting weights for?','لماذا أوزان البدء؟',['To integrate the non-smooth terms `t^{kα}` near t = 0 exactly and restore the order','لتكامل الحدود غير الملساء `t^{kα}` قرب t = 0 بالضبط واستعادة الرتبة'],[['A few extra weights for the first points.','بضعة أوزان إضافية للنقاط الأولى.']],[['To start the iteration','لبدء التكرار'],['They are not needed','لا حاجة لها']]),
+]);
+
+lesson('508',57,[
+  ['The classical orders assume smooth solutions. Since the solution typically behaves like `ψ_0 + ct^{α}`, the error of most schemes on a uniform mesh is limited near t = 0, and the global rate drops. For L1 on a uniform mesh:','الرتب الكلاسيكية تفترض حلولاً ملساء. ولأن الحل يسلك عادة مثل `ψ_0 + ct^{α}` يكون خطأ معظم المخططات على شبكة منتظمة محدوداً قرب t = 0 فتنخفض الرتبة الكلية. ولـ L1 على شبكة منتظمة:'],
+  'max_{n}|y(t_n) − y_n| ~ N^{−α},     |y(T) − y_N| ~ N^{−1}     (y ~ t^{α},   h = #f{T}{N})',
+  ['The maximum error sits near t = 0; at a fixed time the rate is better. This is why the reported order of a method must be checked on a problem with the true singular behaviour, not only on smooth manufactured solutions such as `t^2`.','وأكبر خطأ يقع قرب t = 0، وعند زمن ثابت يكون المعدل أفضل. ولهذا يجب فحص الرتبة المعلنة لطريقة على مسألة بالسلوك الشاذ الحقيقي، لا على حلول مصنّعة ملساء فقط مثل `t^2`.'],
+],[
+  Q('For α = 0.3, what maximum-error rate does uniform L1 give near t = 0?','عند α = 0.3 أي معدل لأكبر خطأ يعطيه L1 المنتظم قرب t = 0؟','~ N^{−0.3}',['N^{−α}'],['~ N^{−1.7}','~ N^{−1}','~ N^{−2}']),
+  Q('Why is `y = t^2` a poor test of an L1 code?','لماذا يكون `y = t^2` اختباراً سيئاً لكود L1؟',['It is smooth, so it shows the order `2 − α` that real solutions do not have','ملساء فتُظهر الرتبة `2 − α` التي لا تملكها الحلول الحقيقية'],[['Add a test with `t^{α}` behaviour.','أضف اختباراً بسلوك `t^{α}`.']],[['It is too hard','صعبة جداً'],['It is not a solution','ليست حلاً']]),
+  Q('Which test solution shows the true behaviour?','أي حل اختبار يُظهر السلوك الحقيقي؟','y = E_{α}(−t^{α})',[['It contains `t^{α}`, `t^{2α}`, …','يحتوي `t^{α}` و `t^{2α}` و …']],['y = t^2','y = 1 + t','y = sin t']),
+  Q('The reported L1 errors at t = 1 for `E_{1/2}(−t^{1/2})` halve when N doubles. What is the order?','أخطاء L1 المعلنة عند t = 1 لـ `E_{1/2}(−t^{1/2})` تنتصف عند مضاعفة N. ما الرتبة؟','1',['2^1 = 2'],['1.5','0.5','2']),
+]);
+
+lesson('508',58,[
+  ['A graded mesh clusters the points near t = 0, where the solution is singular. With the exponent below, L1 recovers its full order 2 − α:','الشبكة المتدرجة تكثّف النقاط قرب t = 0 حيث الحل شاذ. ومع الأس أدناه يستعيد L1 رتبته الكاملة 2 − α:'],
+  't_j = T (#f{j}{N})^{r},     r = #f{2 − α}{α}   ⇒   O(N^{α−2})',
+  ['For `^CD^{1/2}y = −y` with r = 3 the L1 errors at t = 1 become 6.5, 2.3, 0.81, 0.29 × 10^{−4} for N = 40, …, 320: order 1.5 = 2 − α, against 1 on the uniform mesh. Correction terms (starting weights) are an alternative that keeps a uniform mesh.','ولـ `^CD^{1/2}y = −y` مع r = 3 تصبح أخطاء L1 عند t = 1 هي 6.5 و 2.3 و 0.81 و 0.29 × 10^{−4} لـ N = 40 حتى 320: رتبة 1.5 = 2 − α مقابل 1 على الشبكة المنتظمة. وحدود التصحيح (أوزان البدء) بديل يحافظ على شبكة منتظمة.'],
+],[
+  Q('Compute the grading exponent r for α = 1/2.','احسب أس التدرج r عند α = 1/2.','3',['#f{2 − 0.5}{0.5}'],['2','1.5','4']),
+  Q('Give the first mesh point `t_1` for N = 10, T = 1, r = 3.','أعط أول نقطة شبكة `t_1` عند N = 10 و T = 1 و r = 3.','0.001',['(#f{1}{10})^3'],['0.1','0.01','0.0001']),
+  Q('What order does the graded mesh give in the experiment?','أي رتبة تعطيها الشبكة المتدرجة في التجربة؟','1.5',['#f{6.5}{2.3} ≈ 2.8 ≈ 2^{1.5}'],['1','2','0.5']),
+  Q('What is the drawback of strong grading?','ما عيب التدرج القوي؟',['Very small first steps and large steps near T, which can hurt accuracy and conditioning there','خطوات أولى صغيرة جداً وخطوات كبيرة قرب T، وقد يضر ذلك بالدقة والشرط هناك'],[['The choice of r is a balance.','اختيار r موازنة.']],[['None','لا عيب'],['It changes the solution','يغيّر الحل']]),
+]);
+
+lesson('508',59,[
+  ['Stability of a time-stepping method is studied on the test equation `^CD^{α}y = λy`. The method is stable for a given `z = h^{α}λ` if the numerical solution stays bounded; the set of such z is the stability region. The true solution decays when','يُدرس استقرار طريقة الخطو الزمني على معادلة الاختبار `^CD^{α}y = λy`. وتكون الطريقة مستقرة لـ `z = h^{α}λ` معطاة إذا بقي الحل العددي محدوداً، ومجموعة هذه القيم منطقة الاستقرار. والحل الحقيقي يتناقص عندما'],
+  '^CD^{α}y = λy,     z = h^{α}λ,     |arg λ| > #f{απ}{2}',
+  ['Explicit methods (fractional Euler, ABM predictor) have bounded regions, so stiff problems force small h. Implicit methods (implicit Euler, L1, BDF-based FLMM) are stable in the whole sector where the true solution decays.','والطرق الصريحة (أويلر الكسرية ومتنبئ ABM) لها مناطق محدودة فتفرض المسائل الجاسئة h صغيرة. والطرق الضمنية (أويلر الضمنية و L1 و FLMM المبنية على BDF) مستقرة في كامل القطاع الذي يتناقص فيه الحل الحقيقي.'],
+],[
+  Q('For `λ = −1000`, `α = 1/2` and `h = 10^{−4}`, compute z.','لـ `λ = −1000` و `α = 1/2` و `h = 10^{−4}` احسب z.','−10',['10^{−2}·(−1000)'],['−0.1','−1000','−10^{−4}']),
+  Q('Which kind of method suits a stiff fractional problem?','أي نوع من الطرق يناسب مسألة كسرية جاسئة؟',['Implicit','ضمنية'],[['Its stability region covers the decaying sector.','منطقة استقرارها تغطي القطاع المتناقص.']],[['Explicit','صريحة'],['Neither works','لا يصلح أي منهما']]),
+  Q('Why does the variable z contain `h^{α}` and not h?','لماذا يحتوي المتغير z على `h^{α}` لا h؟',['The fractional derivative scales like `h^{−α}` under time scaling','المشتقة الكسرية تتحجم مثل `h^{−α}` عند تحجيم الزمن'],['^CD^{α}y ≈ h^{−α}Σ w_j y_{n−j}'],[['By convention','اصطلاحاً'],['Because α < 1','لأن α < 1']]),
+  Q('Is the L1 scheme implicit or explicit for `^CD^{α}y = f(t, y)`?','هل مخطط L1 ضمني أم صريح لـ `^CD^{α}y = f(t, y)`؟',['Implicit: `y_n` appears on both sides','ضمني: `y_n` تظهر في الطرفين'],['^CD^{α}y(t_n) ≈ … + c y_n = f(t_n, y_n)'],[['Explicit','صريح'],['Neither','ليس هذا ولا ذاك']]),
+]);
+
+lesson('508',60,[
+  ['Every step of a direct scheme uses the whole history: N steps cost `O(N^2)` operations and `O(N)` memory. Fast methods compress the memory by approximating the kernel with a sum of exponentials:','كل خطوة في مخطط مباشر تستخدم التاريخ كله: N خطوة تكلف `O(N^2)` عملية و `O(N)` ذاكرة. والطرق السريعة تضغط الذاكرة بتقريب النواة بمجموع أسيات:'],
+  't^{α−1} ≈ Σ_{l=1}^{L} ω_l e^{−s_l t},     O(N^2)  →  O(N L),     L ~ log N',
+  ['Each exponential term is updated recursively in O(1), so long simulations become feasible. Other options: FFT-based evaluation of the convolution (`O(N log^2 N)`) and the short-memory principle (cut the history, at the price of accuracy).','وكل حد أسي يُحدَّث تكرارياً بتكلفة O(1) فتصبح المحاكاة الطويلة ممكنة. ومن الخيارات الأخرى حساب الالتفاف بـ FFT (`O(N log^2 N)`) ومبدأ الذاكرة القصيرة (قص التاريخ على حساب الدقة).'],
+],[
+  Q('How many operations does a direct scheme need for N = 10^5 steps?','كم عملية يحتاجها مخطط مباشر لـ N = 10^5 خطوة؟','≈ 5 × 10^9',['#f{N^2}{2}'],['≈ 10^5','≈ 10^{11}','≈ 10^6']),
+  Q('With a sum of L = 40 exponentials, about how many?','مع مجموع من L = 40 أسية كم تقريباً؟','≈ 4 × 10^6',['N L'],['≈ 5 × 10^9','≈ 40','≈ 10^5']),
+  Q('Why can each exponential term be updated in O(1)?','لماذا يمكن تحديث كل حد أسي بتكلفة O(1)؟',['`e^{−s(t + h)} = e^{−sh}e^{−st}`: the history integral of an exponential satisfies a one-step recursion','`e^{−s(t + h)} = e^{−sh}e^{−st}`: تكامل التاريخ لأسية يحقق علاقة تكرار بخطوة واحدة'],[['Memory becomes a few numbers per term.','تصبح الذاكرة بضعة أعداد لكل حد.']],[['Because L is small','لأن L صغير'],['It cannot','لا يمكن']]),
+  Q('What is the drawback of the short-memory principle?','ما عيب مبدأ الذاكرة القصيرة؟',['It neglects the old history, which the algebraic tail makes important','يهمل التاريخ القديم الذي يجعله الذيل الجبري مهماً'],[['The error does not vanish as h → 0.','الخطأ لا ينعدم عندما h → 0.']],[['It is slow','بطيء'],['None','لا عيب']]),
+]);
+
 export const MS508 = true;
