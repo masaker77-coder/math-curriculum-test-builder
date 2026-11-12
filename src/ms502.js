@@ -928,4 +928,144 @@ lesson('502',50,[
     [['Each end knot repeated p + 1 = 3 times, no interior knots.','كل عقدة طرفية مكررة p + 1 = 3 مرات، دون عقد داخلية.']], ['(0, 1, 2, 3)','(0, 0, 1, 1)','(0, 0.5, 1)']),
 ]);
 
+/* ---- 502 · Unit 6 (lessons 51–60): inner products and orthogonality ---- */
+lesson('502',51,[
+  ['Products of basis polynomials integrate in closed form, because the product is again one basis polynomial (Lesson 16) and every basis polynomial of degree 2n integrates to `1/(2n + 1)`:','حواصل ضرب كثيرات الأساس تُكامل بصيغة مغلقة، لأن حاصل الضرب كثيرة أساسية واحدة (الدرس 16) وكل كثيرة أساسية من الدرجة 2n تكاملها `1/(2n + 1)`:'],
+  '⟨B_{i,n}, B_{j,n}⟩ = ∫_0^1 B_{i,n} B_{j,n} dx = #f{C(n, i) C(n, j)}{(2n + 1) C(2n, i + j)}',
+  ['All these inner products are positive: Bernstein polynomials are never orthogonal to each other. That is the price of non-negativity.','وكل هذه الضروب الداخلية موجبة: كثيرات بيرنشتاين لا تتعامد أبداً. وهذا ثمن عدم السالبية.'],
+],[
+  Q('Compute `⟨B_{0,1}, B_{1,1}⟩`.','احسب `⟨B_{0,1}, B_{1,1}⟩`.','#f{1}{6}',['#f{1·1}{3·C(2, 1)} = #f{1}{6}', ['Directly: `∫_0^1 x(1 − x) dx = 1/6`.','مباشرة: `∫_0^1 x(1 − x) dx = 1/6`.']],['#f{1}{3}','0','#f{1}{12}']),
+  Q('Compute `‖B_{1,2}‖^2`.','احسب `‖B_{1,2}‖^2`.','#f{2}{15}',['#f{C(2, 1)^2}{5·C(4, 2)} = #f{4}{30}'],['#f{1}{5}','#f{4}{15}','#f{1}{30}']),
+  Q('Compute `⟨B_{0,2}, B_{2,2}⟩`.','احسب `⟨B_{0,2}, B_{2,2}⟩`.','#f{1}{30}',['#f{1·1}{5·C(4, 2)} = #f{1}{30}', ['Directly: `∫_0^1 x^2(1 − x)^2 dx = 1/30`.','مباشرة: `∫_0^1 x^2(1 − x)^2 dx = 1/30`.']],['0','#f{1}{5}','#f{1}{15}']),
+  Q('Compute `‖B_{0,1}‖^2`.','احسب `‖B_{0,1}‖^2`.','#f{1}{3}',['∫_0^1 (1 − x)^2 dx = #f{1}{3}'],['#f{1}{2}','#f{1}{6}','1']),
+]);
+
+lesson('502',52,[
+  ['The Gram matrix `G_{ij} = ⟨B_{i,n}, B_{j,n}⟩` collects all the inner products. For n = 1:','مصفوفة جرام `G_{ij} = ⟨B_{i,n}, B_{j,n}⟩` تجمع كل الضروب الداخلية. وعند n = 1:'],
+  'G = #m{1/3, 1/6 ;; 1/6, 1/3},     G^{−1} = #m{4, −2 ;; −2, 4}',
+  ['G is symmetric and positive definite, every row sums to `1/(n + 1)` (since `Σ_j B_{j,n} = 1`), and its inverse has alternating signs. G becomes ill-conditioned quickly as n grows, which is why least squares is better done through an orthogonal basis.','و G متماثلة موجبة التعريف، ومجموع كل صف `1/(n + 1)` (لأن `Σ_j B_{j,n} = 1`)، ومعكوسها بإشارات متناوبة. وتصبح G رديئة الشرط بسرعة بزيادة n، ولهذا يُفضَّل إجراء المربعات الصغرى عبر أساس متعامد.'],
+],[
+  Q('Compute `G^{−1}` for n = 1.','احسب `G^{−1}` عند n = 1.','G^{−1} = #m{4, −2 ;; −2, 4}',
+    ['det G = #f{1}{9} − #f{1}{36} = #f{1}{12}', 'G^{−1} = 12·#m{1/3, −1/6 ;; −1/6, 1/3}'], ['G^{−1} = #m{3, 6 ;; 6, 3}','G^{−1} = #m{4, 2 ;; 2, 4}','G^{−1} = #m{1/4, −1/2 ;; −1/2, 1/4}']),
+  Q('What is the sum of each row of G for n = 4?','ما مجموع كل صف في G عند n = 4؟','#f{1}{5}',['Σ_j ⟨B_i, B_j⟩ = ⟨B_i, 1⟩ = #f{1}{n + 1}'],['1','#f{1}{4}','#f{1}{9}']),
+  Q('Write G for n = 2 (first row only).','اكتب G عند n = 2 (الصف الأول فقط).','#f{1}{5},   #f{1}{10},   #f{1}{30}',
+    ['#f{1}{5}·#f{C(2, 0)C(2, j)}{C(4, j)}:   #f{1}{5}·1,   #f{1}{5}·#f{2}{4},   #f{1}{5}·#f{1}{6}', ['Check: `1/5 + 1/10 + 1/30 = 1/3 = 1/(n + 1)`.','تحقق: `1/5 + 1/10 + 1/30 = 1/3 = 1/(n + 1)`.']],
+    ['#f{1}{5},   #f{1}{5},   #f{1}{5}','#f{1}{3},   #f{1}{6},   #f{1}{12}','#f{1}{5},   #f{2}{15},   #f{1}{30}']),
+  Q('Why is G positive definite?','لماذا G موجبة التعريف؟',['`c^T G c = ‖Σ c_i B_{i,n}‖^2 > 0` for c ≠ 0, because the basis is independent','`c^T G c = ‖Σ c_i B_{i,n}‖^2 > 0` عند c ≠ 0 لأن الأساس مستقل'],
+    [['A Gram matrix of independent functions is always positive definite.','مصفوفة جرام لدوال مستقلة موجبة التعريف دائماً.']], [['Because its entries are positive','لأن عناصرها موجبة'],['Because it is diagonal','لأنها قطرية']]),
+]);
+
+lesson('502',53,[
+  ['The dual basis `D_0, …, D_n` of `Π_n` is defined by biorthogonality with the Bernstein basis:','الأساس الثنوي `D_0, …, D_n` للفضاء `Π_n` يُعرَّف بالتعامد الثنائي مع أساس بيرنشتاين:'],
+  '⟨D_i, B_{j,n}⟩ = δ_{ij},   D_i = Σ_j (G^{−1})_{ij} B_{j,n}',
+  ['With it, the least-squares coefficients are simply inner products: `c_i = ⟨f, D_i⟩`. For n = 1, `D_0 = 4 − 6x` and `D_1 = 6x − 2`. Dual bases are the starting point of the dual operational matrices (Unit 7).','وبه تصبح معاملات المربعات الصغرى ضروباً داخلية بسيطة: `c_i = ⟨f, D_i⟩`. وعند n = 1 يكون `D_0 = 4 − 6x` و `D_1 = 6x − 2`. والأسس الثنوية نقطة بداية المصفوفات التشغيلية الثنوية (الوحدة 7).'],
+],[
+  Q('Find `D_0` for n = 1.','أوجد `D_0` عند n = 1.','D_0 = 4 − 6x',['D_0 = 4B_{0,1} − 2B_{1,1} = 4(1 − x) − 2x'],['D_0 = 1 − x','D_0 = 4 − 2x','D_0 = 6x − 2']),
+  Q('Check `⟨D_0, B_{0,1}⟩ = 1` and `⟨D_0, B_{1,1}⟩ = 0`.','تحقق من `⟨D_0, B_{0,1}⟩ = 1` و `⟨D_0, B_{1,1}⟩ = 0`.',['Verified: 1 and 0','تحقق: 1 و 0'],
+    ['∫_0^1 (4 − 6x)(1 − x) dx = 4 − 5 + 2 = 1', '∫_0^1 (4 − 6x)x dx = 2 − 2 = 0']),
+  Q('Use the dual basis to find the best linear approximation of `x^2` on [0, 1].','استخدم الأساس الثنوي لإيجاد أفضل تقريب خطي لـ `x^2` على [0, 1].','x − #f{1}{6}',
+    ['c_0 = ∫ x^2(4 − 6x) dx = #f{4}{3} − #f{3}{2} = −#f{1}{6}', 'c_1 = ∫ x^2(6x − 2) dx = #f{3}{2} − #f{2}{3} = #f{5}{6}', '−#f{1}{6}(1 − x) + #f{5}{6}x = x − #f{1}{6}'],
+    ['x','x − #f{1}{3}','#f{1}{3}']),
+  Q('How many dual functions are there for n = 3?','كم دالة ثنوية عند n = 3؟','4',['dim Π_3 = 4'],['3','6','8']),
+]);
+
+lesson('502',54,[
+  ['The best approximation of f in `Π_n` (least squares on [0, 1]) solves the normal equations in the Bernstein basis:','أفضل تقريب لـ f في `Π_n` (المربعات الصغرى على [0, 1]) يحل المعادلات العادية في أساس بيرنشتاين:'],
+  'G c = b,   b_i = ⟨f, B_{i,n}⟩ = ∫_0^1 f B_{i,n} dx',
+  ['This is the same polynomial as the truncated shifted-Legendre series: only its coordinates differ. Because G is ill-conditioned for large n, it is better to compute the Legendre coefficients and convert (Lesson 56), or to use the orthonormal Bernstein basis (Lesson 55).','وهي كثيرة الحدود نفسها التي يعطيها المجموع المقطوع لمتسلسلة ليجندر المزاحة، والإحداثيات فقط مختلفة. ولأن G رديئة الشرط عند n كبير فالأفضل حساب معاملات ليجندر ثم التحويل (الدرس 56)، أو استخدام أساس بيرنشتاين المتعامد المعياري (الدرس 55).'],
+],[
+  Q('For `f = x^2` and n = 1, compute b.','للدالة `f = x^2` عند n = 1 احسب b.','b = (#f{1}{12},  #f{1}{4})',['b_0 = ∫ x^2(1 − x) dx = #f{1}{3} − #f{1}{4},   b_1 = ∫ x^3 dx'],['b = (#f{1}{3},  #f{1}{4})','b = (#f{1}{4},  #f{1}{12})','b = (0,  1)']),
+  Q('Solve `Gc = b` for that case.','حل `Gc = b` لتلك الحالة.','c = (−#f{1}{6},  #f{5}{6})',['c = G^{−1}b = (4·#f{1}{12} − 2·#f{1}{4},  −2·#f{1}{12} + 4·#f{1}{4})'],['c = (0,  1)','c = (#f{1}{6},  #f{5}{6})','c = (−#f{1}{3},  #f{2}{3})']),
+  Q('Find the `L^2` error of that approximation.','أوجد خطأ ذلك التقريب في `L^2`.','#f{1}{#r{180}} ≈ 0.0745',
+    ['x^2 − (x − #f{1}{6}) = #f{P_2^*(x)}{6}', '‖·‖^2 = #f{1}{36}·#f{1}{5} = #f{1}{180}'], ['#f{1}{180}','#f{1}{6}','0']),
+  Q('Why is solving `Gc = b` directly avoided for n = 20?','لماذا يُتجنب حل `Gc = b` مباشرة عند n = 20؟',['G is badly conditioned, so many digits would be lost','G رديئة الشرط جداً فتضيع أرقام كثيرة'],
+    [['The basis functions overlap strongly; their Gram matrix is nearly singular.','الدوال الأساسية متداخلة بقوة، فمصفوفة جرام قريبة من المنفردة.']], [['G is singular for n > 10','G منفردة عند n > 10'],['It is not avoided','لا يُتجنب']]),
+]);
+
+lesson('502',55,[
+  ['Gram–Schmidt applied to the Bernstein basis (in the order `B_{n,n}, B_{n−1,n}, …`) gives orthonormal Bernstein polynomials, which keep a Bernstein-like structure:','بتطبيق جرام–شميت على أساس بيرنشتاين (بالترتيب `B_{n,n}, B_{n−1,n}, …`) نحصل على كثيرات بيرنشتاين المتعامدة المعيارية، التي تحتفظ ببنية شبيهة ببيرنشتاين:'],
+  'φ_{j,n}(x) = #r{2(n − j) + 1} (1 − x)^{n−j} Σ_{k=0}^{j} (−1)^k C(2n + 1 − k, j − k) C(j, k) x^{j−k}',
+  ['For n = 1: `φ_{0,1} = #r{3}(1 − x)` and `φ_{1,1} = 3x − 1`. Their Gram matrix is the identity, so least-squares coefficients are plain inner products and stay well conditioned.','وعند n = 1: `φ_{0,1} = #r{3}(1 − x)` و `φ_{1,1} = 3x − 1`. ومصفوفة جرام لها مصفوفة الوحدة، فمعاملات المربعات الصغرى ضروب داخلية بسيطة وتبقى جيدة الشرط.'],
+],[
+  Q('Check `‖φ_{0,1}‖ = 1`.','تحقق من `‖φ_{0,1}‖ = 1`.','1',['∫_0^1 3(1 − x)^2 dx = 3·#f{1}{3}'],['#r{3}','#f{1}{3}','3']),
+  Q('Check `‖φ_{1,1}‖ = 1` and `⟨φ_{0,1}, φ_{1,1}⟩ = 0`.','تحقق من `‖φ_{1,1}‖ = 1` و `⟨φ_{0,1}, φ_{1,1}⟩ = 0`.',['Verified: 1 and 0','تحقق: 1 و 0'],
+    ['∫_0^1 (3x − 1)^2 dx = 3 − 3 + 1 = 1', '#r{3}∫_0^1 (1 − x)(3x − 1) dx = #r{3}(2 − 1 − 1) = 0']),
+  Q('Find the coefficients of `f = x` in the basis `φ_{0,1}, φ_{1,1}`.','أوجد معاملات `f = x` في الأساس `φ_{0,1}` و `φ_{1,1}`.','#f{#r{3}}{6},   #f{1}{2}',
+    ['⟨x, φ_{0,1}⟩ = #r{3}∫_0^1 x(1 − x) dx = #f{#r{3}}{6}', '⟨x, φ_{1,1}⟩ = ∫_0^1 x(3x − 1) dx = #f{1}{2}', ['Check: `(#r{3}/6)·#r{3}(1 − x) + (1/2)(3x − 1) = x`.','تحقق: `(#r{3}/6)·#r{3}(1 − x) + (1/2)(3x − 1) = x`.']],
+    ['0,   1','#f{1}{2},   #f{1}{2}','#f{#r{3}}{3},   #f{1}{2}']),
+  Q('Use the formula to find `φ_{1,1}`.','استخدم الصيغة لإيجاد `φ_{1,1}`.','φ_{1,1} = 3x − 1',
+    ['j = 1:   #r{1}·(1 − x)^0[C(3, 1)x − C(2, 0)C(1, 1)] = 3x − 1'], ['φ_{1,1} = 2x − 1','φ_{1,1} = #r{3}x','φ_{1,1} = 3x + 1']),
+]);
+
+lesson('502',56,[
+  ['The shifted Legendre polynomials have very simple Bernstein coefficients:','لكثيرات ليجندر المزاحة معاملات بيرنشتاين بسيطة جداً:'],
+  'P_n^*(x) = Σ_{i=0}^{n} (−1)^{n−i} C(n, i) B_{i,n}(x)',
+  ['So converting a Legendre expansion to Bernstein form (or back) needs only binomial coefficients and degree elevation. The coefficients `±C(n, i)` alternate in sign n times, the maximum allowed by the variation-diminishing property: indeed `P_n^*` has n zeros in (0, 1).','إذن تحويل مفكوك ليجندر إلى صيغة بيرنشتاين (أو العكس) لا يحتاج إلا المعاملات ذات الحدين ورفع الدرجة. والمعاملات `±C(n, i)` تتناوب إشاراتها n مرة، وهو الحد الأقصى الذي تسمح به خاصية إنقاص التغير: وفعلاً لـ `P_n^*` عدد n من الجذور في (0, 1).'],
+],[
+  Q('Write `P_1^*` in the Bernstein basis.','اكتب `P_1^*` في أساس بيرنشتاين.','P_1^* = −B_{0,1} + B_{1,1}',['−(1 − x) + x = 2x − 1'],['P_1^* = B_{0,1} − B_{1,1}','P_1^* = B_{0,1} + B_{1,1}','P_1^* = 2B_{1,1}']),
+  Q('Check `P_2^* = B_{0,2} − 2B_{1,2} + B_{2,2}`.','تحقق من `P_2^* = B_{0,2} − 2B_{1,2} + B_{2,2}`.','6x^2 − 6x + 1',
+    ['(1 − x)^2 − 4x(1 − x) + x^2 = 1 − 2x + x^2 − 4x + 4x^2 + x^2'], ['6x^2 − 6x − 1','2x^2 − 2x + 1','x^2 − 4x + 1']),
+  Q('Give the Bernstein coefficients of `P_3^*`.','أعط معاملات بيرنشتاين لـ `P_3^*`.','(−1,  3,  −3,  1)',['(−1)^{3−i} C(3, i)'],['(1,  −3,  3,  −1)','(1,  3,  3,  1)','(−1,  1,  −1,  1)']),
+  Q('With `e^x ≈ 1.71828 P_0^* + 0.84515 P_1^* + 0.13986 P_2^*`, find the Bernstein coefficients of degree 2.','مع `e^x ≈ 1.71828 P_0^* + 0.84515 P_1^* + 0.13986 P_2^*` أوجد معاملات بيرنشتاين من الدرجة 2.','(1.0130,  1.4386,  2.7033)',
+    ['P_0^* → (1, 1, 1),   P_1^* → (−1, 0, 1),   P_2^* → (1, −2, 1)', 'c = (1.71828 − 0.84515 + 0.13986,  1.71828 − 0.27972,  1.71828 + 0.84515 + 0.13986)', ['The end coefficients are close to `e^0 = 1` and `e^1 = 2.718`.','معاملا الطرفين قريبان من `e^0 = 1` و `e^1 = 2.718`.']],
+    ['(1,  1.6487,  2.7183)','(1.7183,  0.8452,  0.1399)','(0.7337,  1.7183,  2.7033)']),
+]);
+
+lesson('502',57,[
+  ['Jacobi polynomials on [0, 1] also have explicit Bernstein coefficients:','لكثيرات جاكوبي على [0, 1] أيضاً معاملات بيرنشتاين صريحة:'],
+  'P_n^{(α,β)}(2x − 1) = Σ_{i=0}^{n} (−1)^{n−i} #f{C(n + α, i) C(n + β, n − i)}{C(n, i)} B_{i,n}(x)',
+  ['They are orthogonal on [0, 1] with the weight `(1 − x)^{α} x^{β}`. With α = β = 0 the formula gives back the Legendre coefficients `(−1)^{n−i} C(n, i)`. Jacobi weights are useful when the solution has known end behaviour, and Course 503 studies them in full.','وهي متعامدة على [0, 1] بالوزن `(1 − x)^{α} x^{β}`. ومع α = β = 0 تعيد الصيغة معاملات ليجندر `(−1)^{n−i} C(n, i)`. وأوزان جاكوبي مفيدة حين يكون سلوك الحل عند الطرفين معروفاً، ويدرسها المقرر 503 كاملة.'],
+],[
+  Q('Find the Bernstein coefficients of `P_1^{(0,1)}(2x − 1)`.','أوجد معاملات بيرنشتاين لـ `P_1^{(0,1)}(2x − 1)`.','(−2,  1)',
+    ['i = 0:  −#f{C(1, 0)C(2, 1)}{1} = −2,   i = 1:  #f{C(1, 1)C(2, 0)}{1} = 1', ['So `−2(1 − x) + x = 3x − 2`, as in Course 501.','إذن `−2(1 − x) + x = 3x − 2` كما في المقرر 501.']],
+    ['(−1,  1)','(2,  −1)','(−2,  3)']),
+  Q('Find the Bernstein coefficients of `P_1^{(1,0)}(2x − 1)`.','أوجد معاملات بيرنشتاين لـ `P_1^{(1,0)}(2x − 1)`.','(−1,  2)',
+    ['i = 0:  −C(2, 0)C(1, 1) = −1,   i = 1:  C(2, 1)C(1, 0) = 2', ['So `−(1 − x) + 2x = 3x − 1`.','إذن `−(1 − x) + 2x = 3x − 1`.']], ['(−2,  1)','(1,  −2)','(−1,  1)']),
+  Q('What does the formula give for α = β = 0?','ماذا تعطي الصيغة عند α = β = 0؟','(−1)^{n−i} C(n, i)',
+    ['#f{C(n, i) C(n, n − i)}{C(n, i)} = C(n, i)', ['These are the coefficients of `P_n^*`.','وهي معاملات `P_n^*`.']], ['C(n, i)','(−1)^i','1']),
+  Q('With which weight are `P_n^{(α,β)}(2x − 1)` orthogonal on [0, 1]?','بأي وزن تتعامد `P_n^{(α,β)}(2x − 1)` على [0, 1]؟','(1 − x)^{α} x^{β}',
+    ['x = #f{1 + s}{2}:   (1 − s)^{α}(1 + s)^{β} ∝ (1 − x)^{α} x^{β}'], ['x^{α}(1 − x)^{β}','1','(1 − x^2)^{α}']),
+]);
+
+lesson('502',58,[
+  ['A practical recipe for expanding f in the Bernstein basis of degree n: compute the shifted-Legendre coefficients `a_k = (2k + 1)∫_0^1 f P_k^* dx` (stably, by Gauss quadrature), convert them to Bernstein coefficients (Lesson 56 plus degree elevation), and estimate the error from the first neglected coefficient:',
+   'وصفة عملية لنشر f في أساس بيرنشتاين من الدرجة n: نحسب معاملات ليجندر المزاحة `a_k = (2k + 1)∫_0^1 f P_k^* dx` (بثبات بتربيع جاوس)، ثم نحوّلها إلى معاملات بيرنشتاين (الدرس 56 مع رفع الدرجة)، ونقدّر الخطأ من أول معامل مُهمَل:'],
+  '‖f − p_n‖ ≈ #f{|a_{n+1}|}{#r{2n + 3}}',
+  ['For `e^x`: `a_0, …, a_4 = 1.71828, 0.84515, 0.13986, 0.01393, 0.00099`; with n = 2 the estimate `0.01393/#r{7} = 0.00527` agrees with the true error 0.00528.','وللدالة `e^x`: `a_0, …, a_4 = 1.71828, 0.84515, 0.13986, 0.01393, 0.00099`، ومع n = 2 يتفق التقدير `0.01393/#r{7} = 0.00527` مع الخطأ الحقيقي 0.00528.'],
+],[
+  Q('Compute `a_0` for `f = e^x`.','احسب `a_0` للدالة `f = e^x`.','e − 1 ≈ 1.71828',['a_0 = ∫_0^1 e^x dx'],['e ≈ 2.71828','1','#f{e − 1}{2} ≈ 0.85914']),
+  Q('Compute `a_1` for `f = e^x`.','احسب `a_1` للدالة `f = e^x`.','3(3 − e) ≈ 0.84515',['3∫_0^1 e^x(2x − 1) dx = 3[(2x − 3)e^x]_0^1 = 3(−e + 3)'],['3(e − 1) ≈ 5.15485','3 − e ≈ 0.28172','e − 2 ≈ 0.71828']),
+  Q('Estimate the `L^2` error of the degree-3 approximation of `e^x`.','قدّر خطأ تقريب الدرجة 3 للدالة `e^x` في `L^2`.','≈ #f{0.00099}{3} ≈ 3.3 × 10^{−4}',['#f{|a_4|}{#r{9}} = #f{0.00099}{3}'],['≈ 0.00099','≈ 0.0053','≈ 10^{−6}']),
+  Q('The coefficients drop by about a factor of 10 per degree. About which n gives an error of `10^{−8}`?','المعاملات تنقسم على نحو 10 لكل درجة. أي n تقريباً يعطي خطأ `10^{−8}`؟','n ≈ 7',
+    ['a_4 ≈ 10^{−3}  ⇒  a_k ≈ 10^{1−k}', 'a_{n+1} ≈ 10^{−8}  ⇒  n + 1 ≈ 9'], ['n ≈ 3','n ≈ 20','n ≈ 50']),
+]);
+
+lesson('502',59,[
+  ['Replacing x by `t^{λ}` gives fractional-order Bernstein functions, suited to solutions with powers `t^{λ}, t^{2λ}, …`:','باستبدال x بـ `t^{λ}` نحصل على دوال بيرنشتاين ذات الرتبة الكسرية، المناسبة للحلول ذات القوى `t^{λ}, t^{2λ}, …`:'],
+  'B_{i,n}^{λ}(t) = B_{i,n}(t^{λ}) = C(n, i) t^{iλ} (1 − t^{λ})^{n−i}',
+  ['All properties carry over through `s = t^{λ}`: non-negativity, partition of unity, end values, and `∫_0^1 B_{i,n}^{λ} λt^{λ−1} dt = 1/(n + 1)`. For example `#r{t}` is exactly `B_{1,1}^{1/2}`.','وتنتقل كل الخواص عبر `s = t^{λ}`: عدم السالبية وتجزئة الواحد والقيم الطرفية و `∫_0^1 B_{i,n}^{λ} λt^{λ−1} dt = 1/(n + 1)`. فمثلاً `#r{t}` هي `B_{1,1}^{1/2}` تماماً.'],
+],[
+  Q('Write `B_{1,2}^{1/2}(t)`.','اكتب `B_{1,2}^{1/2}(t)`.','2#r{t} − 2t',['2t^{1/2}(1 − t^{1/2})'],['2t − 2t^2','#r{t}(1 − t)','2#r{t} + 2t']),
+  Q('Where is the maximum of `B_{1,2}^{1/2}` and what is its value?','أين القيمة العظمى لـ `B_{1,2}^{1/2}` وما قيمتها؟','t = #f{1}{4},   #f{1}{2}',['s = t^{1/2} = #f{1}{2}  ⇒  t = #f{1}{4},   2·#f{1}{2}·#f{1}{2}'],['t = #f{1}{2},   #f{1}{2}','t = #f{1}{4},   #f{1}{4}','t = #f{1}{2},   #f{1}{4}']),
+  Q('Compute `∫_0^1 B_{2,3}^{λ}(t) λt^{λ−1} dt`.','احسب `∫_0^1 B_{2,3}^{λ}(t) λt^{λ−1} dt`.','#f{1}{4}',['s = t^{λ}:   ∫_0^1 B_{2,3}(s) ds = #f{1}{4}'],['#f{λ}{4}','#f{1}{3}','#f{3}{4}']),
+  Q('Write `t^{1/2} + t` in the fractional Bernstein basis with λ = 1/2 and n = 2.','اكتب `t^{1/2} + t` في أساس بيرنشتاين الكسري مع λ = 1/2 و n = 2.','c = (0,  #f{1}{2},  2)',
+    ['s + s^2:   s → (0, #f{1}{2}, 1),   s^2 → (0, 0, 1)'], ['c = (0,  1,  2)','c = (0,  #f{1}{2},  1)','c = (1,  #f{1}{2},  2)']),
+]);
+
+lesson('502',60,[
+  ['The Bernstein form is the best-conditioned polynomial form on [0, 1] among bases of non-negative functions (Farouki and Rajan). The condition number of evaluating p at x is','صيغة بيرنشتاين هي أفضل صيغ كثيرات الحدود شرطاً على [0, 1] بين أسس الدوال غير السالبة (فاروقي وراجان). وعدد شرط حساب p عند x هو'],
+  ['in the Bernstein form, and in the power form:','في صيغة بيرنشتاين، وفي صيغة القوى:'],
+  'cond(p, x) = #f{Σ_i |c_i| B_{i,n}(x)}{|p(x)|},     cond(p, x) = #f{Σ_k |a_k| x^k}{|p(x)|}',
+  ['For `p = (x − 1/2)^{10}` at x = 0.6 the power form has condition about `2.6 × 10^{10}`, the Bernstein form about `9.8 × 10^6`: three more digits survive. Together with de Casteljau’s convex combinations this is why CAD systems and recent spectral solvers prefer the Bernstein form.',
+   'وللدالة `p = (x − 1/2)^{10}` عند x = 0.6 يكون شرط صيغة القوى نحو `2.6 × 10^{10}` وشرط صيغة بيرنشتاين نحو `9.8 × 10^6`: يبقى ثلاثة أرقام إضافية. ومع التراكيب المحدبة في دي كاستلجو هذا سبب تفضيل أنظمة التصميم الهندسي وحلّالات الطرق الطيفية الحديثة لصيغة بيرنشتاين.'],
+],[
+  Q('For `p = (x − 1/2)^{10}`, compute the power-form condition number at x = 0.6.','للدالة `p = (x − 1/2)^{10}` احسب عدد شرط صيغة القوى عند x = 0.6.','≈ 2.6 × 10^{10}',
+    ['Σ_k |a_k| x^k = (0.6 + 0.5)^{10} = 1.1^{10} ≈ 2.594,   p(0.6) = 10^{−10}', '#f{2.594}{10^{−10}} ≈ 2.6 × 10^{10}'], ['≈ 9.8 × 10^6','≈ 1','≈ 10^{−10}']),
+  Q('Compute the Bernstein-form condition number for the same p and x.','احسب عدد شرط صيغة بيرنشتاين للدالة p نفسها عند x نفسها.','≈ 9.8 × 10^6',
+    ['x − #f{1}{2} = −#f{1}{2}B_{0,1} + #f{1}{2}B_{1,1}  ⇒  |c_i| = 2^{−10}', '#f{2^{−10}}{10^{−10}} ≈ 9.8 × 10^6'], ['≈ 2.6 × 10^{10}','≈ 1024','≈ 10^{10}']),
+  Q('About how many more correct digits does the Bernstein form keep in this example?','كم رقماً صحيحاً إضافياً تحتفظ به صيغة بيرنشتاين تقريباً في هذا المثال؟','≈ 3',['log_{10} #f{2.6 × 10^{10}}{9.8 × 10^6} ≈ log_{10} 2650 ≈ 3.4'],['≈ 10','≈ 7','0']),
+  Q('Which evaluation algorithm keeps the advantage of the Bernstein form?','أي خوارزمية حساب تحافظ على ميزة صيغة بيرنشتاين؟',['De Casteljau’s algorithm','خوارزمية دي كاستلجو'],
+    [['Converting to the power form first would throw the advantage away.','التحويل إلى صيغة القوى أولاً يضيّع الميزة.']], [['Horner’s rule after converting to powers','قاعدة هورنر بعد التحويل إلى القوى']]),
+]);
+
 export const MS502 = true;
