@@ -703,4 +703,115 @@ lesson('509',50,[
   Q('Why is D4 better than Haar for compressing a smooth signal?','لماذا يكون D4 أفضل من هار لضغط إشارة ملساء؟',['D4 has two vanishing moments, so details of locally linear parts vanish; Haar only kills constants','لـ D4 عزمان منعدمان فتنعدم تفاصيل الأجزاء الخطية محلياً، وهار يلغي الثوابت فقط'],[['More small coefficients can be dropped.','يمكن حذف معاملات صغيرة أكثر.']],[['D4 is shorter','D4 أقصر'],['D4 is symmetric','D4 متماثل']]),
 ]);
 
+/* ---- 509 · Unit 6 (lessons 51–60): wavelet families ---- */
+lesson('509',51,[
+  ['ψ has p vanishing moments when it is orthogonal to all polynomials of degree below p. In terms of the high-pass filter, or of the symbol:','لـ ψ عدد p من العزوم المنعدمة إذا كانت عمودية على كل كثيرات الحدود ذات الدرجة الأقل من p. وبدلالة مرشح التمرير العالي أو الرمز:'],
+  '∫t^mψ(t) dt = 0  (m < p)     ⇔     Σ_k k^mg_k = 0     ⇔     m_0(ξ) = (#f{1 + e^{−iξ}}{2})^pL(ξ)',
+  ['Then the details of a locally polynomial signal of degree below p vanish, and the coefficients of a smooth function decay like `2^{−j(p+1/2)}`. Haar has p = 1, D4 has p = 2, and the Daubechies filter with 2p coefficients has p.','وحينها تنعدم تفاصيل الإشارة التي هي كثيرة حدود محلياً بدرجة أقل من p، وتتناقص معاملات الدالة الملساء مثل `2^{−j(p+1/2)}`. لهار p = 1 ولـ D4 p = 2، ولمرشح دوبيشي ذي 2p معاملاً p.'],
+],[
+  Q('How many vanishing moments does Haar have, and why not two?','كم عزماً منعدماً لهار، ولماذا ليس اثنين؟',['One: `∫ψ = 0` but `∫tψ = −1/4`','واحد: `∫ψ = 0` لكن `∫tψ = −1/4`'],[['Lesson 12.','الدرس 12.']],[['Two','اثنان'],['None','لا شيء']]),
+  Q('Which polynomials give zero interior details with the 6-coefficient Daubechies filter D6?','أي كثيرات حدود تعطي تفاصيل داخلية صفرية مع مرشح دوبيشي D6 ذي المعاملات الستة؟',['All polynomials of degree at most 2','كل كثيرات الحدود ذات الدرجة 2 على الأكثر'],[['D6 has p = 3; pywt gives zero interior details for `n^2`.','لـ D6 p = 3، و pywt تعطي تفاصيل داخلية صفرية لـ `n^2`.']],[['Only constants','الثوابت فقط'],['Degree at most 3','الدرجة 3 على الأكثر']]),
+  Q('How fast do the details of a smooth function decay with D4?','بأي سرعة تتناقص تفاصيل دالة ملساء مع D4؟','~ 2^{−5j/2}',['2^{−j(p+1/2)},   p = 2'],['~ 2^{−3j/2}','~ 2^{−2j}','~ 2^{−j/2}']),
+  Q('Check `Σ_kg_k = 0` and `Σ_k kg_k ≠ 0` for Haar.','تحقق من `Σ_kg_k = 0` و `Σ_k kg_k ≠ 0` لهار.','#f{1}{#r{2}} − #f{1}{#r{2}} = 0,     0 − #f{1}{#r{2}} ≠ 0',['g = (#f{1}{#r{2}}, −#f{1}{#r{2}})'],['#r{2},   0','0,   0','1,   −1']),
+]);
+
+lesson('509',52,[
+  ['Daubechies found the shortest orthogonal filters with p vanishing moments. Write `y = sin^2(ξ/2)`; then','وجدت دوبيشي أقصر المرشحات المتعامدة ذات p عزوم منعدمة. اكتب `y = sin^2(ξ/2)`، فيكون'],
+  '|m_0(ξ)|^2 = (1 − y)^pP(y),     P(y) = Σ_{k=0}^{p−1} C(p − 1 + k, k)y^k,     (1 − y)^pP(y) + y^pP(1 − y) = 1',
+  ['The last identity is the orthogonality condition of Lesson 36. Spectral factorisation then takes a “square root” of `|m_0|^2` to get `m_0` and the 2p filter coefficients. For p = 2, `P(y) = 1 + 2y`, which gives D4.','والمتطابقة الأخيرة شرط التعامد في الدرس 36. ثم يأخذ التحليل الطيفي «جذراً تربيعياً» لـ `|m_0|^2` لنحصل على `m_0` والمعاملات 2p للمرشح. وعند p = 2 تكون `P(y) = 1 + 2y` وهذا يعطي D4.'],
+],[
+  Q('Compute P(y) for p = 3.','احسب P(y) عند p = 3.','1 + 3y + 6y^2',['C(2, 0) + C(3, 1)y + C(4, 2)y^2'],['1 + 2y + 3y^2','1 + 3y + 3y^2','1 + 2y']),
+  Q('Check the identity for p = 2 at y = 1/2.','تحقق من المتطابقة عند p = 2 و y = 1/2.','#f{1}{4}·2 + #f{1}{4}·2 = 1',['P(#f{1}{2}) = 1 + 1 = 2'],['#f{1}{4} + #f{1}{4} = #f{1}{2}','2 + 2 = 4','#f{1}{2}·2 = 1']),
+  Q('Compute `|m_0(π/2)|^2` for D4.','احسب `|m_0(π/2)|^2` لـ D4.','#f{1}{2}',['y = #f{1}{2}:   (#f{1}{2})^2(1 + 2·#f{1}{2})'],['1','#f{1}{4}','0']),
+  Q('Check the identity for p = 1 (Haar).','تحقق من المتطابقة عند p = 1 (هار).','(1 − y) + y = 1',['P ≡ 1'],['(1 − y)^2 + y^2 = 1','1 − y = 1','y = 1']),
+]);
+
+lesson('509',53,[
+  ['The D4 filter in closed form, with its wavelet filter:','مرشح D4 بصيغة مغلقة مع مرشح مويجته:'],
+  'h = #f{1}{4#r{2}}(1 + #r{3},  3 + #r{3},  3 − #r{3},  1 − #r{3}) ≈ (0.48296, 0.83652, 0.22414, −0.12941)',
+  ['φ and ψ are supported on [0, 3], are continuous but not differentiable (Hölder exponent about 0.55), and are not symmetric. The values at the integers are `φ(1) = 1.366`, `φ(2) = −0.366` (Lesson 40). D4 is the default first choice when Haar is too crude.','و φ و ψ حاملهما [0, 3]، وهما متصلتان لكن غير قابلتين للاشتقاق (أس هولدر نحو 0.55)، وغير متماثلتين. والقيم عند الأعداد الصحيحة `φ(1) = 1.366` و `φ(2) = −0.366` (الدرس 40). و D4 الخيار الأول المعتاد عندما يكون هار خشناً جداً.'],
+],[
+  Q('Compute `h_0` of D4 to four digits.','احسب `h_0` لـ D4 بأربعة أرقام.','#f{1 + #r{3}}{4#r{2}} ≈ 0.4830',['#f{2.7321}{5.6569}'],['0.6830','0.3415','0.1294']),
+  Q('What is the support of the D4 scaling function?','ما حامل دالة التقييس لـ D4؟','[0, 3]',['N − 1 = 4 − 1'],['[0, 4]','[0, 2]','[−1, 2]']),
+  Q('Is D4 symmetric?','هل D4 متماثل؟',['No: `h_0 ≠ h_3`; no real orthogonal compactly supported wavelet except Haar is symmetric','لا: `h_0 ≠ h_3`؛ ولا مويجة حقيقية متعامدة ذات حامل محدود متماثلة غير هار'],[['Symmetry needs biorthogonal wavelets (Lesson 56).','التماثل يحتاج مويجات ثنائية التعامد (الدرس 56).']],[['Yes','نعم'],['Only φ is','φ فقط']]),
+  Q('Check `Σh_k^2 = 1` for D4 in closed form.','تحقق من `Σh_k^2 = 1` لـ D4 بالصيغة المغلقة.','#f{(4 + 2#r{3}) + (12 + 6#r{3}) + (12 − 6#r{3}) + (4 − 2#r{3})}{32} = 1',['(1 + #r{3})^2 = 4 + 2#r{3},   (3 + #r{3})^2 = 12 + 6#r{3}'],['= #f{1}{2}','= 2','= #f{32}{16}']),
+]);
+
+lesson('509',54,[
+  ['For the Daubechies family, more vanishing moments means longer support and more smoothness:','لعائلة دوبيشي يعني مزيد من العزوم المنعدمة حاملاً أطول وملاسة أكبر:'],
+  'L = 2p,     [0, 2p − 1],     α_H ≈ 0.55,  1.09,  1.62   (p = 2, 3, 4)',
+  ['For large p the smoothness grows only like 0.2p. Longer filters cost more and spread a singularity over more coefficients, so the choice of p is a trade-off: smooth signals favour large p, signals with many jumps favour small p.','ولـ p الكبيرة تنمو الملاسة مثل 0.2p فقط. والمرشحات الأطول تكلف أكثر وتنشر الانفراد على معاملات أكثر، فاختيار p موازنة: الإشارات الملساء تفضّل p كبيرة، والإشارات ذات القفزات الكثيرة تفضّل p صغيرة.'],
+],[
+  Q('Give the support length and the number of coefficients for p = 4 (db4).','أعط طول الحامل وعدد المعاملات عند p = 4 (db4).','[0, 7],   8',['2p − 1 = 7,   2p = 8'],['[0, 4],   4','[0, 8],   8','[0, 3],   4']),
+  Q('Is the D6 scaling function (p = 3) differentiable?','هل دالة التقييس لـ D6 (p = 3) قابلة للاشتقاق؟',['Yes, once: its Hölder exponent is about 1.09 > 1','نعم مرة واحدة: أس هولدر لها نحو 1.09 > 1'],[['D4 (0.55) is only continuous.','D4 (0.55) متصلة فقط.']],[['No','لا'],['Twice','مرتين']]),
+  Q('How many coefficients at one level does a jump affect with a filter of length L?','كم معاملاً في مستوى واحد تؤثر فيه قفزة مع مرشح طوله L؟','≈ #f{L}{2}',[['The filter moves by 2 between outputs.','المرشح يتحرك خطوتين بين المخرجات.']],['1','L','2L']),
+  Q('About which p gives Hölder smoothness 2?','أي p تعطي ملاسة هولدر 2 تقريباً؟',['About p = 6: smoothness grows by only about 0.3 per extra vanishing moment after 1.62 at p = 4','نحو p = 6: الملاسة تزيد بنحو 0.3 فقط لكل عزم منعدم إضافي بعد 1.62 عند p = 4'],[['Smoothness grows slowly with p.','الملاسة تنمو ببطء مع p.']],[['p = 2','p = 2'],['p = 40','p = 40']]),
+]);
+
+lesson('509',55,[
+  ['The factorisation of `|m_0|^2` has many square roots. Daubechies chose the minimum-phase one; other choices give other families. The parameters of symN (left) and coifN (right):','لتحليل `|m_0|^2` جذور تربيعية كثيرة. اختارت دوبيشي جذر الطور الأدنى، والاختيارات الأخرى تعطي عائلات أخرى. ووسائط symN (يساراً) و coifN (يميناً):'],
+  'p = N,   L = 2N     ↔     p_{ψ} = 2N,   p_{φ} = 2N − 1,   L = 6N',
+  ['Symlets are as close to symmetric as an orthogonal wavelet can be, which reduces phase distortion. Coiflets also give the scaling function vanishing moments, `∫t^mφ = 0` for 1 ≤ m < 2N, so that `⟨f, φ_{j,k}⟩ ≈ 2^{−j/2}f(k2^{−j})`: the coarse coefficients are almost samples.','والـ Symlets أقرب ما تكون إلى التماثل لمويجة متعامدة، وهذا يقلل تشويه الطور. والـ Coiflets تعطي دالة التقييس أيضاً عزوماً منعدمة `∫t^mφ = 0` لـ 1 ≤ m < 2N، فيكون `⟨f, φ_{j,k}⟩ ≈ 2^{−j/2}f(k2^{−j})`: المعاملات الخشنة تكاد تكون عينات.'],
+],[
+  Q('How many coefficients does coif1 have, and how many vanishing moments does its ψ have?','كم معاملاً لـ coif1، وكم عزماً منعدماً لـ ψ فيها؟','6,   2',['L = 6N,   p_{ψ} = 2N,   N = 1'],['2,   1','4,   2','6,   3']),
+  Q('What does sym4 share with db4?','ماذا تشترك فيه sym4 مع db4؟',['The same length 8 and the same 4 vanishing moments','الطول نفسه 8 والعزوم المنعدمة الأربعة نفسها'],[['Only the phase (asymmetry) differs.','الطور (عدم التماثل) فقط يختلف.']],[['The same filter','المرشح نفسه'],['Nothing','لا شيء']]),
+  Q('Why are the coarse coefficients of a coiflet almost samples?','لماذا تكاد المعاملات الخشنة لـ Coiflet تكون عينات؟',['φ has vanishing moments, so Taylor expansion of f around `k2^{−j}` leaves only `f(k2^{−j})`','لـ φ عزوم منعدمة فيُبقي نشر تايلور لـ f حول `k2^{−j}` الحد `f(k2^{−j})` فقط'],['⟨f, φ_{j,k}⟩ = 2^{−j/2}∫f(2^{−j}(u + k))φ(u)du'],[['φ is a delta','φ دالة دلتا'],['By chance','مصادفة']]),
+  Q('Why does near symmetry matter in image processing?','لماذا يهم شبه التماثل في معالجة الصور؟',['Asymmetric filters shift features differently at different scales and create visible artefacts at edges','المرشحات غير المتماثلة تزيح الملامح بمقادير مختلفة عند مقاييس مختلفة وتولد تشوهات مرئية عند الحواف'],[['Linear phase keeps edges in place.','الطور الخطي يُبقي الحواف في مكانها.']],[['It reduces the cost','يقلل الكلفة'],['It does not matter','لا يهم']]),
+]);
+
+lesson('509',56,[
+  ['Biorthogonal wavelets use two dual MRAs: analysis filters `h̃, g̃` and synthesis filters `h, g` with `⟨φ̃(t − k), φ(t − l)⟩ = δ_{kl}`. They allow symmetric, short, compactly supported filters. The LeGall 5/3 filters of lossless JPEG 2000:','المويجات ثنائية التعامد تستخدم تحليلين متعددي التمييز متقابلين: مرشحات تحليل `h̃, g̃` ومرشحات تركيب `h, g` مع `⟨φ̃(t − k), φ(t − l)⟩ = δ_{kl}`. وهي تسمح بمرشحات متماثلة قصيرة ذات حامل محدود. ومرشحا LeGall 5/3 في JPEG 2000 دون فقد:'],
+  'h̃ = #r{2}(−#f{1}{8}, #f{1}{4}, #f{3}{4}, #f{1}{4}, −#f{1}{8}),     h = #f{1}{#r{2}}(#f{1}{2}, 1, #f{1}{2})',
+  ['The synthesis scaling function is the hat function of Lesson 32. Perfect reconstruction holds, but the transform is not orthogonal, so Parseval is only approximate. The CDF 9/7 pair is used in lossy JPEG 2000.','ودالة التقييس للتركيب هي دالة القبعة في الدرس 32. وإعادة البناء التامة متحققة، لكن التحويل غير متعامد فتكون بارسيفال تقريبية فقط. والزوج CDF 9/7 يُستخدم في JPEG 2000 مع الفقد.'],
+],[
+  Q('Check `Σh̃_k = #r{2}` for the 5/3 analysis filter.','تحقق من `Σh̃_k = #r{2}` لمرشح التحليل 5/3.','#r{2}(−#f{1}{8} + #f{1}{4} + #f{3}{4} + #f{1}{4} − #f{1}{8}) = #r{2}',[['The bracket sums to 1.','القوس مجموعه 1.']],['= 1','= 2#r{2}','= #f{#r{2}}{2}']),
+  Q('Is the 5/3 analysis filter symmetric?','هل مرشح التحليل 5/3 متماثل؟',['Yes: `h̃_k = h̃_{4−k}`','نعم: `h̃_k = h̃_{4−k}`'],[['Symmetric filters give linear phase.','المرشحات المتماثلة تعطي طوراً خطياً.']],[['No','لا'],['Only h is','h فقط']]),
+  Q('Which scaling function does the synthesis filter `(1/2, 1, 1/2)/#r{2}` generate?','أي دالة تقييس يولدها مرشح التركيب `(1/2, 1, 1/2)/#r{2}`؟',['The hat function on [0, 2]','دالة القبعة على [0, 2]'],[['Lesson 32.','الدرس 32.']],[['The box','الصندوق'],['D4','D4']]),
+  Q('Why is JPEG 2000 lossless with the 5/3 filters?','لماذا يكون JPEG 2000 دون فقد مع مرشحي 5/3؟',['Their lifting form (Lesson 70) maps integers to integers exactly','صيغة الرفع لهما (الدرس 70) تحوّل الأعداد الصحيحة إلى أعداد صحيحة بالضبط'],[['The coefficients are dyadic rationals.','المعاملات كسور ثنائية.']],[['They are orthogonal','متعامدان'],['They are long','طويلان']]),
+]);
+
+lesson('509',57,[
+  ['B-splines give explicit wavelets. The B-spline of order m is the m-fold convolution of the box, a piecewise polynomial of degree m − 1 on [0, m]:','الشرائح B تعطي مويجات صريحة. والشريحة B من الرتبة m هي التفاف الصندوق m مرة، وهي كثيرة حدود قطعية من الدرجة m − 1 على [0, m]:'],
+  'N_m(t) = Σ_k 2^{1−m}C(m, k)N_m(2t − k),     N̂_m(ξ) = (#f{1 − e^{−iξ}}{iξ})^m',
+  ['m = 1 is the box, m = 2 the hat `(1/2, 1, 1/2)`, m = 4 the cubic spline `(1, 4, 6, 4, 1)/8`. Spline wavelets are smooth and have explicit formulas; orthogonal versions (Battle–Lemarié) have infinite support with exponential decay, semi-orthogonal and biorthogonal versions have compact support.','و m = 1 الصندوق و m = 2 القبعة `(1/2, 1, 1/2)` و m = 4 الشريحة التكعيبية `(1, 4, 6, 4, 1)/8`. ومويجات الشرائح ملساء ولها صيغ صريحة، والنسخ المتعامدة (باتل–لوماريه) حاملها لانهائي مع تناقص أسي، والنسخ شبه المتعامدة وثنائية التعامد حاملها محدود.'],
+],[
+  Q('Give the two-scale coefficients of the quadratic B-spline (m = 3).','أعط معاملات المقياسين للشريحة B التربيعية (m = 3).','#f{1}{4}(1, 3, 3, 1)',['2^{−2}C(3, k)'],['#f{1}{8}(1, 3, 3, 1)','#f{1}{2}(1, 2, 1)','(1, 3, 3, 1)']),
+  Q('What is the support of `N_4`?','ما حامل `N_4`؟','[0, 4]',[['Convolving m boxes of length 1.','التفاف m صندوقاً طول كل منها 1.']],['[0, 3]','[−2, 2]','[0, 8]']),
+  Q('Compute `N_2(1/2)` from the hat function.','احسب `N_2(1/2)` من دالة القبعة.','#f{1}{2}',['N_2(t) = t   (0 ≤ t ≤ 1)'],['1','#f{1}{4}','0']),
+  Q('What is the drawback of the orthogonal spline wavelets?','ما عيب مويجات الشرائح المتعامدة؟',['Infinite support (with exponential decay), so the filters must be truncated','حامل لانهائي (مع تناقص أسي) فيجب قطع المرشحات'],[['Orthogonalising the shifts of `N_m` spreads them.','تعميد إزاحات `N_m` ينشرها.']],[['They are not smooth','ليست ملساء'],['They have no vanishing moments','لا عزوم منعدمة لها']]),
+]);
+
+lesson('509',58,[
+  ['On a bounded interval the wavelets that cross the ends must be replaced. The Cohen–Daubechies–Vial construction keeps the interior Daubechies functions and adds p boundary functions at each end, built so that polynomials of degree below p are still reproduced:','على مجال محدود يجب استبدال المويجات التي تعبر الطرفين. وبناء كوهين–دوبيشي–فيال يُبقي دوال دوبيشي الداخلية ويضيف p دالة حدية عند كل طرف، مبنية بحيث تبقى كثيرات الحدود ذات الدرجة الأقل من p مُعاد إنتاجها:'],
+  'dim V_j[0, 1] = 2^j = (2^j − 2p) + p + p',
+  ['This removes the artificial details of periodization and symmetric extension (Lesson 46) and keeps the full approximation order up to the boundary. For Haar (p = 1) nothing changes, since Haar functions never cross dyadic interval ends.','وهذا يزيل التفاصيل الاصطناعية للتدوير والامتداد المتماثل (الدرس 46) ويحافظ على رتبة التقريب الكاملة حتى الحد. ولهار (p = 1) لا يتغير شيء لأن دوال هار لا تعبر أطراف المجالات الثنائية أبداً.'],
+],[
+  Q('How many interior functions does `V_5[0, 1]` have with p = 2?','كم دالة داخلية لـ `V_5[0, 1]` مع p = 2؟','28',['2^5 − 2·2'],['32','30','24']),
+  Q('Which level j is the coarsest possible with p = 3?','ما أخشن مستوى j ممكن مع p = 3؟',['j = 3: `2^j ≥ 2p = 6` is needed','j = 3: يلزم `2^j ≥ 2p = 6`'],[['Otherwise the two boundaries overlap.','وإلا تداخل الحدان.']],[['j = 0','j = 0'],['j = 1','j = 1']]),
+  Q('Why does periodization spoil the approximation of `f = t` near the ends?','لماذا يفسد التدوير تقريب `f = t` قرب الطرفين؟',['The periodic extension of t jumps from 1 to 0','الامتداد الدوري لـ t يقفز من 1 إلى 0'],[['Large details appear at the boundary.','تظهر تفاصيل كبيرة عند الحد.']],[['It does not','لا يفسده'],['Because t is odd','لأن t فردية']]),
+  Q('Why does Haar need no boundary functions on [0, 1]?','لماذا لا تحتاج هار دوالاً حدية على [0, 1]؟',['Its supports are dyadic intervals inside [0, 1]','حواملها مجالات ثنائية داخل [0, 1]'],[['p = 1 and support length 1.','p = 1 وطول الحامل 1.']],[['It does need them','بل تحتاجها'],['Because it is symmetric','لأنها متماثلة']]),
+]);
+
+lesson('509',59,[
+  ['Multiwavelets use several scaling functions `Φ = (φ_1, …, φ_r)^T` with a matrix two-scale equation `Φ(t) = #r{2}Σ_kH_kΦ(2t − k)`. They can be orthogonal, symmetric and short at the same time, which single wavelets cannot.','المويجات المتعددة تستخدم عدة دوال تقييس `Φ = (φ_1, …, φ_r)^T` بمعادلة مقياسين مصفوفية `Φ(t) = #r{2}Σ_kH_kΦ(2t − k)`. ويمكن أن تكون متعامدة ومتماثلة وقصيرة معاً، وهذا ما لا تستطيعه المويجات المفردة.'],
+  'φ_i(t) = #r{2i + 1}P_i(2t − 1),     t ∈ [0, 1),     i = 0, 1, …, r − 1',
+  ['Alpert’s multiwavelets use the Legendre polynomials on each dyadic interval: piecewise polynomials of degree below r, with r vanishing moments. They are the basis of the Legendre wavelets of Unit 9 and of fast methods for integral equations.','ومويجات ألبرت المتعددة تستخدم كثيرات ليجندر على كل مجال ثنائي: كثيرات حدود قطعية بدرجة أقل من r مع r عزوم منعدمة. وهي أساس مويجات ليجندر في الوحدة 9 وطرق سريعة للمعادلات التكاملية.'],
+],[
+  Q('Check `‖φ_1‖ = 1` for `φ_1 = #r{3}(2t − 1)` on [0, 1).','تحقق من `‖φ_1‖ = 1` لـ `φ_1 = #r{3}(2t − 1)` على [0, 1).','3∫_0^1(2t − 1)^2dt = 3·#f{1}{3} = 1',[['Lesson 63 of course 508.','الدرس 63 من المقرر 508.']],['3·#f{1}{2} = #f{3}{2}','#f{1}{3}','2']),
+  Q('With r = 3, which polynomials are reproduced exactly on each dyadic interval?','مع r = 3 أي كثيرات حدود يُعاد إنتاجها بالضبط على كل مجال ثنائي؟',['All polynomials of degree at most 2','كل كثيرات الحدود ذات الدرجة 2 على الأكثر'],[['`φ_0, φ_1, φ_2` span them.','`φ_0, φ_1, φ_2` تولدها.']],[['Degree at most 3','الدرجة 3 على الأكثر'],['Only constants','الثوابت فقط']]),
+  Q('How many functions per dyadic interval does an Alpert basis with r = 3 have at one level?','كم دالة لكل مجال ثنائي في أساس ألبرت مع r = 3 عند مستوى واحد؟','3',[['One for each degree 0, 1, 2.','واحدة لكل درجة 0 و 1 و 2.']],['1','6','2^3']),
+  Q('What can multiwavelets combine that single compactly supported wavelets cannot?','ماذا تستطيع المويجات المتعددة أن تجمع مما لا تستطيعه المويجات المفردة ذات الحامل المحدود؟',['Orthogonality, symmetry and short support together','التعامد والتماثل والحامل القصير معاً'],[['Except Haar, a single one cannot (Lesson 53).','باستثناء هار لا تستطيع المويجة المفردة ذلك (الدرس 53).']],[['Infinite smoothness','ملاسة لانهائية'],['Nothing','لا شيء']]),
+]);
+
+lesson('509',60,[
+  ['There is no best wavelet, only a best wavelet for a task. Three numbers drive the choice: the filter length, the decay of the details of smooth parts, and the cost:','لا توجد مويجة أفضل بإطلاق، بل أفضل مويجة لمهمة. وثلاثة أعداد تقود الاختيار: طول المرشح وتناقص تفاصيل الأجزاء الملساء والكلفة:'],
+  'L = 2p,     |d_{j,k}| ~ 2^{−j(p+1/2)},     2NL',
+  ['Haar suits piecewise constant signals and fast prototypes; db and sym wavelets with a few vanishing moments suit smooth signals and compression; biorthogonal symmetric filters suit images (JPEG 2000); complex Morlet wavelets suit continuous time–frequency analysis; Legendre or Chebyshev wavelets suit solving equations (Unit 9).','وهار يناسب الإشارات الثابتة قطعياً والنماذج السريعة، ومويجات db و sym بعزوم منعدمة قليلة تناسب الإشارات الملساء والضغط، والمرشحات ثنائية التعامد المتماثلة تناسب الصور (JPEG 2000)، ومويجات مورليه المركبة تناسب تحليل الزمن–التردد المتصل، ومويجات ليجندر أو تشيبيشيف تناسب حل المعادلات (الوحدة 9).'],
+],[
+  Q('Which wavelet would you choose to locate the switching times of a piecewise constant signal?','أي مويجة تختار لتحديد أزمنة تبدل إشارة ثابتة قطعياً؟',['Haar','هار'],[['One non-zero detail per jump per level, at the right place.','تفصيل غير صفري واحد لكل قفزة في كل مستوى في المكان الصحيح.']],[['Morlet','مورليه'],['db8','db8']]),
+  Q('Which wavelet suits the analysis of a bird song in time and frequency?','أي مويجة تناسب تحليل تغريد طائر في الزمن والتردد؟',['A complex Morlet wavelet with the continuous transform','مويجة مورليه مركبة مع التحويل المتصل'],[['Its modulus gives a smooth scalogram.','مقياسها يعطي مخطط مقياس أملس.']],[['Haar','هار'],['bior2.2','bior2.2']]),
+  Q('Why are symmetric biorthogonal filters used for images?','لماذا تُستخدم المرشحات ثنائية التعامد المتماثلة للصور؟',['Linear phase avoids shifts and artefacts at edges, and short filters keep edges sharp','الطور الخطي يتجنب الإزاحات والتشوهات عند الحواف، والمرشحات القصيرة تُبقي الحواف حادة'],[['JPEG 2000 uses 5/3 and 9/7.','يستخدم JPEG 2000 المرشحين 5/3 و 9/7.']],[['They are orthogonal','متعامدة'],['They are infinite','لانهائية']]),
+  Q('For compressing a smooth temperature record, is db1 or db4 better?','لضغط سجل حرارة أملس أيهما أفضل db1 أم db4؟',['db4: four vanishing moments give many tiny details','db4: العزوم المنعدمة الأربعة تعطي تفاصيل صغيرة جداً كثيرة'],[['db1 is Haar.','db1 هو هار.']],[['db1','db1'],['They are equal','متساويان']]),
+]);
+
 export const MS509 = true;
