@@ -1049,4 +1049,115 @@ lesson('503',80,[
   Q('Why does ``hstar(0, -0.5, -0.5)`` fail (Chebyshev)?','لماذا تفشل ``hstar(0, -0.5, -0.5)`` (تشيبيشيف)؟',['The denominator is `0·Γ(0)`; use `h_0^* = Γ(α + 1)Γ(β + 1)/Γ(α + β + 2)`, which gives π','المقام `0·Γ(0)`، فاستخدم `h_0^* = Γ(α + 1)Γ(β + 1)/Γ(α + β + 2)` التي تعطي π'],['(α + β + 1)Γ(α + β + 1) = Γ(α + β + 2)'],[['Because gamma cannot take negative numbers','لأن gamma لا تقبل الأعداد السالبة'],['It does not fail','لا تفشل']]),
 ]);
 
+/* ---- 503 · Unit 9 (lessons 81–90): spectral methods with Jacobi polynomials ---- */
+lesson('503',81,[
+  ['In a Jacobi–Galerkin method the trial and test functions are the same basis and the residual is made orthogonal to it. For `−u″ = f`, `u(±1) = 0`, the basis `φ_k = (1 − x^2)P_k^{(1,1)}` gives a diagonal stiffness matrix:','في طريقة جاكوبي–جاليركن تكون دوال التجربة والاختبار الأساسَ نفسه ويُجعل الباقي عمودياً عليه. ولـ `−u″ = f` مع `u(±1) = 0` يعطي الأساس `φ_k = (1 − x^2)P_k^{(1,1)}` مصفوفة جساءة قطرية:'],
+  '∫_{−1}^{1} φ_j′ φ_k′ dx = 4(k + 1)^2 #f{2}{2k + 3} δ_{jk},     c_k = #f{⟨f, φ_k⟩}{4(k + 1)^2·2/(2k + 3)}',
+  ['So the solve costs `O(N)` once the right-hand side is known. The basis is proportional to `P_k − P_{k+2}`, Shen’s Legendre basis.','فتكلفة الحل `O(N)` متى عُرف الطرف الأيمن. والأساس متناسب مع `P_k − P_{k+2}` وهو أساس شين لليجندر.'],
+],[
+  Q('Find the stiffness entry for k = 0.','أوجد عنصر الجساءة عند k = 0.','#f{8}{3}',['4·1·#f{2}{3}',['Directly: `∫(−2x)^2 dx = 8/3`.','مباشرة: `∫(−2x)^2 dx = 8/3`.']],['#f{4}{3}','2','#f{16}{3}']),
+  Q('Solve `−u″ = 2`, `u(±1) = 0` with the single function `φ_0 = 1 − x^2`.','حل `−u″ = 2` مع `u(±1) = 0` بالدالة الوحيدة `φ_0 = 1 − x^2`.','c_0 = 1,   u = 1 − x^2',['⟨2, φ_0⟩ = #f{8}{3}','c_0 = #f{8/3}{8/3}',['Exact: the solution is a polynomial in the space.','مضبوط: الحل كثيرة حدود في الفضاء.']],['c_0 = 2,   u = 2(1 − x^2)','c_0 = #f{1}{2},   u = #f{1 − x^2}{2}','c_0 = #f{3}{8},   u = #f{3}{8}(1 − x^2)']),
+  Q('Find the stiffness entry for k = 1.','أوجد عنصر الجساءة عند k = 1.','#f{32}{5}',['4·4·#f{2}{5}'],['#f{8}{5}','#f{16}{5}','#f{72}{7}']),
+  Q('Why does the Galerkin system decouple here?','لماذا ينفصل نظام جاليركن هنا؟',['`φ_k′ = −2(k + 1)P_{k+1}` and the Legendre polynomials are orthogonal','`φ_k′ = −2(k + 1)P_{k+1}` وكثيرات ليجندر متعامدة'],[['Lesson 59.','الدرس 59.']],[['Because f is constant','لأن f ثابتة'],['Because N is small','لأن N صغير']]),
+]);
+
+lesson('503',82,[
+  ['A tau method expands u in the plain polynomials, makes the residual orthogonal to the first `N + 1 − m` of them, and uses the remaining m equations for the m boundary conditions. For `u′ + u = 0`, `u(0) = 1` on [0, 1] with shifted Legendre:','طريقة تاو تنشر u بالكثيرات العادية وتجعل الباقي عمودياً على أول `N + 1 − m` منها، وتستخدم المعادلات m الباقية للشروط الحدية m. فلـ `u′ + u = 0` مع `u(0) = 1` على [0, 1] بليجندر المزاحة:'],
+  'u = Σ_{n=0}^{N} c_n P_n^*,     ⟨u′ + u, P_k^*⟩ = 0  (k < N),     Σ c_n P_n^*(0) = 1',
+  ['The method is simple and works for any boundary condition, but the matrices are not sparse in general.','والطريقة بسيطة وتصلح لأي شرط حدي لكن مصفوفاتها ليست قليلة العناصر عموماً.'],
+],[
+  Q('Solve the tau system for N = 1.','حل نظام تاو عند N = 1.','c_0 = #f{2}{3},   c_1 = −#f{1}{3}',['u′ = 2c_1:   2c_1 + c_0 = 0','u(0) = c_0 − c_1 = 1'],['c_0 = #f{1}{3},   c_1 = −#f{2}{3}','c_0 = 1,   c_1 = −#f{1}{2}','c_0 = #f{2}{3},   c_1 = #f{1}{3}']),
+  Q('Find `u(1)` for N = 1 and compare with `e^{−1} ≈ 0.3679`.','أوجد `u(1)` عند N = 1 وقارن بـ `e^{−1} ≈ 0.3679`.','#f{1}{3} ≈ 0.3333',['u(1) = c_0 + c_1'],['#f{2}{3}','1','0']),
+  Q('For N = 2 the tau solution gives `u(1) = 7/19`. Find its error.','عند N = 2 يعطي حل تاو `u(1) = 7/19`. أوجد خطأه.','≈ 5.4 × 10^{−4}',['#f{7}{19} = 0.36842,   0.36842 − 0.36788'],['≈ 3.5 × 10^{−2}','≈ 5.4 × 10^{−2}','0']),
+  Q('How many residual equations are used with N = 3 and one boundary condition?','كم معادلة باقٍ تُستخدم مع N = 3 وشرط حدي واحد؟','3',['N + 1 − m = 4 − 1'],['4','2','1']),
+]);
+
+lesson('503',83,[
+  ['A collocation method imposes the equation at chosen points, usually Gauss–Jacobi or Gauss–Jacobi–Radau nodes, together with the boundary conditions. For `u′ + u = 0`, `u(0) = 1`, the one-parameter trial `u = 1 + bt` and one collocation point `t_1` give','طريقة التجميع تفرض المعادلة عند نقاط مختارة، عادة عقد جاوس–جاكوبي أو جاوس–جاكوبي–راداو، مع الشروط الحدية. ولـ `u′ + u = 0` مع `u(0) = 1` يعطي الحل التجريبي `u = 1 + bt` ونقطة تجميع واحدة `t_1`'],
+  'b + 1 + b t_1 = 0   ⇒   b = −#f{1}{1 + t_1},     u(1) = #f{t_1}{1 + t_1}',
+  ['The choice of (α, β) decides where the point lies, and so changes the answer. Collocation is the easiest method for nonlinear and variable-coefficient problems.','واختيار (α, β) يحدد موضع النقطة فيغيّر الجواب. والتجميع أسهل الطرق للمسائل غير الخطية وذات المعاملات المتغيرة.'],
+],[
+  Q('Use the Legendre point `t_1 = 1/2`. Find `u(1)`.','استخدم نقطة ليجندر `t_1 = 1/2`. أوجد `u(1)`.','#f{1}{3}',['#f{1/2}{3/2}'],['#f{1}{2}','#f{2}{3}','#f{1}{4}']),
+  Q('Use the point of α = 1, β = 0 (`x = −1/3`, so `t_1 = 1/3`). Find `u(1)`.','استخدم نقطة α = 1 و β = 0 (`x = −1/3` أي `t_1 = 1/3`). أوجد `u(1)`.','#f{1}{4}',['#f{1/3}{4/3}'],['#f{1}{3}','#f{2}{5}','#f{3}{4}']),
+  Q('Use the point of α = 0, β = 1 (`x = 1/3`, so `t_1 = 2/3`). Find `u(1)`.','استخدم نقطة α = 0 و β = 1 (`x = 1/3` أي `t_1 = 2/3`). أوجد `u(1)`.','#f{2}{5}',['#f{2/3}{5/3}'],['#f{1}{3}','#f{1}{4}','#f{3}{5}']),
+  Q('Which method is usually easiest for a nonlinear term such as `u^2`?','أي طريقة عادةً أسهل لحد غير خطي مثل `u^2`؟',['Collocation: the term is just evaluated at the nodes','التجميع: يُحسب الحد عند العقد فقط'],[['Galerkin and tau need projections of `u^2`.','جاليركن وتاو تحتاجان إسقاطات `u^2`.']],[['Galerkin','جاليركن'],['Tau','تاو']]),
+]);
+
+lesson('503',84,[
+  ['For two-point boundary-value problems the boundary-adapted basis of Lessons 59 and 79 removes the boundary equations. For `u″ = g`, `u(±1) = 0`:','لمسائل القيم الحدية ذات النقطتين يزيل الأساس المهيأ للحدود (الدرسان 59 و 79) المعادلات الحدية. فلـ `u″ = g` مع `u(±1) = 0`:'],
+  'u = Σ_k c_k φ_k,   φ_k = (1 − x^2)P_k^{(1,1)},     −#f{8(k + 1)^2}{2k + 3} c_k = ⟨g, φ_k⟩',
+  ['Non-homogeneous conditions are handled by subtracting a simple function that satisfies them, for example a straight line.','والشروط غير المتجانسة تُعالج بطرح دالة بسيطة تحققها، مثل خط مستقيم.'],
+],[
+  Q('Solve `u″ = 6x`, `u(±1) = 0`. Find `c_1`.','حل `u″ = 6x` مع `u(±1) = 0`. أوجد `c_1`.','−#f{1}{2}',['⟨6x, φ_1⟩ = ∫ 6x·2x(1 − x^2) dx = #f{16}{5}','−#f{32}{5}c_1 = #f{16}{5}',['Check: `u = x^3 − x = −(1/2)·2x(1 − x^2)`.','تحقق: `u = x^3 − x = −(1/2)·2x(1 − x^2)`.']],['#f{1}{2}','−1','−#f{1}{4}']),
+  Q('For the same problem, what is `c_0`?','للمسألة نفسها ما `c_0`؟','0',['⟨6x, 1 − x^2⟩ = 0'],['−#f{1}{2}','1','#f{3}{8}']),
+  Q('Which function removes the conditions `u(−1) = 1`, `u(1) = 3`?','أي دالة تزيل الشرطين `u(−1) = 1` و `u(1) = 3`؟','ℓ(x) = 2 + x',['ℓ(−1) = 1,   ℓ(1) = 3'],['ℓ(x) = 1 + 3x','ℓ(x) = 3 − x','ℓ(x) = 2x + 1']),
+  Q('After writing `u = ℓ + v`, which equation does v solve when `u″ = g`?','بعد كتابة `u = ℓ + v` أي معادلة تحلها v عندما `u″ = g`؟','v″ = g,   v(±1) = 0',['ℓ″ = 0'],['v″ = g − ℓ,   v(±1) = 0','v″ = g,   v(±1) = ℓ(±1)','v″ = 0,   v(±1) = 0']),
+]);
+
+lesson('503',85,[
+  ['A fractional equation `D^{ν}y = f(t, y)`, `0 < ν ≤ 1`, `y(0) = y_0`, is first written in integrated form:','المعادلة الكسرية `D^{ν}y = f(t, y)` مع `0 < ν ≤ 1` و `y(0) = y_0` تُكتب أولاً بالصيغة التكاملية:'],
+  'y(t) = y_0 + D^{−ν} f(t, y)',
+  ['This contains the initial condition, needs only the integration matrix `I^{(ν)}` of Lesson 75, and avoids the singular behaviour of the derivative at t = 0. With the fractional basis and λ = ν, the typical solution terms `t^{kν}` become polynomials in s.','وهذه الصيغة تحوي الشرط الابتدائي، ولا تحتاج إلا مصفوفة التكامل `I^{(ν)}` في الدرس 75، وتتجنب السلوك الشاذ للمشتقة عند t = 0. ومع الأساس الكسري و λ = ν تصبح حدود الحل النموذجية `t^{kν}` كثيرات حدود في s.'],
+],[
+  Q('Solve `D^{1/2}y = 1`, `y(0) = 2`.','حل `D^{1/2}y = 1` مع `y(0) = 2`.','y = 2 + #f{2#r{t}}{#r{π}}',['y = 2 + D^{−1/2}1 = 2 + #f{t^{1/2}}{Γ(3/2)}'],['y = 2 + #r{t}','y = 2 + #f{#r{t}}{#r{π}}','y = 2t + #f{2#r{t}}{#r{π}}']),
+  Q('With λ = 1/2, what is the degree of that solution in s?','مع λ = 1/2 ما درجة ذلك الحل في s؟','1',['2 + #f{2}{#r{π}}s'],['2','0','#f{1}{2}']),
+  Q('Write `D^{1/2}y + y = 0`, `y(0) = 1` in integrated form.','اكتب `D^{1/2}y + y = 0` مع `y(0) = 1` بالصيغة التكاملية.','y = 1 − D^{−1/2}y',['D^{−1/2}D^{1/2}y = y − y(0)'],['y = 1 + D^{−1/2}y','y = −D^{1/2}y','y = 1 − D^{1/2}y']),
+  Q('Write the matrix equation for `y = c^TΦ` in that integrated form (`D^{−μ}Φ ≈ I^{(μ)}Φ`, `1 = e_0^TΦ`).','اكتب المعادلة المصفوفية لـ `y = c^TΦ` في تلك الصيغة التكاملية (`D^{−μ}Φ ≈ I^{(μ)}Φ` و `1 = e_0^TΦ`).','(I + (I^{(1/2)})^T) c = e_0',['c^TΦ = e_0^TΦ − c^T I^{(1/2)} Φ'],['(I − (I^{(1/2)})^T) c = e_0','(I + I^{(1/2)}) c = e_0','I^{(1/2)} c = e_0']),
+]);
+
+lesson('503',86,[
+  ['Multi-term equations such as `y′ + D^{1/2}y = f` are integrated by the highest order. With `y(0) = 0`, applying `D^{−1}` gives','المعادلات متعددة الحدود مثل `y′ + D^{1/2}y = f` تُكامل بأعلى رتبة. ومع `y(0) = 0` يعطي تطبيق `D^{−1}`'],
+  'y + D^{−1/2}y = D^{−1}f',
+  ['The natural λ is the greatest common divisor of all orders and of the expected solution powers. An equation of highest order ν needs `⌈ν⌉` initial conditions.','و λ الطبيعية هي القاسم المشترك الأكبر لكل الرتب ولقوى الحل المتوقعة. والمعادلة التي أعلى رتبها ν تحتاج `⌈ν⌉` شرطاً ابتدائياً.'],
+],[
+  Q('Choose λ for `y′ + D^{1/2}y = f`.','اختر λ لـ `y′ + D^{1/2}y = f`.','λ = #f{1}{2}',['gcd(1, #f{1}{2})'],['λ = 1','λ = #f{1}{4}','λ = #f{3}{2}']),
+  Q('How many initial conditions does `D^{3/2}y + y = f` need?','كم شرطاً ابتدائياً تحتاج `D^{3/2}y + y = f`؟','2',['⌈#f{3}{2}⌉ = 2:   y(0),  y′(0)'],['1','3','0']),
+  Q('Write `D^{3/2}y + y = f` with `y(0) = y′(0) = 0` in integrated form.','اكتب `D^{3/2}y + y = f` مع `y(0) = y′(0) = 0` بالصيغة التكاملية.','y + D^{−3/2}y = D^{−3/2}f',['D^{−3/2}D^{3/2}y = y − y(0) − t y′(0) = y'],['y + D^{−1/2}y = D^{−1}f','y = D^{−3/2}f','y + D^{3/2}y = f']),
+  Q('Choose λ for `D^{0.6}y + D^{0.9}y = f`.','اختر λ لـ `D^{0.6}y + D^{0.9}y = f`.','λ = 0.3',['gcd(0.6, 0.9)'],['λ = 0.6','λ = 0.9','λ = 0.15']),
+]);
+
+lesson('503',87,[
+  ['For a time-fractional equation `D_t^{ν}u = u_{xx} + f` the solution is written as a double expansion, Jacobi (or Legendre) in x and fractional functions in t:','للمعادلة الكسرية الزمنية `D_t^{ν}u = u_{xx} + f` يُكتب الحل مفكوكاً مزدوجاً: جاكوبي (أو ليجندر) في x والدوال الكسرية في t:'],
+  'u_{N,M}(x, t) = Σ_{i=0}^{N} Σ_{j=0}^{M} y_{ij} L_i(x) J_j^{λ}(t) = 𝔏^T 𝒴 𝔏',
+  ['The unknowns `y_{ij}` are found from `(N − 1)(M + 1)` interior equations and `2(M + 1)` boundary equations; matrix identities such as `vec(A𝒴B) = (B^T ⊗ A) vec(𝒴)` turn them into one linear system.','وتُحسب المجاهيل `y_{ij}` من `(N − 1)(M + 1)` معادلة داخلية و `2(M + 1)` معادلة حدية، وتحوّلها متطابقات مثل `vec(A𝒴B) = (B^T ⊗ A) vec(𝒴)` إلى نظام خطي واحد.'],
+],[
+  Q('How many unknowns are there for N = 4, M = 3?','كم مجهولاً عند N = 4 و M = 3؟','20',['(N + 1)(M + 1) = 5·4'],['12','16','15']),
+  Q('How many of the equations are interior equations for N = 4, M = 3?','كم من المعادلات معادلات داخلية عند N = 4 و M = 3؟','12',['(N − 1)(M + 1) = 3·4'],['8','20','15']),
+  Q('Write `vec(A𝒴B)` as a matrix times `vec(𝒴)`.','اكتب `vec(A𝒴B)` بصورة مصفوفة مضروبة في `vec(𝒴)`.','(B^T ⊗ A) vec(𝒴)',[['Column-stacking `vec`.','`vec` برص الأعمدة.']],['(A ⊗ B) vec(𝒴)','(A^T ⊗ B) vec(𝒴)','(B ⊗ A^T) vec(𝒴)']),
+  Q('Write the equation in integrated form in t, with `u(x, 0) = u_0(x)`.','اكتب المعادلة بالصيغة التكاملية في t مع `u(x, 0) = u_0(x)`.','u = u_0 + D_t^{−ν}(u_{xx} + f)',['D_t^{−ν}D_t^{ν}u = u − u_0'],['u = D_t^{ν}(u_{xx} + f)','u = u_0 + u_{xx} + f','u = u_0 − D_t^{−ν}(u_{xx} + f)']),
+]);
+
+lesson('503',88,[
+  ['In two space dimensions the basis is a tensor product, and the discrete Laplacian is a sum of Kronecker products:','في بعدين مكانيين يكون الأساس ضرباً تنسورياً، والمؤثر اللابلاسي المتقطع مجموع ضروب كرونيكر:'],
+  'u = Σ y_{ijk} φ_i(x) φ_j(y) J_k^{λ}(t),     Δ_h = D^{(2)} ⊗ I + I ⊗ D^{(2)}',
+  ['The number of unknowns is `(N_x + 1)(N_y + 1)(M + 1)`, so dense solves become expensive quickly. Matrix diagonalization in space, or iterative solvers that use the Kronecker structure, keep the cost manageable.','وعدد المجاهيل `(N_x + 1)(N_y + 1)(M + 1)` فتصبح الحلول الكثيفة مكلفة بسرعة. والتقطير المصفوفي في المكان، أو الحلّالات التكرارية التي تستغل بنية كرونيكر، تبقي التكلفة معقولة.'],
+],[
+  Q('How many unknowns for `N_x = N_y = 10`, M = 5?','كم مجهولاً عند `N_x = N_y = 10` و M = 5؟','726',['11·11·6'],['600','121','66']),
+  Q('What is the size of `D^{(2)} ⊗ I` when each factor is 11 × 11?','ما حجم `D^{(2)} ⊗ I` عندما يكون كل عامل 11 × 11؟','121 × 121',['11·11 = 121'],['22 × 22','11 × 11','1331 × 1331']),
+  Q('About how many operations does a dense solve of the 726 × 726 system take?','كم عملية تقريباً يحتاج الحل الكثيف للنظام 726 × 726؟','≈ 2.6 × 10^8',['#f{2}{3}n^3 = #f{2}{3}·726^3 ≈ #f{2}{3}·3.83 × 10^8',['Gaussian elimination (LU).','الحذف الجاوسي (LU).']],['≈ 5 × 10^5','≈ 3.8 × 10^{10}','≈ 726']),
+  Q('Why does doubling `N_x = N_y` multiply the dense cost by about 64?','لماذا تضاعف `N_x = N_y` يضرب تكلفة الحل الكثيف في 64 تقريباً؟',['The number of unknowns grows by 4 and the cost by `4^3`','عدد المجاهيل يكبر 4 مرات والتكلفة `4^3` مرة'],['n ∝ N^2,   n^3 ∝ N^6,   2^6 = 64'],[['Because the matrix is dense','لأن المصفوفة كثيفة'],['It multiplies by 4','بل تضرب في 4']]),
+]);
+
+lesson('503',89,[
+  ['Volterra integral equations `y(t) = f(t) + ∫_0^t K(t, s) y(s) ds` fit the same framework: with `K = 1` the integral is the integration matrix, and a weakly singular kernel `(t − s)^{μ−1}/Γ(μ)` gives `D^{−μ}` and the matrix `I^{(μ)}`:','المعادلات التكاملية لفولتيرا `y(t) = f(t) + ∫_0^t K(t, s) y(s) ds` تدخل الإطار نفسه: مع `K = 1` يكون التكامل مصفوفة التكامل، والنواة الشاذة ضعيفاً `(t − s)^{μ−1}/Γ(μ)` تعطي `D^{−μ}` والمصفوفة `I^{(μ)}`:'],
+  'y = c^TΦ:     c = f + P^T c     (K = 1)',
+  ['Integro-differential equations are first integrated, so that all terms become integrals of y.','والمعادلات التكاملية التفاضلية تُكامل أولاً حتى تصير كل الحدود تكاملات لـ y.'],
+],[
+  Q('Solve `y = 1 + ∫_0^t y` with shifted Legendre, M = 1 (`P = #m{1/2, 1/2 ;; −1/6, 0}`). Find `c_0`.','حل `y = 1 + ∫_0^t y` بليجندر المزاحة مع M = 1 (`P = #m{1/2, 1/2 ;; −1/6, 0}`). أوجد `c_0`.','#f{12}{7}',['c_0 = 1 + #f{c_0}{2} − #f{c_1}{6},   c_1 = #f{c_0}{2}','c_0(1 − #f{1}{2} + #f{1}{12}) = 1'],['#f{6}{7}','2','#f{7}{12}']),
+  Q('Find `c_1`.','أوجد `c_1`.','#f{6}{7}',['c_1 = #f{c_0}{2}'],['#f{12}{7}','#f{3}{7}','1']),
+  Q('Compare `c_0` with the exact mean of `e^t` on [0, 1].','قارن `c_0` بالمتوسط المضبوط لـ `e^t` على [0, 1].','c_0 = 1.7143,   e − 1 = 1.7183',['#f{12}{7} = 1.71429,   ∫_0^1 e^t dt = e − 1'],['c_0 = 1.7143,   e = 2.7183','c_0 = 0.8571,   e − 1 = 1.7183','c_0 = 2.5714,   e − 1 = 1.7183']),
+  Q('Which kernel turns the integral into `D^{−μ}y`?','أي نواة تحوّل التكامل إلى `D^{−μ}y`؟','K(t, s) = #f{(t − s)^{μ−1}}{Γ(μ)}',[['The Riemann–Liouville integral.','تكامل ريمان–ليوفيل.']],['K(t, s) = (t − s)^{μ}','K(t, s) = e^{−μ(t − s)}','K(t, s) = 1']),
+]);
+
+lesson('503',90,[
+  ['Which (α, β) is best depends on the problem. For the one-point collocation of Lesson 83, `u′ + u = 0`, `u(0) = 1`, the three choices give','أي (α, β) أفضل يعتمد على المسألة. ففي تجميع النقطة الواحدة في الدرس 83 لـ `u′ + u = 0` مع `u(0) = 1` تعطي الخيارات الثلاثة'],
+  '(0, 0):  #f{1}{3},     (1, 0):  #f{1}{4},     (0, 1):  #f{2}{5},     e^{−1} = 0.3679',
+  ['General rules: use weights that match end singularities or boundary conditions; prefer α, β ≤ 0 for interpolation; use Legendre (α = β = 0) when nothing special is known, because its Galerkin matrices are the simplest. Always test with a manufactured solution.','قواعد عامة: استخدم أوزاناً تطابق الانفرادات الطرفية أو الشروط الحدية، وفضّل α, β ≤ 0 للاستكمال، واستخدم ليجندر (α = β = 0) حين لا يُعرف شيء خاص لأن مصفوفات جاليركن له أبسط. واختبر دائماً بحل مُصنَّع.'],
+],[
+  Q('Which of the three points gives the smallest error at t = 1?','أي النقاط الثلاث تعطي أصغر خطأ عند t = 1؟','(α, β) = (0, 1)',['|0.4 − 0.3679| = 0.032,   |0.3333 − 0.3679| = 0.035,   |0.25 − 0.3679| = 0.118'],['(α, β) = (0, 0)','(α, β) = (1, 0)','(α, β) = (1, 1)']),
+  Q('Find the error of the (1, 0) point.','أوجد خطأ النقطة (1, 0).','≈ 0.118',['0.3679 − 0.25'],['≈ 0.032','≈ 0.035','≈ 0.25']),
+  Q('What is a manufactured solution?','ما الحل المُصنَّع؟',['A chosen exact u; f is computed from it, so the error can be measured','u مضبوطة مختارة تُحسب منها f فيمكن قياس الخطأ'],[['It tests the code on a problem with a known answer.','يختبر الكود على مسألة جوابها معلوم.']],[['The numerical solution itself','الحل العددي نفسه'],['A solution found by a computer algebra system','حل يجده نظام جبر حاسوبي']]),
+  Q('Which choice is the safe default when nothing special is known?','أي اختيار هو الافتراضي الآمن حين لا يُعرف شيء خاص؟','α = β = 0',[['Legendre: simplest matrices and good interpolation.','ليجندر: أبسط المصفوفات واستكمال جيد.']],['α = β = 2','α = 1,   β = 0','α = β = −0.9']),
+]);
+
 export const MS503 = true;
