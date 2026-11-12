@@ -596,4 +596,225 @@ lesson('504',40,[
   Q('What does ``Import["errors.csv"]`` return for a file with two columns and three rows?','ماذا تعيد ``Import["errors.csv"]`` لملف من عمودين وثلاثة صفوف؟',['A list of three rows, each a list of two entries','قائمة من ثلاثة صفوف كل منها قائمة من عنصرين'],[['A 3 × 2 nested list.','قائمة متداخلة 3 × 2.']],[['A single string','نصاً واحداً'],['A 2 × 3 list','قائمة 2 × 3']]),
 ]);
 
+/* ---- 504 · Unit 5 (lessons 41–50): programming;  Unit 6 (lessons 51–60): linear algebra ---- */
+lesson('504',41,[
+  ['Patterns describe the shape of an expression. ``_`` matches any single expression, ``__`` one or more, ``x_h`` anything with head h, ``x_?test`` anything that passes a test and ``x_ /; cond`` anything that satisfies a condition:','الأنماط تصف شكل المقدار. ``_`` تطابق أي مقدار واحد، و ``__`` واحداً أو أكثر، و ``x_h`` أي شيء رأسه h، و ``x_?test`` أي شيء يجتاز اختباراً، و ``x_ /; cond`` أي شيء يحقق شرطاً:'],
+  '$ MatchQ[3, _Integer]            (* True *)\nMatchQ[3.5, _Integer]          (* False *)\nCases[{1, -2, 3}, _?Negative]  (* {-2} *)\nx^2 /. x^n_ -> n               (* 2 *)',
+  ['Patterns are the basis of function definitions: ``f[x_] := …`` is a rule for every expression that matches ``f[_]``.','والأنماط أساس تعريف الدوال: ``f[x_] := …`` قاعدة لكل مقدار يطابق ``f[_]``.'],
+],[
+  Q('What is the output of the last line?','ما مخرج السطر الأخير؟','$ 3',[['``x__`` matches the whole sequence a, b, c, and ``{x}`` makes a list of it.','``x__`` تطابق المتتالية a و b و c كلها، و ``{x}`` تجعلها قائمة.']],['$ 1','$ g[a, b, c]','$ {a, b, c}'],'g[x__] := Length[{x}]\ng[a, b, c]'),
+  Q('What is the output of the last line?','ما مخرج السطر الأخير؟','$ h[2.5]',[['2.5 has head Real, so the Integer rule does not apply.','رأس 2.5 هو Real فلا تنطبق قاعدة Integer.']],['$ 6.25','$ 2.5','$ $Failed'],'h[n_Integer] := n^2\nh[2.5]'),
+  Q('What is the output of ``Cases[{1, 2.5, -3, 4}, x_ /; x > 2]``?','ما مخرج ``Cases[{1, 2.5, -3, 4}, x_ /; x > 2]``؟','$ {2.5, 4}',[['The condition keeps the elements greater than 2.','الشرط يبقي العناصر الأكبر من 2.']],['$ {4}','$ {1, 2.5, 4}','$ {2.5, -3, 4}']),
+  Q('Write a pattern for a positive integer n.','اكتب نمطاً لعدد صحيح موجب n.','$ n_Integer?Positive',[['Head Integer and the test Positive.','الرأس Integer والاختبار Positive.']],['$ n_Positive','$ n_Integer > 0','$ Integer[n_?Positive]']),
+]);
+
+lesson('504',42,[
+  ['A function can have several definitions; Mathematica uses the most specific one that matches. This is how recurrences and special cases are written:','يمكن أن يكون للدالة عدة تعريفات، ويستخدم Mathematica أكثرها تحديداً مما يطابق. وهكذا تُكتب علاقات التكرار والحالات الخاصة:'],
+  '$ fact[0] = 1;\nfact[n_Integer?Positive] := n fact[n - 1]\nfact[5]        (* 120 *)',
+  ['``?fact`` lists all its definitions. An argument that matches no rule is returned unevaluated, which is safer than a wrong answer.','و ``?fact`` تعرض كل تعريفاتها. والمتغير الذي لا يطابق أي قاعدة يُعاد دون حساب، وهذا أسلم من جواب خاطئ.'],
+],[
+  Q('What is the output of ``fact[-1]``?','ما مخرج ``fact[-1]``؟','$ fact[-1]',[['−1 is neither 0 nor a positive integer, so no rule matches.','−1 ليس 0 ولا عدداً صحيحاً موجباً فلا قاعدة تطابق.']],['$ 1','$ 0','$ -1']),
+  Q('What is the output of the last line?','ما مخرج السطر الأخير؟','$ sgn[0]',[['Neither condition holds at 0.','لا يتحقق أي من الشرطين عند 0.']],['$ 0','$ 1','$ -1'],'sgn[x_ /; x > 0] := 1;  sgn[x_ /; x < 0] := -1;\nsgn[0]'),
+  Q('Why is ``fact[0] = 1`` written with ``=`` and the general rule with ``:=``?','لماذا يُكتب ``fact[0] = 1`` بـ ``=`` والقاعدة العامة بـ ``:=``؟',['The special value is a constant; the general rule must be evaluated anew for each n','القيمة الخاصة ثابت، والقاعدة العامة يجب أن تُحسب من جديد لكل n'],[['With ``=`` the right side would be evaluated once, with the symbol n.','ومع ``=`` يُحسب الطرف الأيمن مرة واحدة بالرمز n.']],[['There is no difference','لا فرق'],['``=`` is faster','``=`` أسرع']]),
+  Q('Define `P_0 = 1`, `P_1 = x` as special rules of a function ``p[n, x]``.','عرّف `P_0 = 1` و `P_1 = x` قاعدتين خاصتين للدالة ``p[n, x]``.','$ p[0, x_] := 1;  p[1, x_] := x',[['The first argument is a literal number, the second a pattern.','المتغير الأول عدد حرفي والثاني نمط.']],['$ p[0, x] := 1;  p[1, x] := x','$ p[n_ = 0, x_] := 1','$ p[0_, x_] := 1;  p[1_, x_] := x']),
+]);
+
+lesson('504',43,[
+  ['Choices:','الاختيارات:'],
+  '$ If[x > 0, 1, -1]\nWhich[x < 0, -1, x == 0, 0, True, 1]\nSwitch[k, 1, "one", 2, "two", _, "other"]\nPiecewise[{{x^2, x < 0}, {x, x >= 0}}]',
+  ['``If`` needs a condition that evaluates to True or False; with a symbolic x it stays unevaluated. For mathematical functions defined by cases prefer ``Piecewise``: it can be differentiated, integrated and plotted.','``If`` تحتاج شرطاً يصبح True أو False، ومع x رمزية تبقى دون حساب. وللدوال الرياضية المعرّفة بحالات فضّل ``Piecewise`` لأنها تُشتق وتُكامل وتُرسم.'],
+],[
+  Q('What is the output of ``If[x > 0, 1, -1]`` when x has no value?','ما مخرج ``If[x > 0, 1, -1]`` حين لا قيمة لـ x؟','$ If[x > 0, 1, -1]',[['`x > 0` cannot be decided, so If waits.','`x > 0` لا يمكن الحكم عليه فتنتظر If.']],['$ 1','$ -1','$ False']),
+  Q('What is the output of ``Integrate[Piecewise[{{1, x < 1/2}}, 0], {x, 0, 1}]``?','ما مخرج ``Integrate[Piecewise[{{1, x < 1/2}}, 0], {x, 0, 1}]``؟','$ 1/2',[['The function is 1 on [0, 1/2) and 0 after.','الدالة 1 على [0, 1/2) و 0 بعدها.']],['$ 1','$ 0','$ Piecewise[...]']),
+  Q('What is the output of ``Switch[2, 1, "a", 2, "b", _, "c"]``?','ما مخرج ``Switch[2, 1, "a", 2, "b", _, "c"]``؟','$ b',[['The first matching pattern is 2. Strings are shown without quotes.','أول نمط مطابق هو 2. والنصوص تُعرض دون علامات تنصيص.']],['$ a','$ c','$ 2']),
+  Q('What is the output of ``Which[3 < 2, "x", 3 == 3, "y", True, "z"]``?','ما مخرج ``Which[3 < 2, "x", 3 == 3, "y", True, "z"]``؟','$ y',[['The first true condition is `3 == 3`.','أول شرط صحيح `3 == 3`.']],['$ x','$ z','$ True']),
+]);
+
+lesson('504',44,[
+  ['Procedural loops exist, but they are rarely the best choice in Mathematica:','الحلقات الإجرائية موجودة لكنها نادراً ما تكون الخيار الأفضل في Mathematica:'],
+  '$ s = 0;  Do[s += k, {k, 1, 10}];  s     (* 55 *)\nFor[i = 1, i <= 3, i++, Print[i]]\nWhile[x > 1, x = x/2]',
+  ['The functional forms ``Table``, ``Sum``, ``Map`` and ``Total`` are shorter, clearer and usually faster. Building a list with ``AppendTo`` inside a loop is especially slow, because the list is copied at every step.','والصيغ الدالية ``Table`` و ``Sum`` و ``Map`` و ``Total`` أقصر وأوضح وأسرع عادة. وبناء قائمة بـ ``AppendTo`` داخل حلقة بطيء جداً لأن القائمة تُنسخ عند كل خطوة.'],
+],[
+  Q('Rewrite ``v = {}; For[i = 1, i <= 5, i++, AppendTo[v, i^2]]`` in one line.','أعد كتابة ``v = {}; For[i = 1, i <= 5, i++, AppendTo[v, i^2]]`` في سطر واحد.','$ v = Table[i^2, {i, 5}]',[['Same result `{1, 4, 9, 16, 25}`, no copying.','النتيجة نفسها `{1, 4, 9, 16, 25}` دون نسخ.']],['$ v = Do[i^2, {i, 5}]','$ v = For[i^2, {i, 5}]','$ v = Append[i^2, {i, 5}]']),
+  Q('What does ``Do[k^2, {k, 3}]`` return?','ماذا تعيد ``Do[k^2, {k, 3}]``؟','$ Null',[['Do returns nothing; use Table to collect values.','Do لا تعيد شيئاً، فاستخدم Table لجمع القيم.']],['$ {1, 4, 9}','$ 9','$ 14']),
+  Q('What is the value of x after the last line?','ما قيمة x بعد السطر الأخير؟','$ 5/8',['5 → #f{5}{2} → #f{5}{4} → #f{5}{8}'],['$ 5/4','$ 0','$ 1'],'x = 5;\nWhile[x > 1, x = x/2];  x'),
+  Q('Why is ``AppendTo`` in a loop of n steps slow?','لماذا تكون ``AppendTo`` في حلقة من n خطوة بطيئة؟',['Each step copies the whole list, so the total cost grows like `n^2`','كل خطوة تنسخ القائمة كلها فتنمو التكلفة الكلية مثل `n^2`'],['1 + 2 + … + n ≈ #f{n^2}{2}'],[['Because Print is slow','لأن Print بطيئة'],['It is not slow','ليست بطيئة']]),
+]);
+
+lesson('504',45,[
+  ['Local variables keep functions from interfering with each other:','المتغيرات المحلية تمنع الدوال من التداخل:'],
+  '$ Module[{x = 2}, x^2]     (* new local variables *)\nBlock[{x = 2}, f[]]       (* temporary values of global names *)\nWith[{n = 3}, Range[n]]   (* local constants *)',
+  ['``Module`` creates fresh symbols that nothing outside can see. ``Block`` temporarily changes the value of an existing name, so functions called inside see the new value. ``With`` inserts constants into the body.','``Module`` تنشئ رموزاً جديدة لا يراها شيء في الخارج. و ``Block`` تغيّر مؤقتاً قيمة اسم موجود فترى الدوال المستدعاة داخلها القيمة الجديدة. و ``With`` تدرج ثوابت في الجسم.'],
+],[
+  Q('What are the two outputs?','ما المخرجان؟','$ 4 and 5',[['The local x of Module is a different symbol; the global x is still 5.','x المحلية في Module رمز مختلف، و x العامة ما زالت 5.']],['$ 4 and 2','$ 25 and 5','$ 4 and 4'],'x = 5;\nModule[{x = 2}, x^2]\nx'),
+  Q('What is the output of the last line?','ما مخرج السطر الأخير؟','$ 2',[['Block changes the value of the global x while f runs.','Block تغيّر قيمة x العامة أثناء تشغيل f.']],['$ 5','$ x','$ f[]'],'x = 5;  f[] := x;\nBlock[{x = 2}, f[]]'),
+  Q('What is the output of the last line?','ما مخرج السطر الأخير؟','$ 5',[['The local x of Module is not the x inside f.','x المحلية في Module ليست x داخل f.']],['$ 2','$ x$123','$ f[]'],'x = 5;  f[] := x;\nModule[{x = 2}, f[]]'),
+  Q('What is the output of ``With[{n = 3}, Table[k^2, {k, n}]]``?','ما مخرج ``With[{n = 3}, Table[k^2, {k, n}]]``؟','$ {1, 4, 9}',[['n is replaced by 3 in the body.','n تُستبدل بـ 3 في الجسم.']],['$ 9','$ {1, 2, 3}','$ {k^2}']),
+]);
+
+lesson('504',46,[
+  ['A function that remembers its values: the definition ``f[n_] := f[n] = …`` stores each result as a new rule the first time it is computed:','دالة تتذكر قيمها: التعريف ``f[n_] := f[n] = …`` يخزن كل نتيجة قاعدةً جديدة أول مرة تُحسب:'],
+  '$ fib[0] = 0;  fib[1] = 1;\nfib[n_] := fib[n] = fib[n - 1] + fib[n - 2]\nfib[30]        (* 832040, instantly *)',
+  ['Without memoization the number of calls grows like `φ^n` (φ ≈ 1.618); with it, each value is computed once. The same trick makes recurrences for orthogonal polynomials fast.','ودون حفظ النتائج ينمو عدد الاستدعاءات مثل `φ^n` (φ ≈ 1.618)، ومعه تُحسب كل قيمة مرة واحدة. والحيلة نفسها تسرّع علاقات التكرار لكثيرات الحدود المتعامدة.'],
+],[
+  Q('What is the output of ``fib[10]``?','ما مخرج ``fib[10]``؟','$ 55',['0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55'],['$ 89','$ 34','$ 10']),
+  Q('After ``fib[5]``, which new rules exist?','بعد ``fib[5]`` ما القواعد الجديدة الموجودة؟',['``fib[2]`` up to ``fib[5]``','من ``fib[2]`` حتى ``fib[5]``'],[['Each computed value is stored.','كل قيمة محسوبة تُخزن.']],[['Only ``fib[5]``','``fib[5]`` فقط'],['None','لا شيء']]),
+  Q('About how many calls does the plain recursive fib need for n = 30?','كم استدعاءً تقريباً تحتاج fib التكرارية العادية عند n = 30؟','≈ 2.7 × 10^6',['2F_{31} − 1 = 2 692 537'],['30','≈ 900','≈ 10^{30}']),
+  Q('What is the risk of memoization?','ما خطر حفظ النتائج؟',['Stored values use memory and are not updated if the definition changes; clear them with ``Clear[fib]``','القيم المخزنة تستهلك الذاكرة ولا تتحدث إذا تغيّر التعريف، فامسحها بـ ``Clear[fib]``'],[['Old results can silently survive an edit.','قد تبقى نتائج قديمة بعد تعديل دون أن تُلاحظ.']],[['It gives wrong numbers','يعطي أعداداً خاطئة'],['None','لا خطر']]),
+]);
+
+lesson('504',47,[
+  ['Bonnet’s recurrence `nP_n = (2n − 1)xP_{n−1} − (n − 1)P_{n−2}` becomes a memoized definition:','علاقة بونيه `nP_n = (2n − 1)xP_{n−1} − (n − 1)P_{n−2}` تصبح تعريفاً بحفظ النتائج:'],
+  '$ p[0] = 1;  p[1] = x;\np[n_Integer?Positive] := p[n] = Expand[((2 n - 1) x p[n - 1] - (n - 1) p[n - 2])/n]\np[4] == Expand[LegendreP[4, x]]     (* True *)',
+  ['``Expand`` keeps each stored polynomial small; without it the expressions grow as nested products. Deep recursion is limited by ``$RecursionLimit`` (1024 by default), but with memoization you can build up from small n.','و ``Expand`` تبقي كل كثيرة مخزنة صغيرة، ودونها تكبر المقادير ضروباً متداخلة. والتكرار العميق محدود بـ ``$RecursionLimit`` (1024 افتراضياً)، لكن مع حفظ النتائج يمكن البناء تصاعدياً من n صغير.'],
+],[
+  Q('What is the output of ``p[5] /. x -> 1``?','ما مخرج ``p[5] /. x -> 1``؟','$ 1',['P_n(1) = 1'],['$ 5','$ 0','$ 1/5']),
+  Q('What is the output of ``p[3] /. x -> 0``?','ما مخرج ``p[3] /. x -> 0``؟','$ 0',[['`P_3` is odd.','`P_3` فردية.']],['$ 1','$ -3/2','$ 5/2']),
+  Q('What is the coefficient of `x^2` in ``p[2]``?','ما معامل `x^2` في ``p[2]``؟','$ 3/2',['P_2 = #f{3x^2 − 1}{2}'],['$ 3','$ -1/2','$ 1/2']),
+  Q('Why does ``p[2000]`` fail when called first, but work after ``Do[p[k], {k, 2000}]``?','لماذا يفشل ``p[2000]`` إذا استُدعي أولاً ويعمل بعد ``Do[p[k], {k, 2000}]``؟',['Called first it needs a recursion depth beyond ``$RecursionLimit``; building up stores every lower value first','عند استدعائه أولاً يحتاج عمق تكرار أكبر من ``$RecursionLimit``، والبناء التصاعدي يخزن كل القيم الأدنى أولاً'],[['Each call then needs only two stored values.','فيحتاج كل استدعاء بعدها قيمتين مخزنتين فقط.']],[['Because Do is faster','لأن Do أسرع'],['It never works','لا يعمل أبداً']]),
+]);
+
+lesson('504',48,[
+  ['Strings are written in double quotes. ``<>`` joins strings and ``ToString`` turns numbers into strings:','النصوص تُكتب بين علامتي تنصيص مزدوجتين. و ``<>`` تضم النصوص و ``ToString`` تحول الأعداد إلى نصوص:'],
+  '$ "N = " <> ToString[8]               (* N = 8 *)\nStringLength["Legendre"]            (* 8 *)\nStringReplace["n1 n2", "n" -> "N"]  (* N1 N2 *)\nPrint["error = ", ScientificForm[1.2*^-6]]',
+  ['``Print`` takes several arguments and prints them together. Output cells show strings without quotes; ``InputForm`` shows them with quotes.','و ``Print`` تأخذ عدة متغيرات وتطبعها معاً. وخلايا المخرجات تعرض النصوص دون علامات تنصيص، و ``InputForm`` تعرضها بها.'],
+],[
+  Q('What is the output of ``"a" <> "b" <> "c"``?','ما مخرج ``"a" <> "b" <> "c"``؟','$ abc',[['Concatenation.','ضم.']],['$ a b c','$ {a, b, c}','$ a<>b<>c']),
+  Q('What is the output of ``ToExpression["1 + 2"]``?','ما مخرج ``ToExpression["1 + 2"]``؟','$ 3',[['The string is read and evaluated as input.','يُقرأ النص ويُحسب كمدخل.']],['$ 1 + 2','$ "3"','$ 12']),
+  Q('Why does ``"N = " <> 8`` fail?','لماذا يفشل ``"N = " <> 8``؟',['``<>`` joins only strings; 8 must be converted with ToString','``<>`` تضم النصوص فقط، فيجب تحويل 8 بـ ToString'],[['A message ``StringJoin::string`` appears.','تظهر الرسالة ``StringJoin::string``.']],[['8 is too large','8 كبير جداً'],['It does not fail','لا يفشل']]),
+  Q('Build the file names ``"fig1.pdf"``, …, ``"fig3.pdf"``.','ابنِ أسماء الملفات ``"fig1.pdf"`` حتى ``"fig3.pdf"``.','$ Table["fig" <> ToString[k] <> ".pdf", {k, 3}]',[['A list of three strings.','قائمة من ثلاثة نصوص.']],['$ Table["fig" <> k <> ".pdf", {k, 3}]','$ "fig" <> Range[3] <> ".pdf"','$ Table["figk.pdf", {k, 3}]']),
+]);
+
+lesson('504',49,[
+  ['When a result is wrong, look inside the computation:','حين تكون النتيجة خاطئة انظر داخل الحساب:'],
+  '$ Echo[x^2, "x^2 = "]          (* prints and returns its argument *)\nPrint["step ", k]\nTrace[f[3]]                   (* every evaluation step *)\nMonitor[Do[…, {k, 1000}], k]  (* shows k while running *)',
+  ['``Echo`` can be put inside an expression without changing it, which makes it the most convenient probe. Test small cases whose answer you know, and change one thing at a time.','و ``Echo`` يمكن وضعها داخل مقدار دون تغييره، فهي أنسب أداة فحص. واختبر حالات صغيرة تعرف جوابها، وغيّر شيئاً واحداً كل مرة.'],
+],[
+  Q('What is the output of ``Echo[3] + 1``?','ما مخرج ``Echo[3] + 1``؟',['It prints 3 and returns 4','يطبع 3 ويعيد 4'],[['Echo returns its argument.','Echo تعيد متغيرها.']],['$ 3','$ Null + 1']),
+  Q('What is the output of ``Print[3] + 1``?','ما مخرج ``Print[3] + 1``؟',['It prints 3 and returns ``1 + Null``','يطبع 3 ويعيد ``1 + Null``'],[['Print returns Null, so it cannot be used inside a computation.','Print تعيد Null فلا تصلح داخل حساب.']],['$ 4','$ 3']),
+  Q('Which command shows a loop variable while a long loop runs?','أي أمر يعرض متغير الحلقة أثناء تشغيل حلقة طويلة؟','$ Monitor',[['The display disappears when the loop ends.','يختفي العرض عند انتهاء الحلقة.']],['$ Trace','$ Echo','$ Timing']),
+  Q('A function returns a wrong matrix for n = 50. What should you test first?','دالة تعيد مصفوفة خاطئة عند n = 50. ماذا تختبر أولاً؟',['The smallest n, such as 1 or 2, where the matrix can be checked by hand','أصغر n مثل 1 أو 2 حيث يمكن فحص المصفوفة يدوياً'],[['Most errors are visible in small cases.','معظم الأخطاء تظهر في الحالات الصغيرة.']],[['n = 100','n = 100'],['Run it again','تشغيله مرة أخرى']]),
+]);
+
+lesson('504',50,[
+  ['Clean code is code that someone else, or you in six months, can read and trust:','الكود النظيف هو كود يستطيع غيرك أو أنت بعد ستة أشهر قراءته والثقة به:'],
+  '$ (* Parameters *)\nnSpace = 8; mTime = 4; mu = 1/2;\n(* Basis *)\nbasis[i_, t_] := LegendreP[i, 2 t - 1]\n(* Assembly and solution *)\n…',
+  ['Rules: names that say what they hold (start with a small letter); parameters in one place at the top; one function for one task; no hidden global state; comments that explain why, not what; and the notebook runs from top to bottom.','القواعد: أسماء تدل على ما تحمله (تبدأ بحرف صغير)، والوسائط في مكان واحد في الأعلى، ودالة واحدة لمهمة واحدة، ولا حالة عامة مخفية، وتعليقات تشرح لماذا لا ماذا، والدفتر يعمل من الأعلى إلى الأسفل.'],
+],[
+  Q('Which name is better for the number of collocation points in time?','أي اسم أفضل لعدد نقاط التجميع في الزمن؟','$ nTime',[['Descriptive and starting with a small letter.','وصفي ويبدأ بحرف صغير.']],['$ N','$ T2','$ X']),
+  Q('Why should your names not start with a capital letter?','لماذا لا يجب أن تبدأ أسماؤك بحرف كبير؟',['Built-in names start with capitals, so you may clash with one (``N``, ``D``, ``C``, ``E``, ``I`` are taken)','الأسماء الجاهزة تبدأ بحروف كبيرة فقد تتصادم معها (``N`` و ``D`` و ``C`` و ``E`` و ``I`` محجوزة)'],[['``N = 8`` gives an error: N is protected.','``N = 8`` تعطي خطأ لأن N محمية.']],[['It is slower','أبطأ'],['There is no reason','لا سبب']]),
+  Q('What is a good comment for ``mTime = 4``?','ما التعليق الجيد لـ ``mTime = 4``؟',['Why 4: for example, the solution has degree 3 in s, so 4 functions are exact','لماذا 4: مثلاً الحل من الدرجة 3 في s فتكفي 4 دوال بالضبط'],[['Explain the choice, not the assignment.','اشرح الاختيار لا الإسناد.']],[['Set mTime to 4','عيّن mTime بـ 4'],['No comment is needed','لا حاجة لتعليق']]),
+  Q('A function uses a variable defined in another cell. What is the problem?','دالة تستخدم متغيراً معرّفاً في خلية أخرى. ما المشكلة؟',['Hidden global state: the result depends on what was evaluated before','حالة عامة مخفية: النتيجة تعتمد على ما حُسب قبلها'],[['Pass it as an argument or define it at the top.','مرّره متغيراً أو عرّفه في الأعلى.']],[['It is slower','أبطأ'],['There is no problem','لا مشكلة']]),
+]);
+
+lesson('504',51,[
+  ['Vectors are lists and matrices are lists of rows. Basic constructors and operations:','المتجهات قوائم والمصفوفات قوائم صفوف. والمنشئات والعمليات الأساسية:'],
+  '$ {1, 2} . {3, 4}                 (* 11 *)\nNorm[{3, 4}]                     (* 5 *)\nCross[{1, 0, 0}, {0, 1, 0}]      (* {0, 0, 1} *)\nDiagonalMatrix[{1, 2}]           (* {{1, 0}, {0, 2}} *)\nConstantArray[0, {2, 3}]         (* {{0, 0, 0}, {0, 0, 0}} *)',
+  ['There is no separate row or column vector: ``m . v`` treats v as a column and ``v . m`` as a row.','ولا يوجد متجه صفي أو عمودي منفصل: ``m . v`` تعامل v عموداً و ``v . m`` صفاً.'],
+],[
+  Q('What is the output of ``{1, 2, 3} . {4, 5, 6}``?','ما مخرج ``{1, 2, 3} . {4, 5, 6}``؟','$ 32',['4 + 10 + 18'],['$ {4, 10, 18}','$ 15','$ 21']),
+  Q('What is the output of ``{1, 1} . {{1, 2}, {3, 4}}``?','ما مخرج ``{1, 1} . {{1, 2}, {3, 4}}``؟','$ {4, 6}',[['v as a row: column sums.','v صفاً: مجاميع الأعمدة.']],['$ {3, 7}','$ 10','$ {{1, 2}, {3, 4}}']),
+  Q('What is the output of ``Norm[{1, 2, 2}]``?','ما مخرج ``Norm[{1, 2, 2}]``؟','$ 3',['#r{1 + 4 + 4}'],['$ 5','$ 9','$ Sqrt[5]']),
+  Q('Build the 3 × 3 identity matrix.','ابنِ المصفوفة المحايدة 3 × 3.','$ IdentityMatrix[3]',[['Or ``DiagonalMatrix[{1, 1, 1}]``.','أو ``DiagonalMatrix[{1, 1, 1}]``.']],['$ Identity[3]','$ ConstantArray[1, {3, 3}]','$ Eye[3]']),
+]);
+
+lesson('504',52,[
+  ['Products, transposes, inverses and determinants:','الضروب والمنقولات والمعكوسات والمحددات:'],
+  '$ m = {{1, 2}, {3, 4}};\nDet[m]          (* -2 *)\nInverse[m]      (* {{-2, 1}, {3/2, -1/2}} *)\nm . Inverse[m]  (* {{1, 0}, {0, 1}} *)',
+  ['A singular matrix gives the message ``Inverse::sing``. In numerical work avoid ``Inverse`` for solving systems: ``LinearSolve`` is faster and more accurate.','والمصفوفة الشاذة تعطي الرسالة ``Inverse::sing``. وفي العمل العددي تجنّب ``Inverse`` لحل الأنظمة لأن ``LinearSolve`` أسرع وأدق.'],
+],[
+  Q('What is the output of ``Det[{{2, 1}, {1, 2}}]``?','ما مخرج ``Det[{{2, 1}, {1, 2}}]``؟','$ 3',['4 − 1'],['$ 5','$ 4','$ 0']),
+  Q('What is the output of ``Inverse[{{2, 0}, {0, 4}}]``?','ما مخرج ``Inverse[{{2, 0}, {0, 4}}]``؟','$ {{1/2, 0}, {0, 1/4}}',[['Invert each diagonal entry.','اقلب كل عنصر قطري.']],['$ {{2, 0}, {0, 4}}','$ {{-2, 0}, {0, -4}}','$ {{4, 0}, {0, 2}}']),
+  Q('What happens with ``Inverse[{{1, 1}, {1, 1}}]``?','ماذا يحدث مع ``Inverse[{{1, 1}, {1, 1}}]``؟',['The message ``Inverse::sing`` and the input returned: the matrix is singular','الرسالة ``Inverse::sing`` ويُعاد المدخل: المصفوفة شاذة'],['det = 1 − 1 = 0'],[['``{{1, 1}, {1, 1}}``','``{{1, 1}, {1, 1}}`` نفسها'],['A matrix of Infinity','مصفوفة من Infinity']]),
+  Q('What is the output of ``Transpose[{{1, 2}, {3, 4}}] . {1, 0}``?','ما مخرج ``Transpose[{{1, 2}, {3, 4}}] . {1, 0}``؟','$ {1, 2}',[['The transpose has rows (1, 3) and (2, 4).','المنقولة صفاها (1, 3) و (2, 4).']],['$ {1, 3}','$ {3, 4}','$ {2, 4}']),
+]);
+
+lesson('504',53,[
+  ['``LinearSolve[m, b]`` solves `m·x = b`. ``LinearSolve[m]`` factors m once and returns a function that solves for any right-hand side:','``LinearSolve[m, b]`` تحل `m·x = b`. و ``LinearSolve[m]`` تحلل m مرة واحدة وتعيد دالة تحل لأي طرف أيمن:'],
+  '$ LinearSolve[{{2, 1}, {1, 3}}, {3, 5}]   (* {4/5, 7/5} *)\nsolve = LinearSolve[mat];\nsolve[b1];  solve[b2];                  (* no new factorization *)',
+  ['Reusing the factorization matters when the same matrix is used for many time steps or many right-hand sides.','وإعادة استخدام التحليل مهمة حين تُستخدم المصفوفة نفسها لخطوات زمنية كثيرة أو أطراف يمنى كثيرة.'],
+],[
+  Q('Check the solution `{4/5, 7/5}` of the example.','تحقق من الحل `{4/5, 7/5}` في المثال.','2·#f{4}{5} + #f{7}{5} = 3,   #f{4}{5} + 3·#f{7}{5} = 5',['#f{8 + 7}{5} = 3,   #f{4 + 21}{5} = 5'],['2·#f{4}{5} + #f{7}{5} = 5,   #f{4}{5} + 3·#f{7}{5} = 3','#f{4}{5} + #f{7}{5} = 3','2·#f{4}{5} = 3']),
+  Q('What is the output of ``LinearSolve[{{1, 0}, {0, 2}}, {3, 4}]``?','ما مخرج ``LinearSolve[{{1, 0}, {0, 2}}, {3, 4}]``؟','$ {3, 2}',['x = 3,   2y = 4'],['$ {3, 8}','$ {3/1, 4/2, 0}','$ {1, 2}']),
+  Q('Why is ``LinearSolve[m, b]`` preferred to ``Inverse[m] . b``?','لماذا تُفضَّل ``LinearSolve[m, b]`` على ``Inverse[m] . b``؟',['It does less work and has smaller rounding errors','تعمل أقل ولها أخطاء تقريب أصغر'],[['Forming the inverse costs about three times more and loses accuracy for ill-conditioned matrices.','تكوين المعكوس يكلف نحو ثلاثة أضعاف ويفقد الدقة للمصفوفات سيئة الشرط.']],[['They are identical','متطابقتان'],['Inverse is exact','Inverse مضبوطة']]),
+  Q('A 1000 × 1000 system is solved for 500 time steps with the same matrix. What should the code do?','نظام 1000 × 1000 يُحل لـ 500 خطوة زمنية بالمصفوفة نفسها. ماذا يجب أن يفعل الكود؟','$ solve = LinearSolve[mat];  then solve[b] at each step',[['One factorization instead of 500.','تحليل واحد بدل 500.']],['$ LinearSolve[mat, b] at each step','$ Inverse[mat] . b at each step','$ NSolve at each step']),
+]);
+
+lesson('504',54,[
+  ['Eigenvalues and eigenvectors:','القيم والمتجهات الذاتية:'],
+  '$ Eigenvalues[{{2, 1}, {1, 2}}]    (* {3, 1} *)\nEigenvectors[{{2, 1}, {1, 2}}]   (* {{1, 1}, {-1, 1}} *)\nEigensystem[m]                   (* {values, vectors} *)',
+  ['Eigenvalues are sorted by decreasing absolute value; the vectors are not normalized for exact input. For numeric matrices use machine numbers (``N[m]``) to get fast LAPACK routines.','وتُرتب القيم الذاتية تنازلياً حسب القيمة المطلقة، والمتجهات غير مطبّعة للمدخلات المضبوطة. وللمصفوفات العددية استخدم أعداد الآلة (``N[m]``) لتحصل على إجراءات LAPACK السريعة.'],
+],[
+  Q('What is the output of ``Eigenvalues[{{3, 0}, {0, -5}}]``?','ما مخرج ``Eigenvalues[{{3, 0}, {0, -5}}]``؟','$ {-5, 3}',[['Sorted by absolute value: 5 before 3.','مرتبة حسب القيمة المطلقة: 5 قبل 3.']],['$ {3, -5}','$ {-5}','$ {5, 3}']),
+  Q('Check that `(1, 1)` is an eigenvector of `#m{2, 1 ;; 1, 2}`.','تحقق من أن `(1, 1)` متجه ذاتي لـ `#m{2, 1 ;; 1, 2}`.','(3, 3) = 3(1, 1)',['#m{2, 1 ;; 1, 2}(1, 1)^T = (3, 3)^T'],['(2, 2) = 2(1, 1)','(1, 1) = 1(1, 1)','(3, 1)']),
+  Q('The eigenvalues of the Jacobi matrix `#m{0, 1/#r{3} ;; 1/#r{3}, 0}` are the Gauss–Legendre nodes for n = 2. What are they?','القيم الذاتية لمصفوفة جاكوبي `#m{0, 1/#r{3} ;; 1/#r{3}, 0}` هي عقد جاوس–ليجندر عند n = 2. ما هي؟','±#f{1}{#r{3}} ≈ ±0.57735',['λ^2 = #f{1}{3}'],['±#f{1}{3}','0, 1','±1']),
+  Q('What does ``Eigensystem`` return?','ماذا تعيد ``Eigensystem``؟',['A pair: the list of eigenvalues and the list of eigenvectors','زوجاً: قائمة القيم الذاتية وقائمة المتجهات الذاتية'],[['``{vals, vecs} = Eigensystem[m]``.','``{vals, vecs} = Eigensystem[m]``.']],[['Only the eigenvalues','القيم الذاتية فقط'],['The determinant','المحدد']]),
+]);
+
+lesson('504',55,[
+  ['Matrices defined by a formula are built with ``Table`` or ``Array``:','المصفوفات المعرّفة بقانون تُبنى بـ ``Table`` أو ``Array``:'],
+  '$ Table[1/(i + j - 1), {i, 3}, {j, 3}]   (* the Hilbert matrix *)\nArray[f, {2, 2}]                        (* {{f[1, 1], f[1, 2]}, {f[2, 1], f[2, 2]}} *)\nTable[If[j < i && OddQ[i - j], 2 (2 j - 1), 0], {i, 4}, {j, 4}]',
+  ['The last line is the shifted Legendre derivative matrix (Course 503, Lesson 71) with indices shifted by one, because Mathematica counts from 1: entry `(i, j)` corresponds to `(n, k) = (i − 1, j − 1)`.','والسطر الأخير مصفوفة مشتقة ليجندر المزاحة (المقرر 503، الدرس 71) مع إزاحة الأدلة بواحد لأن Mathematica يعد من 1: العنصر `(i, j)` يقابل `(n, k) = (i − 1, j − 1)`.'],
+],[
+  Q('What is the output of ``Array[#1 + #2 &, {2, 2}]``?','ما مخرج ``Array[#1 + #2 &, {2, 2}]``؟','$ {{2, 3}, {3, 4}}',['i + j'],['$ {{0, 1}, {1, 2}}','$ {{1, 2}, {2, 3}}','$ {2, 3, 3, 4}']),
+  Q('What is the output?','ما المخرج؟','$ {{2, -1, 0}, {-1, 2, -1}, {0, -1, 2}}',[['The second-difference matrix.','مصفوفة الفروق الثانية.']],['$ {{2, 1, 0}, {1, 2, 1}, {0, 1, 2}}','$ {{-1, 2, -1}}','$ {{2, 0, 0}, {0, 2, 0}, {0, 0, 2}}'],'Table[Which[i == j, 2, Abs[i - j] == 1, -1, True, 0], {i, 3}, {j, 3}]'),
+  Q('What is row 3 of the derivative matrix built in the overview?','ما الصف 3 من مصفوفة المشتقة المبنية في الشرح؟','$ {0, 6, 0, 0}',['(n, k) = (2, 1):   2(2·1 + 1) = 6'],['$ {2, 0, 0, 0}','$ {0, 2, 0, 0}','$ {2, 6, 0, 0}']),
+  Q('Why does the formula use `2(2j − 1)` instead of `2(2k + 1)`?','لماذا تستخدم الصيغة `2(2j − 1)` بدل `2(2k + 1)`؟',['Because `k = j − 1` when lists are numbered from 1','لأن `k = j − 1` حين تُرقّم القوائم من 1'],['2(2(j − 1) + 1) = 2(2j − 1)'],[['It is a different matrix','مصفوفة مختلفة'],['By mistake','خطأً']]),
+]);
+
+lesson('504',56,[
+  ['``SparseArray`` stores only the nonzero entries. Banded matrices are built with ``Band``:','``SparseArray`` تخزن العناصر غير الصفرية فقط. والمصفوفات الشريطية تُبنى بـ ``Band``:'],
+  '$ a = SparseArray[{Band[{1, 1}] -> 2, Band[{1, 2}] -> -1, Band[{2, 1}] -> -1}, {4, 4}];\nNormal[a]     (* the full matrix *)\nLinearSolve[a, b]',
+  ['Sparse matrices work with Dot, LinearSolve and Eigenvalues like ordinary ones, but save memory and time for large banded systems, such as Galerkin matrices with the basis `P_k − P_{k+2}`.','والمصفوفات القليلة العناصر تعمل مع Dot و LinearSolve و Eigenvalues كالعادية، لكنها توفر الذاكرة والوقت للأنظمة الشريطية الكبيرة مثل مصفوفات جاليركن بالأساس `P_k − P_{k+2}`.'],
+],[
+  Q('How many nonzero entries does the 4 × 4 matrix a have?','كم عنصراً غير صفري في المصفوفة a ذات 4 × 4؟','10',['4 + 3 + 3'],['16','4','12']),
+  Q('What is the output of ``Normal[SparseArray[{{1, 2} -> 5}, {2, 2}]]``?','ما مخرج ``Normal[SparseArray[{{1, 2} -> 5}, {2, 2}]]``؟','$ {{0, 5}, {0, 0}}',[['Entry (1, 2) is 5, the rest zero.','العنصر (1, 2) يساوي 5 والباقي أصفار.']],['$ {{5, 0}, {0, 0}}','$ {{0, 0}, {5, 0}}','$ {5}']),
+  Q('About how much memory does a dense 10 000 × 10 000 matrix of machine numbers need?','كم ذاكرة تقريباً تحتاج مصفوفة كثيفة 10 000 × 10 000 من أعداد الآلة؟','≈ 800 MB',[['`10^8` entries of 8 bytes each.','`10^8` عنصر حجم كل منها 8 بايت.']],['≈ 80 KB','≈ 8 GB','≈ 80 MB']),
+  Q('And a tridiagonal one stored as SparseArray?','وثلاثية القطر مخزنة SparseArray؟',['About `3 × 10^4` entries: well under 1 MB','نحو `3 × 10^4` عنصر: أقل كثيراً من 1 MB'],['3·10^4 − 2'],['≈ 800 MB','≈ 100 MB',['About `10^8` entries','نحو `10^8` عنصر']]),
+]);
+
+lesson('504',57,[
+  ['``KroneckerProduct[a, b]`` builds the block matrix `(a_{ij} b)`. Together with column stacking it turns a matrix equation into an ordinary linear system:','``KroneckerProduct[a, b]`` تبني المصفوفة الكتلية `(a_{ij} b)`. ومع رصّ الأعمدة تحوّل معادلة مصفوفية إلى نظام خطي عادي:'],
+  '$ vec[y_] := Flatten[Transpose[y]]        (* stack the columns *)\nvec[a . y . b] == KroneckerProduct[Transpose[b], a] . vec[y]   (* True *)',
+  ['This is how the unknown matrix `𝒴` of the mapped Legendre method becomes a vector. ``Flatten[y]`` alone stacks the rows, which corresponds to the other order of the factors.','وهكذا يصبح المجهول المصفوفي `𝒴` في طريقة ليجندر المحوّلة متجهاً. و ``Flatten[y]`` وحدها ترص الصفوف، وهذا يقابل الترتيب الآخر للعاملين.'],
+],[
+  Q('What is the output of ``Flatten[Transpose[{{1, 2}, {3, 4}}]]``?','ما مخرج ``Flatten[Transpose[{{1, 2}, {3, 4}}]]``؟','$ {1, 3, 2, 4}',[['Column by column.','عموداً بعد عمود.']],['$ {1, 2, 3, 4}','$ {4, 3, 2, 1}','$ {{1, 3}, {2, 4}}']),
+  Q('What are the dimensions of ``KroneckerProduct`` of a 3 × 3 and a 4 × 4 matrix?','ما أبعاد ``KroneckerProduct`` لمصفوفة 3 × 3 وأخرى 4 × 4؟','$ {12, 12}',['3·4 = 12'],['$ {7, 7}','$ {3, 4}','$ {9, 16}']),
+  Q('What is ``KroneckerProduct[{{1, 0}, {0, 2}}, {{1, 1}}]``?','ما ``KroneckerProduct[{{1, 0}, {0, 2}}, {{1, 1}}]``؟','$ {{1, 1, 0, 0}, {0, 0, 2, 2}}',[['Each entry of the first matrix multiplies the block (1, 1).','كل عنصر في المصفوفة الأولى يضرب الكتلة (1, 1).']],['$ {{1, 0, 1, 0}, {0, 2, 0, 2}}','$ {{1, 1}, {0, 0}, {2, 2}}','$ {{2, 2, 0, 0}, {0, 0, 1, 1}}']),
+  Q('For a time-fractional problem with 9 space and 5 time unknowns per direction, what is the size of the Kronecker system?','لمسألة كسرية زمنية بـ 9 مجاهيل مكانية و 5 زمنية في كل اتجاه، ما حجم نظام كرونيكر؟','45 × 45',['9·5 = 45'],['14 × 14','9 × 5','81 × 25']),
+]);
+
+lesson('504',58,[
+  ['Norms of vectors and matrices, and the condition number:','معايير المتجهات والمصفوفات وعدد الشرط:'],
+  '$ Norm[{1, -2, 2}]               (* 3:  the 2-norm *)\nNorm[{1, -2, 2}, Infinity]     (* 2 *)\nNorm[{1, -2, 2}, 1]            (* 5 *)\nsv = SingularValueList[N[m]];  Max[sv]/Min[sv]   (* the 2-norm condition number *)',
+  ['``Norm[m]`` of a matrix is its largest singular value. The condition number `κ = σ_{max}/σ_{min}` estimates how many digits a linear solve loses: about `log_{10} κ`.','و ``Norm[m]`` لمصفوفة هي أكبر قيمة منفردة لها. وعدد الشرط `κ = σ_{max}/σ_{min}` يقدّر عدد الأرقام التي يفقدها الحل الخطي: نحو `log_{10} κ`.'],
+],[
+  Q('What is the output of ``Norm[{3, -4}, Infinity]``?','ما مخرج ``Norm[{3, -4}, Infinity]``؟','$ 4',['max(|3|, |−4|)'],['$ 5','$ 7','$ -4']),
+  Q('What is the condition number of ``{{1, 0}, {0, 10^-6}}``?','ما عدد شرط ``{{1, 0}, {0, 10^-6}}``؟','10^6',['#f{1}{10^{−6}}'],['10^{−6}','1','10^{12}']),
+  Q('About how many digits are lost when solving with that matrix in machine precision?','كم رقماً يُفقد تقريباً عند الحل بتلك المصفوفة بدقة الآلة؟','≈ 6',['log_{10} 10^6'],['≈ 16','≈ 1','≈ 12']),
+  Q('What is ``Norm[{{2, 0}, {0, -3}}]``?','ما ``Norm[{{2, 0}, {0, -3}}]``؟','$ 3',[['The largest singular value: `|−3|`.','أكبر قيمة منفردة: `|−3|`.']],['$ 2','$ 5','$ Sqrt[13]']),
+]);
+
+lesson('504',59,[
+  ['Mathematica has three kinds of arithmetic: exact (infinite precision), machine (about 16 digits, fast) and arbitrary precision (any number of digits, slower):','في Mathematica ثلاثة أنواع من الحساب: المضبوط (دقة لانهائية)، والآلي (نحو 16 رقماً وسريع)، والدقة الاختيارية (أي عدد من الأرقام وأبطأ):'],
+  '$ Precision[1/3]          (* Infinity *)\nPrecision[1.5]          (* MachinePrecision *)\nPrecision[N[Pi, 30]]    (* 30. *)\n$MachinePrecision       (* 15.9546 *)',
+  ['Ill-conditioned systems, such as the Hilbert matrix or high-order collocation matrices, can lose all machine digits; then solve exactly, or with ``N[m, 40]``, to see which digits are real. Mathematica warns with ``LinearSolve::luc``.','والأنظمة سيئة الشرط مثل مصفوفة هيلبرت أو مصفوفات التجميع عالية الرتبة قد تفقد كل أرقام الآلة، فحلّها مضبوطة أو بـ ``N[m, 40]`` لترى أي الأرقام حقيقي. ويحذر Mathematica بالرسالة ``LinearSolve::luc``.'],
+],[
+  Q('What is the output of ``Precision[2/7]``?','ما مخرج ``Precision[2/7]``؟','$ Infinity',[['An exact rational number.','عدد كسري مضبوط.']],['$ MachinePrecision','$ 16','$ 0']),
+  Q('What is the precision of ``N[Sqrt[2], 50]``?','ما دقة ``N[Sqrt[2], 50]``؟','$ 50.',[['An arbitrary-precision number with 50 digits.','عدد بدقة اختيارية من 50 رقماً.']],['$ MachinePrecision','$ Infinity','$ 16.']),
+  Q('The condition number of ``HilbertMatrix[12]`` is about `1.7 × 10^{16}`. What happens in machine precision?','عدد شرط ``HilbertMatrix[12]`` نحو `1.7 × 10^{16}`. ماذا يحدث بدقة الآلة؟',['All digits can be lost; Mathematica warns with ``LinearSolve::luc``','قد تضيع كل الأرقام، ويحذر Mathematica بالرسالة ``LinearSolve::luc``'],['log_{10}(1.7 × 10^{16}) ≈ 16'],[['Nothing: it is exact','لا شيء: مضبوطة'],['The solve is faster','الحل أسرع']]),
+  Q('How do you solve the same system with 40 digits?','كيف تحل النظام نفسه بـ 40 رقماً؟','$ LinearSolve[N[HilbertMatrix[12], 40], N[b, 40]]',[['About 24 correct digits remain.','يبقى نحو 24 رقماً صحيحاً.']],['$ LinearSolve[HilbertMatrix[12], b, 40]','$ N[LinearSolve[HilbertMatrix[12], b]], 40','$ LinearSolve[HilbertMatrix[12], b, Precision -> 40]']),
+]);
+
+lesson('504',60,[
+  ['``CoefficientArrays`` turns linear equations into a matrix and a vector. For equations written as `b + A·x = 0`:','``CoefficientArrays`` تحوّل المعادلات الخطية إلى مصفوفة ومتجه. للمعادلات المكتوبة `b + A·x = 0`:'],
+  '$ {b, a} = Normal[CoefficientArrays[{x + 2 y == 3, 3 x - y == 1}, {x, y}]]\n(* {{-3, -1}, {{1, 2}, {3, -1}}} *)\nLinearSolve[a, -b]     (* {5/7, 8/7} *)',
+  ['This is the key to replacing FindRoot or Solve on a large linear collocation system: generate the equations symbolically, extract the arrays once, and call one LinearSolve.','وهذا مفتاح استبدال FindRoot أو Solve في نظام تجميع خطي كبير: ولّد المعادلات رمزياً، واستخرج المصفوفات مرة واحدة، واستدعِ LinearSolve واحدة.'],
+],[
+  Q('What is b for the equations above?','ما b للمعادلات أعلاه؟','$ {-3, -1}',[['Each equation is moved to the form `lhs − rhs = 0`; the constants are −3 and −1.','كل معادلة تُنقل إلى الصورة `lhs − rhs = 0`، والثوابت −3 و −1.']],['$ {3, 1}','$ {1, 2}','$ {0, 0}']),
+  Q('Check the solution `x = 5/7`, `y = 8/7`.','تحقق من الحل `x = 5/7` و `y = 8/7`.','#f{5}{7} + #f{16}{7} = 3,   #f{15}{7} − #f{8}{7} = 1',['#f{21}{7} = 3,   #f{7}{7} = 1'],['#f{5}{7} + #f{8}{7} = 3,   #f{15}{7} − #f{8}{7} = 1','#f{5}{7} + #f{16}{7} = 1','#f{13}{7} = 3']),
+  Q('Why is ``LinearSolve[a, -b]`` with a minus sign?','لماذا تأتي ``LinearSolve[a, -b]`` بإشارة سالبة؟','A·x = −b',['b + A·x = 0'],['A·x = b','A·b = x','x = −A·b']),
+  Q('Why is this faster than ``FindRoot`` on 400 linear equations?','لماذا يكون هذا أسرع من ``FindRoot`` على 400 معادلة خطية؟',['One direct solve, with no Newton iterations and no numerical Jacobian','حل مباشر واحد دون تكرارات نيوتن ودون جاكوبي عددي'],[['FindRoot treats the system as nonlinear.','FindRoot تعامل النظام على أنه غير خطي.']],[['FindRoot is exact','FindRoot مضبوطة'],['It is not faster','ليس أسرع']]),
+]);
+
 export const MS504 = true;
