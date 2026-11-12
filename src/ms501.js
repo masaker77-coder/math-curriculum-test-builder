@@ -1344,4 +1344,193 @@ lesson('501',60,[
     ['s = t^{λ}:   ∫_0^1 s ds = #f{1}{2}', ['The answer does not depend on λ.','ولا يعتمد الجواب على λ.']], ['1','#f{λ}{2}','2']),
 ]);
 
+/* ---- 501 · Unit 7 (lessons 61–70): operational matrices ---- */
+lesson('501',61,[
+  ['An operational matrix does calculus on the coefficients. Collect the space basis in the vector `𝔏_N^{γ}(x) = [L_0^{γ}, …, L_N^{γ}]^T`; then the derivative of each basis function is a combination of lower ones:','المصفوفة التشغيلية تُجري التفاضل والتكامل على المعاملات. نجمع الأساس المكاني في المتجه `𝔏_N^{γ}(x) = [L_0^{γ}, …, L_N^{γ}]^T`، فتكون مشتقة كل دالة أساس تركيباً من الأدنى منها:'],
+  '#f{d}{dx} 𝔏_N^{γ}(x) = D^{(1)} 𝔏_N^{γ}(x),   #f{d}{dx} L_r^{γ} = #f{2}{γ} Σ_{j<r, r−j odd} (2j + 1) L_j^{γ}',
+  ['The rule comes from `P_r′ = Σ (2j + 1)P_j` over j = r − 1, r − 3, …, with the factor 2/γ of the map `z = 2x/γ − 1`. If `y = a^T 𝔏`, then `y′ = a^T D^{(1)} 𝔏`: differentiation is one matrix product.',
+   'والقاعدة تأتي من `P_r′ = Σ (2j + 1)P_j` على j = r − 1, r − 3, … مع العامل 2/γ من التحويل `z = 2x/γ − 1`. وإذا كانت `y = a^T 𝔏` فإن `y′ = a^T D^{(1)} 𝔏`: الاشتقاق ضرب مصفوفة واحد.'],
+],[
+  Q('Write `D^{(1)}` for N = 2 and γ = 1.','اكتب `D^{(1)}` عند N = 2 و γ = 1.','D^{(1)} = #m{0, 0, 0 ;; 2, 0, 0 ;; 0, 6, 0}',
+    ['#f{d}{dx}L_1 = 2·1·L_0,   #f{d}{dx}L_2 = 2·3·L_1', ['Check: `L_2 = 6x^2 − 6x + 1` gives `12x − 6 = 6(2x − 1)`.','تحقق: `L_2 = 6x^2 − 6x + 1` تعطي `12x − 6 = 6(2x − 1)`.']],
+    ['D^{(1)} = #m{0, 2, 0 ;; 0, 0, 6 ;; 0, 0, 0}','D^{(1)} = #m{0, 0, 0 ;; 1, 0, 0 ;; 0, 3, 0}','D^{(1)} = #m{0, 0, 0 ;; 2, 0, 0 ;; 2, 6, 0}']),
+  Q('Find the row of `D^{(1)}` for `L_3^{γ}` with γ = 2.','أوجد صف `D^{(1)}` الخاص بـ `L_3^{γ}` عند γ = 2.','d_{3,0} = 1,   d_{3,1} = 0,   d_{3,2} = 5',
+    ['#f{2}{γ}[(2·2 + 1)L_2 + (2·0 + 1)L_0] = 5L_2 + L_0', ['Check: both sides equal `7.5x^2 − 15x + 6`.','تحقق: الطرفان يساويان `7.5x^2 − 15x + 6`.']],
+    ['d_{3,0} = 2,   d_{3,1} = 0,   d_{3,2} = 10','d_{3,0} = 1,   d_{3,1} = 3,   d_{3,2} = 5','d_{3,0} = 0,   d_{3,1} = 0,   d_{3,2} = 5']),
+  Q('Find `d/dx L_1^{γ}`.','أوجد `d/dx L_1^{γ}`.','#f{2}{γ}',
+    ['L_1^{γ} = #f{2x}{γ} − 1  ⇒  #f{d}{dx}L_1^{γ} = #f{2}{γ}L_0^{γ}'], ['2','#f{1}{γ}','#f{γ}{2}']),
+  Q('For `y = L_0 + L_1 + L_2` (γ = 1), use `a^T D^{(1)}` to find the coefficients of `y′`.','للدالة `y = L_0 + L_1 + L_2` (γ = 1) استخدم `a^T D^{(1)}` لإيجاد معاملات `y′`.','y′ = 2L_0 + 6L_1',
+    ['a^T = (1, 1, 1):   a^T D^{(1)} = (0 + 2 + 0,  0 + 0 + 6,  0) = (2, 6, 0)', ['Check: `y = 6x^2 − 4x + 1`, `y′ = 12x − 4 = 2 + 6(2x − 1)`.','تحقق: `y = 6x^2 − 4x + 1` و `y′ = 12x − 4 = 2 + 6(2x − 1)`.']],
+    ['y′ = 2L_1 + 6L_2','y′ = 8L_0','y′ = 2L_0 + 6L_1 + 6L_2']),
+]);
+
+lesson('501',62,[
+  ['Theorem 3.1 of the paper gives the second-derivative matrix directly:','النظرية 3.1 في البحث تعطي مصفوفة المشتقة الثانية مباشرة:'],
+  '#f{d^2}{dx^2} 𝔏_N^{γ}(x) = D^{(2)} 𝔏_N^{γ}(x),   d_{r,j} = #f{4}{γ^2} s (2j + 1)(2j + 2s + 1),   r = j + 2s,   s ≥ 1',
+  ['All other entries are 0: only even gaps r − j appear, and the matrix is strictly lower triangular. A remark for the paper: s may run only while `r = j + 2s ≤ N`.','وكل العناصر الأخرى أصفار: لا تظهر إلا الفروق الزوجية r − j، والمصفوفة مثلثية سفلية تماماً. وملاحظة على البحث: يجري s ما دام `r = j + 2s ≤ N`.'],
+],[
+  Q('Compute `d_{2,0}` for γ = 1 and check it.','احسب `d_{2,0}` عند γ = 1 وتحقق منه.','d_{2,0} = 12',
+    ['r = 2,  j = 0,  s = 1:   4·1·1·3 = 12', ['Check: `(6x^2 − 6x + 1)″ = 12 = 12L_0`.','تحقق: `(6x^2 − 6x + 1)″ = 12 = 12L_0`.']], ['d_{2,0} = 6','d_{2,0} = 3','d_{2,0} = 24']),
+  Q('Compute `d_{3,1}` for γ = 1.','احسب `d_{3,1}` عند γ = 1.','d_{3,1} = 60',
+    ['r = 3,  j = 1,  s = 1:   4·1·3·5 = 60', ['Check: `L_3″ = 120x − 60 = 60(2x − 1)`.','تحقق: `L_3″ = 120x − 60 = 60(2x − 1)`.']], ['d_{3,1} = 15','d_{3,1} = 30','d_{3,1} = 120']),
+  Q('Find the row of `D^{(2)}` for `L_4` with γ = 1.','أوجد صف `D^{(2)}` الخاص بـ `L_4` عند γ = 1.','d_{4,0} = 40,   d_{4,2} = 140',
+    ['j = 0, s = 2:   4·2·1·5 = 40', 'j = 2, s = 1:   4·1·5·7 = 140', ['Check: `140L_2 + 40 = 840x^2 − 840x + 180 = L_4″`.','تحقق: `140L_2 + 40 = 840x^2 − 840x + 180 = L_4″`.']],
+    ['d_{4,0} = 20,   d_{4,2} = 70','d_{4,0} = 40,   d_{4,2} = 70','d_{4,1} = 40,   d_{4,3} = 140']),
+  Q('By what factor do all entries of `D^{(2)}` change when γ = π instead of γ = 1?','بأي عامل تتغير كل عناصر `D^{(2)}` عندما γ = π بدل γ = 1؟','#f{1}{π^2} ≈ 0.1013',
+    ['#f{4/π^2}{4/1} = #f{1}{π^2}'], ['#f{1}{π} ≈ 0.3183','π^2 ≈ 9.8696','#f{4}{π^2} ≈ 0.4053']),
+]);
+
+lesson('501',63,[
+  ['The proof starts from the classical formula on `[−1, 1]`:','يبدأ البرهان من الصيغة الكلاسيكية على `[−1, 1]`:'],
+  'P_r″(z) = Σ_{j ≤ r−2, 2 | (r−j)} (j + #f{1}{2})[r(r + 1) − j(j + 1)] P_j(z)',
+  ['The sum runs over the j below r − 1 for which r − j is even.','والمجموع على قيم j الأقل من r − 1 التي يكون عندها r − j زوجياً.'],
+  ['With r = j + 2s the bracket factorises: `r(r + 1) − j(j + 1) = (r − j)(r + j + 1) = 2s(2j + 2s + 1)`, so the coefficient is `s(2j + 1)(2j + 2s + 1)`. Finally `z = 2x/γ − 1` gives `d^2/dx^2 = (2/γ)^2 d^2/dz^2`, which brings the factor `4/γ^2`.',
+   'ومع r = j + 2s يتحلل القوس: `r(r + 1) − j(j + 1) = (r − j)(r + j + 1) = 2s(2j + 2s + 1)` فيصبح المعامل `s(2j + 1)(2j + 2s + 1)`. وأخيراً `z = 2x/γ − 1` يعطي `d^2/dx^2 = (2/γ)^2 d^2/dz^2` ومنه العامل `4/γ^2`.'],
+],[
+  Q('Check `r(r + 1) − j(j + 1) = 2s(2j + 2s + 1)` for r = 4, j = 2.','تحقق من `r(r + 1) − j(j + 1) = 2s(2j + 2s + 1)` عند r = 4 و j = 2.','14',
+    ['20 − 6 = 14', 's = 1:   2·1·(4 + 2 + 1) = 14'], ['12','7','28']),
+  Q('Use the formula to find `P_3″(z)`.','استخدم الصيغة لإيجاد `P_3″(z)`.','P_3″ = 15P_1 = 15z',
+    ['j = 1:   (1 + #f{1}{2})(12 − 2) = 15', ['Check: `P_3 = (5z^3 − 3z)/2` gives `P_3″ = 15z`.','تحقق: `P_3 = (5z^3 − 3z)/2` تعطي `P_3″ = 15z`.']],
+    ['P_3″ = 10P_1','P_3″ = 15P_1 + 3P_0','P_3″ = 30P_1']),
+  Q('Why do only even gaps r − j appear?','لماذا لا تظهر إلا الفروق الزوجية r − j؟',['`P_r″` has the parity of r, so it contains only `P_j` with the same parity','`P_r″` لها زوجية r فلا تحتوي إلا `P_j` بالزوجية نفسها'],
+    [['Differentiating twice keeps parity, and an even (odd) polynomial has only even (odd) Legendre components.','الاشتقاق مرتين يحفظ الزوجية، والكثيرة الزوجية (الفردية) لا مركبات لها إلا ليجندر الزوجية (الفردية).']],
+    [['Because the matrix is triangular','لأن المصفوفة مثلثية'],['Because γ is even','لأن γ زوجية']]),
+  Q('Compute the coefficient `s(2j + 1)(2j + 2s + 1)` for r = 5, j = 1 before the factor `4/γ^2`.','احسب المعامل `s(2j + 1)(2j + 2s + 1)` عند r = 5 و j = 1 قبل العامل `4/γ^2`.','42',
+    ['s = 2:   2·3·7 = 42', ['Check with the bracket: `(1 + 1/2)(30 − 2) = 42`.','وللتحقق من القوس مباشرة: `(1 + 1/2)(30 − 2) = 42`.']],
+    ['63','21','84']),
+]);
+
+lesson('501',64,[
+  ['The two derivative matrices are linked: differentiating twice is differentiating once, twice.','مصفوفتا المشتقة مرتبطتان: الاشتقاق مرتين هو الاشتقاق مرة واحدة مرتين.'],
+  'D^{(2)} = (D^{(1)})^2,   (D^{(1)})^{N+1} = 0',
+  ['`D^{(1)}` is strictly lower triangular, so it is nilpotent: each power pushes the entries one more diagonal down, and after N + 1 products nothing is left (the (N + 1)-th derivative of a polynomial of degree N is 0). All its eigenvalues are 0, so the matrix cannot be inverted: integration needs a boundary condition.',
+   '`D^{(1)}` مثلثية سفلية تماماً فهي معدومة القوى: كل قوة تدفع العناصر قطراً إلى الأسفل، وبعد N + 1 ضرب لا يبقى شيء (المشتقة ذات الرتبة N + 1 لكثيرة حدود من الدرجة N صفر). وكل قيمها الذاتية أصفار فلا تقبل الانعكاس: التكامل يحتاج شرطاً حدياً.'],
+],[
+  Q('Compute `(D^{(1)})^2` for N = 2, γ = 1 and compare with `D^{(2)}`.','احسب `(D^{(1)})^2` عند N = 2 و γ = 1 وقارنها بـ `D^{(2)}`.','#m{0, 0, 0 ;; 0, 0, 0 ;; 12, 0, 0}',
+    ['#m{0, 0, 0 ;; 2, 0, 0 ;; 0, 6, 0}^2 = #m{0, 0, 0 ;; 0, 0, 0 ;; 6·2, 0, 0}', ['The only entry is `d_{2,0} = 12`, as Theorem 3.1 gives.','العنصر الوحيد `d_{2,0} = 12` كما تعطي النظرية 3.1.']],
+    ['#m{0, 0, 0 ;; 4, 0, 0 ;; 0, 36, 0}','#m{0, 0, 0 ;; 0, 0, 0 ;; 0, 12, 0}','#m{0, 0, 0 ;; 2, 0, 0 ;; 12, 6, 0}']),
+  Q('For N = 3, what is the smallest k with `(D^{(1)})^k = 0`?','عند N = 3 ما أصغر k بحيث `(D^{(1)})^k = 0`؟','4',
+    ['k = N + 1 = 4', ['The third derivative of `L_3` is a non-zero constant, the fourth is 0.','المشتقة الثالثة لـ `L_3` ثابت غير صفري، والرابعة صفر.']], ['3','2','5']),
+  Q('What are the eigenvalues of `D^{(1)}`?','ما القيم الذاتية لـ `D^{(1)}`؟','0',
+    [['A triangular matrix has its diagonal as eigenvalues, and the diagonal of `D^{(1)}` is zero.','القيم الذاتية للمصفوفة المثلثية هي قطرها، وقطر `D^{(1)}` صفري.']], ['1, 2, …, N','#f{2}{γ}','2j + 1']),
+  Q('Why can `u″ = f` not be solved by inverting `D^{(2)}`?','لماذا لا يمكن حل `u″ = f` بعكس `D^{(2)}`؟',['`D^{(2)}` is singular; the two boundary conditions must replace two equations','`D^{(2)}` منفردة، ويجب أن يحل الشرطان الحديان محل معادلتين'],
+    [['Constants and linear functions have zero second derivative: `D^{(2)}` has a two-dimensional kernel.','الثوابت والدوال الخطية مشتقتها الثانية صفر: نواة `D^{(2)}` ثنائية البعد.']],
+    [['Because it is too large','لأنها كبيرة جداً'],['It can; `D^{(2)}` is always invertible','يمكن ذلك، فـ `D^{(2)}` قابلة للعكس دائماً']]),
+]);
+
+lesson('501',65,[
+  ['Integration also acts on coefficients. On `[0, γ]`, from `∫ P_r = (P_{r+1} − P_{r−1})/(2r + 1)`:','والتكامل أيضاً يعمل على المعاملات. على `[0, γ]` ومن `∫ P_r = (P_{r+1} − P_{r−1})/(2r + 1)`:'],
+  '∫_0^x L_r^{γ} dx = #f{γ}{2(2r + 1)}(L_{r+1}^{γ} − L_{r−1}^{γ})  (r ≥ 1),     ∫_0^x L_0^{γ} dx = #f{γ}{2}(L_0^{γ} + L_1^{γ})',
+  ['The lower limit 0 is built in, because `L_{r+1}(0) = L_{r−1}(0)`. The integration matrix J is tridiagonal, with one catch: the last row needs `L_{N+1}`, which is outside the space and is dropped. This truncation is mild for ordinary integrals, and it is the same kind of truncation that Theorem 3.2 makes for fractional ones.',
+   'والحد الأدنى 0 مدمج لأن `L_{r+1}(0) = L_{r−1}(0)`. ومصفوفة التكامل J ثلاثية القطر، مع ملاحظة: الصف الأخير يحتاج `L_{N+1}` الواقعة خارج الفضاء فتُحذف. وهذا القطع خفيف للتكاملات العادية، وهو من نوع القطع نفسه الذي تجريه النظرية 3.2 للتكاملات الكسرية.'],
+],[
+  Q('Write `∫_0^x L_0 dx` in the basis for γ = 1.','اكتب `∫_0^x L_0 dx` بدلالة الأساس عند γ = 1.','x = #f{1}{2}L_0 + #f{1}{2}L_1',
+    ['∫_0^x 1 dx = x = #f{1 + (2x − 1)}{2}'], ['x = L_1','x = #f{1}{2}L_1','x = L_0 + #f{1}{2}L_1']),
+  Q('Write `∫_0^x L_1 dx` in the basis for γ = 1.','اكتب `∫_0^x L_1 dx` بدلالة الأساس عند γ = 1.','#f{1}{6}(L_2 − L_0)',
+    ['#f{1}{2·3}(L_2 − L_0)', ['Check: `∫_0^x (2s − 1) ds = x^2 − x` and `(6x^2 − 6x + 1 − 1)/6 = x^2 − x`.','تحقق: `∫_0^x (2s − 1) ds = x^2 − x` و `(6x^2 − 6x + 1 − 1)/6 = x^2 − x`.']],
+    ['#f{1}{3}(L_2 − L_0)','#f{1}{6}(L_2 + L_0)','#f{1}{2}(L_2 − L_0)']),
+  Q('For N = 2, which term of `∫_0^x L_2 dx` is lost in the matrix J?','عند N = 2 أي حد من `∫_0^x L_2 dx` يضيع في المصفوفة J؟','#f{1}{10}L_3',
+    ['∫_0^x L_2 = #f{1}{10}(L_3 − L_1)', ['`L_3` is outside the space of degree 2, so J keeps only `−L_1/10`.','`L_3` خارج فضاء الدرجة 2، فلا تبقي J إلا `−L_1/10`.']],
+    ['−#f{1}{10}L_1','#f{1}{6}L_2',['Nothing is lost','لا يضيع شيء']]),
+  Q('How does the integration matrix change from γ = 1 to γ = 3?','كيف تتغير مصفوفة التكامل من γ = 1 إلى γ = 3؟',['All entries are multiplied by 3','كل العناصر تُضرب في 3'],
+    ['#f{γ}{2(2r + 1)}', ['Integration scales with the length of the interval, the opposite of differentiation.','التكامل يتناسب مع طول المجال، عكس الاشتقاق.']],
+    [['They are divided by 3','تُقسم على 3'],['They are divided by 9','تُقسم على 9'],['They do not change','لا تتغير']]),
+]);
+
+lesson('501',66,[
+  ['The fractional integral of a basis function is computed exactly, power by power (step 1 of Theorem 3.2):','التكامل الكسري لدالة الأساس يُحسب بدقة قوةً قوة (الخطوة 1 في النظرية 3.2):'],
+  'D^{−μ} L_i^{λ}(t) = Σ_{k=0}^{i} E_{i,k} #f{Γ(kλ + 1)}{Γ(kλ + μ + 1)} t^{kλ+μ}',
+  ['It follows from the power law `D^{−μ} t^p = Γ(p + 1)/Γ(p + μ + 1)·t^{p+μ}`. The result is no longer in the space: the powers `t^{kλ+μ}` are multiples of λ only when `μ/λ` is a whole number. Writing them back in the basis is step 2.',
+   'وهي تأتي من قانون القوى `D^{−μ} t^p = Γ(p + 1)/Γ(p + μ + 1)·t^{p+μ}`. والنتيجة لم تعد داخل الفضاء: القوى `t^{kλ+μ}` مضاعفات لـ λ فقط إذا كان `μ/λ` عدداً صحيحاً. وإعادة كتابتها بالأساس هي الخطوة 2.'],
+],[
+  Q('Compute `D^{−1/2} 1`.','احسب `D^{−1/2} 1`.','#f{t^{1/2}}{Γ(3/2)} ≈ 1.1284 #r{t}',
+    ['p = 0:   #f{Γ(1)}{Γ(3/2)} t^{1/2} = #f{2}{#r{π}} t^{1/2}'], ['#f{t^{1/2}}{Γ(1/2)} ≈ 0.5642 #r{t}','t^{1/2}','2#r{t}']),
+  Q('Compute `D^{−1/2} L_1^{1/2}(t)`, where `L_1^{1/2} = 2t^{1/2} − 1`.','احسب `D^{−1/2} L_1^{1/2}(t)` حيث `L_1^{1/2} = 2t^{1/2} − 1`.','#r{π}t − #f{2}{#r{π}}t^{1/2} ≈ 1.7725t − 1.1284#r{t}',
+    ['D^{−1/2} t^{1/2} = #f{Γ(3/2)}{Γ(2)} t = #f{#r{π}}{2} t', '2·#f{#r{π}}{2} t − #f{t^{1/2}}{Γ(3/2)} = #r{π}t − #f{2}{#r{π}}t^{1/2}'],
+    ['#f{#r{π}}{2}t − #f{2}{#r{π}}t^{1/2}','#r{π}t − t^{1/2}','2t − #r{t}']),
+  Q('Compute `D^{−1} L_1^{1/2}(t)`, an ordinary integral.','احسب `D^{−1} L_1^{1/2}(t)` وهو تكامل عادي.','#f{4}{3}t^{3/2} − t',
+    ['∫_0^t (2s^{1/2} − 1) ds = #f{4}{3}t^{3/2} − t', ['With the power law: `2Γ(3/2)/Γ(5/2) = 2/(3/2) = 4/3`.','وبقانون القوى: `2Γ(3/2)/Γ(5/2) = 2/(3/2) = 4/3`.']],
+    ['#f{2}{3}t^{3/2} − t','#f{4}{3}t^{3/2}','t^{3/2} − t']),
+  Q('For `λ = 1/2`, which of `μ = 1`, `μ = 0.9` keeps `D^{−μ} L_i^{λ}` inside the span of the powers `t^{kλ}`?','عند `λ = 1/2` أيّ القيمتين `μ = 1` و `μ = 0.9` تُبقي `D^{−μ} L_i^{λ}` داخل امتداد القوى `t^{kλ}`؟','μ = 1',
+    ['μ/λ = 2 ∈ ℕ:   t^{kλ+μ} = t^{(k+2)λ}', ['With μ = 0.9, `μ/λ = 1.8` and `t^{kλ+0.9}` is not a power of `t^{1/2}`.','ومع μ = 0.9 يكون `μ/λ = 1.8` و `t^{kλ+0.9}` ليست قوة لـ `t^{1/2}`.']],
+    ['μ = 0.9',['Both','كلتاهما'],['Neither','ولا واحدة']]),
+]);
+
+lesson('501',67,[
+  ['Step 2 of Theorem 3.2 projects each power produced by the integral onto the basis. The coefficients are explicit, because the integrand is again a power:','الخطوة 2 في النظرية 3.2 تُسقط كل قوة ناتجة عن التكامل على الأساس. والمعاملات صريحة لأن الدالة المكامَلة قوة أيضاً:'],
+  't^{kλ+μ} ≈ Σ_{j=0}^{M} c_{k,j} L_j^{λ}(t),   c_{k,j} = (2j + 1) Σ_{s=0}^{j} #f{E_{j,s}}{1 + k + s + μ/λ}',
+  ['This is the only approximation in the theorem: the sum over j is cut at M. In the hand example of the paper, λ = 1/2 and μ = 3/2, so `μ/λ = 3` and `t^{3/2} = u^3` with `u = t^{1/2}`; its projections are `1/4` on `L_0` and `9/20` on `L_1`.',
+   'وهذا التقريب الوحيد في النظرية: المجموع على j يُقطع عند M. وفي المثال اليدوي في البحث λ = 1/2 و μ = 3/2، فيكون `μ/λ = 3` و `t^{3/2} = u^3` مع `u = t^{1/2}`، وإسقاطاتها `1/4` على `L_0` و `9/20` على `L_1`.'],
+],[
+  Q('Compute `c_{0,1}` for λ = 1/2, μ = 3/2.','احسب `c_{0,1}` عند λ = 1/2 و μ = 3/2.','#f{9}{20}',
+    ['μ/λ = 3:   c_{0,1} = 3(#f{E_{1,0}}{4} + #f{E_{1,1}}{5}) = 3(−#f{1}{4} + #f{2}{5})', '= 3·#f{3}{20} = #f{9}{20}'], ['#f{1}{4}','#f{3}{20}','#f{9}{10}']),
+  Q('Compute `c_{1,0}` for λ = 1/2, μ = 3/2.','احسب `c_{1,0}` عند λ = 1/2 و μ = 3/2.','#f{1}{5}',
+    ['c_{1,0} = #f{E_{0,0}}{1 + 1 + 0 + 3} = #f{1}{5}', ['It is the mean value of `u^4` on `[0, 1]`.','وهو متوسط `u^4` على `[0, 1]`.']], ['#f{1}{4}','#f{1}{6}','#f{2}{5}']),
+  Q('Compute `c_{0,2}` for λ = 1/2, μ = 3/2.','احسب `c_{0,2}` عند λ = 1/2 و μ = 3/2.','#f{1}{4}',
+    ['c_{0,2} = 5(#f{1}{4} − #f{6}{5} + #f{6}{6}) = 5·0.05 = #f{1}{4}', ['Indeed `u^3 = (1/4)L_0 + (9/20)L_1 + (1/4)L_2 + (1/20)L_3`, whose coefficients add up to 1.','وفعلاً `u^3 = (1/4)L_0 + (9/20)L_1 + (1/4)L_2 + (1/20)L_3` ومجموع معاملاتها 1.']],
+    ['#f{1}{20}','#f{9}{20}','0']),
+  Q('Why is no numerical quadrature needed for `c_{k,j}`?','لماذا لا يلزم تكامل عددي لحساب `c_{k,j}`؟',['The integrand is a sum of powers of t, integrated by `∫_0^1 λt^{a−1} dt = λ/a`','الدالة المكامَلة مجموع قوى لـ t، وتكاملها بالقاعدة `∫_0^1 λt^{a−1} dt = λ/a`'],
+    ['∫_0^1 λt^{λ−1} t^{kλ+μ} t^{sλ} dt = #f{λ}{λ(1 + k + s) + μ} = #f{1}{1 + k + s + μ/λ}'],
+    [['Because `c_{k,j}` are tabulated','لأن `c_{k,j}` مجدولة'],['Because the integral is always 1','لأن التكامل يساوي 1 دائماً']]),
+]);
+
+lesson('501',68,[
+  ['Step 3 combines the two steps into the matrix of the fractional integral:','الخطوة 3 تجمع الخطوتين في مصفوفة التكامل الكسري:'],
+  'D^{−μ} 𝔏_{M,λ}(t) ≃ I_{(−μ)} 𝔏_{M,λ}(t),   χ_{−μ}^{λ}(i, j) = Σ_{k=0}^{i} E_{i,k} #f{Γ(kλ + 1)}{Γ(kλ + μ + 1)} c_{k,j}',
+  ['The relation is an approximation (the paper prints “=”), because each `c_{k,j}` was cut at M. For the paper’s hand example, M = 1, λ = 1/2 and μ = 3/2 give `I_{(−3/2)} ≈ (0.18806, 0.33851; −0.01082, 0.01598)`. The simplest check is the ordinary integral, λ = 1 and μ = 1.',
+   'والعلاقة تقريب (يطبع البحث «=») لأن كل `c_{k,j}` قُطع عند M. وفي المثال اليدوي في البحث تعطي M = 1 و λ = 1/2 و μ = 3/2 المصفوفة `I_{(−3/2)} ≈ (0.18806, 0.33851; −0.01082, 0.01598)`. وأبسط تحقق هو التكامل العادي λ = 1 و μ = 1.'],
+],[
+  Q('For λ = 1, μ = 1 and M = 1, compute the first row `χ(0, 0)`, `χ(0, 1)`.','عند λ = 1 و μ = 1 و M = 1 احسب الصف الأول `χ(0, 0)` و `χ(0, 1)`.','χ(0, 0) = #f{1}{2},   χ(0, 1) = #f{1}{2}',
+    ['μ/λ = 1:   c_{0,0} = #f{1}{2},   c_{0,1} = 3(−#f{1}{2} + #f{2}{3}) = #f{1}{2}', '#f{Γ(1)}{Γ(2)} = 1', ['So `∫_0^t L_0 = t = (L_0 + L_1)/2`, exactly as in Lesson 65.','إذن `∫_0^t L_0 = t = (L_0 + L_1)/2` كما في الدرس 65 تماماً.']],
+    ['χ(0, 0) = 1,   χ(0, 1) = 0','χ(0, 0) = #f{1}{2},   χ(0, 1) = #f{1}{6}','χ(0, 0) = #f{1}{3},   χ(0, 1) = #f{1}{2}']),
+  Q('For λ = 1, μ = 1 and M = 1, compute the second row `χ(1, 0)`, `χ(1, 1)`.','عند λ = 1 و μ = 1 و M = 1 احسب الصف الثاني `χ(1, 0)` و `χ(1, 1)`.','χ(1, 0) = −#f{1}{6},   χ(1, 1) = 0',
+    ['c_{1,0} = #f{1}{3},   c_{1,1} = 3(−#f{1}{3} + #f{2}{4}) = #f{1}{2},   #f{Γ(2)}{Γ(3)} = #f{1}{2}', 'χ(1, 0) = −#f{1}{2} + 2·#f{1}{2}·#f{1}{3} = −#f{1}{6},   χ(1, 1) = −#f{1}{2} + 2·#f{1}{2}·#f{1}{2} = 0',
+     ['The exact integral is `(L_2 − L_0)/6`; with M = 1 the term `L_2/6` is cut.','التكامل المضبوط `(L_2 − L_0)/6`، ومع M = 1 يُقطع الحد `L_2/6`.']],
+    ['χ(1, 0) = #f{1}{6},   χ(1, 1) = 0','χ(1, 0) = −#f{1}{6},   χ(1, 1) = #f{1}{6}','χ(1, 0) = −#f{1}{2},   χ(1, 1) = #f{1}{2}']),
+  Q('For λ = 1 and μ = 2, compute `χ(0, 0)` and interpret it.','عند λ = 1 و μ = 2 احسب `χ(0, 0)` وفسّره.','#f{1}{6}',
+    ['μ/λ = 2:   c_{0,0} = #f{1}{3},   #f{Γ(1)}{Γ(3)} = #f{1}{2}', 'χ(0, 0) = #f{1}{6}', ['`D^{−2} 1 = t^2/2`, whose mean on `[0, 1]` is `1/6`.','`D^{−2} 1 = t^2/2` ومتوسطها على `[0, 1]` هو `1/6`.']],
+    ['#f{1}{3}','#f{1}{2}','#f{1}{4}']),
+  Q('Use the paper’s matrix to integrate `y = 3L_0^{1/2}` to order 3/2.','استخدم مصفوفة البحث لتكامل `y = 3L_0^{1/2}` من الرتبة 3/2.','D^{−3/2} y ≈ 0.5642 L_0 + 1.0155 L_1',
+    ['(3, 0)·I_{(−3/2)} = 3·(0.18806, 0.33851) = (0.56418, 1.01553)', ['With `u = t^{1/2}` the exact result is `3u^3/Γ(5/2)`; the matrix keeps its first two components.','ومع `u = t^{1/2}` النتيجة المضبوطة `3u^3/Γ(5/2)`، والمصفوفة تحتفظ بمركبتيها الأوليين.']],
+    ['D^{−3/2} y ≈ 0.1881 L_0 + 0.3385 L_1','D^{−3/2} y ≈ 3L_0 + 3L_1','D^{−3/2} y ≈ 0.5642 L_0 − 0.0325 L_1']),
+]);
+
+lesson('501',69,[
+  ['When `q = μ/λ` is a whole number, `D^{−μ} L_i^{λ}` is a polynomial of degree i + q in `u = t^{λ}`, and its expansion stops by itself. So row i of `I_{(−μ)}` is exact whenever','إذا كان `q = μ/λ` عدداً صحيحاً كانت `D^{−μ} L_i^{λ}` كثيرة حدود من الدرجة i + q في `u = t^{λ}`، فيتوقف مفكوكها من تلقاء نفسه. إذن الصف i من `I_{(−μ)}` مضبوط متى كان'],
+  'i + #f{μ}{λ} ≤ M',
+  ['This is the matched case. Otherwise every row is truncated, but the error falls fast with M. The independent checks of the code-enhancement project found, for the integral of `L_2^{λ}` at t = 0.37: error 0 for μ = 3/2, λ = 1/2, and errors `8.0 × 10^{−6}, 8.5 × 10^{−10}` at M = 6, 12 for μ = 19/10, λ = 1/2.',
+   'وهذه حالة التوافق. وإلا فكل الصفوف مقطوعة، لكن الخطأ يتناقص بسرعة مع M. ووجدت فحوص مشروع تحسين الكود المستقلة لتكامل `L_2^{λ}` عند t = 0.37: خطأ 0 عند μ = 3/2 و λ = 1/2، وأخطاء `8.0 × 10^{−6}` و `8.5 × 10^{−10}` عند M = 6 و 12 مع μ = 19/10 و λ = 1/2.'],
+],[
+  Q('For λ = 1/2, μ = 1 and M = 4, which rows of `I_{(−μ)}` are exact?','عند λ = 1/2 و μ = 1 و M = 4 أي صفوف `I_{(−μ)}` مضبوطة؟','i = 0, 1, 2',
+    ['q = #f{1}{1/2} = 2:   i + 2 ≤ 4  ⇒  i ≤ 2'], ['i = 0, 1, 2, 3, 4','i = 0, 1',['None','لا شيء']]),
+  Q('For λ = 1/3, μ = 2/3 and M = 3, which rows are exact?','عند λ = 1/3 و μ = 2/3 و M = 3 أي الصفوف مضبوطة؟','i = 0, 1',
+    ['q = 2:   i ≤ 3 − 2 = 1'], ['i = 0, 1, 2','i = 0','i = 0, 1, 2, 3']),
+  Q('For λ = 1/2 and μ = 0.9, which rows are exact for M = 10?','عند λ = 1/2 و μ = 0.9 أي الصفوف مضبوطة عند M = 10؟',['None: `μ/λ = 1.8` is not a whole number','لا شيء: `μ/λ = 1.8` ليس عدداً صحيحاً'],
+    [['`t^{kλ+0.9}` is never a polynomial in `t^{1/2}`, so every projection is cut at M.','`t^{kλ+0.9}` ليست كثيرة حدود في `t^{1/2}` أبداً، فكل إسقاط مقطوع عند M.']],
+    [['Rows 0 to 8','الصفوف من 0 إلى 8'],['All rows','كل الصفوف']]),
+  Q('A problem has μ = 1.9. Which λ ≤ 1 makes the matrix exact in its first rows?','مسألة فيها μ = 1.9. أي λ ≤ 1 تجعل المصفوفة مضبوطة في صفوفها الأولى؟',['`λ = 1.9/q` with q a whole number, for example `λ = 0.1`','`λ = 1.9/q` حيث q عدد صحيح، مثل `λ = 0.1`'],
+    ['#f{1.9}{λ} ∈ ℕ:   λ = 0.95, 0.475, …, 0.1, …', ['A small λ needs a large M before rows become exact: with λ = 1/10, q = 19 and only rows i ≤ M − 19 are exact. The choice of λ is a trade-off.','و λ الصغيرة تحتاج M كبيرة قبل أن تنضبط الصفوف: مع λ = 1/10 يكون q = 19 ولا تنضبط إلا الصفوف i ≤ M − 19. فاختيار λ موازنة.']],
+    ['λ = 0.5','λ = 0.3','λ = 1']),
+]);
+
+lesson('501',70,[
+  ['Nonlinear and variable-coefficient terms need products of basis functions. For Legendre polynomials the product is again a finite Legendre sum (Adams’ linearization formula):','الحدود غير الخطية وذات المعاملات المتغيرة تحتاج حواصل ضرب دوال الأساس. ولكثيرات ليجندر يكون حاصل الضرب مجموعاً منتهياً منها (صيغة آدامز للخطية):'],
+  'P_m P_n = Σ_{k=0}^{min(m,n)} #f{2m + 2n − 4k + 1}{2m + 2n − 2k + 1}·#f{a_k a_{m−k} a_{n−k}}{a_{m+n−k}} P_{m+n−2k},   a_r = #f{(2r)!}{2^r (r!)^2}',
+  ['The simplest case is multiplication by x, a tridiagonal matrix: `x P_n = [(n + 1)P_{n+1} + n P_{n−1}]/(2n + 1)`. Products of two expansions raise the degree, which is where aliasing (Lesson 50) enters.',
+   'وأبسط حالة الضرب في x وهي مصفوفة ثلاثية القطر: `x P_n = [(n + 1)P_{n+1} + n P_{n−1}]/(2n + 1)`. وضرب مفكوكين يرفع الدرجة، ومن هنا يدخل التداخل (الدرس 50).'],
+],[
+  Q('Expand `P_1 P_2` in Legendre polynomials.','انشر `P_1 P_2` بدلالة كثيرات ليجندر.','P_1 P_2 = #f{2}{5}P_1 + #f{3}{5}P_3',
+    ['P_1 P_2 = #f{3x^3 − x}{2} = #f{3}{2}(#f{3}{5}P_1 + #f{2}{5}P_3) − #f{1}{2}P_1', '= (#f{9}{10} − #f{1}{2})P_1 + #f{3}{5}P_3 = #f{2}{5}P_1 + #f{3}{5}P_3'],
+    ['P_1 P_2 = #f{3}{5}P_1 + #f{2}{5}P_3','P_1 P_2 = P_3','P_1 P_2 = #f{2}{5}P_1 + #f{3}{5}P_2']),
+  Q('Expand `P_2^2` in Legendre polynomials.','انشر `P_2^2` بدلالة كثيرات ليجندر.','P_2^2 = #f{1}{5}P_0 + #f{2}{7}P_2 + #f{18}{35}P_4',
+    ['k = 0:  #f{9}{9}·#f{a_0 a_2 a_2}{a_4} = #f{(3/2)^2}{35/8} = #f{18}{35}', 'k = 1:  #f{5}{7}·#f{a_1 a_1 a_1}{a_3} = #f{5}{7}·#f{1}{5/2} = #f{2}{7},   k = 2:  #f{1}{5}', ['Check at x = 1: `1/5 + 2/7 + 18/35 = 1`.','تحقق عند x = 1: `1/5 + 2/7 + 18/35 = 1`.']],
+    ['P_2^2 = #f{1}{5}P_0 + #f{4}{7}P_2 + #f{8}{35}P_4','P_2^2 = P_4','P_2^2 = #f{2}{5}P_0 + #f{2}{7}P_2 + #f{11}{35}P_4']),
+  Q('Use `x P_n = [(n + 1)P_{n+1} + nP_{n−1}]/(2n + 1)` to expand `x P_2`.','استخدم `x P_n = [(n + 1)P_{n+1} + nP_{n−1}]/(2n + 1)` لنشر `x P_2`.','x P_2 = #f{3}{5}P_3 + #f{2}{5}P_1',
+    ['n = 2:   #f{3P_3 + 2P_1}{5}', ['The same as `P_1 P_2`, since `P_1 = x`.','وهو نفسه `P_1 P_2` لأن `P_1 = x`.']],
+    ['x P_2 = #f{2}{5}P_3 + #f{3}{5}P_1','x P_2 = P_3','x P_2 = #f{3}{5}P_3 − #f{2}{5}P_1']),
+  Q('What is the degree of `u^2` when `u = Σ_{n=0}^{N} c_n P_n`, and how many Legendre terms does it need?','ما درجة `u^2` إذا كانت `u = Σ_{n=0}^{N} c_n P_n`، وكم حداً من ليجندر تحتاج؟',['Degree 2N, so 2N + 1 terms','الدرجة 2N، أي 2N + 1 حداً'],
+    [['Each product `P_m P_n` reaches `P_{m+n}`, so `u^2` reaches `P_{2N}`.','كل حاصل ضرب `P_m P_n` يصل إلى `P_{m+n}`، فتصل `u^2` إلى `P_{2N}`.'], ['A method that keeps N + 1 terms must truncate, or use enough points to avoid aliasing.','والطريقة التي تحتفظ بـ N + 1 حداً يجب أن تقطع أو تستخدم نقاطاً كافية لمنع التداخل.']],
+    [['Degree N, so N + 1 terms','الدرجة N، أي N + 1 حداً'],['Degree `N^2`, so `N^2 + 1` terms','الدرجة `N^2`، أي `N^2 + 1` حداً'],['Degree 2N, but N + 1 terms','الدرجة 2N لكن N + 1 حداً']]),
+]);
+
 export const MS501 = true;
