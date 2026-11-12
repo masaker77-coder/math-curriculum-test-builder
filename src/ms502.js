@@ -459,4 +459,172 @@ lesson('502',20,[
     ['x = 0:  c_0 = 0,     x = 1:  c_2 = 0', ['Then `c_1·2x(1 − x) = 0` for all x, so `c_1 = 0`.','ثم `c_1·2x(1 − x) = 0` لكل x فيكون `c_1 = 0`.']]),
 ]);
 
+/* ---- 502 · Unit 3 (lessons 21–30): the Bernstein operator ---- */
+lesson('502',21,[
+  ['Bernstein’s idea: use the values of f at the equally spaced points `i/n` as coefficients:','فكرة بيرنشتاين: استخدم قيم f عند النقاط متساوية التباعد `i/n` معاملاتٍ:'],
+  '(B_n f)(x) = Σ_{i=0}^{n} f(#f{i}{n}) B_{i,n}(x)',
+  ['This is a polynomial of degree n built from n + 1 samples, but it is not an interpolant: in general `B_n f(i/n) ≠ f(i/n)` except at the two ends. It is a smoothed version of f, a weighted average of its values with weights concentrated near x.',
+   'وهذه كثيرة حدود من الدرجة n مبنية من n + 1 عينة، لكنها ليست استكمالاً: عموماً `B_n f(i/n) ≠ f(i/n)` إلا عند الطرفين. إنها نسخة منعّمة من f، متوسط موزون لقيمها بأوزان مركّزة قرب x.'],
+],[
+  Q('Find `B_1 f`.','أوجد `B_1 f`.','B_1 f = f(0)(1 − x) + f(1)x',
+    ['n = 1:   f(0)B_{0,1} + f(1)B_{1,1}', ['It is the straight line through the two end values.','وهو المستقيم المار بقيمتي الطرفين.']], ['B_1 f = f(x)','B_1 f = f(#f{1}{2})','B_1 f = f(0) + f(1)x']),
+  Q('Compute `B_2 f` for `f(x) = x^2`.','احسب `B_2 f` للدالة `f(x) = x^2`.','B_2 f = #f{x + x^2}{2}',
+    ['f(0) = 0,   f(#f{1}{2}) = #f{1}{4},   f(1) = 1', '#f{1}{4}·2x(1 − x) + x^2 = #f{x}{2} + #f{x^2}{2}'], ['B_2 f = x^2','B_2 f = #f{x^2}{2}','B_2 f = x']),
+  Q('Compute `B_2 f(1/2)` for `f(x) = |x − 1/2|` and compare with `f(1/2) = 0`.','احسب `B_2 f(1/2)` للدالة `f(x) = |x − 1/2|` وقارن بـ `f(1/2) = 0`.','#f{1}{4}',
+    ['f(0) = #f{1}{2},   f(#f{1}{2}) = 0,   f(1) = #f{1}{2}', '#f{1}{2}·#f{1}{4} + 0 + #f{1}{2}·#f{1}{4} = #f{1}{4}', ['The corner is smoothed out.','الزاوية تُنعَّم.']],
+    ['0','#f{1}{2}','#f{1}{8}']),
+  Q('Is `B_n f(1/2) = f(1/2)` in general?','هل `B_n f(1/2) = f(1/2)` في العموم؟',['No: `B_n f` interpolates f only at x = 0 and x = 1','لا: `B_n f` تستكمل f عند x = 0 و x = 1 فقط'],
+    [['The previous example gave 1/4 instead of 0.','المثال السابق أعطى 1/4 بدل 0.']],
+    [['Yes, always','نعم دائماً'],['Yes, for even n','نعم عند n زوجي']]),
+]);
+
+lesson('502',22,[
+  ['The three test functions behave simply under `B_n`:','الدوال الاختبارية الثلاث تسلك ببساطة تحت `B_n`:'],
+  'B_n 1 = 1,   B_n x = x,   B_n x^2 = x^2 + #f{x(1 − x)}{n}',
+  ['The first is the partition of unity, the second `Σ (i/n) B_{i,n} = x`. The third shows the error: `B_n x^2 − x^2 = x(1 − x)/n`, at most `1/(4n)`. Equivalently `Σ_i (i/n − x)^2 B_{i,n}(x) = x(1 − x)/n`, the variance of a binomial proportion.',
+   'الأولى تجزئة الواحد، والثانية `Σ (i/n) B_{i,n} = x`. والثالثة تبيّن الخطأ: `B_n x^2 − x^2 = x(1 − x)/n` وأكبره `1/(4n)`. وبصورة مكافئة `Σ_i (i/n − x)^2 B_{i,n}(x) = x(1 − x)/n`، وهو تباين النسبة في التوزيع ذي الحدين.'],
+],[
+  Q('Compute `B_10 x^2` at x = 0.5.','احسب `B_10 x^2` عند x = 0.5.','0.275',
+    ['0.25 + #f{0.5·0.5}{10} = 0.25 + 0.025'], ['0.25','0.3','0.2525']),
+  Q('Find the largest error `max |B_n x^2 − x^2|` on [0, 1].','أوجد أكبر خطأ `max |B_n x^2 − x^2|` على [0, 1].','#f{1}{4n}',
+    ['#f{x(1 − x)}{n} ≤ #f{1}{4n}', ['The maximum is at x = 1/2.','القيمة العظمى عند x = 1/2.']], ['#f{1}{n}','#f{1}{2n}','#f{1}{n^2}']),
+  Q('How large must n be for `|B_n x^2 − x^2| ≤ 0.001`?','كم يجب أن يكون n لكي `|B_n x^2 − x^2| ≤ 0.001`؟','n ≥ 250',
+    ['#f{1}{4n} ≤ 0.001  ⇒  n ≥ 250'], ['n ≥ 1000','n ≥ 32','n ≥ 25']),
+  Q('Compute `Σ_{i=0}^{4} (i/4 − 1/2)^2 B_{i,4}(1/2)`.','احسب `Σ_{i=0}^{4} (i/4 − 1/2)^2 B_{i,4}(1/2)`.','#f{1}{16}',
+    ['#f{x(1 − x)}{n} = #f{1/4}{4} = #f{1}{16}'], ['#f{1}{4}','0','#f{1}{8}']),
+]);
+
+lesson('502',23,[
+  ['`B_n` is a linear and positive operator:','`B_n` مؤثر خطي وإيجابي:'],
+  'B_n(αf + βg) = α B_n f + β B_n g,     f ≥ 0  ⇒  B_n f ≥ 0',
+  ['Positivity has strong consequences: `f ≤ g ⇒ B_n f ≤ B_n g`, `|B_n f| ≤ B_n|f|`, and `‖B_n f‖_∞ ≤ ‖f‖_∞`, so the operator norm is exactly 1. These are exactly the properties used in the convergence proofs. Note that `B_n` is not a projection: applying it twice changes the result.',
+   'وللإيجابية نتائج قوية: `f ≤ g ⇒ B_n f ≤ B_n g` و `|B_n f| ≤ B_n|f|` و `‖B_n f‖_∞ ≤ ‖f‖_∞`، فمعيار المؤثر يساوي 1 تماماً. وهذه هي الخواص المستخدمة في براهين التقارب. ولاحظ أن `B_n` ليس إسقاطاً: تطبيقه مرتين يغير النتيجة.'],
+],[
+  Q('Compute `B_n(3 + 2x − x^2)`.','احسب `B_n(3 + 2x − x^2)`.','3 + 2x − x^2 − #f{x(1 − x)}{n}',
+    ['3B_n 1 + 2B_n x − B_n x^2 = 3 + 2x − x^2 − #f{x(1 − x)}{n}'], ['3 + 2x − x^2','3 + 2x − x^2 + #f{x(1 − x)}{n}','3 + 2x']),
+  Q('If `0 ≤ f ≤ 1` on [0, 1], what is known about `B_n f`?','إذا كانت `0 ≤ f ≤ 1` على [0, 1] فماذا يُعرف عن `B_n f`؟','0 ≤ B_n f ≤ 1',
+    ['B_n 0 = 0 ≤ B_n f ≤ B_n 1 = 1'], ['B_n f = f','B_n f ≥ 1','−1 ≤ B_n f ≤ 2']),
+  Q('What is the operator norm of `B_n` on `C[0, 1]` with the maximum norm?','ما معيار المؤثر `B_n` على `C[0, 1]` بمعيار القيمة العظمى؟','1',
+    ['|B_n f| ≤ ‖f‖_∞ Σ B_{i,n} = ‖f‖_∞,   B_n 1 = 1'], ['n','n + 1','2^n']),
+  Q('Show that `B_n` is not a projection by computing `B_n(B_n x^2)`.','أثبت أن `B_n` ليس إسقاطاً بحساب `B_n(B_n x^2)`.','x^2 + x(1 − x)(#f{2}{n} − #f{1}{n^2})',
+    ['B_n(x^2 + #f{x − x^2}{n}) = x^2 + #f{x(1 − x)}{n} + #f{1}{n}(x − x^2 − #f{x(1 − x)}{n})', ['This differs from `B_n x^2`, so `B_n^2 ≠ B_n`.','وهذا يختلف عن `B_n x^2` إذن `B_n^2 ≠ B_n`.']],
+    ['x^2 + #f{x(1 − x)}{n}','x^2','x^2 + #f{2x(1 − x)}{n}']),
+]);
+
+lesson('502',24,[
+  ['How fast `B_n f` converges depends on how fast f can change. The modulus of continuity measures this:','سرعة تقارب `B_n f` تعتمد على سرعة تغير f، ويقيسها مقياس الاتصال:'],
+  'ω(f, δ) = sup_{|x − y| ≤ δ} |f(x) − f(y)|',
+  ['A function on a closed interval is uniformly continuous exactly when `ω(f, δ) → 0` as `δ → 0`. For a Lipschitz function with constant L, `ω(f, δ) ≤ Lδ`; for `#r{x}` it is `#r{δ}`, which is slower.','والدالة على مجال مغلق متصلة بانتظام تماماً عندما `ω(f, δ) → 0` بشرط `δ → 0`. وللدالة التي تحقق شرط ليبشيتز بالثابت L يكون `ω(f, δ) ≤ Lδ`، وللدالة `#r{x}` هو `#r{δ}` وهو أبطأ.'],
+],[
+  Q('Find `ω(x^2, δ)` on [0, 1].','أوجد `ω(x^2, δ)` على [0, 1].','2δ − δ^2',
+    ['|x^2 − y^2| = |x − y|·|x + y|', ['The largest change over a step δ is at the right end: `1 − (1 − δ)^2 = 2δ − δ^2`.','أكبر تغير على خطوة δ عند الطرف الأيمن: `1 − (1 − δ)^2 = 2δ − δ^2`.']],
+    ['δ^2','2δ','δ']),
+  Q('Find `ω(#r{x}, δ)` on [0, 1].','أوجد `ω(#r{x}, δ)` على [0, 1].','#r{δ}',
+    [['The largest change is at the left end: `#r{δ} − #r{0}`.','أكبر تغير عند الطرف الأيسر: `#r{δ} − #r{0}`.']], ['δ','#f{δ}{2}','2#r{δ}']),
+  Q('Find `ω(|x − 1/2|, δ)`.','أوجد `ω(|x − 1/2|, δ)`.','δ',
+    [['The function is Lipschitz with L = 1, and its slope is ±1 on each side.','الدالة تحقق ليبشيتز مع L = 1، وميلها ±1 على كل جانب.']], ['2δ','#f{δ}{2}','δ^2']),
+  Q('`f(x) = sin x` on [0, 1]. Give a bound for `ω(f, δ)`.','`f(x) = sin x` على [0, 1]. أعط حداً لـ `ω(f, δ)`.','ω ≤ δ',
+    ['|sin x − sin y| ≤ max|cos|·|x − y| ≤ |x − y|'], ['ω ≤ δ^2','ω ≤ #r{δ}','ω ≤ sin δ^2']),
+]);
+
+lesson('502',25,[
+  ['Weierstrass’ approximation theorem (1885): every continuous function on a closed interval `[a, b]` can be approximated uniformly, as closely as we like, by polynomials:','نظرية فايرشتراس للتقريب (1885): كل دالة متصلة على مجال مغلق `[a, b]` يمكن تقريبها بانتظام وبأي دقة نريد بكثيرات حدود:'],
+  'f ∈ C[a, b],  ε > 0   ⇒   ∃ p:   max_{a≤x≤b} |f(x) − p(x)| < ε',
+  ['The theorem says nothing about the degree needed, and it needs both continuity and a closed bounded interval. It is the foundation of every polynomial method in this programme: it guarantees that the spaces `Π_n` are big enough.','والنظرية لا تقول شيئاً عن الدرجة اللازمة، وتحتاج الاتصال ومجالاً مغلقاً محدوداً معاً. وهي أساس كل طريقة بكثيرات الحدود في هذا البرنامج: تضمن أن الفضاءات `Π_n` كبيرة بما يكفي.'],
+],[
+  Q('Does a polynomial exist within 0.01 of `|x − 1/2|` on [0, 1]?','هل توجد كثيرة حدود على بعد 0.01 من `|x − 1/2|` على [0, 1]؟',['Yes','نعم'],
+    [['The function is continuous on a closed interval; the corner only affects the degree needed.','الدالة متصلة على مجال مغلق، والزاوية تؤثر في الدرجة اللازمة فقط.']], [['No, because of the corner','لا، بسبب الزاوية']]),
+  Q('Can `1/x` be approximated uniformly by polynomials on `(0, 1]`?','هل يمكن تقريب `1/x` بانتظام بكثيرات حدود على `(0, 1]`؟',['No: it is unbounded, while every polynomial is bounded there','لا: إنها غير محدودة، بينما كل كثيرة حدود محدودة هناك'],
+    [['The theorem needs a closed bounded interval and a continuous function on it.','النظرية تحتاج مجالاً مغلقاً محدوداً ودالة متصلة عليه.']], [['Yes','نعم']]),
+  Q('A function has a jump at x = 1/2. Can polynomials approximate it uniformly on [0, 1]?','دالة لها قفزة عند x = 1/2. هل تقرّبها كثيرات الحدود بانتظام على [0, 1]؟',['No: a uniform limit of continuous functions is continuous','لا: النهاية المنتظمة لدوال متصلة دالة متصلة'],
+    [['Polynomials can approach it in the `L^2` sense, but not uniformly.','يمكن أن تقترب منها الكثيرات بمعنى `L^2` لكن ليس بانتظام.']], [['Yes','نعم']]),
+  Q('Which proof of the theorem gives an explicit sequence of polynomials?','أي برهان للنظرية يعطي متتالية صريحة من كثيرات الحدود؟',['Bernstein’s proof: `B_n f → f` uniformly','برهان بيرنشتاين: `B_n f → f` بانتظام'],
+    [['The polynomials `B_n f` need only the values `f(i/n)`.','الكثيرات `B_n f` لا تحتاج إلا القيم `f(i/n)`.']], [['None: the theorem is purely existential','لا يوجد: النظرية وجودية فقط']]),
+]);
+
+lesson('502',26,[
+  ['Bernstein’s proof (1912) is short. Since `Σ B_{i,n} = 1`:','برهان بيرنشتاين (1912) قصير. بما أن `Σ B_{i,n} = 1`:'],
+  '|B_n f(x) − f(x)| ≤ Σ_i |f(#f{i}{n}) − f(x)| B_{i,n}(x)',
+  ['Split the sum. For `|i/n − x| < δ` the terms are below ε by uniform continuity. For the far terms use `|f(i/n) − f(x)| ≤ 2M` (M = max|f|) and Chebyshev’s inequality with the variance `x(1 − x)/n`:','نقسم المجموع. عند `|i/n − x| < δ` تكون الحدود أقل من ε بالاتصال المنتظم. وللحدود البعيدة نستخدم `|f(i/n) − f(x)| ≤ 2M` (حيث M = max|f|) ومتباينة تشيبيشيف مع التباين `x(1 − x)/n`:'],
+  'Σ_{|i/n − x| ≥ δ} B_{i,n}(x) ≤ #f{x(1 − x)}{n δ^2} ≤ #f{1}{4n δ^2}',
+  ['So `|B_n f − f| ≤ ε + 2M/(4nδ^2)`, which is below 2ε for n large: uniform convergence.','إذن `|B_n f − f| ≤ ε + 2M/(4nδ^2)`، وهو أقل من 2ε عند n كبير: تقارب منتظم.'],
+],[
+  Q('With M = 1, δ = 0.1 and n = 1000, bound the far part `2M/(4nδ^2)`.','مع M = 1 و δ = 0.1 و n = 1000 أوجد حد الجزء البعيد `2M/(4nδ^2)`.','0.05',
+    ['#f{2}{4·1000·0.01} = #f{2}{40} = 0.05'], ['0.005','0.5','0.0005']),
+  Q('With M = 1 and δ = 0.1, how large must n be for the far part to be ≤ 0.01?','مع M = 1 و δ = 0.1 كم يجب أن تكون n ليكون الجزء البعيد ≤ 0.01؟','n ≥ 5000',
+    ['#f{2}{4n·0.01} ≤ 0.01  ⇒  n ≥ #f{2}{0.0004} = 5000'], ['n ≥ 500','n ≥ 50000','n ≥ 100']),
+  Q('Which identity gives the bound `Σ_{|i/n − x| ≥ δ} B_{i,n} ≤ x(1 − x)/(nδ^2)`?','أي متطابقة تعطي الحد `Σ_{|i/n − x| ≥ δ} B_{i,n} ≤ x(1 − x)/(nδ^2)`؟','Σ_i (#f{i}{n} − x)^2 B_{i,n}(x) = #f{x(1 − x)}{n}',
+    [['In the far terms `(i/n − x)^2/δ^2 ≥ 1`, so they are bounded by the whole weighted sum divided by `δ^2`.','في الحدود البعيدة `(i/n − x)^2/δ^2 ≥ 1` فتُحد بالمجموع الموزون كله مقسوماً على `δ^2`.']],
+    ['Σ_i B_{i,n}(x) = 1','Σ_i #f{i}{n} B_{i,n}(x) = x','B_{i,n}(x) ≤ 1']),
+  Q('What is the probabilistic meaning of the proof?','ما المعنى الاحتمالي للبرهان؟',['The law of large numbers: the proportion `S_n/n` of a binomial variable concentrates near x','قانون الأعداد الكبيرة: النسبة `S_n/n` لمتغير ذي الحدين تتركز قرب x'],
+    ['B_n f(x) = E[f(S_n/n)],   S_n ~ Bin(n, x)'], [['The central limit theorem for sums of uniform variables','نظرية النهاية المركزية لمجاميع متغيرات منتظمة']]),
+]);
+
+lesson('502',27,[
+  ['Korovkin’s theorem explains why the three test functions are enough. If `L_n` are linear positive operators on `C[a, b]` and','نظرية كوروفكين تفسر لماذا تكفي الدوال الاختبارية الثلاث. إذا كانت `L_n` مؤثرات خطية إيجابية على `C[a, b]` وكان'],
+  'L_n 1 → 1,   L_n x → x,   L_n x^2 → x^2',
+  ['(all three uniformly on `[a, b]`),','(الثلاث بانتظام على `[a, b]`)،'],
+  ['then `L_n f → f` uniformly for every continuous f. For Bernstein operators this gives Weierstrass’ theorem at once, since `B_n x^2 = x^2 + x(1 − x)/n`. The same check is used for every positive operator in Unit 10 (Kantorovich, Durrmeyer, Szász, …).',
+   'فإن `L_n f → f` بانتظام لكل دالة متصلة f. ولمؤثرات بيرنشتاين يعطي هذا نظرية فايرشتراس مباشرة لأن `B_n x^2 = x^2 + x(1 − x)/n`. ويُستخدم التحقق نفسه لكل مؤثر إيجابي في الوحدة 10 (كانتوروفيتش ودورماير وساس …).'],
+],[
+  Q('Which three functions must be checked in Korovkin’s theorem?','ما الدوال الثلاث التي يجب التحقق منها في نظرية كوروفكين؟','1,   x,   x^2',
+    [['Convergence on these three test functions implies convergence for every continuous f.','التقارب على هذه الدوال الثلاث يقتضي التقارب لكل دالة متصلة f.']], ['1,   x,   x^3','x,   x^2,   x^3','sin x,   cos x,   1']),
+  Q('An operator satisfies `L_n 1 = 1`, `L_n x = x`, `L_n x^2 = x^2 + 1/#r{n}`. Does `L_n f → f`, provided it is positive?','مؤثر يحقق `L_n 1 = 1` و `L_n x = x` و `L_n x^2 = x^2 + 1/#r{n}`. هل `L_n f → f` بشرط أن يكون إيجابياً؟',['Yes','نعم'],
+    ['#f{1}{#r{n}} → 0'], [['No','لا']]),
+  Q('Can Korovkin’s theorem be applied to Lagrange interpolation at equally spaced points?','هل تنطبق نظرية كوروفكين على استكمال لاجرانج بنقاط متساوية التباعد؟',['No: the interpolation operator is not positive (its Lagrange functions take negative values)','لا: مؤثر الاستكمال ليس إيجابياً (دوال لاجرانج تأخذ قيماً سالبة)'],
+    [['Indeed it reproduces 1, x, x² exactly but still diverges for Runge’s function.','وهو فعلاً يعيد 1 و x و x² بدقة لكنه يتباعد مع دالة رونج.']], [['Yes','نعم']]),
+  Q('Check the three Korovkin conditions for `B_n`.','تحقق من شروط كوروفكين الثلاثة لـ `B_n`.',['All hold: `1 → 1`, `x → x` exactly, and `x^2 + x(1 − x)/n → x^2`','كلها تتحقق: `1 → 1` و `x → x` بدقة، و `x^2 + x(1 − x)/n → x^2`'],
+    ['‖B_n x^2 − x^2‖_∞ = #f{1}{4n} → 0']),
+]);
+
+lesson('502',28,[
+  ['A quantitative version of Bernstein’s theorem (Popoviciu):','صيغة كمية لنظرية بيرنشتاين (بوبوفيتشيو):'],
+  '‖B_n f − f‖_∞ ≤ #f{3}{2} ω(f, #f{1}{#r{n}})',
+  ['For a Lipschitz function the error is at most `(3/2)L/#r{n}`; for `#r{x}` it is `O(n^{−1/4})`. To halve the bound for a Lipschitz function, n must be multiplied by 4.','وللدالة التي تحقق ليبشيتز يكون الخطأ على الأكثر `(3/2)L/#r{n}`، وللدالة `#r{x}` يكون `O(n^{−1/4})`. ولتنصيف الحد لدالة ليبشيتز يجب ضرب n في 4.'],
+],[
+  Q('Bound `‖B_100 f − f‖` for a Lipschitz f with L = 1.','أوجد حداً لـ `‖B_100 f − f‖` لدالة ليبشيتز مع L = 1.','0.15',
+    ['#f{3}{2}·#f{1}{#r{100}} = 0.15'], ['0.015','0.01','1.5']),
+  Q('Bound `‖B_n f − f‖` for `f = #r{x}` with `n = 10^4`.','أوجد حداً لـ `‖B_n f − f‖` للدالة `f = #r{x}` عند `n = 10^4`.','0.15',
+    ['ω(#r{x}, δ) = #r{δ}:   #f{3}{2}·(10^{−2})^{1/2} = #f{3}{2}·0.1'], ['0.0015','0.015','1.5 × 10^{−4}']),
+  Q('By what factor must n grow to halve the bound for a Lipschitz function?','بأي عامل يجب أن تكبر n لتنصيف الحد لدالة ليبشيتز؟','4',
+    ['#f{1}{#r{4n}} = #f{1}{2}·#f{1}{#r{n}}'], ['2','8','16']),
+  Q('For `f = x^2` compare the true error `1/(4n)` with Popoviciu’s bound at n = 100.','للدالة `f = x^2` قارن الخطأ الحقيقي `1/(4n)` بحد بوبوفيتشيو عند n = 100.','0.0025  vs  ≈ 0.29',
+    ['#f{1}{400} = 0.0025', '#f{3}{2}ω(x^2, 0.1) = 1.5(0.2 − 0.01) = 0.285', ['The bound is general; for smooth functions Voronovskaya’s theorem is sharper.','الحد عام، وللدوال الملساء نظرية فورونوفسكايا أدق.']],
+    ['0.0025  vs  0.0025','0.025  vs  ≈ 0.29','0.29  vs  0.0025']),
+]);
+
+lesson('502',29,[
+  ['For smooth f the error of `B_n f` has an exact leading term (Voronovskaya, 1932):','للدالة الملساء f للخطأ في `B_n f` حد رئيس مضبوط (فورونوفسكايا 1932):'],
+  'lim_{n→∞} n[B_n f(x) − f(x)] = #f{x(1 − x)}{2} f″(x)',
+  ['So `B_n f − f ≈ x(1 − x) f″(x)/(2n)`: the error is of order exactly `1/n` wherever `f″ ≠ 0`, positive where f is convex and negative where it is concave. For `f = x^2` it is exact: `x(1 − x)/n`.','إذن `B_n f − f ≈ x(1 − x) f″(x)/(2n)`: الخطأ من الرتبة `1/n` تماماً أينما `f″ ≠ 0`، موجب حيث f محدبة وسالب حيث مقعرة. وللدالة `f = x^2` هو مضبوط: `x(1 − x)/n`.'],
+],[
+  Q('Estimate `B_100 e^x − e^x` at x = 0.5.','قدّر `B_100 e^x − e^x` عند x = 0.5.','≈ 0.00206',
+    ['#f{0.25·e^{0.5}}{2·100} = #f{0.25·1.6487}{200} ≈ 0.00206', ['The exact difference is 0.002062.','والفرق المضبوط 0.002062.']], ['≈ 0.0206','≈ 0.00412','≈ 0.0103']),
+  Q('Estimate `B_100 sin(πx)` at x = 1/2.','قدّر `B_100 sin(πx)` عند x = 1/2.','≈ 0.98766',
+    ['f″ = −π^2 sin(πx):   1 + #f{0.25·(−π^2)}{200} ≈ 1 − 0.01234', ['The exact value is 0.98774.','والقيمة المضبوطة 0.98774.']], ['≈ 1','≈ 1.01234','≈ 0.9'] ),
+  Q('Use Voronovskaya’s formula for `f = x^2`.','استخدم صيغة فورونوفسكايا للدالة `f = x^2`.','#f{x(1 − x)}{2}·2 = x(1 − x)',
+    ['f″ = 2:   n(B_n x^2 − x^2) = x(1 − x)', ['It agrees exactly with `B_n x^2 = x^2 + x(1 − x)/n`.','وتطابق تماماً `B_n x^2 = x^2 + x(1 − x)/n`.']], ['0','2x(1 − x)','x^2']),
+  Q('For which f does `n[B_n f − f] → 0` at every x?','لأي دوال f يكون `n[B_n f − f] → 0` عند كل x؟',['For linear functions, where `f″ = 0`','للدوال الخطية حيث `f″ = 0`'],
+    [['And indeed `B_n` reproduces linear functions exactly.','وفعلاً `B_n` تعيد الدوال الخطية بدقة.']], [['For all smooth functions','لكل الدوال الملساء'],['For convex functions','للدوال المحدبة']]),
+]);
+
+lesson('502',30,[
+  ['Bernstein approximation is slow, and it cannot be made faster: if `‖B_n f − f‖ = o(1/n)`, then f is linear (saturation). Even for `f = x^2`, an error of `10^{−6}` needs n = 250 000, while Chebyshev interpolation reproduces `x^2` exactly with three points.',
+   'التقريب ببيرنشتاين بطيء ولا يمكن تسريعه: إذا كان `‖B_n f − f‖ = o(1/n)` فإن f خطية (التشبع). وحتى للدالة `f = x^2` يحتاج خطأ `10^{−6}` إلى n = 250 000، بينما يعيد استكمال تشيبيشيف `x^2` بدقة بثلاث نقاط.'],
+  '‖B_n f − f‖_∞ = o(#f{1}{n})   ⇒   f(x) = a + bx',
+  ['So Bernstein polynomials are used for their shape properties, their stability and their simple operational matrices, not for fast approximation. In spectral methods (Units 7–9) the Bernstein basis spans the same space `Π_n` as Legendre or Chebyshev, so the approximation from the space is just as good: only the operator `B_n` is slow.',
+   'إذن تُستخدم كثيرات بيرنشتاين لخواص الشكل والاستقرار وبساطة المصفوفات التشغيلية، لا للتقريب السريع. وفي الطرق الطيفية (الوحدات 7–9) يولّد أساس بيرنشتاين الفضاء نفسه `Π_n` الذي يولّده ليجندر أو تشيبيشيف، فالتقريب من الفضاء جيد بالقدر نفسه: المؤثر `B_n` وحده هو البطيء.'],
+],[
+  Q('How large must n be for `‖B_n x^2 − x^2‖ ≤ 10^{−6}`?','كم يجب أن تكون n لكي `‖B_n x^2 − x^2‖ ≤ 10^{−6}`؟','n = 250 000',
+    ['#f{1}{4n} = 10^{−6}  ⇒  n = 250 000'], ['n = 1000','n = 10^6','n = 500']),
+  Q('What does the saturation theorem say?','ماذا تقول نظرية التشبع؟',['If `‖B_n f − f‖ = o(1/n)` then f is linear','إذا كان `‖B_n f − f‖ = o(1/n)` فإن f خطية'],
+    [['No non-linear function is approximated faster than `1/n` by `B_n`.','لا تُقرَّب أي دالة غير خطية أسرع من `1/n` بـ `B_n`.']], [['`B_n f` converges geometrically for analytic f','`B_n f` يتقارب هندسياً للدوال التحليلية'],['`B_n f = f` for polynomials','`B_n f = f` لكثيرات الحدود']]),
+  Q('Is the best approximation from `Π_n` worse in the Bernstein basis than in the Legendre basis?','هل أفضل تقريب من `Π_n` أسوأ في أساس بيرنشتاين منه في أساس ليجندر؟',['No: both bases span the same space, so the best approximation is the same','لا: الأساسان يولّدان الفضاء نفسه، فأفضل تقريب واحد'],
+    [['Only the particular operator `B_n f` is slow; least squares or collocation in the Bernstein basis converge spectrally.','المؤثر الخاص `B_n f` وحده البطيء، أما المربعات الصغرى أو التجميع بأساس بيرنشتاين فتتقارب طيفياً.']],
+    [['Yes, always','نعم دائماً'],['Yes, by a factor `2^n`','نعم، بعامل `2^n`']]),
+  Q('For `f = e^x`, compare the errors of `B_10 f` and of the degree-10 Chebyshev interpolant.','للدالة `f = e^x` قارن خطأ `B_10 f` وخطأ استكمال تشيبيشيف من الدرجة 10.','≈ 2 × 10^{−2}  vs  ≈ 2 × 10^{−14}',
+    [['Bernstein, by Voronovskaya:','بيرنشتاين بحسب فورونوفسكايا:'], '#f{x(1 − x) e^x}{2·10} ≈ 0.02', ['Chebyshev interpolation on [0, 1] with 11 points reaches `2.3 × 10^{−14}` (measured): twelve more digits from the same number of values.','واستكمال تشيبيشيف على [0, 1] بإحدى عشرة نقطة يصل إلى `2.3 × 10^{−14}` (مقيس): اثنا عشر رقماً إضافياً من العدد نفسه من القيم.']],
+    ['≈ 2 × 10^{−14}  vs  ≈ 2 × 10^{−2}','≈ 2 × 10^{−2}  vs  ≈ 2 × 10^{−2}','≈ 10^{−3}  vs  ≈ 10^{−6}']),
+]);
+
 export const MS502 = true;
