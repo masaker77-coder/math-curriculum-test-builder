@@ -814,4 +814,115 @@ lesson('509',60,[
   Q('For compressing a smooth temperature record, is db1 or db4 better?','لضغط سجل حرارة أملس أيهما أفضل db1 أم db4؟',['db4: four vanishing moments give many tiny details','db4: العزوم المنعدمة الأربعة تعطي تفاصيل صغيرة جداً كثيرة'],[['db1 is Haar.','db1 هو هار.']],[['db1','db1'],['They are equal','متساويان']]),
 ]);
 
+/* ---- 509 · Unit 7 (lessons 61–70): approximation theory ---- */
+lesson('509',61,[
+  ['A wavelet with p vanishing moments reproduces polynomials of degree below p in `V_j`, and the projection error of a smooth function falls like `2^{−jp}`:','المويجة ذات p عزوم منعدمة تعيد إنتاج كثيرات الحدود ذات الدرجة الأقل من p في `V_j`، وخطأ إسقاط دالة ملساء يتناقص مثل `2^{−jp}`:'],
+  '‖f − P_jf‖ ≤ C 2^{−jp}‖f^{(p)}‖',
+  ['For `f = sin 2πt + 0.3 cos 6πt` (periodic, 1024 samples) the RMS error of `P_Jf` for J = 3, 4, 5, 6 is: Haar 0.21, 0.11, 0.054, 0.027 (factor 2, p = 1); db2 0.12, 0.033, 0.0087, 0.0022 (factor 4, p = 2); db4 0.079, 0.0081, 0.00057, 0.000037 (factor approaching 16, p = 4).','ولـ `f = sin 2πt + 0.3 cos 6πt` (دورية، 1024 عينة) يكون خطأ RMS لـ `P_Jf` عند J = 3 و 4 و 5 و 6: هار 0.21 و 0.11 و 0.054 و 0.027 (عامل 2، p = 1)، و db2 0.12 و 0.033 و 0.0087 و 0.0022 (عامل 4، p = 2)، و db4 0.079 و 0.0081 و 0.00057 و 0.000037 (عامل يقترب من 16، p = 4).'],
+],[
+  Q('By what factor should the error fall per level with db3?','بأي عامل يجب أن يتناقص الخطأ لكل مستوى مع db3؟','8',['2^p,   p = 3'],['3','6','16']),
+  Q('Estimate p from the db2 errors 0.0087 and 0.0022.','قدّر p من أخطاء db2 وهي 0.0087 و 0.0022.','p ≈ 2',['log_2 #f{0.0087}{0.0022} ≈ log_2 4'],['p ≈ 1','p ≈ 4','p ≈ 0.5']),
+  Q('Why are the first db4 ratios (9.8, 14.2) below 16?','لماذا تكون نسب db4 الأولى (9.8 و 14.2) أقل من 16؟',['The rate is asymptotic: at coarse levels the constant and higher terms still matter','المعدل تقاربي: عند المستويات الخشنة ما زال للثابت والحدود الأعلى أثر'],[['The ratio approaches 16 as J grows.','النسبة تقترب من 16 مع نمو J.']],[['db4 has fewer moments','لـ db4 عزوم أقل'],['Rounding','التقريب']]),
+  Q('How many levels does Haar need to reach 0.003 from 0.027?','كم مستوى تحتاج هار للوصول إلى 0.003 من 0.027؟','≈ 3',['0.027·2^{−3} ≈ 0.0034'],['1','10','30']),
+]);
+
+lesson('509',62,[
+  ['Coefficient decay follows from the same idea. Change variables in `⟨f, ψ_{j,k}⟩`, expand f by Taylor around `k2^{−j}`, and the first p terms vanish against ψ:','تناقص المعاملات ينتج من الفكرة نفسها. غيّر المتغير في `⟨f, ψ_{j,k}⟩` وانشر f بتايلور حول `k2^{−j}` فتنعدم الحدود p الأولى مع ψ:'],
+  '⟨f, ψ_{j,k}⟩ = 2^{−j/2}∫f(2^{−j}(u + k))ψ(u) du,     |⟨f, ψ_{j,k}⟩| ≤ C 2^{−j(p+1/2)} max|f^{(p)}|',
+  ['The bound is local: only the values of `f^{(p)}` on the support of `ψ_{j,k}` matter. For Haar and `f = t` we found exactly `−2^{−3j/2}/4`, the case p = 1.','والحد محلي: قيم `f^{(p)}` على حامل `ψ_{j,k}` فقط هي المهمة. ولهار و `f = t` وجدنا بالضبط `−2^{−3j/2}/4`، وهي الحالة p = 1.'],
+],[
+  Q('How fast do the db2 coefficients of `sin t` decay with j?','بأي سرعة تتناقص معاملات db2 لـ `sin t` مع j؟','~ 2^{−5j/2}',['2^{−j(p+1/2)},   p = 2'],['~ 2^{−3j/2}','~ 2^{−j}','~ 2^{−2j}']),
+  Q('For Haar and `f = t^2`, which Taylor term survives in `⟨f, ψ_{j,k}⟩`?','لهار و `f = t^2` أي حد من تايلور يبقى في `⟨f, ψ_{j,k}⟩`؟',['The first-order term `f′(k2^{−j})·2^{−j}u`','حد الرتبة الأولى `f′(k2^{−j})·2^{−j}u`'],[['Constants vanish against ψ, the linear term does not.','الثوابت تنعدم مع ψ والحد الخطي لا.']],[['The constant term','الحد الثابت'],['None','لا شيء']]),
+  Q('Compute `⟨t, ψ_{3,0}⟩` for Haar.','احسب `⟨t, ψ_{3,0}⟩` لهار.','−#f{2^{−9/2}}{4} ≈ −0.0110',['−#f{2^{−3j/2}}{4},   j = 3'],['−#f{1}{32}','−0.0884','0']),
+  Q('Why does a jump give large coefficients only near it?','لماذا تعطي القفزة معاملات كبيرة قربها فقط؟',['The bound is local: away from the jump f is smooth on the support','الحد محلي: بعيداً عن القفزة تكون f ملساء على الحامل'],[['Only `≈ L/2` coefficients per level straddle the jump.','نحو `L/2` معاملاً فقط لكل مستوى تعبر القفزة.']],[['Because ψ is large there','لأن ψ كبيرة هناك'],['It gives large coefficients everywhere','تعطي معاملات كبيرة في كل مكان']]),
+]);
+
+lesson('509',63,[
+  ['Wavelet coefficients characterize smoothness. For 0 < α < p (α not an integer), with ψ of regularity above α:','معاملات المويجات تميّز الملاسة. ولـ 0 < α < p (α غير صحيح) مع ψ ملاستها أعلى من α:'],
+  'f ∈ C^{α}     ⇔     sup_{j,k} 2^{j(α+1/2)}|⟨f, ψ_{j,k}⟩| < ∞',
+  ['Fourier coefficients cannot do this: their decay depends on the worst point of f. Locally, the coefficients near a point `t_0` decay like `2^{−j(α(t_0)+1/2)}`, so wavelets read the pointwise smoothness, which is the basis of the singularity detection of Lesson 28.','ومعاملات فورييه لا تستطيع ذلك: تناقصها يعتمد على أسوأ نقطة في f. ومحلياً تتناقص المعاملات قرب نقطة `t_0` مثل `2^{−j(α(t_0)+1/2)}`، فتقرأ المويجات الملاسة النقطية، وهذا أساس كشف الانفراد في الدرس 28.'],
+],[
+  Q('Near `t_0 = 1/2`, how do the coefficients of `|t − 1/2|^{1/2}` decay?','قرب `t_0 = 1/2` كيف تتناقص معاملات `|t − 1/2|^{1/2}`؟','~ 2^{−j}',['α + #f{1}{2} = 1'],['~ 2^{−j/2}','~ 2^{−3j/2}','~ 2^{−2j}']),
+  Q('Coefficients decay like `2^{−1.2j}` everywhere. What is α?','المعاملات تتناقص مثل `2^{−1.2j}` في كل مكان. ما α؟','0.7',['α + #f{1}{2} = 1.2'],['1.2','1.7','0.6']),
+  Q('Can Haar (p = 1) measure α = 1.5?','هل تستطيع هار (p = 1) قياس α = 1.5؟',['No: it needs more vanishing moments than α; Haar saturates at `2^{−3j/2}`','لا: تحتاج عزوماً منعدمة أكثر من α، وهار تتشبع عند `2^{−3j/2}`'],[['Every smooth function looks like α = 1 to Haar.','كل دالة ملساء تبدو لهار كأن α = 1.']],[['Yes','نعم'],['Only near jumps','فقط قرب القفزات']]),
+  Q('Why can’t Fourier coefficients give pointwise smoothness?','لماذا لا تعطي معاملات فورييه الملاسة النقطية؟',['Each sine covers the whole interval, so the decay reflects the least smooth point','كل جيب يغطي المجال كله فيعكس التناقص أقل النقاط ملاسة'],[['Lesson 5.','الدرس 5.']],[['They can','تستطيع'],['They are complex','لأنها مركبة']]),
+]);
+
+lesson('509',64,[
+  ['Linear approximation keeps a fixed set of coefficients, the N = `2^J` coarsest ones, whatever f is. It is the projection `P_J`:','التقريب الخطي يحتفظ بمجموعة ثابتة من المعاملات، الـ N = `2^J` الأخشن، أياً كانت f. وهو الإسقاط `P_J`:'],
+  '‖f − P_Jf‖ = O(N^{−p}),     ‖g − P_Jg‖ = O(N^{−1/2}),     N = 2^J',
+  ['For a smooth f the error is `O(N^{−p})`. For a function g with a jump, the one interval containing the jump keeps an error of size 1 on a length `1/N`, so the error is only `O(N^{−1/2})`, whatever the wavelet. Linear approximation cannot adapt to where the singularities are.','وللدالة الملساء f يكون الخطأ `O(N^{−p})`. وللدالة g ذات القفزة يبقى في المجال الوحيد الذي يحتوي القفزة خطأ حجمه 1 على طول `1/N`، فيكون الخطأ `O(N^{−1/2})` فقط أياً كانت المويجة. والتقريب الخطي لا يتكيف مع مواضع نقاط الانفراد.'],
+],[
+  Q('For g = `1_{[1/3, 1]}` and Haar, bound `‖g − P_Jg‖^2`.','لـ g = `1_{[1/3, 1]}` وهار قدّر `‖g − P_Jg‖^2`.','≤ #f{2^{−J}}{4}',[['On the interval of length `2^{−J}` containing 1/3 the error is at most 1/2.','على المجال الذي طوله `2^{−J}` ويحتوي 1/3 يكون الخطأ 1/2 على الأكثر.']],['≤ 2^{−2J}','≤ 4^{−J}/12','= 0']),
+  Q('How many coefficients N does linear approximation need for error 0.01 on a jump of height 1?','كم معاملاً N يحتاج التقريب الخطي لخطأ 0.01 على قفزة ارتفاعها 1؟','N ≈ 2500',['#f{1}{2#r{N}} ≈ 0.01'],['N ≈ 50','N ≈ 100','N ≈ 10^6']),
+  Q('Why is the error of a jump `O(N^{−1/2})` for every wavelet?','لماذا يكون خطأ القفزة `O(N^{−1/2})` لكل مويجة؟',['An error of order 1 remains on an interval of length about `1/N`, and its square root is `N^{−1/2}`','يبقى خطأ رتبته 1 على مجال طوله نحو `1/N` وجذره التربيعي `N^{−1/2}`'],[['Vanishing moments do not help at a jump.','العزوم المنعدمة لا تفيد عند القفزة.']],[['Because of Gibbs oscillations','بسبب تذبذبات جيبس'],['It is `O(N^{−p})`','إنه `O(N^{−p})`']]),
+  Q('What does linear approximation keep?','بماذا يحتفظ التقريب الخطي؟',['The same N coarse coefficients for every function','المعاملات الخشنة N نفسها لكل دالة'],[['Hence “linear”: `f ↦ f_N` is a linear map.','ومن هنا «خطي»: `f ↦ f_N` تطبيق خطي.']],[['The N largest coefficients','أكبر N معاملاً'],['Random coefficients','معاملات عشوائية']]),
+]);
+
+lesson('509',65,[
+  ['Nonlinear approximation keeps the N largest coefficients of each f. With `Λ_N` the indices of those coefficients, it adapts to the singularities automatically:','التقريب غير الخطي يحتفظ بأكبر N معاملاً لكل f. ومع `Λ_N` أدلة تلك المعاملات يتكيف مع نقاط الانفراد تلقائياً:'],
+  'f_N = Σ_{λ∈Λ_N} ⟨f, ψ_λ⟩ψ_λ,     ‖f − f_N‖^2 = Σ_{λ∉Λ_N}|⟨f, ψ_λ⟩|^2',
+  ['For the step `1_{t > 1/3}` sampled at 1024 points, the Haar transform has only 11 non-zero coefficients (one per level plus the average), so 11 terms are exact. For a piecewise smooth function the nonlinear error is `O(N^{−p})` again, as if there were no jumps.','وللدالة الدرجية `1_{t > 1/3}` المعاينة عند 1024 نقطة لا يملك تحويل هار إلا 11 معاملاً غير صفري (واحد لكل مستوى زائد المتوسط)، فتكون 11 حداً مضبوطة. وللدالة الملساء قطعياً يعود الخطأ غير الخطي `O(N^{−p})` كأنه لا قفزات.'],
+],[
+  Q('Why does the Haar transform of the step have exactly 11 non-zero coefficients for 1024 samples?','لماذا لتحويل هار للدالة الدرجية 11 معاملاً غير صفري بالضبط لـ 1024 عينة؟','10 + 1',[['Ten levels with one wavelet straddling the jump each, plus the overall average.','عشرة مستويات في كل منها مويجة واحدة تعبر القفزة، زائد المتوسط الكلي.']],['1024','2','512']),
+  Q('With the 4 largest Haar coefficients the RMS error of the step is 0.167, with 8 it is 0.043. With 11?','مع أكبر 4 معاملات هار يكون خطأ RMS للدالة الدرجية 0.167، ومع 8 يكون 0.043. ومع 11؟','0',[['All non-zero coefficients are kept.','كل المعاملات غير الصفرية محفوظة.']],['0.011','0.022','0.043']),
+  Q('Is `f ↦ f_N` linear for nonlinear approximation?','هل `f ↦ f_N` خطي في التقريب غير الخطي؟',['No: the kept set depends on f, so `(f + g)_N ≠ f_N + g_N` in general','لا: المجموعة المحفوظة تعتمد على f فيكون `(f + g)_N ≠ f_N + g_N` عموماً'],[['Hence the name.','ومن هنا الاسم.']],[['Yes','نعم'],['Only for Haar','فقط لهار']]),
+  Q('Compute the squared error of keeping `(16, −6)` of the coefficients `(16, −6, −#r{2}, −#r{2})`.','احسب مربع خطأ الاحتفاظ بـ `(16, −6)` من المعاملات `(16, −6, −#r{2}, −#r{2})`.','4',['2 + 2'],['2','36','0']),
+]);
+
+lesson('509',66,[
+  ['A coefficient vector is sparse when few entries carry most of the energy. Sort the magnitudes, `|c|_{(1)} ≥ |c|_{(2)} ≥ ⋯`; if they decay like a power, the best N-term error follows:','متجه المعاملات متفرق عندما تحمل مداخل قليلة معظم الطاقة. رتّب المقادير `|c|_{(1)} ≥ |c|_{(2)} ≥ ⋯`؛ وإذا تناقصت كقوة فإن خطأ أفضل N حداً يتبع:'],
+  '|c|_{(n)} ≤ Cn^{−s}     ⇒     ‖f − f_N‖^2 = Σ_{n>N}|c|_{(n)}^2 ≤ C^2#f{N^{1−2s}}{2s − 1}',
+  ['Wavelets make piecewise smooth signals and natural images sparse, which is why thresholding works for compression and denoising and why compressed sensing can recover such signals from few measurements.','والمويجات تجعل الإشارات الملساء قطعياً والصور الطبيعية متفرقة، ولهذا تنجح العتبة في الضغط وإزالة الضجيج، ولهذا يستطيع الاستشعار المضغوط استرجاع مثل هذه الإشارات من قياسات قليلة.'],
+],[
+  Q('If `|c|_{(n)} = n^{−1}`, how does `‖f − f_N‖` behave?','إذا كان `|c|_{(n)} = n^{−1}` فكيف يسلك `‖f − f_N‖`؟','~ N^{−1/2}',['Σ_{n>N}n^{−2} ≈ #f{1}{N}'],['~ N^{−1}','~ N^{−2}','~ log N']),
+  Q('If `|c|_{(n)} = n^{−3}`, how does `‖f − f_N‖` behave?','إذا كان `|c|_{(n)} = n^{−3}` فكيف يسلك `‖f − f_N‖`؟','~ N^{−5/2}',['N^{(1−2s)/2},   s = 3'],['~ N^{−3}','~ N^{−5}','~ N^{−1/2}']),
+  Q('Which is sparser: `(10, 0, 0, 0.1)` or `(5, 5, 5, 5)`?','أيهما أكثر تفرقاً: `(10, 0, 0, 0.1)` أم `(5, 5, 5, 5)`؟','(10, 0, 0, 0.1)',[['One entry carries 99.99 % of the energy.','مدخل واحد يحمل 99.99 % من الطاقة.']],['(5, 5, 5, 5)',['both','كلاهما'],['neither','لا شيء منهما']]),
+  Q('For compression, what does sparsity buy?','ماذا تشتري التفرقة في الضغط؟',['Few stored coefficients for a small error','معاملات مخزنة قليلة مقابل خطأ صغير'],[['The positions of the kept coefficients must be stored too.','يجب تخزين مواضع المعاملات المحفوظة أيضاً.']],[['Faster transforms','تحويلات أسرع'],['Nothing','لا شيء']]),
+]);
+
+lesson('509',67,[
+  ['Function spaces have exact descriptions in wavelet coefficients. With `d_{j,k} = ⟨f, ψ_{j,k}⟩` and a smooth enough wavelet:','لفضاءات الدوال أوصاف دقيقة بمعاملات المويجات. ومع `d_{j,k} = ⟨f, ψ_{j,k}⟩` ومويجة ملساء بما يكفي:'],
+  '‖f‖_{H^s}^2 ≈ Σ_{j,k}4^{js}|d_{j,k}|^2,     ‖f‖_{B^s_{p,q}} ≈ (Σ_j(2^{j(s+1/2−1/p)}‖d_{j,·}‖_{ℓ^p})^q)^{1/q}',
+  ['The Sobolev space `H^s` weights the energy at level j by `4^{js}`. Besov spaces measure the coefficients of each level in `ℓ^p` norms; with p < 1 or p = 1 they allow isolated singularities and are the natural spaces of nonlinear approximation.','وفضاء سوبوليف `H^s` يزن الطاقة في المستوى j بـ `4^{js}`. وفضاءات بيسوف تقيس معاملات كل مستوى بمعايير `ℓ^p`، ومع p < 1 أو p = 1 تسمح بنقاط انفراد معزولة، وهي الفضاءات الطبيعية للتقريب غير الخطي.'],
+],[
+  Q('For a step, each level has one coefficient of size about `2^{−j/2}`. For which s is it in `H^s`?','للدالة الدرجية في كل مستوى معامل واحد حجمه نحو `2^{−j/2}`. لأي s تنتمي إلى `H^s`؟','s < #f{1}{2}',['Σ_j 4^{js}2^{−j} = Σ_j 2^{j(2s−1)} < ∞'],['s < 1','s ≤ 1',['every s','كل s']]),
+  Q('For `f = t` and Haar, `|d_{j,k}| = 2^{−3j/2}/4`. Compute `Σ_k|d_{j,k}|^2` at level j.','لـ `f = t` وهار `|d_{j,k}| = 2^{−3j/2}/4`. احسب `Σ_k|d_{j,k}|^2` في المستوى j.','#f{4^{−j}}{16}',['2^j·#f{2^{−3j}}{16}'],['#f{2^{−3j}}{16}','#f{2^{−j}}{16}','#f{1}{16}']),
+  Q('Why is the Besov norm with p = 1 suited to signals with a few jumps?','لماذا يناسب معيار بيسوف مع p = 1 الإشارات ذات قفزات قليلة؟',['It adds magnitudes, so a few large coefficients cost little compared with many medium ones','يجمع المقادير فتكلف معاملات كبيرة قليلة أقل من معاملات متوسطة كثيرة'],[['It rewards sparsity.','يكافئ التفرقة.']],[['It is a Hilbert norm','معيار هلبرت'],['It ignores jumps','يتجاهل القفزات']]),
+  Q('Which level weight does `H^1` use?','أي وزن للمستوى يستخدم `H^1`؟','4^j',['4^{js},   s = 1'],['2^j','1','16^j']),
+]);
+
+lesson('509',68,[
+  ['Compare the errors with N coefficients: Fourier for a smooth periodic function, Fourier at a jump, and wavelets (nonlinear) for a piecewise smooth function:','قارن الأخطاء بـ N معاملاً: فورييه لدالة ملساء دورية، وفورييه عند قفزة، والمويجات (غير الخطية) لدالة ملساء قطعياً:'],
+  'e^{−cN},     N^{−1/2},     N^{−p}',
+  ['Fourier series are unbeatable for smooth periodic functions but suffer from Gibbs oscillations (about 9 % overshoot) and `N^{−1/2}` convergence at a jump: for the step at 1/3 the best 16, 64 and 256 Fourier terms leave errors 0.095, 0.046 and 0.022. Haar needs 11 terms for zero error. Polynomials need a change of variable for `t^{α}` behaviour (course 508, Unit 7).','ومتسلسلات فورييه لا تُجارى للدوال الملساء الدورية لكنها تعاني تذبذبات جيبس (تجاوز نحو 9 %) وتقارب `N^{−1/2}` عند القفزة: للدالة الدرجية عند 1/3 تترك أفضل 16 و 64 و 256 حداً من فورييه أخطاء 0.095 و 0.046 و 0.022. وهار تحتاج 11 حداً لخطأ صفري. وكثيرات الحدود تحتاج تغيير متغير لسلوك `t^{α}` (المقرر 508، الوحدة 7).'],
+],[
+  Q('Check the rate of the Fourier errors 0.095, 0.046, 0.022 for N = 16, 64, 256.','تحقق من معدل أخطاء فورييه 0.095 و 0.046 و 0.022 عند N = 16 و 64 و 256.','~ N^{−1/2}',['#f{0.095}{0.046} ≈ 2 ≈ 4^{1/2}'],['~ N^{−1}','~ e^{−N}','~ N^{−2}']),
+  Q('Which basis is best for `sin 2πt + 0.3 cos 6πt` on [0, 1]?','أي أساس أفضل لـ `sin 2πt + 0.3 cos 6πt` على [0, 1]؟',['Fourier: two terms are exact','فورييه: حدان مضبوطان'],[['A periodic trigonometric polynomial.','كثيرة حدود مثلثية دورية.']],[['Haar','هار'],['db4','db4']]),
+  Q('Which basis is best for a piecewise constant signal?','أي أساس أفضل لإشارة ثابتة قطعياً؟',['Haar, with nonlinear approximation','هار مع التقريب غير الخطي'],[['One coefficient per jump per level.','معامل واحد لكل قفزة في كل مستوى.']],[['Fourier','فورييه'],['Legendre polynomials','كثيرات ليجندر']]),
+  Q('How large is the Gibbs overshoot of a Fourier partial sum at a jump of height 1?','ما حجم تجاوز جيبس لمجموع فورييه الجزئي عند قفزة ارتفاعها 1؟','≈ 0.09',[['It does not shrink as N grows; it only moves closer to the jump.','لا يصغر مع نمو N بل يقترب من القفزة فقط.']],['≈ 0','≈ 0.5','≈ #f{1}{N}']),
+]);
+
+lesson('509',69,[
+  ['Wavelet packets split the detail spaces too, not only the approximations. The result is a full binary tree of subspaces, and every admissible cut through the tree is an orthonormal basis. At depth J there are `2^J` nodes holding N coefficients in total:','حزم المويجات تقسم فضاءات التفاصيل أيضاً لا التقريبات فقط. والنتيجة شجرة ثنائية كاملة من الفضاءات الجزئية، وكل قطع مقبول عبر الشجرة أساس متعامد معياري. وعند العمق J توجد `2^J` عقدة تحمل N معاملاً إجمالاً:'],
+  'W_j = W_j^{(0)} ⊕ W_j^{(1)},     O(N log N)',
+  ['The best-basis algorithm of Coifman and Wickerhauser chooses, from the bottom up, whether to keep a node or its two children, by comparing an entropy cost. Packets adapt to oscillating signals (speech, vibrations) whose energy is concentrated in high frequency bands.','وخوارزمية الأساس الأفضل لكويفمان وويكرهاوزر تختار من الأسفل إلى الأعلى بين الاحتفاظ بعقدة أو بابنيها بمقارنة كلفة إنتروبيا. والحزم تتكيف مع الإشارات المتذبذبة (الكلام والاهتزازات) التي تتركز طاقتها في نطاقات ترددية عالية.'],
+],[
+  Q('How many nodes does a full packet tree have at depth 3?','كم عقدة لشجرة حزم كاملة عند العمق 3؟','8',['2^3'],['3','4','15']),
+  Q('What is the total cost of a full packet tree of depth log₂N?','ما الكلفة الكلية لشجرة حزم كاملة بعمق log₂N؟','O(N log N)',[['Each depth costs O(N).','كل عمق يكلف O(N).']],['O(N)','O(N^2)','O(log N)']),
+  Q('Which entropy cost favours a sparse node?','أي كلفة إنتروبيا تفضّل عقدة متفرقة؟','−Σ p_i log p_i,   p_i = #f{|c_i|^2}{‖c‖^2}',[['Small when a few coefficients carry the energy.','صغيرة عندما تحمل معاملات قليلة الطاقة.']],['Σ |c_i|^2','max |c_i|','N']),
+  Q('When are packets better than the ordinary wavelet basis?','متى تكون الحزم أفضل من أساس المويجات العادي؟',['For signals with energy in high-frequency bands, such as vibrations','للإشارات التي طاقتها في نطاقات ترددية عالية مثل الاهتزازات'],[['The ordinary basis splits only the low band.','الأساس العادي يقسم النطاق المنخفض فقط.']],[['For piecewise constant signals','للإشارات الثابتة قطعياً'],['Never','أبداً']]),
+]);
+
+lesson('509',70,[
+  ['The lifting scheme builds a wavelet transform from three in-place steps: split the samples into even and odd, predict the odd from the even, update the even with the details. Haar (left) and the 5/3 filters (right):','مخطط الرفع يبني تحويلاً مويجياً من ثلاث خطوات في المكان: قسّم العينات إلى زوجية وفردية، وتنبأ بالفردية من الزوجية، وحدّث الزوجية بالتفاصيل. هار (يساراً) ومرشحا 5/3 (يميناً):'],
+  'd_k = x_{2k+1} − x_{2k},   s_k = x_{2k} + #f{d_k}{2};     d_k = x_{2k+1} − #f{x_{2k} + x_{2k+2}}{2},   s_k = x_{2k} + #f{d_{k−1} + d_k}{4}',
+  ['The inverse simply runs the steps backward with the signs changed, so reconstruction is exact even with rounding: with integer rounding in each step, the 5/3 transform maps integers to integers (lossless JPEG 2000). Every wavelet with finite filters can be factored into lifting steps, which roughly halves the work.','والعكس يشغّل الخطوات عكسياً مع تغيير الإشارات، فتكون إعادة البناء مضبوطة حتى مع التقريب: مع تقريب صحيح في كل خطوة يحوّل تحويل 5/3 الأعداد الصحيحة إلى أعداد صحيحة (JPEG 2000 دون فقد). وكل مويجة ذات مرشحات منتهية يمكن تحليلها إلى خطوات رفع، وهذا يقارب نصف العمل.'],
+],[
+  Q('Apply Haar lifting to `(2, 4, 6, 8)`.','طبّق رفع هار على `(2, 4, 6, 8)`.','d = (2, 2),   s = (3, 7)',['d = (4 − 2, 8 − 6),   s = (2 + 1, 6 + 1)'],['d = (−2, −2),   s = (3, 7)','d = (2, 2),   s = (6, 14)','d = (1, 1),   s = (2, 6)']),
+  Q('Invert Haar lifting for `s = (3, 7)`, `d = (2, 2)`.','اعكس رفع هار لـ `s = (3, 7)` و `d = (2, 2)`.','(2, 4, 6, 8)',['x_{2k} = s_k − #f{d_k}{2},   x_{2k+1} = x_{2k} + d_k'],['(3, 5, 7, 9)','(4, 2, 8, 6)','(1, 3, 5, 7)']),
+  Q('Compute the 5/3 prediction details of the linear signal `x_n = n`.','احسب تفاصيل التنبؤ 5/3 للإشارة الخطية `x_n = n`.','d_k = (2k + 1) − #f{2k + 2k + 2}{2} = 0',[['The linear prediction is exact for lines.','التنبؤ الخطي مضبوط للخطوط.']],['d_k = 1','d_k = #f{1}{2}','d_k = 2k']),
+  Q('Why is lifting invertible even with rounding?','لماذا يكون الرفع قابلاً للعكس حتى مع التقريب؟',['Each step adds a function of the other half; subtracting the same rounded value undoes it','كل خطوة تضيف دالة في النصف الآخر، وطرح القيمة المقربة نفسها يلغيها'],[['The rounding is computed from values that are known at inversion time.','التقريب يُحسب من قيم معلومة وقت العكس.']],[['Rounding errors cancel by chance','أخطاء التقريب تُلغى مصادفة'],['It is not','ليس قابلاً للعكس']]),
+]);
+
 export const MS509 = true;
