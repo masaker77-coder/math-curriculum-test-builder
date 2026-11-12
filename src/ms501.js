@@ -961,4 +961,207 @@ lesson('501',40,[
     ['1.2 × 10^{−2}  vs  6.5 × 10^{−5}',['The errors are equal','الخطآن متساويان'],'6.5 × 10^{−3}  vs  1.2 × 10^{−4}']),
 ]);
 
+/* ---- 501 · Unit 5 (lessons 41–50): interpolation and differentiation matrices ---- */
+lesson('501',41,[
+  ['Given values `f_j = f(x_j)` at n + 1 distinct nodes, there is exactly one polynomial of degree ≤ n through them. In Lagrange form it is','إذا أُعطيت القيم `f_j = f(x_j)` عند n + 1 عقدة مختلفة فهناك كثيرة حدود وحيدة درجتها ≤ n تمر بها، وصيغتها عند لاجرانج'],
+  'p(x) = Σ_{j=0}^{n} f_j ℓ_j(x),   ℓ_j(x) = Π_{k≠j} #f{x − x_k}{x_j − x_k},   ℓ_j(x_i) = δ_{ij}',
+  ['Each Lagrange function is 1 at its own node and 0 at the others, and together they add up to 1. A collocation method stores a function by its nodal values `u_j`, and every operation is done on the interpolating polynomial.',
+   'كل دالة لاجرانج تساوي 1 عند عقدتها و 0 عند غيرها، ومجموعها 1. وطريقة التجميع تخزّن الدالة بقيمها العقدية `u_j`، وكل عملية تُجرى على كثيرة الاستكمال.'],
+],[
+  Q('Find the three Lagrange functions for the nodes −1, 0, 1.','أوجد دوال لاجرانج الثلاث للعقد −1 و 0 و 1.','ℓ_{−1} = #f{x(x − 1)}{2},   ℓ_0 = 1 − x^2,   ℓ_1 = #f{x(x + 1)}{2}',
+    ['ℓ_{−1} = #f{(x − 0)(x − 1)}{(−1)(−2)},   ℓ_0 = #f{(x + 1)(x − 1)}{(1)(−1)},   ℓ_1 = #f{(x + 1)x}{(2)(1)}'],
+    ['ℓ_{−1} = #f{x(x + 1)}{2},   ℓ_0 = 1 − x^2,   ℓ_1 = #f{x(x − 1)}{2}','ℓ_{−1} = x(x − 1),   ℓ_0 = x^2 − 1,   ℓ_1 = x(x + 1)','ℓ_{−1} = #f{1 − x}{2},   ℓ_0 = 1 − x^2,   ℓ_1 = #f{1 + x}{2}']),
+  Q('Interpolate `e^x` at −1, 0, 1 and evaluate the polynomial at x = 0.5.','استكمل `e^x` عند −1 و 0 و 1 واحسب كثيرة الحدود عند x = 0.5.','p(0.5) ≈ 1.7234',
+    ['ℓ_{−1}(0.5) = −0.125,   ℓ_0(0.5) = 0.75,   ℓ_1(0.5) = 0.375', 'p(0.5) = −0.125·0.3679 + 0.75·1 + 0.375·2.7183 ≈ 1.7234', ['The exact value is `e^{0.5} = 1.6487`.','والقيمة المضبوطة `e^{0.5} = 1.6487`.']],
+    ['p(0.5) ≈ 1.6487','p(0.5) ≈ 1.3591','p(0.5) ≈ 2.0000']),
+  Q('Interpolate `x^3` at the nodes −1, 0, 1.','استكمل `x^3` عند العقد −1 و 0 و 1.','p(x) = x',
+    ['f_j = −1, 0, 1', 'p = −ℓ_{−1} + ℓ_1 = #f{x(x + 1) − x(x − 1)}{2} = x', ['`x^3 − x` vanishes at all three nodes, so the interpolant cannot see it.','`x^3 − x` تنعدم عند العقد الثلاث فلا يراها الاستكمال.']],
+    ['p(x) = x^3','p(x) = x^2','p(x) = 0']),
+  Q('Compute `ℓ_{−1}(x) + ℓ_0(x) + ℓ_1(x)` for the nodes −1, 0, 1.','احسب `ℓ_{−1}(x) + ℓ_0(x) + ℓ_1(x)` للعقد −1 و 0 و 1.','1',
+    ['#f{x^2 − x}{2} + 1 − x^2 + #f{x^2 + x}{2} = 1', ['It interpolates `f = 1` exactly.','فهو يستكمل `f = 1` بدقة.']],
+    ['x','0','3']),
+]);
+
+lesson('501',42,[
+  ['The error of interpolation at n + 1 nodes is','خطأ الاستكمال عند n + 1 عقدة هو'],
+  'f(x) − p(x) = #f{f^{(n+1)}(ξ)}{(n + 1)!} ω(x),   ω(x) = Π_{j=0}^{n} (x − x_j)',
+  ['Two factors decide the error: the smoothness of f, through `f^{(n+1)}`, and the placement of the nodes, through the node polynomial ω. For three equally spaced nodes on `[−1, 1]`, `max|ω| = 2/(3#r{3}) ≈ 0.385`; for the three Chebyshev points it drops to 1/4, the smallest possible.',
+   'عاملان يحددان الخطأ: نعومة f من خلال `f^{(n+1)}`، وتوزيع العقد من خلال كثيرة العقد ω. فلثلاث عقد متساوية التباعد على `[−1, 1]` يكون `max|ω| = 2/(3#r{3}) ≈ 0.385`، ولنقاط تشيبيشيف الثلاث ينخفض إلى 1/4 وهو أصغر ما يمكن.'],
+],[
+  Q('Bound the error of interpolating `e^x` at −1, 0, 1 at the point x = 0.5.','أوجد حداً لخطأ استكمال `e^x` عند −1 و 0 و 1 عند النقطة x = 0.5.','≤ #f{e·0.375}{6} ≈ 0.1699',
+    ['|ω(0.5)| = |1.5·0.5·(−0.5)| = 0.375,   |f‴| ≤ e', '|f − p| ≤ #f{e}{3!}·0.375 ≈ 0.1699', ['The actual error is `1.7234 − 1.6487 = 0.0747`.','والخطأ الفعلي `1.7234 − 1.6487 = 0.0747`.']],
+    ['≤ 0.0747','≤ #f{0.375}{6} ≈ 0.0625','≤ e·0.375 ≈ 1.0194']),
+  Q('Find `max |ω(x)|` on `[−1, 1]` for the nodes −1, 0, 1.','أوجد `max |ω(x)|` على `[−1, 1]` للعقد −1 و 0 و 1.','#f{2}{3#r{3}} ≈ 0.3849',
+    ['ω = x^3 − x,   ω′ = 3x^2 − 1 = 0  ⇒  x = #f{1}{#r{3}}', '|ω(#f{1}{#r{3}})| = #f{1}{#r{3}} − #f{1}{3#r{3}} = #f{2}{3#r{3}}'],
+    ['#f{1}{4}','1','#f{1}{#r{3}} ≈ 0.5774']),
+  Q('Interpolate `x^2 + 1` at three nodes. What is the error?','استكمل `x^2 + 1` عند ثلاث عقد. ما الخطأ؟','0',
+    ['f‴ = 0  ⇒  f − p = 0', ['A polynomial of degree ≤ n is reproduced exactly by n + 1 nodes.','كثيرة الحدود التي درجتها ≤ n تُستعاد بدقة من n + 1 عقدة.']],
+    ['#f{1}{3}','ω(x)','#f{2}{3#r{3}}']),
+  Q('For `f = x^3` and the nodes −1, 0, 1, write `f − p` exactly.','للدالة `f = x^3` والعقد −1 و 0 و 1 اكتب `f − p` بدقة.','f − p = x^3 − x',
+    ['#f{f‴}{3!} = #f{6}{6} = 1  ⇒  f − p = ω(x) = x^3 − x', ['This agrees with `p = x` from the previous lesson.','وهذا يطابق `p = x` من الدرس السابق.']],
+    ['f − p = 0','f − p = x^3','f − p = 6(x^3 − x)']),
+]);
+
+lesson('501',43,[
+  ['The barycentric formula evaluates the interpolating polynomial stably in `O(n)` operations per point, once the weights are known:','الصيغة الباريسنترية تحسب كثيرة الاستكمال حساباً مستقراً بـ `O(n)` عملية لكل نقطة بعد معرفة الأوزان:'],
+  'p(x) = #f{Σ_j #f{λ_j}{x − x_j} f_j}{Σ_j #f{λ_j}{x − x_j}},   λ_j = #f{1}{Π_{k≠j}(x_j − x_k)}',
+  ['It comes from dividing the Lagrange form by the same formula for `f = 1`. Multiplying all `λ_j` by a common constant does not change p, so the weights can be scaled freely. At a node itself one simply returns `f_j`.',
+   'وتأتي من قسمة صيغة لاجرانج على الصيغة نفسها للدالة `f = 1`. وضرب كل `λ_j` في ثابت مشترك لا يغير p، فيمكن تحجيم الأوزان بحرية. وعند العقدة نفسها نعيد `f_j` مباشرة.'],
+],[
+  Q('Compute the barycentric weights for the nodes −1, 0, 1.','احسب الأوزان الباريسنترية للعقد −1 و 0 و 1.','λ = #f{1}{2},  −1,  #f{1}{2}',
+    ['λ_{−1} = #f{1}{(−1 − 0)(−1 − 1)} = #f{1}{2},   λ_0 = #f{1}{(0 + 1)(0 − 1)} = −1,   λ_1 = #f{1}{(2)(1)} = #f{1}{2}'],
+    ['λ = 1,  −2,  1','λ = #f{1}{2},  1,  #f{1}{2}','λ = −#f{1}{2},  1,  −#f{1}{2}']),
+  Q('Use the barycentric formula to evaluate the interpolant of `e^x` at −1, 0, 1 at x = 0.5.','استخدم الصيغة الباريسنترية لحساب استكمال `e^x` عند −1 و 0 و 1 عند x = 0.5.','≈ 1.7234',
+    ['#f{λ_j}{x − x_j} = #f{0.5}{1.5}, #f{−1}{0.5}, #f{0.5}{−0.5} = #f{1}{3}, −2, −1', ['Numerator and denominator:','البسط والمقام:'], '#f{#f{1}{3}·0.3679 − 2·1 − 1·2.7183}{#f{1}{3} − 2 − 1} = #f{−4.5957}{−2.6667} ≈ 1.7234',
+     ['The same value as the Lagrange form.','القيمة نفسها التي أعطتها صيغة لاجرانج.']],
+    ['≈ 1.6487','≈ 4.5957','≈ −1.7234']),
+  Q('The weights `1/2, −1, 1/2` are replaced by `1, −2, 1`. How does p change?','استُبدلت بالأوزان `1/2, −1, 1/2` الأوزانُ `1, −2, 1`. كيف تتغير p؟',['It does not change','لا تتغير'],
+    [['The common factor 2 cancels between numerator and denominator.','العامل المشترك 2 يختصر بين البسط والمقام.']],
+    [['It doubles','تتضاعف'],['It is halved','تنصف'],['It changes sign','تتغير إشارتها']]),
+  Q('How many operations does the barycentric formula need for one new point when there are n + 1 nodes?','كم عملية تحتاج الصيغة الباريسنترية لنقطة جديدة واحدة عند وجود n + 1 عقدة؟','O(n)',
+    [['The weights are computed once (`O(n^2)`); after that each evaluation is two sums of n + 1 terms.','الأوزان تُحسب مرة واحدة (`O(n^2)`) وبعدها كل حساب مجموعان من n + 1 حداً.']],
+    ['O(n^2)','O(n^3)','O(1)']),
+]);
+
+lesson('501',44,[
+  ['For the standard point sets the barycentric weights are known in closed form (up to a common factor):','لمجموعات النقاط المعيارية تُعرف الأوزان الباريسنترية بصيغة مغلقة (مع عامل مشترك):'],
+  ['Chebyshev points `x_j = cos(jπ/n)`:','نقاط تشيبيشيف `x_j = cos(jπ/n)`:'],
+  'λ_j = (−1)^j δ_j,   δ_0 = δ_n = #f{1}{2},   δ_j = 1   (0 < j < n)',
+  ['Gauss–Legendre points, and Gauss–Lobatto points:','نقاط جاوس–ليجندر، ونقاط جاوس–لوباتو:'],
+  'λ_j = (−1)^j #r{(1 − x_j^2) w_j},     λ_j = (−1)^j #r{w_j}',
+  ['Here `w_j` are the quadrature weights. So the same nodes give quadrature, interpolation and differentiation at almost no extra cost.','و `w_j` أوزان التربيع. إذن العقد نفسها تعطي التربيع والاستكمال والاشتقاق دون تكلفة تُذكر.'],
+],[
+  Q('Use `λ_j = (−1)^j #r{w_j}` with the Lobatto weights `1/3, 4/3, 1/3` at −1, 0, 1, and compare with Lesson 43.','استخدم `λ_j = (−1)^j #r{w_j}` مع أوزان لوباتو `1/3, 4/3, 1/3` عند −1 و 0 و 1، وقارن بالدرس 43.','λ ∝ #f{1}{2},  −1,  #f{1}{2}',
+    ['#r{#f{1}{3}}, −#r{#f{4}{3}}, #r{#f{1}{3}} = 0.5774, −1.1547, 0.5774', ['Dividing by 1.1547 gives `1/2, −1, 1/2`: the same weights up to a factor.','بالقسمة على 1.1547 نحصل على `1/2, −1, 1/2`: الأوزان نفسها مع عامل.']],
+    ['λ ∝ #f{1}{3},  #f{4}{3},  #f{1}{3}','λ ∝ 1,  1,  1','λ ∝ 1,  −2,  −1']),
+  Q('Write the barycentric weights for the five Chebyshev points `cos(jπ/4)`, j = 0, …, 4.','اكتب الأوزان الباريسنترية لنقاط تشيبيشيف الخمس `cos(jπ/4)` حيث j = 0, …, 4.','λ = #f{1}{2},  −1,  1,  −1,  #f{1}{2}',
+    ['λ_j = (−1)^j δ_j,   δ_0 = δ_4 = #f{1}{2}'],
+    ['λ = 1,  −1,  1,  −1,  1','λ = #f{1}{2},  1,  1,  1,  #f{1}{2}','λ = #f{1}{2},  −1,  1,  −1,  −#f{1}{2}']),
+  Q('Compute the Gauss–Legendre barycentric weights for the two nodes `±1/#r{3}` (weights 1).','احسب الأوزان الباريسنترية لجاوس–ليجندر للعقدتين `±1/#r{3}` (وزناهما 1).','λ ∝ 1,  −1',
+    ['#r{(1 − #f{1}{3})·1} = #r{#f{2}{3}} ≈ 0.8165', 'λ = 0.8165,  −0.8165', ['Directly: `1/(x_0 − x_1) = −#r{3}/2` and `#r{3}/2`, the same ratio.','مباشرة: `1/(x_0 − x_1) = −#r{3}/2` و `#r{3}/2` بالنسبة نفسها.']],
+    ['λ ∝ 1,  1','λ ∝ 1,  −2','λ ∝ #f{2}{3},  #f{2}{3}']),
+  Q('Why do the barycentric weights alternate in sign?','لماذا تتناوب إشارات الأوزان الباريسنترية؟',['`λ_j` has the sign of `Π_{k≠j}(x_j − x_k)`, which flips from one node to the next','إشارة `λ_j` هي إشارة `Π_{k≠j}(x_j − x_k)` وهي تنقلب من عقدة إلى التالية'],
+    [['Moving to the next node changes the sign of exactly one factor `(x_j − x_k)`.','الانتقال إلى العقدة التالية يغيّر إشارة عامل واحد فقط `(x_j − x_k)`.']],
+    [['Because the quadrature weights alternate','لأن أوزان التربيع تتناوب'],['They do not; it depends on f','لا تتناوب، فذلك يعتمد على f']]),
+]);
+
+lesson('501',45,[
+  ['The Lebesgue constant measures how much interpolation can amplify errors:','ثابت ليبيغ يقيس مقدار تضخيم الاستكمال للأخطاء:'],
+  'Λ_n = max_{−1≤x≤1} Σ_j |ℓ_j(x)|,   ‖f − p‖_∞ ≤ (1 + Λ_n) ‖f − p^*‖_∞',
+  ['Here `p^*` is the best polynomial approximation of the same degree, so interpolation is nearly optimal when `Λ_n` is small. For Chebyshev or Legendre points `Λ_n` grows only like `(2/π) log n`; for equally spaced points it grows like `2^n`: about 30 for n = 10 and about 11 000 for n = 20.',
+   'و `p^*` أفضل تقريب كثير حدود بالدرجة نفسها، فيكون الاستكمال قريباً من الأمثل إذا كان `Λ_n` صغيراً. ولنقاط تشيبيشيف أو ليجندر ينمو `Λ_n` مثل `(2/π) log n` فقط، أما للنقاط متساوية التباعد فينمو مثل `2^n`: نحو 30 عند n = 10 ونحو 11 000 عند n = 20.'],
+],[
+  Q('Find the Lebesgue constant for the nodes −1, 0, 1.','أوجد ثابت ليبيغ للعقد −1 و 0 و 1.','Λ_2 = #f{5}{4}',
+    ['0 ≤ x ≤ 1:   Σ|ℓ_j| = #f{x(1 − x)}{2} + (1 − x^2) + #f{x(x + 1)}{2} = 1 + x − x^2', ['The maximum is at x = 1/2:','القيمة العظمى عند x = 1/2:'], '1 + #f{1}{2} − #f{1}{4} = #f{5}{4}'],
+    ['Λ_2 = 1','Λ_2 = #f{3}{2}','Λ_2 = 2']),
+  Q('The best approximation of degree 20 has error `10^{−6}` and Chebyshev points give `Λ_20 ≈ 2.87`. Bound the interpolation error.','أفضل تقريب من الدرجة 20 خطؤه `10^{−6}` ونقاط تشيبيشيف تعطي `Λ_20 ≈ 2.87`. أوجد حداً لخطأ الاستكمال.','≤ 3.87 × 10^{−6}',
+    ['(1 + Λ_20)·10^{−6} = 3.87 × 10^{−6}'], ['≤ 2.87 × 10^{−6}','≤ 10^{−6}','≤ 1.1 × 10^{−2}']),
+  Q('Repeat with 21 equally spaced points, where `Λ_20 ≈ 1.1 × 10^4`.','أعد الحساب بـ 21 نقطة متساوية التباعد حيث `Λ_20 ≈ 1.1 × 10^4`.','≤ 1.1 × 10^{−2}',
+    ['(1 + 1.1 × 10^4)·10^{−6} ≈ 1.1 × 10^{−2}', ['The same degree loses four digits just because of the node placement.','الدرجة نفسها تخسر أربعة أرقام بسبب توزيع العقد فقط.']],
+    ['≤ 3.87 × 10^{−6}','≤ 10^{−6}','≤ 1.1 × 10^{−6}']),
+  Q('Why does the Lebesgue constant also measure sensitivity to rounding errors in the data?','لماذا يقيس ثابت ليبيغ أيضاً الحساسية لأخطاء التقريب في البيانات؟',['A change δ in every value changes p by at most `Λ_n δ`','تغيّر قدره δ في كل قيمة يغيّر p بما لا يزيد عن `Λ_n δ`'],
+    ['|Σ_j δ_j ℓ_j(x)| ≤ max|δ_j|·Σ_j |ℓ_j(x)| ≤ Λ_n max|δ_j|'],
+    [['It does not; it measures only smoothness','لا يقيسها، فهو يقيس النعومة فقط'],['Because `Λ_n` is always 1','لأن `Λ_n` يساوي 1 دائماً']]),
+]);
+
+lesson('501',46,[
+  ['Runge’s example `f(x) = 1/(1 + 25x^2)` is smooth, yet interpolation at equally spaced points diverges near the ends as n grows. With n = 10 the maximum error is about 1.9, and with n = 20 about 60.',
+   'مثال رونج `f(x) = 1/(1 + 25x^2)` دالة ملساء، ومع ذلك يتباعد استكمالها بنقاط متساوية التباعد قرب الطرفين بزيادة n. فعند n = 10 أكبر خطأ نحو 1.9، وعند n = 20 نحو 60.'],
+  ['At the Chebyshev points `x_j = cos(jπ/n)` the maximum error is only 0.13 for n = 10 and 0.018 for n = 20.','وعند نقاط تشيبيشيف `x_j = cos(jπ/n)` أكبر خطأ 0.13 فقط عند n = 10 و 0.018 عند n = 20.'],
+  ['Points that cluster near the ends with density `1/(π#r{1 − x^2})` — Chebyshev, Legendre–Gauss and Lobatto points — remove the phenomenon: for them interpolation converges for every analytic f. This is why spectral methods never use equally spaced points.',
+   'والنقاط التي تتكاثف قرب الطرفين بكثافة `1/(π#r{1 − x^2})`، مثل نقاط تشيبيشيف وجاوس–ليجندر ولوباتو، تزيل الظاهرة: معها يتقارب الاستكمال لكل دالة تحليلية. ولهذا لا تستخدم الطرق الطيفية النقاط متساوية التباعد أبداً.'],
+],[
+  Q('Write the five Chebyshev points `cos(jπ/4)`.','اكتب نقاط تشيبيشيف الخمس `cos(jπ/4)`.','1,  0.7071,  0,  −0.7071,  −1',
+    ['cos 0 = 1,   cos #f{π}{4} = 0.7071,   cos #f{π}{2} = 0', ['and the negatives by symmetry.','والسالبة بالتماثل.']],
+    ['1,  0.5,  0,  −0.5,  −1','0.9511,  0.5878,  0,  −0.5878,  −0.9511','1,  0.8660,  0,  −0.8660,  −1']),
+  Q('With n = 10, equally spaced interpolation of Runge’s function has error 1.9 and Chebyshev interpolation 0.13. By what factor is Chebyshev better?','عند n = 10 خطأ الاستكمال المتساوي التباعد لدالة رونج 1.9 وخطأ تشيبيشيف 0.13. بأي عامل يكون تشيبيشيف أفضل؟','≈ 15',
+    ['#f{1.9}{0.13} ≈ 15', ['At n = 20 the factor is `60/0.018 ≈ 3300`: one method diverges while the other converges.','وعند n = 20 العامل `60/0.018 ≈ 3300`: طريقة تتباعد والأخرى تتقارب.']],
+    ['≈ 1.5','≈ 150','≈ 0.07']),
+  Q('Runge’s function is analytic on `[−1, 1]`. Why do Chebyshev interpolants converge only like `1.22^{−n}`?','دالة رونج تحليلية على `[−1, 1]`. لماذا تتقارب استكمالات تشيبيشيف مثل `1.22^{−n}` فقط؟',['Its poles `±i/5` are close to the interval: ρ ≈ 1.22','قطباها `±i/5` قريبان من المجال: ρ ≈ 1.22'],
+    ['ρ = 0.2 + #r{1.04} ≈ 1.22', ['The same ρ as for its Legendre coefficients (Lesson 26).','وهي ρ نفسها لمعاملات ليجندر (الدرس 26).']],
+    [['Because the points are badly placed','لأن النقاط سيئة التوزيع'],['Because the function has a jump','لأن للدالة قفزة']]),
+  Q('Which point sets avoid the Runge phenomenon?','أي مجموعات النقاط تتجنب ظاهرة رونج؟',['Chebyshev, Gauss–Legendre and Gauss–Lobatto points','نقاط تشيبيشيف وجاوس–ليجندر وجاوس–لوباتو'],
+    [['All of them cluster near ±1 like `1/#r{1 − x^2}`, which keeps the Lebesgue constant logarithmic.','كلها تتكاثف قرب ±1 مثل `1/#r{1 − x^2}`، فيبقى ثابت ليبيغ لوغاريتمياً.']],
+    [['Equally spaced points with more nodes','نقاط متساوية التباعد بعقد أكثر'],['Random points','نقاط عشوائية']]),
+]);
+
+lesson('501',47,[
+  ['Differentiating the interpolant gives the derivative at the nodes as a matrix–vector product:','باشتقاق كثيرة الاستكمال نحصل على المشتقة عند العقد على صورة ضرب مصفوفة في متجه:'],
+  'u′(x_i) ≈ Σ_j D_{ij} u_j,   D_{ij} = ℓ_j′(x_i)',
+  ['With the barycentric weights, `D_{ij} = (λ_j/λ_i)/(x_i − x_j)` for i ≠ j, and `D_{ii} = −Σ_{j≠i} D_{ij}`, because the derivative of a constant is zero (every row sums to 0). For the nodes −1, 0, 1:',
+   'ومع الأوزان الباريسنترية `D_{ij} = (λ_j/λ_i)/(x_i − x_j)` عند i ≠ j، و `D_{ii} = −Σ_{j≠i} D_{ij}` لأن مشتقة الثابت صفر (مجموع كل صف 0). وللعقد −1 و 0 و 1:'],
+  'D = #m{−3/2, 2, −1/2 ;; −1/2, 0, 1/2 ;; 1/2, −2, 3/2}',
+],[
+  Q('Find the middle row of D for the nodes −1, 0, 1.','أوجد الصف الأوسط في D للعقد −1 و 0 و 1.','−#f{1}{2},  0,  #f{1}{2}',
+    ['ℓ_{−1}′ = #f{2x − 1}{2},   ℓ_0′ = −2x,   ℓ_1′ = #f{2x + 1}{2}', 'x = 0:   −#f{1}{2},  0,  #f{1}{2}', ['This is the central difference `(u_1 − u_{−1})/2`.','وهذا هو الفرق المركزي `(u_1 − u_{−1})/2`.']],
+    ['−1,  0,  1','#f{1}{2},  0,  −#f{1}{2}','−#f{3}{2},  2,  −#f{1}{2}']),
+  Q('Apply D to the values of `u = x^2` at −1, 0, 1.','طبّق D على قيم `u = x^2` عند −1 و 0 و 1.','Du = (−2,  0,  2)',
+    ['u = (1, 0, 1)', 'Du = (−#f{3}{2} − #f{1}{2},  −#f{1}{2} + #f{1}{2},  #f{1}{2} + #f{3}{2}) = (−2, 0, 2)', ['These are the values of `u′ = 2x`: exact, since u is in the space.','وهي قيم `u′ = 2x`: مضبوطة لأن u داخل الفضاء.']],
+    ['Du = (2,  0,  2)','Du = (−1,  0,  1)','Du = (0,  0,  0)']),
+  Q('Use `D_{ij} = (λ_j/λ_i)/(x_i − x_j)` with `λ = (1/2, −1, 1/2)` to compute `D_{−1,0}` (row x = −1, column x = 0).','استخدم `D_{ij} = (λ_j/λ_i)/(x_i − x_j)` مع `λ = (1/2, −1, 1/2)` لحساب `D_{−1,0}` (صف x = −1 وعمود x = 0).','2',
+    ['#f{λ_0/λ_{−1}}{x_{−1} − x_0} = #f{−1/(1/2)}{−1 − 0} = #f{−2}{−1} = 2'], ['−2','#f{1}{2}','−#f{1}{2}']),
+  Q('Why does every row of a differentiation matrix sum to 0?','لماذا مجموع كل صف في مصفوفة التفاضل صفر؟',['Because D applied to the constant vector gives the derivative of 1, which is 0','لأن تطبيق D على المتجه الثابت يعطي مشتقة 1 وهي 0'],
+    ['D·(1, 1, …, 1)^T = (Σ_j D_{ij})_i = 0', ['This is used to compute the diagonal accurately: `D_{ii} = −Σ_{j≠i} D_{ij}`.','وتُستخدم لحساب القطر بدقة: `D_{ii} = −Σ_{j≠i} D_{ij}`.']],
+    [['Because D is symmetric','لأن D متماثلة'],['Because the nodes are symmetric','لأن العقد متماثلة']]),
+]);
+
+lesson('501',48,[
+  ['The matrix of the second derivative is `D^{(2)} = D^2`, and in general `D^{(k)} = D^k`, because differentiating the interpolant twice is the same as differentiating it once and interpolating again (the derivative of a polynomial of degree n is in the space).',
+   'مصفوفة المشتقة الثانية `D^{(2)} = D^2`، وعموماً `D^{(k)} = D^k`، لأن اشتقاق الاستكمال مرتين يساوي اشتقاقه مرة ثم الاستكمال من جديد (مشتقة كثيرة حدود درجتها n داخل الفضاء).'],
+  ['For Chebyshev or Legendre points the norms grow fast:','ولنقاط تشيبيشيف أو ليجندر تنمو المعايير بسرعة:'],
+  '‖D‖ ~ n^2,   ‖D^{(k)}‖ ~ n^{2k}',
+  ['The growth comes from the crowded points near ±1, where the spacing is about `1/n^2`. It makes collocation systems ill-conditioned and forces small time steps in explicit methods: for `u_t = u_{xx}` the step must shrink like `n^{−4}`.',
+   'وهذا النمو سببه تزاحم النقاط قرب ±1 حيث التباعد نحو `1/n^2`، وهو يجعل أنظمة التجميع رديئة الشرط ويفرض خطوات زمنية صغيرة في الطرق الصريحة: ففي `u_t = u_{xx}` يجب أن تصغر الخطوة مثل `n^{−4}`.'],
+],[
+  Q('Compute `D^2` for the nodes −1, 0, 1.','احسب `D^2` للعقد −1 و 0 و 1.','D^2 = #m{1, −2, 1 ;; 1, −2, 1 ;; 1, −2, 1}',
+    ['(D^2)_{11} = (−#f{3}{2})^2 + 2(−#f{1}{2}) + (−#f{1}{2})(#f{1}{2}) = 1', ['All rows are equal: the second derivative of a quadratic is a constant, `u_{−1} − 2u_0 + u_1`.','الصفوف كلها متساوية: المشتقة الثانية لكثيرة حدود تربيعية ثابت `u_{−1} − 2u_0 + u_1`.']],
+    ['D^2 = #m{1, −2, 1 ;; 0, 0, 0 ;; 1, −2, 1}','D^2 = #m{−2, 1, 0 ;; 1, −2, 1 ;; 0, 1, −2}','D^2 = #m{2, −4, 2 ;; 2, −4, 2 ;; 2, −4, 2}']),
+  Q('If n is doubled, by about what factor does `‖D^{(2)}‖` grow?','إذا ضوعف n فبأي عامل تقريباً يكبر `‖D^{(2)}‖`؟','16',
+    ['‖D^{(2)}‖ ~ n^4  ⇒  2^4 = 16'], ['4','2','8']),
+  Q('Apply `D^2` to the values of `u = x^2` at −1, 0, 1.','طبّق `D^2` على قيم `u = x^2` عند −1 و 0 و 1.','D^2 u = (2,  2,  2)',
+    ['u = (1, 0, 1):   1 − 0 + 1 = 2', ['The same in every row.','والنتيجة نفسها في كل صف.'], ['`u″ = 2` exactly.','`u″ = 2` بدقة.']],
+    ['D^2 u = (0,  0,  0)','D^2 u = (−2,  0,  2)','D^2 u = (1,  −2,  1)']),
+  Q('The explicit Euler step for `u_t = u_{xx}` is stable for Δt about `1/‖D^2‖`. With n = 16 a step of `10^{−4}` is stable. Estimate the stable step for n = 32.','خطوة أويلر الصريحة لـ `u_t = u_{xx}` مستقرة عندما Δt نحو `1/‖D^2‖`. عند n = 16 الخطوة `10^{−4}` مستقرة. قدّر الخطوة المستقرة عند n = 32.','≈ 6.25 × 10^{−6}',
+    ['Δt ~ n^{−4}:   10^{−4}·(#f{16}{32})^4 = #f{10^{−4}}{16} = 6.25 × 10^{−6}', ['This is why implicit time stepping is used with spectral differentiation.','ولهذا تُستخدم الخطوات الضمنية مع الاشتقاق الطيفي.']],
+    ['≈ 2.5 × 10^{−5}','≈ 5 × 10^{−5}','≈ 10^{−4}']),
+]);
+
+lesson('501',49,[
+  ['A function of degree ≤ n can be stored by its values `u_i` at n + 1 nodes or by its Legendre coefficients `a_j`. The matrix `V_{ij} = P_j(x_i)` passes from one to the other:','الدالة التي درجتها ≤ n يمكن تخزينها بقيمها `u_i` عند n + 1 عقدة أو بمعاملات ليجندر `a_j`، والمصفوفة `V_{ij} = P_j(x_i)` تنقل بينهما:'],
+  'u = V a,   a = V^{−1} u',
+  ['At Gauss points the inverse is explicit: by exact quadrature `a_j = #f{2j + 1}{2} Σ_i w_i u_i P_j(x_i)`. Values are convenient for nonlinear terms (multiply pointwise); coefficients are convenient for derivatives, integrals and for reading the decay, which estimates the error.',
+   'وعند نقاط جاوس يكون المعكوس صريحاً، فبالتربيع المضبوط `a_j = #f{2j + 1}{2} Σ_i w_i u_i P_j(x_i)`. والقيم مناسبة للحدود غير الخطية (الضرب نقطة بنقطة)، والمعاملات مناسبة للمشتقات والتكاملات ولقراءة التناقص الذي يقدّر الخطأ.'],
+],[
+  Q('Write V for the nodes `±1/#r{3}` and the basis `P_0, P_1`.','اكتب V للعقدتين `±1/#r{3}` والأساس `P_0` و `P_1`.','V = #m{1, −0.5774 ;; 1, 0.5774}',
+    ['V_{ij} = P_j(x_i):   P_0 = 1,   P_1(x_i) = x_i'], ['V = #m{1, 0.5774 ;; 1, −0.5774}','V = #m{0.5774, 1 ;; −0.5774, 1}','V = #m{1, 0 ;; 0, 1}']),
+  Q('Find the coefficients of the function whose values at `−1/#r{3}`, `1/#r{3}` are 1 and 3.','أوجد معاملات الدالة التي قيمتاها عند `−1/#r{3}` و `1/#r{3}` هما 1 و 3.','a_0 = 2,   a_1 = #r{3} ≈ 1.7321',
+    ['a_0 + a_1(−0.5774) = 1,   a_0 + a_1(0.5774) = 3', 'a_0 = 2,   a_1 = #f{2}{2·0.5774} = #r{3}'],
+    ['a_0 = 2,   a_1 = 1','a_0 = 1,   a_1 = 3','a_0 = 4,   a_1 = #r{3}']),
+  Q('Recompute `a_1` with the quadrature formula `a_j = ((2j + 1)/2) Σ_i w_i u_i P_j(x_i)`.','أعد حساب `a_1` بصيغة التربيع `a_j = ((2j + 1)/2) Σ_i w_i u_i P_j(x_i)`.','#r{3} ≈ 1.7321',
+    ['a_1 = #f{3}{2}(1·1·(−0.5774) + 1·3·0.5774) = #f{3}{2}·1.1547 = 1.7321'], ['1.1547','0.5774','3']),
+  Q('After a computation the coefficients are `a_0 = 1`, `a_5 = 10^{−3}`, `a_10 = 10^{−6}`. Estimate the size of `a_15`.','بعد حساب كانت المعاملات `a_0 = 1` و `a_5 = 10^{−3}` و `a_10 = 10^{−6}`. قدّر حجم `a_15`.','≈ 10^{−9}',
+    [['Each five steps divide the coefficient by 1000: geometric decay with ρ = `1000^{1/5} ≈ 4`.','كل خمس خطوات تقسم المعامل على 1000: تناقص هندسي مع ρ = `1000^{1/5} ≈ 4`.'], 'a_15 ≈ 10^{−6}·10^{−3} = 10^{−9}', ['The last coefficients are an estimate of the truncation error.','والمعاملات الأخيرة تقدير لخطأ القطع.']],
+    ['≈ 10^{−7}','≈ 10^{−12}','≈ 10^{−6}']),
+]);
+
+lesson('501',50,[
+  ['Discrete coefficients computed from n Gauss points are exact only for functions of degree ≤ n − 1. Higher polynomials are not lost: they are folded onto lower ones (aliasing). At the Gauss points `P_n = 0`, and by the recurrence','المعاملات المتقطعة المحسوبة من n نقطة جاوس مضبوطة فقط للدوال التي درجتها ≤ n − 1. والكثيرات الأعلى لا تضيع بل تُطوى على الأدنى (التداخل aliasing). فعند نقاط جاوس `P_n = 0`، ومن علاقة التكرار'],
+  'P_{n+1}(x_i) = −#f{n}{n + 1} P_{n−1}(x_i)',
+  ['So the discrete transform sees `P_n` as 0 and `P_{n+1}` as `−(n/(n + 1)) P_{n−1}`. Aliasing matters in nonlinear terms: the product of two functions of degree N has degree 2N, and is computed without aliasing only with about 3N/2 points (the 3/2 rule).',
+   'إذن يرى التحويل المتقطع `P_n` صفراً و `P_{n+1}` على أنها `−(n/(n + 1)) P_{n−1}`. والتداخل مهم في الحدود غير الخطية: حاصل ضرب دالتين درجة كل منهما N درجته 2N، ولا يُحسب دون تداخل إلا بنحو 3N/2 نقطة (قاعدة 3/2).'],
+],[
+  Q('With 2 Gauss points, which discrete coefficients does `P_3` produce?','مع نقطتي جاوس، ما المعاملات المتقطعة التي تنتجها `P_3`؟','a_0 = 0,   a_1 = −#f{2}{3}',
+    ['n = 2:   P_3(x_i) = −#f{2}{3} P_1(x_i)', ['Check at `1/#r{3}`: `P_3 = −2/(3#r{3}) = −0.3849` and `−(2/3)(0.5774) = −0.3849`.','تحقق عند `1/#r{3}`: `P_3 = −2/(3#r{3}) = −0.3849` و `−(2/3)(0.5774) = −0.3849`.']],
+    ['a_0 = 0,   a_1 = 0','a_0 = 0,   a_1 = 1','a_0 = −#f{2}{3},   a_1 = 0']),
+  Q('With 2 Gauss points, what are the discrete coefficients of `P_2`?','مع نقطتي جاوس، ما المعاملات المتقطعة لـ `P_2`؟','a_0 = 0,   a_1 = 0',
+    [['The Gauss points are the zeros of `P_2`, so its values there are all 0.','نقاط جاوس هي جذور `P_2` فقيمها هناك أصفار.']],
+    ['a_0 = 1,   a_1 = 0','a_0 = #f{1}{3},   a_1 = 0','a_0 = 0,   a_1 = #f{2}{3}']),
+  Q('How many points avoid aliasing in `u^2` when u has degree N = 20?','كم نقطة تمنع التداخل في `u^2` إذا كانت درجة u هي N = 20؟','30',
+    ['#f{3N}{2} = 30', ['With 30 Gauss points the coefficients up to degree 20 of the degree-40 product are computed without aliasing.','مع 30 نقطة جاوس تُحسب معاملات حاصل الضرب (درجته 40) حتى الدرجة 20 دون تداخل.']],
+    ['20','40','21']),
+  Q('With 3 Gauss points, `P_4` aliases onto which polynomial?','مع ثلاث نقاط جاوس، على أي كثيرة حدود تُطوى `P_4`؟','−#f{3}{4} P_2',
+    ['n = 3:   P_4(x_i) = −#f{3}{4} P_2(x_i)', ['Check at 0: `P_4(0) = 3/8` and `−(3/4)·(−1/2) = 3/8`.','تحقق عند 0: `P_4(0) = 3/8` و `−(3/4)·(−1/2) = 3/8`.']],
+    ['0','−#f{4}{3} P_2','#f{3}{4} P_2']),
+]);
+
 export const MS501 = true;
