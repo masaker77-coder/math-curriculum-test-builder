@@ -375,4 +375,225 @@ lesson('504',20,[
   Q('What is the output of ``Nest[#^2 &, 2, 3]``?','ما مخرج ``Nest[#^2 &, 2, 3]``؟','$ 256',['2 → 4 → 16 → 256'],['$ 8','$ 64','$ 16']),
 ]);
 
+/* ---- 504 · Unit 3 (lessons 21–30): calculus;  Unit 4 (lessons 31–40): graphics ---- */
+lesson('504',21,[
+  ['``Limit[expr, x -> a]`` computes limits exactly, including limits at infinity. One-sided limits use the option ``Direction``:','``Limit[expr, x -> a]`` تحسب النهايات بالضبط بما فيها النهايات عند اللانهاية. والنهايات من جهة واحدة تستخدم الخيار ``Direction``:'],
+  '$ Limit[Sin[x]/x, x -> 0]                       (* 1 *)\nLimit[(1 + 1/n)^n, n -> Infinity]              (* E *)\nLimit[1/x, x -> 0, Direction -> "FromAbove"]   (* Infinity *)',
+  ['``"FromAbove"`` means x > a (from the right) and ``"FromBelow"`` means x < a. If the two one-sided limits differ, the two-sided limit is reported as ``Indeterminate``.','و ``"FromAbove"`` تعني x > a (من اليمين) و ``"FromBelow"`` تعني x < a. وإذا اختلفت النهايتان من الجهتين أُعلنت النهاية ``Indeterminate``.'],
+],[
+  Q('What is the output of ``Limit[(x^2 - 1)/(x - 1), x -> 1]``?','ما مخرج ``Limit[(x^2 - 1)/(x - 1), x -> 1]``؟','$ 2',['#f{x^2 − 1}{x − 1} = x + 1 → 2'],['$ 0','$ Indeterminate','$ 1']),
+  Q('What is the output of ``Limit[x Log[x], x -> 0]``?','ما مخرج ``Limit[x Log[x], x -> 0]``؟','$ 0',[['x tends to 0 faster than `log x` tends to −∞.','x تؤول إلى 0 أسرع من أيلولة `log x` إلى −∞.']],['$ -Infinity','$ 1','$ Indeterminate']),
+  Q('What is the output of ``Limit[1/x, x -> 0, Direction -> "FromBelow"]``?','ما مخرج ``Limit[1/x, x -> 0, Direction -> "FromBelow"]``؟','$ -Infinity',[['x < 0, so `1/x` is large and negative.','x < 0 فتكون `1/x` كبيرة وسالبة.']],['$ Infinity','$ 0','$ Indeterminate']),
+  Q('Write the limit `lim_{n→∞} Γ(n + 1/2)/(#r{n} Γ(n))`.','اكتب النهاية `lim_{n→∞} Γ(n + 1/2)/(#r{n} Γ(n))`.','$ Limit[Gamma[n + 1/2]/(Sqrt[n] Gamma[n]), n -> Infinity]   (* 1 *)',['#f{Γ(n + 1/2)}{Γ(n)} ~ n^{1/2}'],['$ Limit[Gamma[n + 1/2]/(Sqrt[n] Gamma[n]), n = Infinity]','$ limit(gamma(n + 1/2)/(sqrt(n) gamma(n)), n -> Infinity)','$ Limit[Gamma[n + 1/2]/(Sqrt[n] Gamma[n])]']),
+]);
+
+lesson('504',22,[
+  ['``D[f, x]`` differentiates with respect to x, ``D[f, {x, k}]`` k times, and ``D[f, x, y]`` gives a mixed derivative. For a defined function the prime also works:','``D[f, x]`` تشتق بالنسبة إلى x، و ``D[f, {x, k}]`` k مرة، و ``D[f, x, y]`` تعطي مشتقة مختلطة. وللدالة المعرّفة تعمل الشرطة أيضاً:'],
+  '$ D[x^3, x]               (* 3 x^2 *)\nD[Sin[x], {x, 2}]        (* -Sin[x] *)\nf[x_] := x^4;  f\'[x]      (* 4 x^3 *)',
+  ['Symbols other than x are treated as constants. ``D`` knows the special functions of the course, for example the derivative of ``LegendreP[n, x]`` for symbolic n.','وتُعامل الرموز الأخرى غير x كثوابت. و ``D`` تعرف الدوال الخاصة في المقرر، فمثلاً مشتقة ``LegendreP[n, x]`` لـ n رمزي.'],
+],[
+  Q('What is the output of ``D[x^2 y, x, y]``?','ما مخرج ``D[x^2 y, x, y]``؟','$ 2 x',['∂_x(x^2 y) = 2xy,   ∂_y(2xy) = 2x'],['$ 2 x y','$ x^2','$ 2']),
+  Q('What is the output of ``D[LegendreP[2, x], x]``?','ما مخرج ``D[LegendreP[2, x], x]``؟','$ 3 x',['#f{d}{dx}#f{3x^2 − 1}{2} = 3x'],['$ 6 x','$ 1/2 (3 x)','$ 3 x^2']),
+  Q('What is the output of ``D[Exp[a x], {x, 3}]``?','ما مخرج ``D[Exp[a x], {x, 3}]``؟','$ a^3 E^(a x)',['(e^{ax})‴ = a^3 e^{ax}'],['$ 3 a E^(a x)','$ E^(a x)','$ a E^(3 a x)']),
+  Q('What is the output of ``D[LegendreP[3, 2 t - 1], t]`` evaluated at t = 1?','ما مخرج ``D[LegendreP[3, 2 t - 1], t]`` عند t = 1؟','$ 12',['2P_3′(1) = 2·#f{3·4}{2}',['`P_n′(1) = n(n + 1)/2`, and the chain rule gives the factor 2.','`P_n′(1) = n(n + 1)/2` وقاعدة السلسلة تعطي العامل 2.']],['$ 6','$ 2','$ 24']),
+]);
+
+lesson('504',23,[
+  ['``Integrate[f, x]`` gives an antiderivative (without + C) and ``Integrate[f, {x, a, b}]`` a definite integral, both exactly:','``Integrate[f, x]`` تعطي دالة أصلية (دون + C) و ``Integrate[f, {x, a, b}]`` تكاملاً محدداً، وكلاهما مضبوط:'],
+  '$ Integrate[x^2, x]                              (* x^3/3 *)\nIntegrate[x^2, {x, 0, 1}]                       (* 1/3 *)\nIntegrate[LegendreP[2, x]^2, {x, -1, 1}]        (* 2/5 *)\nIntegrate[Exp[-x^2], {x, -Infinity, Infinity}]  (* Sqrt[Pi] *)',
+  ['Exact integration can be slow or fail for complicated integrands; then it returns the integral unevaluated, and ``NIntegrate`` (next lesson) is the tool.','والتكامل المضبوط قد يكون بطيئاً أو يفشل للدوال المعقدة، فيعيد التكامل دون حساب، وعندها ``NIntegrate`` (الدرس التالي) هي الأداة.'],
+],[
+  Q('What is the output of ``Integrate[t^(1/2), {t, 0, 1}]``?','ما مخرج ``Integrate[t^(1/2), {t, 0, 1}]``؟','$ 2/3',['∫_0^1 t^{1/2} dt = #f{1}{3/2}'],['$ 1/2','$ 3/2','$ 0.666667']),
+  Q('What is the output of ``Integrate[1/x, x]``?','ما مخرج ``Integrate[1/x, x]``؟','$ Log[x]',[['Without the constant and without the absolute value.','دون الثابت ودون القيمة المطلقة.']],['$ Log[Abs[x]] + C','$ -1/x^2','$ 1/x']),
+  Q('Write the norm `∫_{−1}^{1} P_3(x)^2 dx` and give its value.','اكتب المعيار `∫_{−1}^{1} P_3(x)^2 dx` وأعط قيمته.','$ Integrate[LegendreP[3, x]^2, {x, -1, 1}]   (* 2/7 *)',['#f{2}{2n + 1} = #f{2}{7}'],['$ Integrate[LegendreP[3, x]^2, x, -1, 1]   (* 2/7 *)','$ Integrate[LegendreP[3, x]^2, {x, -1, 1}]   (* 2/5 *)','$ Integral[LegendreP[3, x]^2, {x, -1, 1}]']),
+  Q('What is the output of ``Integrate[(1 - x) x, {x, -1, 1}]``?','ما مخرج ``Integrate[(1 - x) x, {x, -1, 1}]``؟','$ -2/3',['∫(x − x^2) dx = 0 − #f{2}{3}',['The weighted mean of x for α = 1, β = 0 (Course 503).','المتوسط الموزون لـ x عند α = 1 و β = 0 (المقرر 503).']],['$ 2/3','$ 0','$ -1/3']),
+]);
+
+lesson('504',24,[
+  ['``NIntegrate`` computes definite integrals numerically with adaptive rules. It handles integrable end singularities and infinite intervals:','``NIntegrate`` تحسب التكاملات المحددة عددياً بقواعد تكيفية، وتتعامل مع الانفرادات الطرفية القابلة للتكامل والمجالات اللانهائية:'],
+  '$ NIntegrate[Exp[-x^2], {x, 0, 1}]      (* 0.746824 *)\nNIntegrate[1/Sqrt[x], {x, 0, 1}]       (* 2. *)\nNIntegrate[Exp[-x], {x, 0, Infinity}]  (* 1. *)',
+  ['Options: ``WorkingPrecision -> 30`` computes with 30 digits, ``PrecisionGoal`` and ``AccuracyGoal`` set the target. A singular point inside the interval should be listed: ``{x, 0, 1/2, 1}``.','الخيارات: ``WorkingPrecision -> 30`` تحسب بـ 30 رقماً، و ``PrecisionGoal`` و ``AccuracyGoal`` تحددان الهدف. والنقطة الشاذة داخل المجال يجب ذكرها: ``{x, 0, 1/2, 1}``.'],
+],[
+  Q('What is the output of ``NIntegrate[Sin[x]/x, {x, 0, Pi}]``?','ما مخرج ``NIntegrate[Sin[x]/x, {x, 0, Pi}]``؟','$ 1.85194',['Si(π) = 1.851937…'],['$ 2.','$ 1.5708','$ 0.']),
+  Q('Why does ``NIntegrate[1/Sqrt[x], {x, 0, 1}]`` work although the integrand is infinite at 0?','لماذا تعمل ``NIntegrate[1/Sqrt[x], {x, 0, 1}]`` مع أن الدالة لانهائية عند 0؟',['The singularity is integrable, and the adaptive rule never evaluates at the end point','الانفراد قابل للتكامل والقاعدة التكيفية لا تحسب عند الطرف أبداً'],['∫_0^1 x^{−1/2} dx = 2'],[['It does not work','لا تعمل'],['Because it uses exact arithmetic','لأنها تستخدم الحساب المضبوط']]),
+  Q('Write `∫_0^1 |x − 1/2| dx` with the kink listed.','اكتب `∫_0^1 |x − 1/2| dx` مع ذكر نقطة الانكسار.','$ NIntegrate[Abs[x - 1/2], {x, 0, 1/2, 1}]   (* 0.25 *)',['2·#f{1}{2}·#f{1}{2}·#f{1}{2} = #f{1}{4}'],['$ NIntegrate[Abs[x - 1/2], {x, 0, 1}, 1/2]','$ NIntegrate[Abs[x - 1/2], {x, 1/2}]','$ Integrate[Abs[x - 1/2], {x, 0, 1/2, 1}]']),
+  Q('Which option computes the integral with 25 digits?','أي خيار يحسب التكامل بـ 25 رقماً؟','$ WorkingPrecision -> 25',[['Machine numbers have about 16 digits.','أعداد الآلة نحو 16 رقماً.']],['$ Digits -> 25','$ N -> 25','$ Precision = 25']),
+]);
+
+lesson('504',25,[
+  ['``Series[f, {x, a, n}]`` gives the Taylor (or Laurent, Puiseux) expansion to order n with an ``O`` term; ``Normal`` removes the O term:','``Series[f, {x, a, n}]`` تعطي مفكوك تايلور (أو لوران أو بوازو) حتى الرتبة n مع حد ``O``، و ``Normal`` تحذف حد O:'],
+  '$ Series[Exp[x], {x, 0, 3}]         (* 1 + x + x^2/2 + x^3/6 + O[x]^4 *)\nNormal[Series[Exp[x], {x, 0, 3}]]  (* 1 + x + x^2/2 + x^3/6 *)\nSeriesCoefficient[1/(1 - x), {x, 0, 5}]   (* 1 *)',
+  ['Series also expands special functions, for example `Γ(1 + x) = 1 − γx + …`, which appears in the small-μ behaviour of fractional operators.','و Series تنشر الدوال الخاصة أيضاً، مثل `Γ(1 + x) = 1 − γx + …` التي تظهر في سلوك المؤثرات الكسرية عند μ صغيرة.'],
+],[
+  Q('What is the output of ``Series[Sin[x]/x, {x, 0, 4}]``?','ما مخرج ``Series[Sin[x]/x, {x, 0, 4}]``؟','$ 1 - x^2/6 + x^4/120 + O[x]^5',['#f{sin x}{x} = 1 − #f{x^2}{3!} + #f{x^4}{5!} − …'],['$ x - x^3/6 + O[x]^5','$ 1 - x^2/2 + x^4/24 + O[x]^5','$ 1 + O[x]^5']),
+  Q('What is the output of ``Series[Gamma[1 + x], {x, 0, 1}]``?','ما مخرج ``Series[Gamma[1 + x], {x, 0, 1}]``؟','$ 1 - EulerGamma x + O[x]^2',['Γ′(1) = −γ'],['$ 1 + x + O[x]^2','$ 1 + EulerGamma x + O[x]^2','$ 1 + O[x]^2']),
+  Q('What is the output of ``SeriesCoefficient[Exp[2 x], {x, 0, 3}]``?','ما مخرج ``SeriesCoefficient[Exp[2 x], {x, 0, 3}]``؟','$ 4/3',['#f{2^3}{3!} = #f{8}{6}'],['$ 8','$ 1/6','$ 2/3']),
+  Q('Why is ``Normal`` needed before plotting a series?','لماذا نحتاج ``Normal`` قبل رسم متسلسلة؟',['The ``O`` term makes it a SeriesData object, not an ordinary expression','حد ``O`` يجعلها كائن SeriesData لا مقداراً عادياً'],[['``Normal`` turns it into a polynomial.','``Normal`` تحولها إلى كثيرة حدود.']],[['To make it exact','لجعلها مضبوطة'],['It is not needed','لا حاجة إليها']]),
+]);
+
+lesson('504',26,[
+  ['Many results hold only for some parameter values. Give assumptions to Simplify, Refine and Integrate:','كثير من النتائج تصح لبعض قيم الوسائط فقط. أعطِ الافتراضات لـ Simplify و Refine و Integrate:'],
+  '$ Refine[Sqrt[x^2], x > 0]                              (* x *)\nIntegrate[x^n, {x, 0, 1}, Assumptions -> n > -1]       (* 1/(1 + n) *)\nRefine[Sin[n Pi], Element[n, Integers]]                (* 0 *)',
+  ['Without assumptions Integrate returns a ``ConditionalExpression`` that states the condition. ``Assuming[cond, expr]`` applies the condition to every command inside expr.','ودون افتراضات تعيد Integrate الكائن ``ConditionalExpression`` الذي يذكر الشرط. و ``Assuming[cond, expr]`` تطبّق الشرط على كل أمر داخل expr.'],
+],[
+  Q('What is the output of ``Integrate[x^n, {x, 0, 1}]`` with no assumption?','ما مخرج ``Integrate[x^n, {x, 0, 1}]`` دون افتراض؟','$ ConditionalExpression[1/(1 + n), Re[n] > -1]',[['The integral converges only for Re n > −1.','التكامل يتقارب فقط عندما Re n > −1.']],['$ 1/(1 + n)','$ Infinity','$ x^(n + 1)/(n + 1)']),
+  Q('What is the output of ``Simplify[Abs[x], x < 0]``?','ما مخرج ``Simplify[Abs[x], x < 0]``؟','$ -x',['|x| = −x  (x < 0)'],['$ x','$ Abs[x]','$ 0']),
+  Q('What is the output of ``Refine[Cos[n Pi], Element[n, Integers]]``?','ما مخرج ``Refine[Cos[n Pi], Element[n, Integers]]``؟','$ (-1)^n',['cos(nπ) = (−1)^n'],['$ 1','$ 0','$ Cos[n Pi]']),
+  Q('Compute `∫_0^1 t^{μ}(1 − t) dt` for 0 < μ < 1.','احسب `∫_0^1 t^{μ}(1 − t) dt` عندما 0 < μ < 1.','$ Integrate[t^mu (1 - t), {t, 0, 1}, Assumptions -> 0 < mu < 1]',['B(μ + 1, 2) = #f{1}{(μ + 1)(μ + 2)}'],['$ Integrate[t^mu (1 - t), {t, 0, 1}, 0 < mu < 1]','$ Integrate[t^mu (1 - t), {t, 0, 1}] /. 0 < mu < 1','$ Refine[t^mu (1 - t), 0 < mu < 1]']),
+]);
+
+lesson('504',27,[
+  ['The special functions of fractional calculus are built in:','الدوال الخاصة في التفاضل الكسري جاهزة:'],
+  '$ Gamma[5]                 (* 24 *)\nGamma[1/2]               (* Sqrt[Pi] *)\nBeta[2, 3]               (* 1/12 *)\nN[MittagLefflerE[1, 2]]  (* 7.38906 *)',
+  ['``Gamma[z]`` is `Γ(z)`, ``Beta[p, q]`` is `B(p, q) = Γ(p)Γ(q)/Γ(p + q)`, and ``MittagLefflerE[a, z]`` (or ``MittagLefflerE[a, b, z]``) is `E_a(z)`, with `E_1(z) = e^z`. ``Pochhammer[a, n]`` is `(a)_n = Γ(a + n)/Γ(a)`.','و ``Gamma[z]`` هي `Γ(z)`، و ``Beta[p, q]`` هي `B(p, q) = Γ(p)Γ(q)/Γ(p + q)`، و ``MittagLefflerE[a, z]`` (أو ``MittagLefflerE[a, b, z]``) هي `E_a(z)` مع `E_1(z) = e^z`. و ``Pochhammer[a, n]`` هي `(a)_n = Γ(a + n)/Γ(a)`.'],
+],[
+  Q('What is the output of ``Gamma[5/2]``?','ما مخرج ``Gamma[5/2]``؟','$ (3 Sqrt[Pi])/4',['Γ(#f{5}{2}) = #f{3}{2}·#f{1}{2}#r{π}'],['$ 3/4','$ Sqrt[Pi]/2','$ 1.32934 Pi']),
+  Q('What is the output of ``N[MittagLefflerE[1/2, -1]]``?','ما مخرج ``N[MittagLefflerE[1/2, -1]]``؟','$ 0.427584',['E_{1/2}(−1) = e·erfc(1)'],['$ 0.367879','$ 2.71828','$ 0.5']),
+  Q('What is the output of ``Pochhammer[1/2, 2]``?','ما مخرج ``Pochhammer[1/2, 2]``؟','$ 3/4',['#f{1}{2}·#f{3}{2}'],['$ 1/4','$ 1','$ 3/2']),
+  Q('Write `Γ(k + 1)/Γ(k + 1 − μ)` for k = 1, μ = 1/2 and give its value.','اكتب `Γ(k + 1)/Γ(k + 1 − μ)` عند k = 1 و μ = 1/2 وأعط قيمته.','$ Gamma[2]/Gamma[3/2]   (* 2/Sqrt[Pi] *)',['#f{1}{#r{π}/2}'],['$ Gamma[2]/Gamma[1/2]   (* 1/Sqrt[Pi] *)','$ Gamma[1]/Gamma[3/2]','$ Beta[2, 3/2]']),
+]);
+
+lesson('504',28,[
+  ['The classical orthogonal polynomials are built in and return explicit polynomials for numeric n:','كثيرات الحدود المتعامدة الكلاسيكية جاهزة وتعيد كثيرات حدود صريحة عندما يكون n عددياً:'],
+  '$ LegendreP[3, x]       (* 1/2 (-3 x + 5 x^3) *)\nChebyshevT[3, x]       (* -3 x + 4 x^3 *)\nJacobiP[1, 1, 0, x]    (* 1/2 (1 + 3 x) *)\nLaguerreL[2, x]        (* 1/2 (2 - 4 x + x^2) *)',
+  ['The argument order of ``JacobiP[n, a, b, x]`` is n, α, β, x. For the shifted versions substitute `2t − 1`; for the fractional versions substitute `2t^{λ} − 1`.','وترتيب متغيرات ``JacobiP[n, a, b, x]`` هو n ثم α ثم β ثم x. وللصيغ المزاحة عوّض `2t − 1`، وللصيغ الكسرية عوّض `2t^{λ} − 1`.'],
+],[
+  Q('What is the output of ``HermiteH[2, x]``?','ما مخرج ``HermiteH[2, x]``؟','$ -2 + 4 x^2',['H_2(x) = 4x^2 − 2'],['$ x^2 - 1','$ 4 x^2','$ 2 - 4 x^2']),
+  Q('What is the output of ``Expand[LegendreP[2, 2 t - 1]]``?','ما مخرج ``Expand[LegendreP[2, 2 t - 1]]``؟','$ 1 - 6 t + 6 t^2',['P_2^*(t) = 6t^2 − 6t + 1'],['$ -1 + 6 t^2','$ 1 + 6 t + 6 t^2','$ 3 t^2 - 1']),
+  Q('What is the output of ``Simplify[JacobiP[3, 0, 0, x] - LegendreP[3, x]]``?','ما مخرج ``Simplify[JacobiP[3, 0, 0, x] - LegendreP[3, x]]``؟','$ 0',['P_n^{(0,0)} = P_n'],['$ x^3','$ 1/2','$ JacobiP[3, 0, 0, x]']),
+  Q('Write the fractional Legendre function `L_2^{λ}(t) = P_2(2t^{λ} − 1)` with λ = 1/2.','اكتب دالة ليجندر الكسرية `L_2^{λ}(t) = P_2(2t^{λ} − 1)` مع λ = 1/2.','$ LegendreP[2, 2 Sqrt[t] - 1]',[['Expanded: `1 − 6#r{t} + 6t`.','بعد النشر: `1 − 6#r{t} + 6t`.']],['$ LegendreP[2, 2 t - 1]^(1/2)','$ LegendreP[2, Sqrt[2 t - 1]]','$ LegendreP[1/2, 2 t - 1]']),
+]);
+
+lesson('504',29,[
+  ['Orthogonality is checked by computing a table of inner products. The result should be a diagonal matrix with the norms on the diagonal:','يُتحقق من التعامد بحساب جدول الضروب الداخلية، ويجب أن تكون النتيجة مصفوفة قطرية والمعايير على قطرها:'],
+  '$ Table[Integrate[LegendreP[m, x] LegendreP[n, x], {x, -1, 1}], {m, 0, 2}, {n, 0, 2}]\n(* {{2, 0, 0}, {0, 2/3, 0}, {0, 0, 2/5}} *)',
+  ['For other families include the weight in the integrand, and for shifted or fractional families change the interval and the weight together.','وللعائلات الأخرى أدخل الوزن في التكامل، وللعائلات المزاحة أو الكسرية غيّر المجال والوزن معاً.'],
+],[
+  Q('What is the output of ``Integrate[ChebyshevT[1, x]^2/Sqrt[1 - x^2], {x, -1, 1}]``?','ما مخرج ``Integrate[ChebyshevT[1, x]^2/Sqrt[1 - x^2], {x, -1, 1}]``؟','$ Pi/2',['∫ #f{x^2}{#r{1 − x^2}} dx = #f{π}{2}'],['$ Pi','$ 2/3','$ 0']),
+  Q('What is the output of ``Integrate[LegendreP[1, 2 t - 1]^2, {t, 0, 1}]``?','ما مخرج ``Integrate[LegendreP[1, 2 t - 1]^2, {t, 0, 1}]``؟','$ 1/3',['#f{1}{2n + 1}'],['$ 2/3','$ 1','$ 1/2']),
+  Q('Which integral checks that `P_0^{(1,0)}` and `P_1^{(1,0)}` are orthogonal?','أي تكامل يتحقق من تعامد `P_0^{(1,0)}` و `P_1^{(1,0)}`؟','$ Integrate[(1 - x) JacobiP[0, 1, 0, x] JacobiP[1, 1, 0, x], {x, -1, 1}]',[['The weight `(1 − x)^1 (1 + x)^0` must be in the integrand; the result is 0.','الوزن `(1 − x)^1 (1 + x)^0` يجب أن يكون في التكامل، والنتيجة 0.']],['$ Integrate[JacobiP[0, 1, 0, x] JacobiP[1, 1, 0, x], {x, -1, 1}]','$ Integrate[(1 + x) JacobiP[0, 1, 0, x] JacobiP[1, 1, 0, x], {x, -1, 1}]','$ Integrate[(1 - x) JacobiP[1, 1, 0, x], {x, 0, 1}]']),
+  Q('Check the orthogonality of `L_0^{λ}` and `L_1^{λ}` with weight `λt^{λ−1}` for λ = 1/2.','تحقق من تعامد `L_0^{λ}` و `L_1^{λ}` بالوزن `λt^{λ−1}` عند λ = 1/2.','$ Integrate[(1/2) t^(-1/2) LegendreP[1, 2 Sqrt[t] - 1], {t, 0, 1}]   (* 0 *)',['s = #r{t}:   ∫_0^1 (2s − 1) ds = 0'],['$ Integrate[LegendreP[1, 2 Sqrt[t] - 1], {t, 0, 1}]   (* 0 *)','$ Integrate[(1/2) t^(1/2) LegendreP[1, 2 Sqrt[t] - 1], {t, 0, 1}]','$ Integrate[(1/2) t^(-1/2) LegendreP[1, 2 t - 1], {t, -1, 1}]']),
+]);
+
+lesson('504',30,[
+  ['A reliable way to check an identity: (1) write both sides as expressions; (2) for numeric n compute ``Expand[lhs - rhs]`` in a Table; (3) for symbolic parameters try ``FullSimplify`` with assumptions; (4) always add a numerical spot check at random points.','طريقة موثوقة للتحقق من متطابقة: (1) اكتب الطرفين مقدارين، (2) لـ n عددي احسب ``Expand[lhs - rhs]`` في Table، (3) للوسائط الرمزية جرّب ``FullSimplify`` مع الافتراضات، (4) أضف دائماً فحصاً عددياً عند نقاط عشوائية.'],
+  '$ Table[Expand[(n + 1) LegendreP[n + 1, x] - (2 n + 1) x LegendreP[n, x] + n LegendreP[n - 1, x]], {n, 1, 5}]\n(* {0, 0, 0, 0, 0} *)',
+  ['A numerical check gives a tiny number such as `10^{−16}` instead of 0; compare with a tolerance, not with ``==``.','والفحص العددي يعطي عدداً صغيراً جداً مثل `10^{−16}` بدل 0، فقارن بسماحية لا بـ ``==``.'],
+],[
+  Q('Why is ``Expand`` needed in the table?','لماذا نحتاج ``Expand`` في الجدول؟',['Without it the difference stays as an unexpanded sum of products and is not shown as 0','دونها يبقى الفرق مجموع ضروب غير منشور ولا يظهر صفراً'],[['Mathematica does not expand products automatically.','لا ينشر Mathematica الضروب تلقائياً.']],[['To make the computation exact','لجعل الحساب مضبوطاً'],['It is not needed','لا حاجة إليها']]),
+  Q('Write a numerical spot check of Bonnet’s formula for n = 7 at a random point.','اكتب فحصاً عددياً لصيغة بونيه عند n = 7 في نقطة عشوائية.','$ 8 LegendreP[8, x] - 15 x LegendreP[7, x] + 7 LegendreP[6, x] /. x -> RandomReal[{-1, 1}]',['(n + 1) = 8,   2n + 1 = 15,   n = 7'],['$ 7 LegendreP[8, x] - 15 x LegendreP[7, x] + 7 LegendreP[6, x] /. x -> RandomReal[]','$ 8 LegendreP[8, x] - 15 x LegendreP[7, x] + 7 LegendreP[6, x] == 0','$ 8 LegendreP[8, x] - 14 x LegendreP[7, x] + 7 LegendreP[6, x] /. x -> RandomReal[{-1, 1}]']),
+  Q('The spot check gives ``1.11022*10^-16``. Is the identity wrong?','الفحص العددي يعطي ``1.11022*10^-16``. هل المتطابقة خاطئة؟',['No: this is rounding error of machine numbers','لا: هذا خطأ تقريب لأعداد الآلة'],[['About one unit in the 16th digit.','قرابة وحدة في الرقم السادس عشر.']],[['Yes','نعم'],['Only for n = 7','فقط عند n = 7']]),
+  Q('Check `P_n′(1) = n(n + 1)/2` for n = 1, …, 6.','تحقق من `P_n′(1) = n(n + 1)/2` عند n = 1, …, 6.','$ Table[(D[LegendreP[n, x], x] /. x -> 1) - n (n + 1)/2, {n, 1, 6}]',[['The result should be a list of six zeros.','يجب أن تكون النتيجة قائمة من ستة أصفار.']],['$ Table[D[LegendreP[n, 1], x] - n (n + 1)/2, {n, 1, 6}]','$ Table[LegendreP\'[n, 1] == n (n + 1)/2, n, 1, 6]','$ Sum[(D[LegendreP[n, x], x] /. x -> 1) - n (n + 1)/2, {n, 1, 6}]']),
+]);
+
+lesson('504',31,[
+  ['``Plot[f, {x, a, b}]`` draws a function. Options are written as rules after the iterator:','``Plot[f, {x, a, b}]`` ترسم دالة، والخيارات تُكتب قواعد بعد المُكرِّر:'],
+  '$ Plot[LegendreP[4, x], {x, -1, 1},\n  PlotRange -> {-1, 1}, AxesLabel -> {"x", "P4"},\n  PlotLabel -> "Legendre P4", Frame -> True]',
+  ['Useful options: ``PlotRange`` (the visible y range, or ``All``), ``AxesLabel`` or ``FrameLabel``, ``PlotStyle`` (colour, thickness, dashing), ``PlotPoints`` and ``MaxRecursion`` (sampling), ``ImageSize``.','خيارات مفيدة: ``PlotRange`` (مدى y الظاهر أو ``All``)، و ``AxesLabel`` أو ``FrameLabel``، و ``PlotStyle`` (اللون والسمك والتقطيع)، و ``PlotPoints`` و ``MaxRecursion`` (أخذ العينات)، و ``ImageSize``.'],
+],[
+  Q('Which option makes the whole curve visible when Plot cuts off its peaks?','أي خيار يُظهر المنحنى كله حين تقطع Plot قممه؟','$ PlotRange -> All',[['By default Plot may clip extreme values.','افتراضياً قد تقص Plot القيم المتطرفة.']],['$ PlotRange -> Full','$ AxesLabel -> All','$ ImageSize -> All']),
+  Q('Which option draws a thick red curve?','أي خيار يرسم منحنى أحمر سميكاً؟','$ PlotStyle -> {Red, Thick}',[['Directives are combined in a list.','التوجيهات تُجمع في قائمة.']],['$ Color -> Red','$ PlotStyle = Red + Thick','$ Style -> {Red, Thick}']),
+  Q('Why does ``Plot[f[x], {x, 0, 1}]`` show an empty frame?','لماذا تُظهر ``Plot[f[x], {x, 0, 1}]`` إطاراً فارغاً؟',['f has no definition, so the values are not numbers','f غير معرّفة فالقيم ليست أعداداً'],[['Plot draws only points where the expression evaluates to a real number.','Plot ترسم فقط النقاط التي يصبح فيها المقدار عدداً حقيقياً.']],[['The interval is too small','المجال صغير جداً'],['Plot needs ``N``','Plot تحتاج ``N``']]),
+  Q('Which option labels the axes of a framed plot?','أي خيار يسمّي محاور رسم بإطار؟','$ FrameLabel -> {"t", "error"}',[['With ``Frame -> True`` the labels go on the frame.','مع ``Frame -> True`` توضع التسميات على الإطار.']],['$ AxesLabel -> Frame','$ Label -> {"t", "error"}','$ PlotLabel -> {"t", "error"}']),
+]);
+
+lesson('504',32,[
+  ['A list of functions gives several curves. ``PlotLegends`` adds a legend and ``PlotStyle`` can give each curve its own style:','قائمة دوال تعطي عدة منحنيات. و ``PlotLegends`` تضيف مفتاحاً و ``PlotStyle`` تعطي كل منحنى نمطه:'],
+  '$ Plot[Evaluate[Table[LegendreP[n, x], {n, 0, 4}]], {x, -1, 1},\n  PlotLegends -> "Expressions"]\nPlot[{Sin[x], Cos[x]}, {x, 0, 2 Pi}, PlotStyle -> {Blue, Dashed}]',
+  ['``Evaluate`` makes Plot build the list first, so it knows that there are five separate curves and colours them differently.','و ``Evaluate`` تجعل Plot تبني القائمة أولاً فتعرف أن هناك خمسة منحنيات منفصلة وتلونها بألوان مختلفة.'],
+],[
+  Q('How many curves does the first input draw?','كم منحنى يرسم المدخل الأول؟','5',['n = 0, 1, 2, 3, 4'],['4','1','6']),
+  Q('What happens without ``Evaluate`` around the Table?','ماذا يحدث دون ``Evaluate`` حول Table؟',['The curves are drawn but may all get the same colour, because Plot does not see a list in advance','تُرسم المنحنيات لكن قد تأخذ كلها اللون نفسه لأن Plot لا ترى القائمة مسبقاً'],[['Plot holds its first argument unevaluated.','Plot تبقي متغيرها الأول دون حساب.']],[['Nothing is drawn','لا يُرسم شيء'],['An error message','رسالة خطأ']]),
+  Q('Which legend option shows the formulas themselves?','أي خيار للمفتاح يعرض الصيغ نفسها؟','$ PlotLegends -> "Expressions"',[['Or give your own names: ``PlotLegends -> {"P0", "P1"}``.','أو أعطِ أسماءك: ``PlotLegends -> {"P0", "P1"}``.']],['$ PlotLegends -> True','$ Legend -> "Formulas"','$ PlotLabel -> "Expressions"']),
+  Q('Plot the exact solution `e^{−t}` and the approximation `1 − 2t/3` together on [0, 1].','ارسم الحل المضبوط `e^{−t}` والتقريب `1 − 2t/3` معاً على [0, 1].','$ Plot[{Exp[-t], 1 - 2 t/3}, {t, 0, 1}]',[['A list of two expressions.','قائمة من مقدارين.']],['$ Plot[Exp[-t], 1 - 2 t/3, {t, 0, 1}]','$ Plot[Exp[-t] + 1 - 2 t/3, {t, 0, 1}]','$ Plot[{Exp[-t], 1 - 2 t/3}, t, 0, 1]']),
+]);
+
+lesson('504',33,[
+  ['``ListPlot`` draws data points and ``ListLinePlot`` joins them. A plain list is plotted against 1, 2, 3, …; a list of pairs gives the coordinates:','``ListPlot`` ترسم نقاط البيانات و ``ListLinePlot`` تصلها. والقائمة البسيطة تُرسم مقابل 1, 2, 3, …، وقائمة الأزواج تعطي الإحداثيات:'],
+  '$ ListPlot[{1, 4, 9, 16}]\nListLinePlot[{{0, 1}, {0.5, 0.6}, {1, 0.37}}]\nListPlot[data, Joined -> True, PlotMarkers -> Automatic]',
+  ['To compare data with an exact curve use ``Show[Plot[…], ListPlot[…]]`` (Lesson 37).','ولمقارنة البيانات بمنحنى مضبوط استخدم ``Show[Plot[…], ListPlot[…]]`` (الدرس 37).'],
+],[
+  Q('At which x values does ``ListPlot[{5, 7, 9}]`` put its points?','عند أي قيم x تضع ``ListPlot[{5, 7, 9}]`` نقاطها؟','$ 1, 2, 3',[['A plain list is plotted against its positions.','القائمة البسيطة تُرسم مقابل مواضعها.']],['$ 5, 7, 9','$ 0, 1, 2','$ 0, 0.5, 1']),
+  Q('Build the pairs `(x_i, f(x_i))` for nodes ``x`` and a function ``f``.','ابنِ الأزواج `(x_i, f(x_i))` للعقد ``x`` والدالة ``f``.','$ Transpose[{x, f /@ x}]',[['Or ``{#, f[#]} & /@ x``.','أو ``{#, f[#]} & /@ x``.']],['$ {x, f /@ x}','$ Join[x, f /@ x]','$ Table[x, f[x]]']),
+  Q('Which option joins the points of ListPlot with lines?','أي خيار يصل نقاط ListPlot بخطوط؟','$ Joined -> True',[['``ListLinePlot`` does the same by default.','``ListLinePlot`` تفعل الشيء نفسه افتراضياً.']],['$ Lines -> True','$ PlotStyle -> Joined','$ Connect -> All']),
+  Q('What does ``ListPlot[Table[{k, LegendreP[3, k/4]}, {k, -4, 4}]]`` show?','ماذا تعرض ``ListPlot[Table[{k, LegendreP[3, k/4]}, {k, -4, 4}]]``؟',['Nine points of `P_3(k/4)`, plotted against k from −4 to 4','تسع نقاط من `P_3(k/4)` مرسومة مقابل k من −4 إلى 4'],[['The x coordinate is k, not k/4.','الإحداثي x هو k لا k/4.']],[['A continuous curve','منحنى متصل'],['Four points','أربع نقاط']]),
+]);
+
+lesson('504',34,[
+  ['Errors are shown on logarithmic scales. ``ListLogPlot`` uses a logarithmic y axis, ``ListLogLogPlot`` logarithmic axes in both directions:','تُعرض الأخطاء على مقاييس لوغاريتمية. ``ListLogPlot`` تستخدم محور y لوغاريتمياً، و ``ListLogLogPlot`` محورين لوغاريتميين:'],
+  '$ errs = {{4, 1.2*^-3}, {8, 1.1*^-6}, {12, 1.3*^-9}, {16, 1.2*^-12}};\nListLogPlot[errs, Joined -> True]',
+  ['A spectral rate `e_N ~ ρ^{−N}` is a straight line on ``ListLogPlot``; an algebraic rate `e_N ~ N^{−p}` is a straight line of slope −p on ``ListLogLogPlot``. ``1.2*^-3`` is Mathematica’s notation for `1.2 × 10^{−3}`.','المعدل الطيفي `e_N ~ ρ^{−N}` خط مستقيم في ``ListLogPlot``، والمعدل الجبري `e_N ~ N^{−p}` خط مستقيم ميله −p في ``ListLogLogPlot``. و ``1.2*^-3`` طريقة Mathematica لكتابة `1.2 × 10^{−3}`.'],
+],[
+  Q('Which plot makes `e_N = N^{−4}` a straight line?','أي رسم يجعل `e_N = N^{−4}` خطاً مستقيماً؟','$ ListLogLogPlot',['log e_N = −4 log N'],['$ ListLogPlot','$ ListPlot','$ ListLinePlot']),
+  Q('What is the slope of that line?','ما ميل ذلك الخط؟','−4',['log e = −4 log N'],['4','−#f{1}{4}','−1']),
+  Q('How do you write `3 × 10^{−8}` in Mathematica input?','كيف تكتب `3 × 10^{−8}` في مدخل Mathematica؟','$ 3*^-8',[['Or ``3 10^-8``, which is exact.','أو ``3 10^-8`` وهي مضبوطة.']],['$ 3e-8','$ 3E-8','$ 3^-8']),
+  Q('In the data above the error falls by about `10^{−3}` every 4 steps of N. What is ρ?','في البيانات أعلاه يصغر الخطأ بعامل `10^{−3}` تقريباً كل 4 خطوات في N. ما ρ؟','≈ 5.6',['ρ^4 ≈ 10^3  ⇒  ρ ≈ 10^{0.75}'],['≈ 1000','≈ 3','≈ 10']),
+]);
+
+lesson('504',35,[
+  ['Functions of two variables:','دوال المتغيرين:'],
+  '$ Plot3D[Sin[Pi x] Exp[-y], {x, 0, 1}, {y, 0, 1}]\nContourPlot[x^2 + y^2, {x, -1, 1}, {y, -1, 1}]\nDensityPlot[Sin[Pi x] Sin[Pi y], {x, 0, 1}, {y, 0, 1}]',
+  ['With an equation, ``ContourPlot[f == g, …]`` draws the curve where the two sides are equal. These plots show solutions `u(x, t)` of the time-fractional equations of the programme.','ومع معادلة ترسم ``ContourPlot[f == g, …]`` المنحنى الذي يتساوى عنده الطرفان. وهذه الرسوم تعرض حلول `u(x, t)` للمعادلات الكسرية الزمنية في البرنامج.'],
+],[
+  Q('Which input draws the circle `x^2 + y^2 = 1`?','أي مدخل يرسم الدائرة `x^2 + y^2 = 1`؟','$ ContourPlot[x^2 + y^2 == 1, {x, -1, 1}, {y, -1, 1}]',[['An equation with ``==``.','معادلة بـ ``==``.']],['$ Plot[x^2 + y^2 == 1, {x, -1, 1}]','$ ContourPlot[x^2 + y^2 = 1, {x, -1, 1}, {y, -1, 1}]','$ Plot3D[x^2 + y^2 == 1, {x, -1, 1}, {y, -1, 1}]']),
+  Q('How many iterators does Plot3D need?','كم مُكرِّراً تحتاج Plot3D؟','2',[['One for each horizontal variable.','واحد لكل متغير أفقي.']],['1','3','0']),
+  Q('Plot `u(x, t) = t^{1/2} sin(πx)` on [0, 1] × [0, 1] as a surface.','ارسم `u(x, t) = t^{1/2} sin(πx)` على [0, 1] × [0, 1] سطحاً.','$ Plot3D[Sqrt[t] Sin[Pi x], {x, 0, 1}, {t, 0, 1}]',[['x and t are just the two variables.','x و t هما المتغيران فقط.']],['$ Plot[Sqrt[t] Sin[Pi x], {x, 0, 1}, {t, 0, 1}]','$ Plot3D[Sqrt[t] Sin[Pi x], {x, t, 0, 1}]','$ ContourPlot[Sqrt[t] Sin[Pi x] == 0, {x, 0, 1}]']),
+  Q('What does ``DensityPlot`` show?','ماذا تعرض ``DensityPlot``؟',['The values as colours on the plane','القيم ألواناً على المستوى'],[['Light and dark regions instead of height.','مناطق فاتحة وداكنة بدل الارتفاع.']],[['A surface','سطحاً'],['Level curves only','منحنيات المستوى فقط']]),
+]);
+
+lesson('504',36,[
+  ['A curve given by `(x(t), y(t))` is drawn with ``ParametricPlot``; a curve `r(θ)` with ``PolarPlot``:','المنحنى المعطى بـ `(x(t), y(t))` يُرسم بـ ``ParametricPlot``، والمنحنى `r(θ)` بـ ``PolarPlot``:'],
+  '$ ParametricPlot[{Cos[t], Sin[t]}, {t, 0, 2 Pi}]     (* the unit circle *)\nPolarPlot[1 + Cos[t], {t, 0, 2 Pi}]                (* a cardioid *)\nParametricPlot3D[{Cos[t], Sin[t], t}, {t, 0, 4 Pi}]  (* a helix *)',
+  ['Bézier curves (Course 502) are parametric plots of the Bernstein form `Σ b_i B_{i,n}(t)`.','ومنحنيات بيزييه (المقرر 502) رسوم وسيطية لصيغة بيرنشتاين `Σ b_i B_{i,n}(t)`.'],
+],[
+  Q('What does ``ParametricPlot[{Cos[t], 2 Sin[t]}, {t, 0, 2 Pi}]`` draw?','ماذا ترسم ``ParametricPlot[{Cos[t], 2 Sin[t]}, {t, 0, 2 Pi}]``؟',['An ellipse with semi-axes 1 (in x) and 2 (in y)','قطعاً ناقصاً نصفا محوريه 1 (في x) و 2 (في y)'],['x^2 + #f{y^2}{4} = 1'],[['A circle of radius 2','دائرة نصف قطرها 2'],['A line segment','قطعة مستقيمة']]),
+  Q('Draw the quadratic Bézier curve with control points (0, 0), (1, 2), (2, 0).','ارسم منحنى بيزييه التربيعي بنقاط التحكم (0, 0) و (1, 2) و (2, 0).','$ ParametricPlot[(1 - t)^2 {0, 0} + 2 t (1 - t) {1, 2} + t^2 {2, 0}, {t, 0, 1}]',['B_{0,2} = (1 − t)^2,   B_{1,2} = 2t(1 − t),   B_{2,2} = t^2'],['$ Plot[(1 - t)^2 {0, 0} + 2 t (1 - t) {1, 2} + t^2 {2, 0}, {t, 0, 1}]','$ ParametricPlot[{0, 0} + {1, 2} + {2, 0}, {t, 0, 1}]','$ ListPlot[{{0, 0}, {1, 2}, {2, 0}}]']),
+  Q('What is the largest r of the cardioid ``1 + Cos[t]``?','ما أكبر r للقلبية ``1 + Cos[t]``؟','2',['t = 0:   1 + 1'],['1','0','π']),
+  Q('Which command draws a curve in space?','أي أمر يرسم منحنى في الفضاء؟','$ ParametricPlot3D',[['It takes a list of three coordinates.','يأخذ قائمة من ثلاثة إحداثيات.']],['$ Plot3D','$ ParametricPlot','$ ContourPlot3D']),
+]);
+
+lesson('504',37,[
+  ['Graphics can be combined and arranged:','يمكن دمج الرسوم وترتيبها:'],
+  '$ p1 = Plot[Exp[-t], {t, 0, 1}];\np2 = ListPlot[{{0, 1}, {0.5, 0.6}, {1, 0.37}}];\nShow[p1, p2]                 (* both in one picture *)\nGraphicsRow[{p1, p2}]        (* side by side *)\nGraphicsGrid[{{p1, p2}, {p2, p1}}]',
+  ['``Show`` takes its options, such as ``PlotRange``, from the first graphic; give them explicitly in Show if the later graphics fall outside.','وتأخذ ``Show`` خياراتها مثل ``PlotRange`` من الرسم الأول، فأعطها صراحة في Show إذا خرجت الرسوم اللاحقة عنه.'],
+],[
+  Q('Which command overlays an exact curve and computed points?','أي أمر يركّب منحنى مضبوطاً ونقاطاً محسوبة؟','$ Show[Plot[...], ListPlot[...]]',[['Show puts graphics into one coordinate system.','Show تضع الرسوم في نظام إحداثيات واحد.']],['$ GraphicsRow[{Plot[...], ListPlot[...]}]','$ Plot[...] + ListPlot[...]','$ Join[Plot[...], ListPlot[...]]']),
+  Q('Some points of p2 are not visible in ``Show[p1, p2]``. Why?','بعض نقاط p2 لا تظهر في ``Show[p1, p2]``. لماذا؟',['Show uses the PlotRange of p1','Show تستخدم PlotRange الخاص بـ p1'],[['Write ``Show[p1, p2, PlotRange -> All]``.','اكتب ``Show[p1, p2, PlotRange -> All]``.']],[['ListPlot cannot be combined','لا يمكن دمج ListPlot'],['The points are wrong','النقاط خاطئة']]),
+  Q('How do you arrange four plots in a 2 × 2 array?','كيف ترتب أربعة رسوم في مصفوفة 2 × 2؟','$ GraphicsGrid[{{a, b}, {c, d}}]',[['A nested list: rows of graphics.','قائمة متداخلة: صفوف من الرسوم.']],['$ GraphicsRow[{a, b, c, d}]','$ Show[a, b, c, d]','$ Grid[a, b, c, d]']),
+  Q('What does the semicolon after ``p1 = Plot[…];`` do?','ماذا تفعل الفاصلة المنقوطة بعد ``p1 = Plot[…];``؟',['It stores the plot without displaying it','تخزن الرسم دون عرضه'],[['It is displayed later by Show.','ويُعرض لاحقاً بـ Show.']],[['It deletes the plot','تحذف الرسم'],['Nothing','لا شيء']]),
+]);
+
+lesson('504',38,[
+  ['``Manipulate`` turns any expression into an interactive figure with sliders:','``Manipulate`` تحول أي مقدار إلى شكل تفاعلي بمنزلقات:'],
+  '$ Manipulate[Plot[LegendreP[n, x], {x, -1, 1}, PlotRange -> {-1, 1}],\n  {{n, 2}, 0, 8, 1}]\nManipulate[Plot[MittagLefflerE[a, -t^a], {t, 0, 5}], {a, 0.1, 1}]',
+  ['``{{n, 2}, 0, 8, 1}`` means: start at 2, range 0 to 8, step 1. Fix ``PlotRange`` so the axes do not jump while the slider moves.','و ``{{n, 2}, 0, 8, 1}`` تعني: ابدأ بـ 2، والمدى من 0 إلى 8، والخطوة 1. وثبّت ``PlotRange`` حتى لا تقفز المحاور مع حركة المنزلق.'],
+],[
+  Q('How do you restrict the slider n to integers from 0 to 6?','كيف تقيّد المنزلق n بالأعداد الصحيحة من 0 إلى 6؟','$ {n, 0, 6, 1}',[['The fourth entry is the step.','العنصر الرابع هو الخطوة.']],['$ {n, 0, 6}','$ {n, Integers, 0, 6}','$ {n, 1, 6, 0}']),
+  Q('What is the initial value in ``{{mu, 0.5}, 0.1, 0.9}``?','ما القيمة الابتدائية في ``{{mu, 0.5}, 0.1, 0.9}``؟','0.5',[['The inner pair is the name and its start value.','الزوج الداخلي هو الاسم وقيمته الابتدائية.']],['0.1','0.9','0']),
+  Q('Why fix ``PlotRange`` inside Manipulate?','لماذا نثبت ``PlotRange`` داخل Manipulate؟',['So the scale stays the same while the parameter changes','حتى يبقى المقياس ثابتاً مع تغير الوسيط'],[['Otherwise each frame chooses its own range.','وإلا يختار كل إطار مداه.']],[['It is required','إلزامي'],['To make it faster','لتسريعه']]),
+  Q('Which slider explores the order μ of `t^{μ}/Γ(μ + 1)` between 0.1 and 1?','أي منزلق يستكشف الرتبة μ في `t^{μ}/Γ(μ + 1)` بين 0.1 و 1؟','$ Manipulate[Plot[t^mu/Gamma[mu + 1], {t, 0, 1}], {mu, 0.1, 1}]',[['A continuous slider: no step.','منزلق متصل دون خطوة.']],['$ Manipulate[Plot[t^mu/Gamma[mu + 1], {t, 0, 1}], {mu, 0.1, 1, 1}]','$ Plot[t^mu/Gamma[mu + 1], {t, 0, 1}, {mu, 0.1, 1}]','$ Manipulate[t^mu/Gamma[mu + 1], {t, 0, 1}]']),
+]);
+
+lesson('504',39,[
+  ['Results are presented as tables. ``Grid`` gives full control over the layout, ``TableForm`` a quick view:','تُعرض النتائج جداول. ``Grid`` تعطي تحكماً كاملاً في التخطيط، و ``TableForm`` عرضاً سريعاً:'],
+  '$ Grid[{{"N", "error"}, {4, 1.2*^-3}, {8, 2.1*^-6}}, Frame -> All]\nTableForm[{{4, 1.2*^-3}, {8, 2.1*^-6}}, TableHeadings -> {None, {"N", "error"}}]',
+  ['Numbers are formatted with ``ScientificForm[x, k]`` and ``NumberForm[x, k]``. Like MatrixForm, these wrappers are for display only.','وتُنسَّق الأعداد بـ ``ScientificForm[x, k]`` و ``NumberForm[x, k]``. ومثل MatrixForm فهذه الأغلفة للعرض فقط.'],
+],[
+  Q('What is the display of ``NumberForm[N[Pi], 4]``?','ما عرض ``NumberForm[N[Pi], 4]``؟','$ 3.142',[['Four significant digits.','أربعة أرقام معنوية.']],['$ 3.1416','$ 3.14','$ 3.1415']),
+  Q('Which option draws all the lines of a Grid?','أي خيار يرسم كل خطوط Grid؟','$ Frame -> All',[['``Frame -> True`` draws only the outer border.','``Frame -> True`` ترسم الحدود الخارجية فقط.']],['$ Lines -> All','$ Borders -> True','$ Dividers -> None']),
+  Q('Build the rows `{N, e_N}` for N = 4, 8, 12 from a function ``err[N]``.','ابنِ الصفوف `{N, e_N}` لـ N = 4, 8, 12 من دالة ``err[N]``.','$ Table[{n, err[n]}, {n, 4, 12, 4}]',[['Then put a header row in front and pass it to Grid.','ثم ضع صف العناوين في الأول ومررها إلى Grid.']],['$ Table[{n, err[n]}, {n, 4, 12}]','$ {Range[4, 12, 4], err}','$ Table[n, err[n], {n, 4, 12, 4}]']),
+  Q('Why should ``ScientificForm`` not be used before a computation?','لماذا لا تُستخدم ``ScientificForm`` قبل الحساب؟',['It wraps the number for display, so later arithmetic does not work on it as a number','تغلّف العدد للعرض فلا يعمل الحساب اللاحق عليه كعدد'],[['Apply it only to the final table.','طبّقها على الجدول النهائي فقط.']],[['It rounds the number permanently','تقرّب العدد نهائياً'],['It is slow','بطيئة']]),
+]);
+
+lesson('504',40,[
+  ['``Export`` writes figures and data to files; the format is taken from the extension. ``Import`` reads them back:','``Export`` تكتب الأشكال والبيانات في ملفات، والصيغة تؤخذ من الامتداد. و ``Import`` تقرؤها:'],
+  '$ SetDirectory[NotebookDirectory[]];\nExport["fig.pdf", p1]\nExport["errors.csv", errs]\nImport["errors.csv"]      (* the list of rows *)',
+  ['Vector formats (PDF, EPS, SVG) are best for papers; PNG for slides and the web. Setting the directory to the notebook’s folder keeps all files of a project together.','والصيغ المتجهية (PDF و EPS و SVG) أفضل للبحوث، و PNG للعروض والويب. وتعيين المجلد إلى مجلد الدفتر يبقي ملفات المشروع معاً.'],
+],[
+  Q('Export the graphic ``p`` as a PNG file.','صدّر الرسم ``p`` ملف PNG.','$ Export["fig.png", p]',[['The extension chooses the format.','الامتداد يختار الصيغة.']],['$ Export[p, "fig.png"]','$ Save["fig.png", p]','$ p >> "fig.png"']),
+  Q('Where is a file saved if no directory is set?','أين يُحفظ الملف إذا لم يُعيَّن مجلد؟',['In the current directory given by ``Directory[]``','في المجلد الحالي الذي تعطيه ``Directory[]``'],[['Often the home directory, not the notebook’s folder.','وغالباً المجلد الرئيس لا مجلد الدفتر.']],[['Next to the notebook, always','بجانب الدفتر دائماً'],['Nowhere','لا يُحفظ']]),
+  Q('Which format is best for a figure in a journal paper?','أي صيغة أفضل لشكل في بحث بمجلة؟','$ PDF',[['A vector format stays sharp at any size.','الصيغة المتجهية تبقى حادة بأي حجم.']],['$ JPG','$ GIF','$ BMP']),
+  Q('What does ``Import["errors.csv"]`` return for a file with two columns and three rows?','ماذا تعيد ``Import["errors.csv"]`` لملف من عمودين وثلاثة صفوف؟',['A list of three rows, each a list of two entries','قائمة من ثلاثة صفوف كل منها قائمة من عنصرين'],[['A 3 × 2 nested list.','قائمة متداخلة 3 × 2.']],[['A single string','نصاً واحداً'],['A 2 × 3 list','قائمة 2 × 3']]),
+]);
+
 export const MS504 = true;
