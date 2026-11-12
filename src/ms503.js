@@ -715,4 +715,226 @@ lesson('503',50,[
   Q('For `∫_0^1 t^{−1/2} g(t) dt`, which Jacobi weight appears after `t = (x + 1)/2`?','للتكامل `∫_0^1 t^{−1/2} g(t) dt` أي وزن لجاكوبي يظهر بعد `t = (x + 1)/2`؟','(1 + x)^{−1/2}:   α = 0,   β = −#f{1}{2}',['t^{−1/2} = #r{2}(1 + x)^{−1/2}'],['(1 − x)^{−1/2}:   α = −#f{1}{2},   β = 0','(1 − x^2)^{−1/2}','1']),
 ]);
 
+/* ---- 503 · Unit 6 (lessons 51–60): series;  Unit 7 (lessons 61–70): shifted and fractional forms ---- */
+lesson('503',51,[
+  ['A function is expanded in Jacobi polynomials with coefficients given by weighted inner products:','تُنشر الدالة بكثيرات جاكوبي بمعاملات تعطيها الضروب الداخلية الموزونة:'],
+  'f = Σ_{n=0}^{∞} c_n P_n^{(α,β)},   c_n = #f{⟨f, P_n⟩_w}{h_n} = #f{1}{h_n} ∫_{−1}^{1} (1 − x)^α(1 + x)^β f P_n dx',
+  ['The coefficients depend on the weight: the same f has different expansions for different (α, β), each optimal in its own weighted norm.','والمعاملات تعتمد على الوزن: للدالة نفسها مفكوكات مختلفة لكل (α, β)، كل منها أمثل في معياره الموزون.'],
+],[
+  Q('For α = 1, β = 0, compute `c_0` of `f = x`.','عند α = 1 و β = 0 احسب `c_0` للدالة `f = x`.','−#f{1}{3}',['⟨x, 1⟩_w = ∫_{−1}^{1}(1 − x)x dx = −#f{2}{3},   h_0 = 2'],['0','#f{1}{3}','−#f{2}{3}']),
+  Q('For α = 1, β = 0, compute `c_1` of `f = x` (h_1 = 1).','عند α = 1 و β = 0 احسب `c_1` للدالة `f = x` (h_1 = 1).','#f{2}{3}',['⟨x, P_1⟩_w = ∫_{−1}^{1}(1 − x)x#f{3x + 1}{2} dx = #f{2}{3}',['Check: `x = −1/3 + (2/3)P_1^{(1,0)}`.','تحقق: `x = −1/3 + (2/3)P_1^{(1,0)}`.']],['1','#f{1}{3}','#f{3}{2}']),
+  Q('What is `c_0` of f = 1 in any Jacobi family?','ما `c_0` للدالة f = 1 في أي عائلة جاكوبي؟','1',['#f{⟨1, 1⟩_w}{h_0} = #f{h_0}{h_0}'],['h_0','0','2']),
+  Q('For Legendre, `c_0` of `f = x` is 0. Why is it −1/3 for α = 1, β = 0?','لليجندر `c_0` للدالة `f = x` يساوي 0. لماذا هو −1/3 عند α = 1 و β = 0؟',['The weight `1 − x` favours negative x, so the weighted mean of x is negative','الوزن `1 − x` يرجّح قيم x السالبة فيكون المتوسط الموزون لـ x سالباً'],[['`c_0` is the weighted mean of f.','`c_0` هو المتوسط الموزون لـ f.']],[['A computing error','خطأ حسابي'],['Because x is odd','لأن x فردية']]),
+]);
+
+lesson('503',52,[
+  ['The truncated series `S_N f = Σ_{n≤N} c_n P_n` is the best approximation of f in `Π_N` for the weighted norm:','المجموع المقطوع `S_N f = Σ_{n≤N} c_n P_n` أفضل تقريب لـ f في `Π_N` بالمعيار الموزون:'],
+  '‖f − S_N f‖_w ≤ ‖f − p‖_w,   ‖f − S_N f‖_w^2 = ‖f‖_w^2 − Σ_{n≤N} c_n^2 h_n',
+  ['Changing the weight changes which errors matter: a weight that vanishes at x = 1 tolerates larger errors there. This is useful when the solution is known to be less important, or singular, near an end.','وتغيير الوزن يغيّر الأخطاء المهمة: الوزن الذي ينعدم عند x = 1 يتسامح مع أخطاء أكبر هناك. وهذا مفيد حين يُعرف أن الحل أقل أهمية أو شاذ قرب طرف.'],
+],[
+  Q('Find the best constant approximation of x with the weight `1 − x`.','أوجد أفضل تقريب ثابت لـ x بالوزن `1 − x`.','−#f{1}{3}',['c_0 = −#f{1}{3}'],['0','#f{1}{3}','−1']),
+  Q('Find its weighted error `‖x − c_0‖_w`.','أوجد خطأه الموزون `‖x − c_0‖_w`.','#f{2}{3}',['‖x‖_w^2 = ∫(1 − x)x^2 dx = #f{2}{3},   c_0^2 h_0 = #f{2}{9}','#f{2}{3} − #f{2}{9} = #f{4}{9}  ⇒  #f{2}{3}'],['#f{4}{9}','#r{#f{2}{3}}','0']),
+  Q('With the Legendre weight, what is the best constant approximation of x?','بوزن ليجندر ما أفضل تقريب ثابت لـ x؟','0',['c_0 = #f{1}{2}∫_{−1}^{1} x dx = 0'],['−#f{1}{3}','#f{1}{2}','1']),
+  Q('To which functions is the error `f − S_N f` orthogonal?','على أي الدوال يكون الخطأ `f − S_N f` عمودياً؟',['To every polynomial of degree ≤ N, in the weighted inner product','على كل كثيرة حدود درجتها ≤ N في الضرب الداخلي الموزون'],[['This is the weighted Pythagoras behind the error formula.','وهذا فيثاغورس الموزون وراء صيغة الخطأ.']],[['To f','على f'],['To nothing','لا شيء']]),
+]);
+
+lesson('503',53,[
+  ['Parseval’s identity in the weighted space:','متطابقة بارسيفال في الفضاء الموزون:'],
+  '‖f‖_w^2 = ∫_{−1}^{1} w f^2 dx = Σ_{n=0}^{∞} c_n^2 h_n',
+  ['The truncation error is the tail of the sum, so the decay of `c_n^2 h_n` (not of `c_n` alone) decides the accuracy. Since `h_n` itself depends on α, β and n, compare normalized coefficients `c_n #r{h_n}` when judging convergence.','وخطأ القطع ذيل المجموع، فتناقص `c_n^2 h_n` (لا `c_n` وحدها) يحدد الدقة. ولأن `h_n` نفسها تعتمد على α و β و n نقارن المعاملات المطبّعة `c_n #r{h_n}` عند الحكم على التقارب.'],
+],[
+  Q('Check Parseval for `f = x` with α = 1, β = 0 (`c_0 = −1/3`, `c_1 = 2/3`, `h_0 = 2`, `h_1 = 1`).','تحقق من بارسيفال للدالة `f = x` مع α = 1 و β = 0 (`c_0 = −1/3` و `c_1 = 2/3` و `h_0 = 2` و `h_1 = 1`).','#f{2}{3}',['#f{1}{9}·2 + #f{4}{9}·1 = #f{6}{9}','∫_{−1}^{1}(1 − x)x^2 dx = #f{2}{3}'],['#f{4}{9}','#f{5}{9}','1']),
+  Q('A function has `‖f‖_w^2 = 1` and `Σ_{n≤N} c_n^2 h_n = 0.9999`. Find `‖f − S_N f‖_w`.','دالة فيها `‖f‖_w^2 = 1` و `Σ_{n≤N} c_n^2 h_n = 0.9999`. أوجد `‖f − S_N f‖_w`.','0.01',['#r{1 − 0.9999} = #r{10^{−4}}'],['10^{−4}','0.9999','0.1']),
+  Q('Why compare `c_n #r{h_n}` instead of `c_n`?','لماذا نقارن `c_n #r{h_n}` بدل `c_n`؟',['`h_n` varies with n, so only the normalized coefficients measure the contribution to the error','`h_n` تتغير مع n فلا تقيس المساهمة في الخطأ إلا المعاملات المطبّعة'],[['They are the coefficients in the orthonormal basis.','وهي المعاملات في الأساس المتعامد المعياري.']],[['There is no difference','لا فرق']]),
+  Q('Compute `‖1‖_w^2` for α = β = 1.','احسب `‖1‖_w^2` عند α = β = 1.','#f{4}{3}',['h_0 = ∫_{−1}^{1}(1 − x^2) dx'],['2','#f{2}{3}','1']),
+]);
+
+lesson('503',54,[
+  ['For analytic f the Jacobi coefficients decay geometrically, at the same rate ρ for every (α, β): ρ is set by the Bernstein ellipse of the nearest singularity, exactly as for Legendre (Course 501, Lesson 26). The parameters change only algebraic factors such as powers of n.',
+   'للدوال التحليلية تتناقص معاملات جاكوبي هندسياً بالمعدل ρ نفسه لكل (α, β): وتحدد ρ قطعُ برنشتاين الناقص لأقرب نقطة شاذة تماماً كما لليجندر (المقرر 501، الدرس 26). والوسيطان لا يغيران إلا عوامل جبرية مثل قوى n.'],
+  '|c_n #r{h_n}| ≤ C n^{s} ρ^{−n},   ρ = |z_0 + #r{z_0^2 − 1}|',
+  ['So for smooth problems the choice of α, β matters for boundary conditions, conditioning and sparsity, not for the convergence rate.','فللمسائل الملساء يهم اختيار α و β للشروط الحدية والشرط وقلة العناصر، لا لمعدل التقارب.'],
+],[
+  Q('Find ρ for `f = 1/(x − 3)`.','أوجد ρ للدالة `f = 1/(x − 3)`.','3 + 2#r{2} ≈ 5.83',['3 + #r{9 − 1} = 3 + #r{8}'],['3','#r{8} ≈ 2.83','2']),
+  Q('With ρ = 5.83, about how many terms give `10^{−10}`?','مع ρ = 5.83 كم حداً تقريباً يعطي `10^{−10}`؟','≈ 13',['#f{10}{log_{10} 5.83} = #f{10}{0.766} ≈ 13'],['≈ 10','≈ 58','≈ 6']),
+  Q('Does changing (α, β) from (0, 0) to (1, 1) change ρ?','هل يغيّر تغيير (α, β) من (0, 0) إلى (1, 1) قيمة ρ؟',['No: ρ depends only on the singularities of f','لا: ρ تعتمد فقط على النقاط الشاذة لـ f'],[['Only factors like a power of n change.','لا تتغير إلا عوامل مثل قوة لـ n.']],[['Yes, it doubles','نعم، تتضاعف']]),
+  Q('How do the coefficients of `e^x` decay?','كيف تتناقص معاملات `e^x`؟',['Faster than any `ρ^{−n}`: e^x is entire','أسرع من أي `ρ^{−n}`: e^x دالة صحيحة'],[['Roughly like `1/(2^n n!)`.','تقريباً مثل `1/(2^n n!)`.']],[['Like `n^{−2}`','مثل `n^{−2}`'],['They do not decay','لا تتناقص']]),
+]);
+
+lesson('503',55,[
+  ['If f has an end singularity, a good choice of Jacobi weight absorbs it. For `f = #r{1 − x} g(x)` with smooth g, the functions `#r{1 − x} P_n^{(1,0)}(x)` are orthogonal in plain `L^2(−1, 1)`:','إذا كان لـ f انفراد طرفي فالاختيار الجيد لوزن جاكوبي يمتصه. فللدالة `f = #r{1 − x} g(x)` مع g ملساء تكون الدوال `#r{1 − x} P_n^{(1,0)}(x)` متعامدة في `L^2(−1, 1)` العادي:'],
+  '∫_{−1}^{1} #r{1 − x} P_m^{(1,0)}·#r{1 − x} P_n^{(1,0)} dx = ∫_{−1}^{1} (1 − x) P_m^{(1,0)} P_n^{(1,0)} dx = h_n δ_{mn}',
+  ['Expanding g instead of f restores spectral convergence. This is the idea behind the generalized Jacobi functions and the poly-fractonomials of Unit 10.','ونشر g بدل f يعيد التقارب الطيفي. وهذه الفكرة وراء دوال جاكوبي المعممة وكثيرات جاكوبي الكسرية في الوحدة 10.'],
+],[
+  Q('At what rate do the Legendre coefficients of `#r{1 − x}` decay?','بأي معدل تتناقص معاملات ليجندر للدالة `#r{1 − x}`؟','n^{−2}',[['An end singularity of order 1/2 (Course 501, Lesson 27).','انفراد طرفي من الرتبة 1/2 (المقرر 501، الدرس 27).']],['ρ^{−n}','n^{−1/2}','n^{−1}']),
+  Q('Expand `#r{1 − x}(1 + x)` in the functions `#r{1 − x}P_n^{(1,0)}`.','انشر `#r{1 − x}(1 + x)` بالدوال `#r{1 − x}P_n^{(1,0)}`.','#f{2}{3}P_0^{(1,0)} + #f{2}{3}P_1^{(1,0)}',['g = 1 + x = c_0 + c_1#f{3x + 1}{2}','c_1 = #f{2}{3},   c_0 = 1 − #f{1}{3} = #f{2}{3}'],['P_0^{(1,0)} + P_1^{(1,0)}','#f{1}{3}P_0^{(1,0)} + #f{2}{3}P_1^{(1,0)}','2P_1^{(1,0)}']),
+  Q('Why are the functions `#r{1 − x}P_n^{(1,0)}` orthogonal with weight 1?','لماذا تتعامد الدوال `#r{1 − x}P_n^{(1,0)}` بالوزن 1؟',['Their product contains `(1 − x)`, the Jacobi weight with α = 1','حاصل ضربها يحتوي `(1 − x)` وهو وزن جاكوبي مع α = 1'],[['The square roots combine into the weight.','الجذور التربيعية تتحد في الوزن.']],[['Because P_n are orthogonal with weight 1','لأن P_n متعامدة بالوزن 1'],['They are not','ليست متعامدة']]),
+  Q('How fast does the expansion of `#r{1 − x} e^x` in `#r{1 − x}P_n^{(1,0)}` converge?','بأي سرعة يتقارب مفكوك `#r{1 − x} e^x` بالدوال `#r{1 − x}P_n^{(1,0)}`؟',['Spectrally, like the expansion of the smooth `e^x`','طيفياً مثل مفكوك الدالة الملساء `e^x`'],[['The singular factor is in the basis, not in the expanded function.','العامل الشاذ في الأساس لا في الدالة المنشورة.']],[['Like `n^{−2}`','مثل `n^{−2}`'],['It does not converge','لا يتقارب']]),
+]);
+
+lesson('503',56,[
+  ['Discrete Jacobi coefficients use the Gauss–Jacobi rule in place of the integrals:','المعاملات المتقطعة لجاكوبي تستخدم قاعدة جاوس–جاكوبي بدل التكاملات:'],
+  'c_k ≈ ĉ_k = #f{1}{h_k} Σ_{i=1}^{n} w_i f(x_i) P_k(x_i),   k = 0, …, n − 1',
+  ['They are exact when `f P_k` has degree ≤ 2n − 1 for every k ≤ n − 1, that is for every f of degree ≤ n; otherwise higher terms alias onto lower ones (`P_n` is zero at the nodes). The values `f(x_i)` and the coefficients `ĉ_k` are two equivalent descriptions of the interpolant.','وتكون مضبوطة متى كانت درجة `f P_k` ≤ 2n − 1 لكل k ≤ n − 1، أي لكل f درجتها ≤ n، وإلا تُطوى الحدود العليا على الدنيا (`P_n` صفر عند العقد). والقيم `f(x_i)` والمعاملات `ĉ_k` وصفان متكافئان لكثيرة الاستكمال.'],
+],[
+  Q('With the one-point rule (α = 1, β = 0: node −1/3, weight 2), compute `ĉ_0` for `f = x`.','بقاعدة النقطة الواحدة (α = 1 و β = 0: العقدة −1/3 والوزن 2) احسب `ĉ_0` للدالة `f = x`.','−#f{1}{3}',['#f{1}{2}·2·(−#f{1}{3})·1',['Exact, as computed in Lesson 51.','مضبوط كما حُسب في الدرس 51.']],['0','#f{2}{3}','−#f{2}{3}']),
+  Q('With the same rule, compute `ĉ_0` for `f = x^2` and compare with the exact `c_0 = 1/3`.','بالقاعدة نفسها احسب `ĉ_0` للدالة `f = x^2` وقارن بالقيمة المضبوطة `c_0 = 1/3`.','ĉ_0 = #f{1}{9},   c_0 = #f{1}{3}',['ĉ_0 = #f{1}{2}·2·#f{1}{9}','c_0 = #f{1}{2}∫_{−1}^{1}(1 − x)x^2 dx = #f{1}{3}',['Degree 2 > 2n − 1 = 1: the one-point rule is no longer exact.','الدرجة 2 > 2n − 1 = 1: قاعدة النقطة الواحدة لم تعد مضبوطة.']],['ĉ_0 = #f{1}{3},   c_0 = #f{1}{3}','ĉ_0 = #f{1}{9},   c_0 = #f{1}{9}','ĉ_0 = 0,   c_0 = #f{1}{3}']),
+  Q('With n nodes, what does `P_n` contribute to the discrete coefficients?','مع n عقدة ماذا تساهم `P_n` في المعاملات المتقطعة؟','0',[['The nodes are the zeros of `P_n`, so all its values vanish.','العقد جذور `P_n` فكل قيمها أصفار.']],['1','h_n','P_n(1)']),
+  Q('Up to which degree of f are the discrete coefficients exact with n nodes?','حتى أي درجة لـ f تكون المعاملات المتقطعة مضبوطة مع n عقدة؟','n',['k ≤ n − 1:   deg(f P_k) ≤ n + n − 1 = 2n − 1',['Lesson 51’s `f = x` with one node (n = 1) is exact; `x^2` is not.','الدالة `f = x` في الدرس 51 بعقدة واحدة (n = 1) مضبوطة، و `x^2` ليست كذلك.']],['2n − 1','n − 1','2n']),
+]);
+
+lesson('503',57,[
+  ['Interpolation at the zeros of `P_n^{(α,β)}` is stable only for suitable parameters. With `γ = max(α, β)`, the Lebesgue constant grows like','الاستكمال عند جذور `P_n^{(α,β)}` مستقر فقط لوسائط مناسبة. ومع `γ = max(α, β)` ينمو ثابت ليبيغ مثل'],
+  'Λ_n ~ log n   (γ ≤ −#f{1}{2}),     Λ_n ~ n^{γ+1/2}   (γ > −#f{1}{2})',
+  ['So Chebyshev points (γ = −1/2) are optimal, Legendre points (γ = 0) still very good (`#r{n}` growth), and large parameters should be avoided for interpolation, even though they are fine for quadrature.','فنقاط تشيبيشيف (γ = −1/2) مثلى، ونقاط ليجندر (γ = 0) جيدة جداً أيضاً (نمو `#r{n}`)، ويجب تجنب الوسائط الكبيرة في الاستكمال مع أنها جيدة للتربيع.'],
+],[
+  Q('How does `Λ_n` grow at the Legendre–Gauss points?','كيف ينمو `Λ_n` عند نقاط ليجندر–جاوس؟','~ #r{n}',['γ = 0:   n^{1/2}'],['~ log n','~ n','~ 2^n']),
+  Q('How does `Λ_n` grow for α = β = 2?','كيف ينمو `Λ_n` عند α = β = 2؟','~ n^{5/2}',['γ + #f{1}{2} = 2.5'],['~ n^2','~ log n','~ #r{n}']),
+  Q('Which parameters give logarithmic growth?','أي الوسائط تعطي نمواً لوغاريتمياً؟',['α, β ≤ −1/2, for example Chebyshev','α, β ≤ −1/2، مثل تشيبيشيف'],[['These points cluster most strongly near ±1.','هذه النقاط تتكاثف بأقوى صورة قرب ±1.']],[['α = β = 1','α = β = 1'],['Any α, β','أي α و β']]),
+  Q('Are large α, β bad for Gauss–Jacobi quadrature as well?','هل الوسائط الكبيرة α و β سيئة لتربيع جاوس–جاكوبي أيضاً؟',['No: the weights stay positive and the rule is exact to degree 2n − 1','لا: الأوزان تبقى موجبة والقاعدة مضبوطة حتى الدرجة 2n − 1'],[['Quadrature is stable for every α, β > −1; only interpolation suffers.','التربيع مستقر لكل α, β > −1، والاستكمال وحده يتأثر.']],[['Yes','نعم']]),
+]);
+
+lesson('503',58,[
+  ['Differentiation matrices at Jacobi points are built exactly as in Course 501, from the barycentric weights `λ_j = 1/Π_{k≠j}(x_j − x_k)`:','مصفوفات التفاضل عند نقاط جاكوبي تُبنى كما في المقرر 501 من الأوزان الباريسنترية `λ_j = 1/Π_{k≠j}(x_j − x_k)`:'],
+  'D_{ij} = #f{λ_j/λ_i}{x_i − x_j}  (i ≠ j),     D_{ii} = −Σ_{j≠i} D_{ij}',
+  ['Every row sums to zero, the matrix is exact for polynomials of degree < n, and its norm grows like `n^2`. The choice of points (α, β) changes the conditioning but not the construction.','ومجموع كل صف صفر، والمصفوفة مضبوطة لكثيرات الحدود ذات الدرجة < n، ومعيارها ينمو مثل `n^2`. واختيار النقاط (α, β) يغيّر الشرط لا طريقة البناء.'],
+],[
+  Q('Build D for the nodes `x_0 = −1/#r{5}`, `x_1 = 1/#r{5}` (zeros of `P_2^{(1,1)}`).','ابنِ D للعقدتين `x_0 = −1/#r{5}` و `x_1 = 1/#r{5}` (جذري `P_2^{(1,1)}`).','D = #f{#r{5}}{2}#m{−1, 1 ;; −1, 1}',['ℓ_0′ = #f{1}{x_0 − x_1} = −#f{#r{5}}{2},   ℓ_1′ = #f{#r{5}}{2}',['For two points every row is the same difference quotient.','لنقطتين كل صف هو خارج قسمة الفروق نفسه.']],['D = #f{#r{5}}{2}#m{1, −1 ;; 1, −1}','D = #m{−1, 1 ;; −1, 1}','D = #r{5}#m{−1, 1 ;; −1, 1}']),
+  Q('Apply that D to `u = x`.','طبّق D تلك على `u = x`.','(1,  1)',['#f{#r{5}}{2}(x_1 − x_0) = #f{#r{5}}{2}·#f{2}{#r{5}} = 1'],['(0,  0)','(#r{5},  #r{5})','(−1,  1)']),
+  Q('Why must every row of D sum to 0?','لماذا يجب أن يكون مجموع كل صف في D صفراً؟',['The derivative of a constant is 0','مشتقة الثابت صفر'],['D·(1, …, 1)^T = 0'],[['Because D is antisymmetric','لأن D ضد متماثلة']]),
+  Q('By what factor does `‖D‖` grow when n is doubled?','بأي عامل يكبر `‖D‖` عند مضاعفة n؟','≈ 4',['‖D‖ ~ n^2'],['≈ 2','≈ 8','≈ 16']),
+]);
+
+lesson('503',59,[
+  ['Choosing (α, β) for a problem: (1) for boundary conditions use bases that vanish at the ends, such as `(1 − x^2)P_k^{(1,1)}`, whose derivatives are single Legendre polynomials:','اختيار (α, β) لمسألة: (1) للشروط الحدية نستخدم أسساً تنعدم عند الطرفين، مثل `(1 − x^2)P_k^{(1,1)}` التي مشتقاتها كثيرات ليجندر مفردة:'],
+  '#f{d}{dx}[(1 − x^2) P_k^{(1,1)}] = −2(k + 1) P_{k+1}',
+  ['(2) For end singularities choose the weight that absorbs them (Lesson 55). (3) For interpolation prefer α, β ≤ 0. (4) For fractional problems on [0, 1] the paper keeps α = β = 0 and moves the singularity into the map `t^{λ}`.','(2) للانفرادات الطرفية اختر الوزن الذي يمتصها (الدرس 55). (3) للاستكمال يُفضَّل α, β ≤ 0. (4) وللمسائل الكسرية على [0, 1] يبقي البحث α = β = 0 وينقل الانفراد إلى التحويل `t^{λ}`.'],
+],[
+  Q('Check the identity for k = 0.','تحقق من المتطابقة عند k = 0.','−2x',['#f{d}{dx}(1 − x^2) = −2x = −2·1·P_1'],['2x','−2','−x']),
+  Q('Check the identity for k = 1.','تحقق من المتطابقة عند k = 1.','2 − 6x^2',['#f{d}{dx}[(1 − x^2)·2x] = 2 − 6x^2','−4P_2 = −4·#f{3x^2 − 1}{2} = 2 − 6x^2'],['6x^2 − 2','2x − 6x^3','−4x']),
+  Q('Why do `(1 − x^2)P_k^{(1,1)}` give a diagonal stiffness matrix for `−u″`?','لماذا تعطي `(1 − x^2)P_k^{(1,1)}` مصفوفة جساءة قطرية لـ `−u″`؟',['Their derivatives are multiples of distinct Legendre polynomials, which are orthogonal','مشتقاتها مضاعفات لكثيرات ليجندر مختلفة وهي متعامدة'],['⟨φ_j′, φ_k′⟩ = 4(j + 1)(k + 1)⟨P_{j+1}, P_{k+1}⟩'],[['Because they are orthogonal themselves','لأنها متعامدة بنفسها']]),
+  Q('A solution behaves like `(1 + x)^{1/2}` near x = −1. Which weight absorbs it?','حلٌّ يسلك مثل `(1 + x)^{1/2}` قرب x = −1. أي وزن يمتصه؟',['β = 1, with the functions `(1 + x)^{1/2}P_n^{(0,1)}`','β = 1 مع الدوال `(1 + x)^{1/2}P_n^{(0,1)}`'],['(1 + x)^{1/2}·(1 + x)^{1/2} = (1 + x)'],['α = 1','α = β = #f{1}{2}','β = −#f{1}{2}']),
+]);
+
+lesson('503',60,[
+  ['Clenshaw’s algorithm evaluates a Jacobi series stably by running the recurrence backwards. If `P_{k+1} = (a_k x + b_k)P_k − c_k P_{k−1}` with `P_0 = 1`, `P_1 = a_0 x + b_0`, then','خوارزمية كلينشو تحسب متسلسلة جاكوبي بثبات بتشغيل علاقة التكرار إلى الخلف. إذا كان `P_{k+1} = (a_k x + b_k)P_k − c_k P_{k−1}` مع `P_0 = 1` و `P_1 = a_0 x + b_0` فإن'],
+  'y_{N+1} = y_{N+2} = 0,   y_k = c_k^* + (a_k x + b_k) y_{k+1} − c_{k+1} y_{k+2},   S = Σ c_k^* P_k = y_0',
+  ['(here `c_k^*` are the series coefficients). It costs `O(N)` per point and never forms the polynomials explicitly.','(و `c_k^*` معاملات المتسلسلة). وتكلفتها `O(N)` لكل نقطة ولا تكوّن الكثيرات صراحة أبداً.'],
+],[
+  Q('For Legendre, `a_k = (2k + 1)/(k + 1)`, `b_k = 0`, `c_k = k/(k + 1)`. Evaluate `S = 1 + 2P_1 + 3P_2` at x = 0.5.','لليجندر `a_k = (2k + 1)/(k + 1)` و `b_k = 0` و `c_k = k/(k + 1)`. احسب `S = 1 + 2P_1 + 3P_2` عند x = 0.5.','1.625',['y_2 = 3,   y_1 = 2 + #f{3}{2}·0.5·3 = 4.25','y_0 = 1 + 1·0.5·4.25 − #f{1}{2}·3 = 1.625',['Directly: `1 + 1 + 3(−0.125) = 1.625`.','مباشرة: `1 + 1 + 3(−0.125) = 1.625`.']],['2','1.25','4.25']),
+  Q('What does Clenshaw cost for N terms at one point?','ما تكلفة كلينشو لـ N حداً عند نقطة واحدة؟','O(N)',[['One pass of the recurrence.','مرور واحد على علاقة التكرار.']],['O(N^2)','O(N log N)','O(1)']),
+  Q('For Chebyshev, `a_0 = 1`, `a_k = 2` (k ≥ 1), `b_k = 0`, `c_k = 1`. Evaluate `S = 1 + 2T_1 + 3T_2` at x = 0.5.','لتشيبيشيف `a_0 = 1` و `a_k = 2` (k ≥ 1) و `b_k = 0` و `c_k = 1`. احسب `S = 1 + 2T_1 + 3T_2` عند x = 0.5.','0.5',['y_2 = 3,   y_1 = 2 + 2·0.5·3 = 5','y_0 = 1 + 1·0.5·5 − 1·3 = 0.5'],['3.5','2','−0.5']),
+  Q('Why is Clenshaw preferred to summing `c_k P_k(x)` after computing each `P_k(x)`?','لماذا تُفضَّل كلينشو على جمع `c_k P_k(x)` بعد حساب كل `P_k(x)`؟',['Same cost but no storage of all `P_k`, and better error behaviour for decaying coefficients','التكلفة نفسها دون تخزين كل `P_k` وسلوك أفضل للخطأ مع المعاملات المتناقصة'],[['Both are `O(N)`; Clenshaw adds the small terms first.','كلاهما `O(N)`، وكلينشو تجمع الحدود الصغيرة أولاً.']],[['It is exact','لأنها مضبوطة']]),
+]);
+
+lesson('503',61,[
+  ['On `[0, 1]` the shifted Jacobi polynomials and their weight are','على `[0, 1]` تكون كثيرات جاكوبي المزاحة ووزنها'],
+  'P_n^{*(α,β)}(t) = P_n^{(α,β)}(2t − 1),     w^*(t) = (1 − t)^{α} t^{β}',
+  ['The end t = 1 corresponds to x = 1 (parameter α) and t = 0 to x = −1 (parameter β), so `P_n^*(1) = C(n + α, n)` and `P_n^*(0) = (−1)^n C(n + β, n)`. For problems in time, β controls the behaviour at the initial point t = 0.','الطرف t = 1 يقابل x = 1 (الوسيط α) والطرف t = 0 يقابل x = −1 (الوسيط β)، فيكون `P_n^*(1) = C(n + α, n)` و `P_n^*(0) = (−1)^n C(n + β, n)`. وفي المسائل الزمنية يتحكم β في السلوك عند النقطة الابتدائية t = 0.'],
+],[
+  Q('Find `P_1^{*(1,0)}(t)`.','أوجد `P_1^{*(1,0)}(t)`.','3t − 1',['#f{3(2t − 1) + 1}{2}'],['3t − 2','2t − 1','3t + 1']),
+  Q('Find `P_2^{*(0,1)}(0)`.','أوجد `P_2^{*(0,1)}(0)`.','3',['(−1)^2 C(3, 2)'],['−3','1','6']),
+  Q('Which parameter controls the behaviour at t = 0?','أي وسيط يتحكم في السلوك عند t = 0؟','β',['t = 0  ↔  x = −1'],['α','α + β','λ']),
+  Q('Write the weight on `[0, 1]` for α = 0, β = 1.','اكتب الوزن على `[0, 1]` عند α = 0 و β = 1.','w^* = t',['(1 − t)^0 t^1'],['w^* = 1 − t','w^* = t(1 − t)','w^* = 1']),
+]);
+
+lesson('503',62,[
+  ['On a general interval `[0, γ]`:','على مجال عام `[0, γ]`:'],
+  'P_n^{(α,β)}(#f{2t}{γ} − 1),     w = (γ − t)^{α} t^{β},     ‖P_n‖_w^2 = (#f{γ}{2})^{α+β+1} h_n',
+  ['With α = β = 0 these are the polynomials `L_i^{γ}` of the paper (Course 501, Lesson 15), with norm `γ/(2i + 1)`. Derivatives pick up the factor `2/γ` per order.','ومع α = β = 0 تكون كثيرات `L_i^{γ}` في البحث (المقرر 501، الدرس 15) بالمعيار `γ/(2i + 1)`. والمشتقات تكتسب العامل `2/γ` لكل رتبة.'],
+],[
+  Q('Write `P_1^{(0,0)}(2t/γ − 1)` for γ = 2.','اكتب `P_1^{(0,0)}(2t/γ − 1)` عند γ = 2.','t − 1',['#f{2t}{2} − 1'],['2t − 1','#f{t}{2} − 1','t']),
+  Q('Find the norm for α = β = 0, n = 2, γ = 3.','أوجد المعيار عند α = β = 0 و n = 2 و γ = 3.','#f{3}{5}',['#f{γ}{2}·#f{2}{2n + 1} = #f{γ}{5}'],['#f{2}{5}','3','#f{1}{5}']),
+  Q('Find the norm for α = β = 1, n = 1, γ = 2.','أوجد المعيار عند α = β = 1 و n = 1 و γ = 2.','#f{16}{15}',['(#f{2}{2})^3·h_1 = h_1 = #f{16}{15}'],['#f{2}{15}','#f{32}{15}','#f{8}{15}']),
+  Q('What factor does the first derivative pick up on `[0, γ]`?','ما العامل الذي تكتسبه المشتقة الأولى على `[0, γ]`؟','#f{2}{γ}',['x = #f{2t}{γ} − 1  ⇒  #f{dx}{dt} = #f{2}{γ}'],['#f{γ}{2}','γ','#f{4}{γ^2}']),
+]);
+
+lesson('503',63,[
+  ['In powers of t the shifted Jacobi polynomials are','بقوى t تكون كثيرات جاكوبي المزاحة'],
+  'P_n^{*(α,β)}(t) = Σ_{k=0}^{n} (−1)^{n−k} #f{Γ(n + β + 1) Γ(n + k + α + β + 1)}{Γ(k + β + 1) Γ(n + α + β + 1) (n − k)! k!} t^k',
+  ['With α = β = 0 the coefficients are the numbers `E_{n,k}` of the paper. This power form is what makes the fractional integrals of the basis explicit (Unit 8), through `D^{−μ} t^k = Γ(k + 1)/Γ(k + μ + 1)·t^{k+μ}`.','ومع α = β = 0 تكون المعاملات هي الأعداد `E_{n,k}` في البحث. وهذه الصيغة القوية ما يجعل التكاملات الكسرية للأساس صريحة (الوحدة 8) عبر `D^{−μ} t^k = Γ(k + 1)/Γ(k + μ + 1)·t^{k+μ}`.'],
+],[
+  Q('Use the formula for n = 1, α = 1, β = 0.','استخدم الصيغة عند n = 1 و α = 1 و β = 0.','3t − 1',['k = 0:  −#f{Γ(2)Γ(3)}{Γ(1)Γ(3)} = −1,     k = 1:  #f{Γ(2)Γ(4)}{Γ(2)Γ(3)} = 3'],['3t + 1','2t − 1','−3t + 1']),
+  Q('Reduce the coefficient to α = β = 0.','اختصر المعامل إلى α = β = 0.','(−1)^{n−k}#f{(n + k)!}{(n − k)!(k!)^2}',['#f{n!(n + k)!}{k! n! (n − k)! k!}'],['C(n, k)','(−1)^k C(n, k)','#f{(n + k)!}{n! k!}']),
+  Q('Find the constant term of `P_2^{*(0,1)}(t)`.','أوجد الحد الثابت لـ `P_2^{*(0,1)}(t)`.','3',['k = 0:  (−1)^2#f{Γ(4)Γ(4)}{Γ(2)Γ(4)·2!·0!} = #f{6}{2}',['It equals `P_2^*(0) = C(3, 2)`.','ويساوي `P_2^*(0) = C(3, 2)`.']],['−3','1','6']),
+  Q('Why is the power form useful for fractional calculus?','لماذا تفيد الصيغة القوية في التفاضل الكسري؟',['Fractional integrals and derivatives of powers are explicit','لأن التكاملات والمشتقات الكسرية للقوى صريحة'],['D^{−μ} t^k = #f{Γ(k + 1)}{Γ(k + μ + 1)} t^{k+μ}'],[['It is the most stable form for evaluation','لأنها أكثر الصيغ استقراراً للحساب']]),
+]);
+
+lesson('503',64,[
+  ['Orthogonality carries over to `[0, 1]` with the norm scaled by `2^{−(α+β+1)}`:','التعامد ينتقل إلى `[0, 1]` مع تحجيم المعيار بـ `2^{−(α+β+1)}`:'],
+  '∫_0^1 (1 − t)^{α} t^{β} P_m^* P_n^* dt = #f{h_n}{2^{α+β+1}} δ_{mn} = h_n^* δ_{mn}',
+  ['The factor comes from `1 − x = 2(1 − t)`, `1 + x = 2t` and `dx = 2 dt`. For α = β = 0 it gives `1/(2n + 1)`, the norm of `P_n^*` in Course 501.','والعامل يأتي من `1 − x = 2(1 − t)` و `1 + x = 2t` و `dx = 2 dt`. وعند α = β = 0 يعطي `1/(2n + 1)` وهو معيار `P_n^*` في المقرر 501.'],
+],[
+  Q('Find `h_1^*` for α = β = 1.','أوجد `h_1^*` عند α = β = 1.','#f{2}{15}',['#f{16/15}{2^3}',['Directly: `∫_0^1 t(1 − t)·4(2t − 1)^2 dt = 2/15`.','مباشرة: `∫_0^1 t(1 − t)·4(2t − 1)^2 dt = 2/15`.']],['#f{16}{15}','#f{1}{15}','#f{4}{15}']),
+  Q('Find `h_0^*` for α = 0, β = 1.','أوجد `h_0^*` عند α = 0 و β = 1.','#f{1}{2}',['∫_0^1 t dt'],['2','1','#f{1}{4}']),
+  Q('Reduce `h_n^*` to α = β = 0.','اختصر `h_n^*` إلى α = β = 0.','#f{1}{2n + 1}',['#f{2/(2n + 1)}{2}'],['#f{2}{2n + 1}','1','#f{1}{n + 1}']),
+  Q('Where does the factor `2^{α+β+1}` come from?','من أين يأتي العامل `2^{α+β+1}`؟',['From `1 − x = 2(1 − t)`, `1 + x = 2t` and `dx = 2dt`','من `1 − x = 2(1 − t)` و `1 + x = 2t` و `dx = 2dt`'],['(1 − x)^{α}(1 + x)^{β} dx = 2^{α+β+1}(1 − t)^{α}t^{β} dt'],[['From the leading coefficient','من المعامل الرئيس']]),
+]);
+
+lesson('503',65,[
+  ['Replacing t by `t^{λ}` gives the fractional Jacobi functions:','باستبدال t بـ `t^{λ}` نحصل على دوال جاكوبي الكسرية:'],
+  'J_n^{λ}(t) = P_n^{(α,β)}(2t^{λ} − 1) = P_n^{*(α,β)}(t^{λ}),   0 < λ ≤ 1',
+  ['They combine the two tools of the programme: the map `s = t^{λ}` that matches fractional powers, and the Jacobi weight that matches end behaviour. With α = β = 0 they are the fractional Legendre functions `L_n^{λ}` of the paper.','وهي تجمع أداتي البرنامج: التحويل `s = t^{λ}` الذي يطابق القوى الكسرية، ووزن جاكوبي الذي يطابق السلوك عند الطرفين. ومع α = β = 0 تكون دوال ليجندر الكسرية `L_n^{λ}` في البحث.'],
+],[
+  Q('Write `J_1^{1/2}(t)` for α = 0, β = 1.','اكتب `J_1^{1/2}(t)` عند α = 0 و β = 1.','3#r{t} − 2',['P_1^{*(0,1)}(s) = 3s − 2,   s = #r{t}'],['3t − 2','2#r{t} − 1','3#r{t} − 1']),
+  Q('Find its zero.','أوجد جذرها.','t = #f{4}{9}',['#r{t} = #f{2}{3}'],['t = #f{2}{3}','t = #f{1}{4}','t = #f{1}{9}']),
+  Q('Write `J_1^{λ}(t)` for α = β = 0.','اكتب `J_1^{λ}(t)` عند α = β = 0.','2t^{λ} − 1',['P_1^*(s) = 2s − 1'],['3t^{λ} − 1','t^{λ}','2t − 1']),
+  Q('Find `J_n^{λ}(1)`.','أوجد `J_n^{λ}(1)`.','C(n + α, n)',['t = 1  ⇒  s = 1  ⇒  x = 1'],['1','(−1)^n C(n + β, n)','0']),
+]);
+
+lesson('503',66,[
+  ['With `s = t^{λ}`, `ds = λt^{λ−1} dt`, the orthogonality of `P_n^*` becomes','مع `s = t^{λ}` و `ds = λt^{λ−1} dt` يصبح تعامد `P_n^*`'],
+  '∫_0^1 J_m^{λ} J_n^{λ} w^{λ} dt = h_n^* δ_{mn},     w^{λ}(t) = λ t^{λ−1}(1 − t^{λ})^{α} t^{λβ}',
+  ['The weight is the Jacobi weight in s times the Jacobian of the map. For α = β = 0 it is the weight `λt^{λ−1}` of the paper.','والوزن هو وزن جاكوبي في s مضروباً في جاكوبي التحويل. وعند α = β = 0 هو الوزن `λt^{λ−1}` في البحث.'],
+],[
+  Q('Check `∫_0^1 J_0 J_1 w dt = 0` for α = 0, β = 1.','تحقق من `∫_0^1 J_0 J_1 w dt = 0` عند α = 0 و β = 1.','0',['∫_0^1 (3s − 2)s ds = 1 − 1'],['#f{1}{2}','1','#f{1}{12}']),
+  Q('Compute `h_1^*` for α = 0, β = 1.','احسب `h_1^*` عند α = 0 و β = 1.','#f{1}{4}',['∫_0^1 (3s − 2)^2 s ds = #f{9}{4} − 4 + 2'],['#f{1}{2}','#f{1}{3}','1']),
+  Q('Write `w^{λ}` for α = 0, β = 1, λ = 1/2.','اكتب `w^{λ}` عند α = 0 و β = 1 و λ = 1/2.','#f{1}{2}',['λt^{λ−1}·t^{λβ} = #f{1}{2}t^{−1/2}·t^{1/2}'],['#f{1}{2}t^{−1/2}','t^{1/2}','1']),
+  Q('Reduce `w^{λ}` to α = β = 0.','اختصر `w^{λ}` إلى α = β = 0.','λt^{λ−1}',['(1 − t^{λ})^0 t^0 = 1'],['1','t^{λ}','λ']),
+]);
+
+lesson('503',67,[
+  ['Quadrature for the fractional Jacobi weight maps a Gauss–Jacobi rule from x to t:','التربيع لوزن جاكوبي الكسري ينقل قاعدة جاوس–جاكوبي من x إلى t:'],
+  't_i = (#f{x_i + 1}{2})^{1/λ},   w_i^* = #f{w_i}{2^{α+β+1}}:     ∫_0^1 w^{λ} f dt ≈ Σ_i w_i^* f(t_i)',
+  ['The rule is exact when `f(s^{1/λ})` is a polynomial in s of degree ≤ 2n − 1. The mapped nodes are the roots of `J_n^{λ}` and serve as collocation points in time.','والقاعدة مضبوطة متى كانت `f(s^{1/λ})` كثيرة حدود في s درجتها ≤ 2n − 1. والعقد المحوّلة هي جذور `J_n^{λ}` وتصلح نقاط تجميع في الزمن.'],
+],[
+  Q('Find the one-point node in t for α = 0, β = 1, λ = 1/2.','أوجد عقدة النقطة الواحدة في t عند α = 0 و β = 1 و λ = 1/2.','t = #f{4}{9}',['x_1 = #f{1}{3}  ⇒  s = #f{2}{3}  ⇒  t = s^2'],['t = #f{2}{3}','t = #f{1}{3}','t = #f{1}{9}']),
+  Q('Find its weight `w^*`.','أوجد وزنها `w^*`.','#f{1}{2}',['#f{2}{2^2}'],['2','1','#f{1}{4}']),
+  Q('Use the rule to compute `∫_0^1 w^{λ} #r{t} dt` (α = 0, β = 1, λ = 1/2).','استخدم القاعدة لحساب `∫_0^1 w^{λ} #r{t} dt` (α = 0 و β = 1 و λ = 1/2).','#f{1}{3}',['#f{1}{2}·#r{#f{4}{9}} = #f{1}{2}·#f{2}{3}',['Exactly `∫_0^1 s·s ds = 1/3`.','وهو بالضبط `∫_0^1 s·s ds = 1/3`.']],['#f{1}{2}','#f{2}{3}','#f{1}{4}']),
+  Q('When is the mapped rule exact?','متى تكون القاعدة المحوّلة مضبوطة؟',['When `f(s^{1/λ})` is a polynomial of degree ≤ 2n − 1 in s','عندما تكون `f(s^{1/λ})` كثيرة حدود درجتها ≤ 2n − 1 في s'],[['Smoothness is required in s, not in t.','النعومة مطلوبة في s لا في t.']],[['When f is smooth in t','عندما تكون f ملساء في t']]),
+]);
+
+lesson('503',68,[
+  ['A function on [0, 1] is expanded in fractional Jacobi functions with','الدالة على [0, 1] تُنشر بدوال جاكوبي الكسرية بالمعاملات'],
+  'f ≈ Σ_{n=0}^{M} c_n J_n^{λ},   c_n = #f{1}{h_n^*}∫_0^1 w^{λ} f J_n^{λ} dt',
+  ['With `s = t^{λ}` every coefficient is an ordinary shifted-Jacobi coefficient of `f(s^{1/λ})`, so all tools of Units 5–6 apply, including discrete coefficients from the mapped rule.','ومع `s = t^{λ}` يكون كل معامل معاملاً عادياً لجاكوبي المزاحة للدالة `f(s^{1/λ})`، فتنطبق كل أدوات الوحدتين 5 و 6 بما فيها المعاملات المتقطعة من القاعدة المحوّلة.'],
+],[
+  Q('For `f = #r{t}`, α = 0, β = 1, λ = 1/2, find `c_0`.','للدالة `f = #r{t}` مع α = 0 و β = 1 و λ = 1/2 أوجد `c_0`.','#f{2}{3}',['#f{1}{1/2}∫_0^1 s·s ds = 2·#f{1}{3}'],['#f{1}{3}','1','#f{1}{2}']),
+  Q('For the same f, find `c_1` (`h_1^* = 1/4`).','للدالة نفسها أوجد `c_1` (`h_1^* = 1/4`).','#f{1}{3}',['#f{1}{1/4}∫_0^1 s(3s − 2)s ds = 4(#f{3}{4} − #f{2}{3}) = 4·#f{1}{12}',['Check: `2/3 + (1/3)(3s − 2) = s`.','تحقق: `2/3 + (1/3)(3s − 2) = s`.']],['#f{1}{12}','#f{2}{3}','1']),
+  Q('How many terms does the expansion of `#r{t}` need here?','كم حداً يحتاج مفكوك `#r{t}` هنا؟','2',[['`#r{t} = s` is a polynomial of degree 1 in s.','`#r{t} = s` كثيرة حدود من الدرجة 1 في s.']],['∞','1','3']),
+  Q('Which quantity replaces the plain Jacobi norm `h_n` on [0, 1]?','أي كمية تحل محل معيار جاكوبي العادي `h_n` على [0, 1]؟','h_n^* = #f{h_n}{2^{α+β+1}}',[['Lesson 64.','الدرس 64.']],['h_n','2h_n','#f{h_n}{λ}']),
+]);
+
+lesson('503',69,[
+  ['λ is chosen so that the solution becomes smooth in `s = t^{λ}`; α and β are chosen for the weight. If the solution contains `t^{β_1}, t^{β_2}, …`, take λ as their greatest common divisor (Course 501, Lesson 30); if it also vanishes at t = 0 like `t^{a}`, a weight with β > 0 (in s) can absorb part of that behaviour.',
+   'تُختار λ بحيث يصبح الحل أملس في `s = t^{λ}`، ويُختار α و β للوزن. فإذا احتوى الحل `t^{β_1}, t^{β_2}, …` نأخذ λ القاسم المشترك الأكبر لها (المقرر 501، الدرس 30)، وإذا انعدم أيضاً عند t = 0 مثل `t^{a}` فالوزن مع β > 0 (في s) يمكن أن يمتص جزءاً من هذا السلوك.'],
+  'y = t^{0.75} + t^{1.5}   ⇒   λ = gcd(0.75, 1.5) = 0.75',
+],[
+  Q('Choose λ for `y = t^{0.75} + t^{1.5}`.','اختر λ للدالة `y = t^{0.75} + t^{1.5}`.','λ = 0.75',['1.5 = 2·0.75'],['λ = 0.25','λ = 1.5','λ = 0.5']),
+  Q('Choose λ for `y = t^{1/3} + t^{1/2}`.','اختر λ للدالة `y = t^{1/3} + t^{1/2}`.','λ = #f{1}{6}',['gcd(#f{2}{6}, #f{3}{6})'],['λ = #f{1}{3}','λ = #f{1}{2}','λ = #f{5}{6}']),
+  Q('With λ = 0.75, what is the degree of `t^{0.75} + t^{1.5}` in s?','مع λ = 0.75 ما درجة `t^{0.75} + t^{1.5}` في s؟','2',['s + s^2'],['1','3','1.5']),
+  Q('Why can a smaller λ still be correct but less efficient?','لماذا تكون λ الأصغر صحيحة مع ذلك لكنها أقل كفاءة؟',['Any common divisor works, but a smaller one raises the degree in s','أي قاسم مشترك يصلح، لكن الأصغر يرفع الدرجة في s'],['λ = 0.25:   s^3 + s^6'],[['It does not work','لا تصلح'],['It is always better','دائماً أفضل']]),
+]);
+
+lesson('503',70,[
+  ['The paper of Courses 501 and 507 uses the simplest member of this family: α = β = 0, so `J_n^{λ} = L_n^{λ}`, the weight is `λt^{λ−1}`, the norm is `1/(2n + 1)`, and the power coefficients are the numbers `E_{n,r}`. All the general Jacobi formulas of this course reduce to the paper’s formulas in this case.',
+   'البحث في المقررين 501 و 507 يستخدم أبسط عضو في هذه العائلة: α = β = 0، فتكون `J_n^{λ} = L_n^{λ}` والوزن `λt^{λ−1}` والمعيار `1/(2n + 1)` ومعاملات القوى الأعداد `E_{n,r}`. وكل صيغ جاكوبي العامة في هذا المقرر تؤول إلى صيغ البحث في هذه الحالة.'],
+  'α = β = 0:   J_n^{λ} = L_n^{λ},   w^{λ} = λt^{λ−1},   h_n^* = #f{1}{2n + 1}',
+],[
+  Q('Reduce `h_n^*` to the paper’s case.','اختصر `h_n^*` إلى حالة البحث.','#f{1}{2n + 1}',['#f{2/(2n + 1)}{2^1}'],['#f{2}{2n + 1}','1','#f{λ}{2n + 1}']),
+  Q('Reduce the analytic form of `P_n^*` to the paper’s coefficients.','اختصر الصيغة التحليلية لـ `P_n^*` إلى معاملات البحث.','E_{n,k} = (−1)^{n−k}#f{(n + k)!}{(n − k)!(k!)^2}',[['Lesson 63 with α = β = 0.','الدرس 63 مع α = β = 0.']],['C(n, k)','(−1)^k','#f{(n + k)!}{n!}']),
+  Q('Reduce the weight `w^{λ}` to the paper’s case.','اختصر الوزن `w^{λ}` إلى حالة البحث.','λt^{λ−1}',['α = β = 0'],['1','t^{λ}','λ']),
+  Q('Which generalization would let the paper’s method also absorb a known factor `t^{a}` of the solution?','أي تعميم يسمح لطريقة البحث أيضاً بامتصاص عامل معلوم `t^{a}` في الحل؟',['Using β > 0 (or generalized Jacobi functions) in time','استخدام β > 0 (أو دوال جاكوبي المعممة) في الزمن'],[['The weight `t^{λβ}` then matches the vanishing at t = 0.','فيطابق الوزن `t^{λβ}` الانعدام عند t = 0.']],[['A larger M','M أكبر'],['A smaller γ','γ أصغر']]),
+]);
+
 export const MS503 = true;
