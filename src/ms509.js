@@ -482,4 +482,115 @@ lesson('509',30,[
   Q('`|Wf|` grows like `a^{−1/2}` as a → 0 near `t_0`. What is f like there?','`|Wf|` ينمو مثل `a^{−1/2}` عندما a → 0 قرب `t_0`. كيف تكون f هناك؟',['It has a spike (like δ), α = −1','فيها نبضة (مثل δ) و α = −1'],['α + #f{1}{2} = −#f{1}{2}'],[['A jump','قفزة'],['It is smooth','ملساء']]),
 ]);
 
+/* ---- 509 · Unit 4 (lessons 31–40): multiresolution analysis ---- */
+lesson('509',31,[
+  ['A multiresolution analysis (MRA) is a ladder of closed subspaces of `L^2(ℝ)` with five properties: the spaces are nested, their union is dense in `L^2`, their intersection is zero, doubling the variable moves one level up, and the shifts `φ(t − k)` are an orthonormal basis of `V_0`:','التحليل متعدد التمييز سلّم من الفضاءات الجزئية المغلقة في `L^2(ℝ)` بخمس خصائص: الفضاءات متداخلة، واتحادها كثيف في `L^2`، وتقاطعها صفر، ومضاعفة المتغير تنقل مستوى للأعلى، والإزاحات `φ(t − k)` أساس متعامد معياري لـ `V_0`:'],
+  '⋯ ⊂ V_{−1} ⊂ V_0 ⊂ V_1 ⊂ ⋯,     ∩V_j = {0},     f(t) ∈ V_j ⇔ f(2t) ∈ V_{j+1},     ⟨φ(t − k), φ(t − l)⟩ = δ_{kl}',
+  ['Haar is the first example: `V_j` are the piecewise constants of Unit 2. Every MRA produces a wavelet ψ whose shifts and dilations are an orthonormal basis of `L^2(ℝ)`, so constructing wavelets reduces to constructing scaling functions φ.','وهار أول مثال: `V_j` هي الدوال الثابتة قطعياً في الوحدة 2. وكل تحليل متعدد التمييز ينتج مويجة ψ تكون إزاحاتها وتمديداتها أساساً متعامداً معيارياً لـ `L^2(ℝ)`، فيؤول بناء المويجات إلى بناء دوال تقييس φ.'],
+],[
+  Q('If `f(t) = 1_{[0, 1)}(t)` is in `V_0`, which function is in `V_2`?','إذا كانت `f(t) = 1_{[0, 1)}(t)` في `V_0` فأي دالة في `V_2`؟','f(4t) = 1_{[0, 1/4)}(t)',['f(t) ∈ V_0 ⇔ f(2^jt) ∈ V_j'],['f(t/4)','f(2t)','f(t − 2)']),
+  Q('For Haar, is `{φ(t − k)}` orthonormal?','لهار هل `{φ(t − k)}` متعامدة معيارياً؟',['Yes: the unit intervals `[k, k + 1)` are disjoint and each has length 1','نعم: مجالات الوحدة `[k, k + 1)` منفصلة وطول كل منها 1'],[['This is the last axiom.','هذه آخر مسلّمة.']],[['No','لا'],['Only for k ≥ 0','فقط عند k ≥ 0']]),
+  Q('What does `∩V_j = {0}` mean for Haar?','ماذا يعني `∩V_j = {0}` لهار؟',['A function constant on ever longer intervals and of finite energy must be zero','الدالة الثابتة على مجالات تزداد طولاً بلا حد وطاقتها منتهية يجب أن تكون صفراً'],[['`V_{−j}` contains functions constant on intervals of length `2^j`.','`V_{−j}` يحتوي دوالاً ثابتة على مجالات طولها `2^j`.']],[['The spaces `V_j` are disjoint','الفضاءات `V_j` منفصلة'],['Nothing','لا شيء']]),
+  Q('For the Shannon MRA, `V_j` are the functions whose transform vanishes outside which band?','لتحليل شانون متعدد التمييز، `V_j` هي الدوال التي ينعدم تحويلها خارج أي نطاق؟','|ω| ≤ 2^jπ',[['Doubling the resolution doubles the bandwidth.','مضاعفة التمييز تضاعف عرض النطاق.']],['|ω| ≤ π','|ω| ≤ 2^j','|ω| ≤ jπ']),
+]);
+
+lesson('509',32,[
+  ['Since `V_0 ⊂ V_1`, φ is a combination of the half-scale functions `#r{2}φ(2t − k)`. This is the two-scale (refinement) equation:','لأن `V_0 ⊂ V_1` تكون φ تركيباً من دوال نصف المقياس `#r{2}φ(2t − k)`. وهذه معادلة المقياسين (معادلة التنقيح):'],
+  'φ(t) = #r{2} Σ_k h_k φ(2t − k),     h_k = ⟨φ, φ_{1,k}⟩,     Σ_k h_k = #r{2}',
+  ['Integrating both sides gives `Σh_k = #r{2}` when `∫φ ≠ 0`. Haar has `h = (1/#r{2}, 1/#r{2})`. The hat function on [0, 2] satisfies `φ(t) = #f{1}{2}φ(2t) + φ(2t − 1) + #f{1}{2}φ(2t − 2)`, an MRA of piecewise linear functions (its shifts are not orthogonal, but form a stable basis).','وتكامل الطرفين يعطي `Σh_k = #r{2}` عندما `∫φ ≠ 0`. ولهار `h = (1/#r{2}, 1/#r{2})`. ودالة القبعة على [0, 2] تحقق `φ(t) = #f{1}{2}φ(2t) + φ(2t − 1) + #f{1}{2}φ(2t − 2)`، وهو تحليل للدوال الخطية قطعياً (إزاحاتها غير متعامدة لكنها أساس مستقر).'],
+],[
+  Q('Derive `Σh_k = #r{2}` from the two-scale equation.','استنتج `Σh_k = #r{2}` من معادلة المقياسين.','∫φ = #r{2}Σh_k·#f{1}{2}∫φ',['∫φ(2t − k)dt = #f{1}{2}∫φ'],['∫φ = Σh_k∫φ','∫φ = #r{2}Σh_k∫φ','∫φ = 2Σh_k∫φ']),
+  Q('Give the coefficients `h_k` of the hat function.','أعط المعاملات `h_k` لدالة القبعة.','h = (#f{1}{2#r{2}}, #f{1}{#r{2}}, #f{1}{2#r{2}})',['#r{2}h = (#f{1}{2}, 1, #f{1}{2})'],['h = (#f{1}{2}, 1, #f{1}{2})','h = (1, 2, 1)','h = (#f{1}{#r{2}}, #f{1}{#r{2}})']),
+  Q('Check `Σh_k = #r{2}` for the hat function.','تحقق من `Σh_k = #r{2}` لدالة القبعة.','#f{1}{2#r{2}} + #f{1}{#r{2}} + #f{1}{2#r{2}} = #f{2}{#r{2}} = #r{2}',[['Consistent with ∫φ = 1.','متسق مع ∫φ = 1.']],['= 2','= 1','= #f{1}{#r{2}}']),
+  Q('Check the two-scale equation of the hat function at t = 1.','تحقق من معادلة المقياسين لدالة القبعة عند t = 1.','φ(1) = #f{1}{2}φ(2) + φ(1) + #f{1}{2}φ(0) = 0 + 1 + 0 = 1',['φ(0) = φ(2) = 0,   φ(1) = 1'],['φ(1) = #f{1}{2}','φ(1) = 2','φ(1) = 0']),
+]);
+
+lesson('509',33,[
+  ['Orthonormality of `{φ(t − k)}` forces conditions on the filter. The Daubechies filter D4 (four coefficients) satisfies all of them:','تعامد `{φ(t − k)}` المعياري يفرض شروطاً على المرشح. ومرشح دوبيشي D4 (أربعة معاملات) يحققها كلها:'],
+  'Σh_k = #r{2},     Σh_k^2 = 1,     Σ_k h_kh_{k+2m} = δ_{m0};     D4:   h = #f{(1 + #r{3},  3 + #r{3},  3 − #r{3},  1 − #r{3})}{4#r{2}}',
+  ['Numerically `h = (0.48296, 0.83652, 0.22414, −0.12941)`. For four coefficients the shifted condition is the single equation `h_0h_2 + h_1h_3 = 0`. These quadratic conditions plus vanishing moments (Unit 6) determine D4 up to reflection.','وعددياً `h = (0.48296, 0.83652, 0.22414, −0.12941)`. ولأربعة معاملات يكون شرط الإزاحة معادلة واحدة `h_0h_2 + h_1h_3 = 0`. وهذه الشروط التربيعية مع العزوم المنعدمة (الوحدة 6) تحدد D4 حتى الانعكاس.'],
+],[
+  Q('Check `Σh_k^2 = 1` for Haar.','تحقق من `Σh_k^2 = 1` لهار.','#f{1}{2} + #f{1}{2} = 1',['h = (#f{1}{#r{2}}, #f{1}{#r{2}})'],['#f{1}{#r{2}} + #f{1}{#r{2}} = #r{2}','1 + 1 = 2','#f{1}{4} + #f{1}{4} = #f{1}{2}']),
+  Q('Check `h_0h_2 + h_1h_3 = 0` for D4.','تحقق من `h_0h_2 + h_1h_3 = 0` لـ D4.','(1 + #r{3})(3 − #r{3}) + (3 + #r{3})(1 − #r{3}) = 2#r{3} − 2#r{3} = 0',['(1 + #r{3})(3 − #r{3}) = 2#r{3},   (3 + #r{3})(1 − #r{3}) = −2#r{3}'],['= 4','= 2#r{3}','= −1']),
+  Q('Check `Σh_k = #r{2}` for D4.','تحقق من `Σh_k = #r{2}` لـ D4.','#f{8}{4#r{2}} = #r{2}',['(1 + #r{3}) + (3 + #r{3}) + (3 − #r{3}) + (1 − #r{3}) = 8'],['#f{8}{4} = 2','#f{4}{4#r{2}}','1']),
+  Q('Why must the number of coefficients be even for an orthonormal compactly supported φ?','لماذا يجب أن يكون عدد المعاملات زوجياً لـ φ متعامدة معيارياً ذات حامل محدود؟',['If `h_0, …, h_{N−1}` with N − 1 even, the shift m = (N − 1)/2 gives `h_0h_{N−1} = 0`, a contradiction','إذا كانت `h_0, …, h_{N−1}` مع N − 1 زوجي فالإزاحة m = (N − 1)/2 تعطي `h_0h_{N−1} = 0` وهذا تناقض'],[['The end coefficients are non-zero by definition.','المعاملات الطرفية غير صفرية بالتعريف.']],[['By convention','اصطلاحاً'],['It need not be','لا يلزم']]),
+]);
+
+lesson('509',34,[
+  ['The wavelet is built from the same half-scale functions, with the alternating flip of the filter:','تُبنى المويجة من دوال نصف المقياس نفسها مع القلب المتناوب للمرشح:'],
+  'ψ(t) = #r{2}Σ_k g_kφ(2t − k),     g_k = (−1)^k h_{N−1−k}',
+  ['For Haar, `g = (1/#r{2}, −1/#r{2})` gives `ψ = φ(2t) − φ(2t − 1)`. For D4, `g = (h_3, −h_2, h_1, −h_0) = (−0.12941, −0.22414, 0.83652, −0.48296)`. Then `Σg_k = 0`, the discrete form of `∫ψ = 0`.','ولهار `g = (1/#r{2}, −1/#r{2})` تعطي `ψ = φ(2t) − φ(2t − 1)`. ولـ D4 `g = (h_3, −h_2, h_1, −h_0) = (−0.12941, −0.22414, 0.83652, −0.48296)`. ثم `Σg_k = 0` وهو الصورة المتقطعة لـ `∫ψ = 0`.'],
+],[
+  Q('Compute g from `h = (1/#r{2}, 1/#r{2})`.','احسب g من `h = (1/#r{2}, 1/#r{2})`.','g = (#f{1}{#r{2}}, −#f{1}{#r{2}})',['g_0 = h_1,   g_1 = −h_0'],['g = (#f{1}{#r{2}}, #f{1}{#r{2}})','g = (−#f{1}{#r{2}}, −#f{1}{#r{2}})','g = (1, −1)']),
+  Q('Check `Σg_k = 0` for D4.','تحقق من `Σg_k = 0` لـ D4.','h_3 − h_2 + h_1 − h_0 = #f{(1 − #r{3}) − (3 − #r{3}) + (3 + #r{3}) − (1 + #r{3})}{4#r{2}} = 0',[['Equivalent to `m_0(π) = 0`.','يكافئ `m_0(π) = 0`.']],['= #r{2}','= 1','= −#r{2}']),
+  Q('Check `Σ_k k g_k = 0` for D4.','تحقق من `Σ_k k g_k = 0` لـ D4.','−h_2 + 2h_1 − 3h_0 = #f{−(3 − #r{3}) + 2(3 + #r{3}) − 3(1 + #r{3})}{4#r{2}} = 0',[['D4 has two vanishing moments.','لـ D4 عزمان منعدمان.']],['= 1','= #r{3}','= −#r{2}']),
+  Q('Why does the flip make ψ orthogonal to φ?','لماذا يجعل القلب ψ عمودية على φ؟',['`Σ_k h_kg_{k+2m} = 0` for all m: the terms cancel in pairs','`Σ_k h_kg_{k+2m} = 0` لكل m: الحدود تُلغى أزواجاً'],[['For m = 0 and D4: `h_0h_3 − h_1h_2 + h_2h_1 − h_3h_0 = 0`.','عند m = 0 ولـ D4: `h_0h_3 − h_1h_2 + h_2h_1 − h_3h_0 = 0`.']],[['By symmetry of φ','بتماثل φ'],['It does not','لا يجعلها']]),
+]);
+
+lesson('509',35,[
+  ['All orthogonality relations of the MRA are equations on the two filters:','كل علاقات التعامد في التحليل متعدد التمييز معادلات على المرشحين:'],
+  'Σ_kh_kh_{k+2m} = δ_{m0},     Σ_kg_kg_{k+2m} = δ_{m0},     Σ_kh_kg_{k+2m} = 0',
+  ['They say that the matrix built from the even shifts of h and g is orthogonal. This is exactly why one level of the discrete transform (Unit 5) is an orthogonal matrix and keeps energy.','وهي تقول إن المصفوفة المبنية من الإزاحات الزوجية لـ h و g متعامدة. وهذا بالضبط سبب أن مستوى واحداً من التحويل المتقطع (الوحدة 5) مصفوفة متعامدة تحفظ الطاقة.'],
+],[
+  Q('Check `Σg_k^2 = 1` for D4.','تحقق من `Σg_k^2 = 1` لـ D4.',['It equals `Σh_k^2 = 1`: the flip only permutes and changes signs','يساوي `Σh_k^2 = 1`: القلب يبدّل ويغير الإشارات فقط'],[['Squares ignore signs.','المربعات تتجاهل الإشارات.']],[['It equals 2','يساوي 2'],['It equals 0','يساوي 0']]),
+  Q('Check `Σh_kg_k = 0` for Haar.','تحقق من `Σh_kg_k = 0` لهار.','#f{1}{2} − #f{1}{2} = 0',['h_0g_0 + h_1g_1 = #f{1}{#r{2}}·#f{1}{#r{2}} + #f{1}{#r{2}}·(−#f{1}{#r{2}})'],['1','#f{1}{2}','−1']),
+  Q('For a filter of length 6, how many equations `Σh_kh_{k+2m} = δ_{m0}` are there with m ≥ 0?','لمرشح طوله 6 كم معادلة `Σh_kh_{k+2m} = δ_{m0}` مع m ≥ 0؟','3:   m = 0, 1, 2',[['m = 3 would need `h_6`.','m = 3 تحتاج `h_6`.']],['6','2','1']),
+  Q('Why does an orthogonal transform keep energy?','لماذا يحفظ التحويل المتعامد الطاقة؟','‖Wx‖^2 = x^TW^TWx = ‖x‖^2',['W^TW = I'],['‖Wx‖ = 2‖x‖','‖Wx‖^2 = ‖x‖','W = W^T']),
+]);
+
+lesson('509',36,[
+  ['On the Fourier side the filter becomes a trigonometric polynomial, the symbol, and the two-scale equation becomes a product:','في جانب فورييه يصبح المرشح كثيرة حدود مثلثية هي الرمز، وتصبح معادلة المقياسين ضرباً:'],
+  'm_0(ξ) = #f{1}{#r{2}}Σ_kh_ke^{−ikξ},     φ̂(ξ) = m_0(#f{ξ}{2})φ̂(#f{ξ}{2}),     |m_0(ξ)|^2 + |m_0(ξ + π)|^2 = 1',
+  ['`m_0(0) = 1` (from `Σh_k = #r{2}`) and `m_0(π) = 0`: a low-pass filter. Iterating the product gives `φ̂(ξ) = Π_{j≥1}m_0(ξ/2^j)φ̂(0)`. For Haar, `m_0 = (1 + e^{−iξ})/2` and `|m_0|^2 = cos^2(ξ/2)`.','و `m_0(0) = 1` (من `Σh_k = #r{2}`) و `m_0(π) = 0`: مرشح تمرير منخفض. وتكرار الضرب يعطي `φ̂(ξ) = Π_{j≥1}m_0(ξ/2^j)φ̂(0)`. ولهار `m_0 = (1 + e^{−iξ})/2` و `|m_0|^2 = cos^2(ξ/2)`.'],
+],[
+  Q('Compute `|m_0(ξ)|^2` for Haar.','احسب `|m_0(ξ)|^2` لهار.','cos^2#f{ξ}{2}',['|1 + e^{−iξ}|^2 = 2 + 2cos ξ = 4cos^2#f{ξ}{2}'],['sin^2#f{ξ}{2}','1','cos^2ξ']),
+  Q('Check `|m_0(ξ)|^2 + |m_0(ξ + π)|^2 = 1` for Haar.','تحقق من `|m_0(ξ)|^2 + |m_0(ξ + π)|^2 = 1` لهار.','cos^2#f{ξ}{2} + sin^2#f{ξ}{2} = 1',['cos^2#f{ξ + π}{2} = sin^2#f{ξ}{2}'],['cos^2ξ + sin^2ξ = 1','2cos^2#f{ξ}{2} = 1','cos ξ + sin ξ = 1']),
+  Q('Compute `m_0(π)` for Haar.','احسب `m_0(π)` لهار.','0',['#f{1 + e^{−iπ}}{2} = #f{1 − 1}{2}'],['1','#f{1}{2}','−1']),
+  Q('Use the infinite product to find `φ̂` for Haar.','استخدم الضرب اللانهائي لإيجاد `φ̂` لهار.','e^{−iξ/2}#f{sin(ξ/2)}{ξ/2}',['Π_{j≥1}cos#f{ξ}{2^{j+1}}·e^{−iξ/2^{j+1}} = e^{−iξ/2}#f{sin(ξ/2)}{ξ/2}'],['#f{sin ξ}{ξ}','e^{−iξ}','1']),
+]);
+
+lesson('509',37,[
+  ['ψ follows from φ through the high-pass symbol, defined from `m_0` by a shift of π and a phase:','تنتج ψ من φ عبر رمز التمرير العالي المعرّف من `m_0` بإزاحة π وطور:'],
+  'ψ̂(ξ) = m_1(#f{ξ}{2})φ̂(#f{ξ}{2}),     |m_1(ξ)| = |m_0(ξ + π)|',
+  ['`m_1(0) = 0` makes `ψ̂(0) = 0`, so ψ has mean zero, and `|m_1|` is large where `|m_0|` is small: the two filters split the frequencies between them. In coefficients this is the alternating flip `g_k = (−1)^kh_{N−1−k}` of Lesson 34.','و `m_1(0) = 0` يجعل `ψ̂(0) = 0` فيكون متوسط ψ صفراً، و `|m_1|` كبير حيث `|m_0|` صغير: المرشحان يقتسمان الترددات. وبالمعاملات هذا هو القلب المتناوب `g_k = (−1)^kh_{N−1−k}` في الدرس 34.'],
+],[
+  Q('Compute `|m_1(ξ)|^2` for Haar.','احسب `|m_1(ξ)|^2` لهار.','sin^2#f{ξ}{2}',['|m_0(ξ + π)|^2 = cos^2#f{ξ + π}{2}'],['cos^2#f{ξ}{2}','1','0']),
+  Q('Why is ψ a high-pass function?','لماذا ψ دالة تمرير عالٍ؟',['`m_1(0) = 0` and `|m_1(π)| = 1`: low frequencies are removed','`m_1(0) = 0` و `|m_1(π)| = 1`: الترددات المنخفضة تُزال'],[['ψ̂ is small near ξ = 0.','`ψ̂` صغيرة قرب ξ = 0.']],[['Because ψ oscillates fast','لأن ψ تتذبذب بسرعة'],['It is low-pass','إنها تمرير منخفض']]),
+  Q('Compute `|m_0(ξ)|^2 + |m_1(ξ)|^2` for Haar.','احسب `|m_0(ξ)|^2 + |m_1(ξ)|^2` لهار.','1',['cos^2#f{ξ}{2} + sin^2#f{ξ}{2}'],['2','0','cos ξ']),
+  Q('Build g for the filter `h = (h_0, h_1, h_2, h_3, h_4, h_5)`.','ابنِ g للمرشح `h = (h_0, h_1, h_2, h_3, h_4, h_5)`.','g = (h_5, −h_4, h_3, −h_2, h_1, −h_0)',['g_k = (−1)^kh_{5−k}'],['g = (h_0, −h_1, h_2, −h_3, h_4, −h_5)','g = (−h_5, h_4, −h_3, h_2, −h_1, h_0)','g = (h_5, h_4, h_3, h_2, h_1, h_0)']),
+]);
+
+lesson('509',38,[
+  ['The Shannon MRA is the opposite of Haar: perfect in frequency, poor in time. Its scaling function and filter are','تحليل شانون متعدد التمييز عكس هار: مثالي في التردد وضعيف في الزمن. ودالة التقييس والمرشح'],
+  'φ(t) = #f{sin πt}{πt},     φ̂ = 1_{[−π, π]},     h_0 = #f{1}{#r{2}},   h_k = #f{#r{2} sin(πk/2)}{πk}',
+  ['The wavelet has `ψ̂` equal to 1 (up to a phase) on `π ≤ |ξ| ≤ 2π`: an ideal band-pass filter. But φ and ψ decay only like `1/t`, so the filters are infinite and decay slowly: `h_1 = 0.4502`, `h_3 = −0.1501`, `h_5 = 0.0900`, and all even `h_k` (k ≠ 0) vanish.','والمويجة `ψ̂` لها تساوي 1 (حتى طور) على `π ≤ |ξ| ≤ 2π`: مرشح تمرير نطاقي مثالي. لكن φ و ψ تتناقصان مثل `1/t` فقط فتكون المرشحات لانهائية بطيئة التناقص: `h_1 = 0.4502` و `h_3 = −0.1501` و `h_5 = 0.0900`، وكل `h_k` الزوجية (k ≠ 0) منعدمة.'],
+],[
+  Q('Compute `h_1` for Shannon.','احسب `h_1` لشانون.','#f{#r{2}}{π} ≈ 0.4502',['#f{#r{2} sin(π/2)}{π}'],['#f{1}{π}','#f{1}{#r{2}}','0']),
+  Q('Why is `h_2 = 0`?','لماذا `h_2 = 0`؟','sin π = 0',['h_2 = #f{#r{2} sin π}{2π}'],['sin π = 1','h_2 = h_1','π = 0']),
+  Q('Where is `ψ̂` of the Shannon wavelet supported?','أين يتركز حامل `ψ̂` لمويجة شانون؟','π ≤ |ξ| ≤ 2π',[['`V_1 = V_0 ⊕ W_0` splits `|ξ| ≤ 2π` into `|ξ| ≤ π` and the rest.','`V_1 = V_0 ⊕ W_0` يقسم `|ξ| ≤ 2π` إلى `|ξ| ≤ π` والباقي.']],['|ξ| ≤ π','|ξ| ≥ 2π','0 ≤ ξ ≤ π']),
+  Q('What is the drawback of the Shannon wavelet?','ما عيب مويجة شانون؟',['It decays only like `1/t`: poor time localization and infinite filters','تتناقص مثل `1/t` فقط: تموضع زمني ضعيف ومرشحات لانهائية'],[['The uncertainty principle at work.','مبدأ الارتياب يعمل.']],[['It is not orthogonal','غير متعامدة'],['It has jumps','فيها قفزات']]),
+]);
+
+lesson('509',39,[
+  ['Meyer smoothed the Shannon construction: `φ̂` is smooth, equal to 1 for `|ξ| ≤ 2π/3`, decreasing smoothly to 0 at `|ξ| = 4π/3`, and with `|φ̂(ξ)|^2 + |φ̂(ξ − 2π)|^2 = 1` on the transition:','ماير نعّم بناء شانون: `φ̂` ملساء تساوي 1 عند `|ξ| ≤ 2π/3` وتتناقص بنعومة إلى 0 عند `|ξ| = 4π/3`، مع `|φ̂(ξ)|^2 + |φ̂(ξ − 2π)|^2 = 1` على منطقة الانتقال:'],
+  'φ̂(ξ) = 1   (|ξ| ≤ #f{2π}{3}),     φ̂(ξ) = 0   (|ξ| ≥ #f{4π}{3}),     ψ̂(ξ) = 0   (|ξ| ∉ [#f{2π}{3}, #f{8π}{3}])',
+  ['Because the transforms are smooth, φ and ψ decay faster than any power of t, and ψ is infinitely differentiable. The price: no compact support, so the filters are still infinite (but decay fast).','ولأن التحويلات ملساء تتناقص φ و ψ أسرع من أي قوة لـ t، و ψ قابلة للاشتقاق لانهائياً. والثمن: لا حامل محدود فتبقى المرشحات لانهائية (لكنها سريعة التناقص).'],
+],[
+  Q('What is `φ̂(0.5)` for the Meyer scaling function?','ما `φ̂(0.5)` لدالة التقييس لماير؟','1',['0.5 < #f{2π}{3} ≈ 2.09'],['0','#f{1}{2}','#f{1}{#r{2}}']),
+  Q('Check `|φ̂(ξ)|^2 + |φ̂(ξ − 2π)|^2 = 1` at ξ = π.','تحقق من `|φ̂(ξ)|^2 + |φ̂(ξ − 2π)|^2 = 1` عند ξ = π.','2|φ̂(π)|^2 = 1   ⇒   |φ̂(π)| = #f{1}{#r{2}}',['|φ̂(−π)| = |φ̂(π)|'],['|φ̂(π)| = 1','|φ̂(π)| = 0','|φ̂(π)| = #f{1}{2}']),
+  Q('Why does φ decay fast in time?','لماذا تتناقص φ بسرعة في الزمن؟',['`φ̂` is smooth: smoothness in frequency means decay in time','`φ̂` ملساء: الملاسة في التردد تعني التناقص في الزمن'],[['The dual of Lesson 5: smooth functions have fast-decaying Fourier coefficients.','عكس الدرس 5: الدوال الملساء لها معاملات فورييه سريعة التناقص.']],[['φ has compact support','لـ φ حامل محدود'],['It does not','لا تتناقص']]),
+  Q('Compare Meyer and Shannon wavelets.','قارن مويجتي ماير وشانون.',['Both are band-limited; Meyer’s smooth cut-off gives fast decay in time, Shannon’s sharp cut-off only `1/t`','كلاهما محدود النطاق؛ القطع الأملس لماير يعطي تناقصاً سريعاً في الزمن، والقطع الحاد لشانون `1/t` فقط'],[['Neither has compact support.','لا حامل محدود لأي منهما.']],[['They are the same','متماثلتان'],['Shannon decays faster','شانون تتناقص أسرع']]),
+]);
+
+lesson('509',40,[
+  ['φ is usually not known in closed form. The cascade algorithm computes it from the filter by iterating the two-scale equation, starting from the box:','دالة φ عادة لا تُعرف بصيغة مغلقة. وخوارزمية الشلال تحسبها من المرشح بتكرار معادلة المقياسين بدءاً من الصندوق:'],
+  'φ^{(n+1)}(t) = #r{2}Σ_kh_kφ^{(n)}(2t − k),     φ^{(0)} = 1_{[0, 1)}',
+  ['Exact values at the integers come from an eigenvector: for D4, `φ(1) = (1 + #r{3})/2 = 1.366`, `φ(2) = (1 − #r{3})/2 = −0.366`. Then the equation gives the half-integers, `φ(1/2) = (2 + #r{3})/4 = 0.933`, `φ(3/2) = 0`, `φ(5/2) = (2 − #r{3})/4 = 0.067`, and so on at every dyadic point.','والقيم المضبوطة عند الأعداد الصحيحة تأتي من متجه ذاتي: لـ D4 `φ(1) = (1 + #r{3})/2 = 1.366` و `φ(2) = (1 − #r{3})/2 = −0.366`. ثم تعطي المعادلة أنصاف الأعداد `φ(1/2) = (2 + #r{3})/4 = 0.933` و `φ(3/2) = 0` و `φ(5/2) = (2 − #r{3})/4 = 0.067`، وهكذا عند كل نقطة ثنائية.'],
+],[
+  Q('Write the equations for `φ(1)`, `φ(2)` of D4 (support [0, 3]).','اكتب معادلتي `φ(1)` و `φ(2)` لـ D4 (الحامل [0, 3]).','φ(1) = #r{2}(h_1φ(1) + h_0φ(2)),     φ(2) = #r{2}(h_3φ(1) + h_2φ(2))',['φ(n) = #r{2}Σ_kh_kφ(2n − k),   φ(0) = φ(3) = 0'],['φ(1) = h_0φ(1),   φ(2) = h_1φ(2)','φ(1) = #r{2}h_0,   φ(2) = #r{2}h_1','φ(1) + φ(2) = 0']),
+  Q('Check `φ(1) + φ(2) = 1` for the D4 values.','تحقق من `φ(1) + φ(2) = 1` لقيم D4.','#f{1 + #r{3}}{2} + #f{1 − #r{3}}{2} = 1',[['The integer values of an MRA scaling function sum to 1.','قيم دالة التقييس عند الأعداد الصحيحة مجموعها 1.']],['= #r{3}','= 0','= 2']),
+  Q('Compute `φ(1/2)` for D4.','احسب `φ(1/2)` لـ D4.','#r{2}h_0φ(1) = #f{2 + #r{3}}{4} ≈ 0.933',['#r{2}·#f{1 + #r{3}}{4#r{2}}·#f{1 + #r{3}}{2} = #f{(1 + #r{3})^2}{8}'],['#f{1 + #r{3}}{2}','0.5','#r{2}h_0']),
+  Q('What does the cascade algorithm start from, and what does each step do?','من أين تبدأ خوارزمية الشلال وماذا تفعل كل خطوة؟',['From the box; each step applies the two-scale equation once, halving the resolution of the picture','من الصندوق؛ وكل خطوة تطبق معادلة المقياسين مرة فتنصّف تمييز الصورة'],[['It converges for D4 and most filters used in practice.','تتقارب لـ D4 ولمعظم المرشحات المستخدمة.']],[['From φ itself','من φ نفسها'],['From ψ','من ψ']]),
+]);
+
 export const MS509 = true;
