@@ -593,4 +593,114 @@ lesson('509',40,[
   Q('What does the cascade algorithm start from, and what does each step do?','من أين تبدأ خوارزمية الشلال وماذا تفعل كل خطوة؟',['From the box; each step applies the two-scale equation once, halving the resolution of the picture','من الصندوق؛ وكل خطوة تطبق معادلة المقياسين مرة فتنصّف تمييز الصورة'],[['It converges for D4 and most filters used in practice.','تتقارب لـ D4 ولمعظم المرشحات المستخدمة.']],[['From φ itself','من φ نفسها'],['From ψ','من ψ']]),
 ]);
 
+/* ---- 509 · Unit 5 (lessons 41–50): the discrete wavelet transform ---- */
+lesson('509',41,[
+  ['Mallat’s algorithm computes the wavelet coefficients from samples without ever evaluating φ or ψ. One level filters the approximation `a_{j+1}` with h and g and keeps every second output:','خوارزمية مالات تحسب معاملات المويجات من العينات دون حساب φ أو ψ أبداً. والمستوى الواحد يرشّح التقريب `a_{j+1}` بـ h و g ويحتفظ بقيمة من كل قيمتين:'],
+  'a_j[k] = Σ_n h_{n−2k} a_{j+1}[n],     d_j[k] = Σ_n g_{n−2k} a_{j+1}[n]',
+  ['Repeating on `a_j` gives all levels. For Haar and `(2, 4, 6, 8)`: `a = (4.243, 9.899)`, `d = (−1.414, −1.414)`. A filter with p vanishing moments gives zero interior details for polynomials of degree below p: D4 kills constants and lines.','وتكرار ذلك على `a_j` يعطي كل المستويات. ولهار و `(2, 4, 6, 8)`: `a = (4.243, 9.899)` و `d = (−1.414, −1.414)`. والمرشح ذو p عزوم منعدمة يعطي تفاصيل داخلية صفرية لكثيرات الحدود ذات الدرجة الأقل من p: D4 يلغي الثوابت والخطوط.'],
+],[
+  Q('Compute one Haar level of `(2, 4, 6, 8)`.','احسب مستوى هار واحداً لـ `(2, 4, 6, 8)`.','a = (3#r{2}, 7#r{2}),   d = (−#r{2}, −#r{2})',['a = #f{2 + 4}{#r{2}}, #f{6 + 8}{#r{2}},   d = #f{2 − 4}{#r{2}}, #f{6 − 8}{#r{2}}'],['a = (3, 7),   d = (−1, −1)','a = (6, 14),   d = (−2, −2)','a = (3#r{2}, 7#r{2}),   d = (#r{2}, #r{2})']),
+  Q('Apply one D4 level to the constant signal `(1, 1, …, 1)` (periodic).','طبّق مستوى D4 واحداً على الإشارة الثابتة `(1, 1, …, 1)` (دورية).','a_k = #r{2},   d_k = 0',['Σh_k = #r{2},   Σg_k = 0'],['a_k = 1,   d_k = 0','a_k = #r{2},   d_k = #r{2}','a_k = 2,   d_k = 1']),
+  Q('For `x_n = n^2`, the interior D4 details are all equal. Compute their value `Σ_kk^2g_k`.','لـ `x_n = n^2` تكون تفاصيل D4 الداخلية متساوية. احسب قيمتها `Σ_kk^2g_k`.','−h_2 + 4h_1 − 9h_0 = −#r{3/2} ≈ −1.225',['g = (h_3, −h_2, h_1, −h_0)'],['0','1.225','−0.5']),
+  Q('How many coefficients does a full Haar transform of a signal of length 8 have?','كم معاملاً للتحويل الكامل بهار لإشارة طولها 8؟','8:   1 + 1 + 2 + 4',[['As many numbers as samples.','عدد يساوي عدد العينات.']],['15','4','16']),
+]);
+
+lesson('509',42,[
+  ['Reconstruction upsamples the coarse and detail coefficients and filters them with the same filters, then adds:','إعادة البناء تزيد عينات المعاملات الخشنة والتفصيلية وترشّحها بالمرشحات نفسها ثم تجمع:'],
+  'a_{j+1}[n] = Σ_k h_{n−2k}a_j[k] + Σ_k g_{n−2k}d_j[k]',
+  ['For an orthogonal wavelet the synthesis matrix is the transpose of the analysis matrix, so the same numbers h, g serve both directions. Exact reconstruction holds to rounding error, about `10^{−15}` in double precision.','وللمويجة المتعامدة تكون مصفوفة التركيب منقول مصفوفة التحليل، فتخدم الأعداد نفسها h و g الاتجاهين. وإعادة البناء مضبوطة حتى خطأ التقريب، نحو `10^{−15}` في الدقة المضاعفة.'],
+],[
+  Q('Reconstruct from the Haar coefficients `a = (3#r{2}, 7#r{2})`, `d = (−#r{2}, −#r{2})`.','أعد البناء من معاملات هار `a = (3#r{2}, 7#r{2})` و `d = (−#r{2}, −#r{2})`.','(2, 4, 6, 8)',['x_{2k} = #f{a_k + d_k}{#r{2}},   x_{2k+1} = #f{a_k − d_k}{#r{2}}'],['(4, 2, 8, 6)','(3, 3, 7, 7)','(1, 3, 5, 7)']),
+  Q('Reconstruct from `a = (3#r{2}, 7#r{2})` with the details set to zero.','أعد البناء من `a = (3#r{2}, 7#r{2})` مع جعل التفاصيل صفراً.','(3, 3, 7, 7)',['#f{3#r{2}}{#r{2}} = 3,   #f{7#r{2}}{#r{2}} = 7'],['(2, 4, 6, 8)','(3#r{2}, 3#r{2}, 7#r{2}, 7#r{2})','(6, 6, 14, 14)']),
+  Q('What is the squared error of the reconstruction without details?','ما مربع خطأ إعادة البناء دون التفاصيل؟','4',['‖d‖^2 = 2 + 2'],['2','0','8']),
+  Q('Why can the same filters be used for synthesis?','لماذا يمكن استخدام المرشحات نفسها للتركيب؟',['The analysis matrix W is orthogonal, so its inverse is `W^T`','مصفوفة التحليل W متعامدة فمعكوسها `W^T`'],[['Biorthogonal wavelets (Unit 6) use different synthesis filters.','المويجات ثنائية التعامد (الوحدة 6) تستخدم مرشحات تركيب مختلفة.']],[['By symmetry of h','بتماثل h'],['They cannot','لا يمكن']]),
+]);
+
+lesson('509',43,[
+  ['Two operations change the sampling rate. Downsampling keeps the even samples; upsampling inserts zeros:','عمليتان تغيّران معدل المعاينة. إنقاص العينات يحتفظ بالعينات الزوجية، وزيادتها تُدخل أصفاراً:'],
+  '(↓2 x)[k] = x[2k],     (↑2 x)[2k] = x[k],   (↑2 x)[2k + 1] = 0',
+  ['`↓2` after `↑2` is the identity, but `↑2` after `↓2` loses the odd samples. On the frequency side, downsampling folds the frequencies above π/2 onto the lower ones (aliasing); the filters of a wavelet bank are designed so that these aliases cancel in reconstruction.','و `↓2` بعد `↑2` هو المطابقة، لكن `↑2` بعد `↓2` يفقد العينات الفردية. وفي جانب التردد يطوي إنقاص العينات الترددات فوق π/2 على المنخفضة (تداخل)، ومرشحات بنك المويجات مصممة لتلغي هذه التداخلات في إعادة البناء.'],
+],[
+  Q('Compute `↓2 (1, 2, 3, 4, 5, 6)`.','احسب `↓2 (1, 2, 3, 4, 5, 6)`.','(1, 3, 5)',['x[0], x[2], x[4]'],['(2, 4, 6)','(1, 2, 3)','(1, 0, 3, 0, 5, 0)']),
+  Q('Compute `↑2 (1, 2, 3)`.','احسب `↑2 (1, 2, 3)`.','(1, 0, 2, 0, 3, 0)',[['Zeros at the odd positions.','أصفار في المواضع الفردية.']],['(1, 1, 2, 2, 3, 3)','(0, 1, 0, 2, 0, 3)','(1, 3)']),
+  Q('Compute `↑2 ↓2 (1, 2, 3, 4, 5, 6)`.','احسب `↑2 ↓2 (1, 2, 3, 4, 5, 6)`.','(1, 0, 3, 0, 5, 0)',['↓2:   (1, 3, 5)'],['(1, 2, 3, 4, 5, 6)','(1, 1, 3, 3, 5, 5)','(2, 0, 4, 0, 6, 0)']),
+  Q('The signal `(1, −1, 1, −1, …)` has frequency π. What does `↓2` give?','الإشارة `(1, −1, 1, −1, …)` ترددها π. ماذا يعطي `↓2`؟',['`(1, 1, 1, …)`: frequency π appears as frequency 0 (aliasing)','`(1, 1, 1, …)`: التردد π يظهر تردداً 0 (تداخل)'],[['This is why a low-pass filter comes before downsampling.','ولهذا يأتي مرشح تمرير منخفض قبل إنقاص العينات.']],[['`(−1, −1, …)`','`(−1, −1, …)`'],['`(0, 0, …)`','`(0, 0, …)`']]),
+]);
+
+lesson('509',44,[
+  ['A two-channel filter bank splits a signal into a low band and a high band and puts it back together. With z-transforms `H(z) = Σ_kh_kz^{−k}`:','بنك المرشحات ثنائي القناة يقسم الإشارة إلى نطاق منخفض ونطاق عالٍ ثم يعيد تجميعها. ومع تحويلات z `H(z) = Σ_kh_kz^{−k}`:'],
+  'x  →  (H_0, H_1)  →  ↓2  →  ↑2  →  (F_0, F_1)  →  x̂',
+  ['For Haar, `H_0(z) = (1 + z^{−1})/#r{2}` and `H_1(z) = (1 − z^{−1})/#r{2}`. On the unit circle `|H_0(e^{iω})| = #r{2}|cos(ω/2)|`: it passes low frequencies and blocks ω = π, while `|H_1|` does the opposite.','ولهار `H_0(z) = (1 + z^{−1})/#r{2}` و `H_1(z) = (1 − z^{−1})/#r{2}`. وعلى دائرة الوحدة `|H_0(e^{iω})| = #r{2}|cos(ω/2)|`: يمرّر الترددات المنخفضة ويحجب ω = π، و `|H_1|` يفعل العكس.'],
+],[
+  Q('Compute `|H_0(e^{iω})|` at ω = 0 and ω = π for Haar.','احسب `|H_0(e^{iω})|` عند ω = 0 و ω = π لهار.','#r{2},   0',['#f{|1 + e^{−iω}|}{#r{2}}'],['1,   1','0,   #r{2}','2,   0']),
+  Q('Compute `|H_1(e^{iω})|^2` for Haar.','احسب `|H_1(e^{iω})|^2` لهار.','2sin^2#f{ω}{2}',['#f{|1 − e^{−iω}|^2}{2} = #f{2 − 2cos ω}{2}'],['2cos^2#f{ω}{2}','1','sin^2ω']),
+  Q('Check `|H_0|^2 + |H_1|^2` for Haar.','تحقق من `|H_0|^2 + |H_1|^2` لهار.','2',['2cos^2#f{ω}{2} + 2sin^2#f{ω}{2}'],['1','0','4']),
+  Q('Write `H_0(z)` for D4.','اكتب `H_0(z)` لـ D4.','h_0 + h_1z^{−1} + h_2z^{−2} + h_3z^{−3}',['H(z) = Σ_kh_kz^{−k}'],['h_0 + h_1z + h_2z^2 + h_3z^3','h_0z^{−3} + h_3','(1 + z^{−1})^4']),
+]);
+
+lesson('509',45,[
+  ['The bank reconstructs perfectly (up to a delay l) when there is no distortion and the aliasing cancels:','يعيد البنك البناء تاماً (حتى تأخير l) عندما لا يوجد تشويه ويُلغى التداخل:'],
+  'F_0(z)H_0(z) + F_1(z)H_1(z) = 2z^{−l},     F_0(z)H_0(−z) + F_1(z)H_1(−z) = 0',
+  ['For Haar take `F_0 = (1 + z^{−1})/#r{2}` and `F_1 = −(1 − z^{−1})/#r{2}`: the first sum is `2z^{−1}` and the second is 0. Orthogonal wavelets satisfy both with `F_k(z) = z^{−(N−1)}H_k(z^{−1})`; biorthogonal ones relax the condition that F and H be related this way.','ولهار خذ `F_0 = (1 + z^{−1})/#r{2}` و `F_1 = −(1 − z^{−1})/#r{2}`: المجموع الأول `2z^{−1}` والثاني 0. والمويجات المتعامدة تحققهما مع `F_k(z) = z^{−(N−1)}H_k(z^{−1})`، والمويجات ثنائية التعامد ترخي شرط ارتباط F و H بهذه الطريقة.'],
+],[
+  Q('Compute `F_0H_0 + F_1H_1` for the Haar bank above.','احسب `F_0H_0 + F_1H_1` لبنك هار أعلاه.','2z^{−1}',['#f{(1 + z^{−1})^2 − (1 − z^{−1})^2}{2} = #f{4z^{−1}}{2}'],['2','0','1 + z^{−2}']),
+  Q('Compute `F_0(z)H_0(−z) + F_1(z)H_1(−z)` for that bank.','احسب `F_0(z)H_0(−z) + F_1(z)H_1(−z)` لذلك البنك.','0',['#f{(1 + z^{−1})(1 − z^{−1}) − (1 − z^{−1})(1 + z^{−1})}{2}'],['2z^{−1}','1','z^{−2}']),
+  Q('What delay does the Haar bank introduce?','أي تأخير يُدخله بنك هار؟','l = 1',['2z^{−l} = 2z^{−1}'],['l = 0','l = 2','l = 4']),
+  Q('What would a non-zero alias term cause?','ماذا يسبب حد تداخل غير صفري؟',['A mirrored copy of the spectrum (frequency `π − ω`) in the output','نسخة معكوسة من الطيف (التردد `π − ω`) في الخرج'],[['It comes from `X(−z)`.','يأتي من `X(−z)`.']],[['A delay','تأخيراً'],['Nothing','لا شيء']]),
+]);
+
+lesson('509',46,[
+  ['A finite signal needs values beyond its ends for filters longer than 2. Three common choices: periodic extension (wrap around), symmetric extension (mirror), and zero padding:','الإشارة المنتهية تحتاج قيماً بعد طرفيها للمرشحات الأطول من 2. وثلاثة خيارات شائعة: الامتداد الدوري (الالتفاف) والامتداد المتماثل (المرآة) والحشو بالأصفار:'],
+  'x = (1, 2, 3, 4):     …3, 4 | 1, 2, 3, 4 | 1, 2…   ;   …2, 1 | 1, 2, 3, 4 | 4, 3…   ;   …0, 0 | 1, 2, 3, 4 | 0, 0…',
+  ['Periodization keeps the number of coefficients (N/2 per level) but creates an artificial jump between the ends; the symmetric mode avoids the jump but returns `⌊(N + L − 1)/2⌋` coefficients for a filter of length L, for example 5 instead of 4 for N = 8 and D4. Boundary wavelets (Lesson 58) solve the problem properly.','والتدوير يحافظ على عدد المعاملات (N/2 لكل مستوى) لكنه يخلق قفزة اصطناعية بين الطرفين، والوضع المتماثل يتجنب القفزة لكنه يعيد `⌊(N + L − 1)/2⌋` معاملاً لمرشح طوله L، مثلاً 5 بدل 4 عند N = 8 و D4. ومويجات الحدود (الدرس 58) تحل المسألة حلاً صحيحاً.'],
+],[
+  Q('With periodization, why does the linear signal `0, 1, …, 7` give large D4 details at the ends?','مع التدوير لماذا تعطي الإشارة الخطية `0, 1, …, 7` تفاصيل D4 كبيرة عند الطرفين؟',['The wrap-around joins 7 to 0: an artificial jump','الالتفاف يصل 7 بـ 0: قفزة اصطناعية'],[['pywt gives `(−1.035, 0, 0, 3.864)`.','تعطي pywt القيم `(−1.035, 0, 0, 3.864)`.']],[['Rounding','التقريب'],['D4 does not kill lines','D4 لا يلغي الخطوط']]),
+  Q('How many approximation coefficients does the symmetric mode give for N = 8, L = 4?','كم معامل تقريب يعطيه الوضع المتماثل عند N = 8 و L = 4؟','5',['⌊#f{8 + 4 − 1}{2}⌋'],['4','8','6']),
+  Q('Extend `(1, 2, 3, 4)` symmetrically by two values on each side.','مدّد `(1, 2, 3, 4)` تماثلياً بقيمتين من كل جهة.','(2, 1, 1, 2, 3, 4, 4, 3)',[['Mirror including the end sample.','مرآة تشمل عينة الطرف.']],['(3, 4, 1, 2, 3, 4, 1, 2)','(0, 0, 1, 2, 3, 4, 0, 0)','(1, 1, 1, 2, 3, 4, 4, 4)']),
+  Q('Which extension keeps the transform orthogonal with exactly N coefficients?','أي امتداد يحافظ على تعامد التحويل بعدد N من المعاملات بالضبط؟',['Periodization','التدوير'],[['The transform is then an orthogonal N × N matrix.','يكون التحويل حينها مصفوفة متعامدة N × N.']],[['Zero padding','الحشو بالأصفار'],['Symmetric extension','الامتداد المتماثل']]),
+]);
+
+lesson('509',47,[
+  ['With periodization one level of the transform is an N × N orthogonal matrix: N/2 rows of h shifted by 2, then N/2 rows of g. For Haar and N = 4:','مع التدوير يكون مستوى واحد من التحويل مصفوفة متعامدة N × N: N/2 صفاً من h مزاحة بخطوتين ثم N/2 صفاً من g. ولهار و N = 4:'],
+  'W_1 = #f{1}{#r{2}}#m{1, 1, 0, 0 ;; 0, 0, 1, 1 ;; 1, −1, 0, 0 ;; 0, 0, 1, −1},     W_1W_1^T = I',
+  ['The full transform is a product of such matrices acting on the shrinking approximation part. For Haar and N = 4 the rows of the full matrix are `(1, 1, 1, 1)/2`, `(1, 1, −1, −1)/2`, `(1, −1, 0, 0)/#r{2}`, `(0, 0, 1, −1)/#r{2}`: the discrete Haar basis.','والتحويل الكامل ضرب مثل هذه المصفوفات تعمل على جزء التقريب المتقلص. ولهار و N = 4 تكون صفوف المصفوفة الكاملة `(1, 1, 1, 1)/2` و `(1, 1, −1, −1)/2` و `(1, −1, 0, 0)/#r{2}` و `(0, 0, 1, −1)/#r{2}`: أساس هار المتقطع.'],
+],[
+  Q('Compute `W_1(4, 6, 10, 12)^T`.','احسب `W_1(4, 6, 10, 12)^T`.','(5#r{2}, 11#r{2}, −#r{2}, −#r{2})',['#f{1}{#r{2}}(10, 22, −2, −2)'],['(10, 22, −2, −2)','(5, 11, −1, −1)','(5#r{2}, 11#r{2}, #r{2}, #r{2})']),
+  Q('Check that rows 1 and 3 of `W_1` are orthogonal.','تحقق أن الصفين 1 و 3 من `W_1` متعامدان.','#f{1}{2}(1·1 + 1·(−1)) = 0',[['Same support, h against g.','الحامل نفسه، h مقابل g.']],['= 1','= #f{1}{2}','= −1']),
+  Q('Apply the full 4-point Haar matrix to `(4, 6, 10, 12)`.','طبّق مصفوفة هار الكاملة ذات النقاط الأربع على `(4, 6, 10, 12)`.','(16, −6, −#r{2}, −#r{2})',['#f{32}{2},   #f{10 − 22}{2},   #f{−2}{#r{2}},   #f{−2}{#r{2}}'],['(8, −3, −1, −1)','(32, −12, −2, −2)','(16, 6, #r{2}, #r{2})']),
+  Q('Why is a matrix not used to compute the transform in practice?','لماذا لا تُستخدم المصفوفة لحساب التحويل عملياً؟',['Multiplying by a dense N × N matrix costs `O(N^2)`; the filters cost `O(N)`','الضرب في مصفوفة كثيفة N × N يكلف `O(N^2)`، والمرشحات تكلف `O(N)`'],[['The matrix is sparse and structured.','المصفوفة متفرقة ومنظمة.']],[['It is not orthogonal','غير متعامدة'],['It is not invertible','غير قابلة للعكس']]),
+]);
+
+lesson('509',48,[
+  ['The cost of the fast transform is linear in N. A level with n inputs makes n/2 low-pass and n/2 high-pass outputs, each needing L multiplications, so `nL` in total; the levels halve:','كلفة التحويل السريع خطية في N. والمستوى ذو n مدخلاً ينتج n/2 خرجاً منخفضاً و n/2 عالياً، يحتاج كل منها L ضرباً، فالمجموع `nL`، والمستويات تتنصف:'],
+  'NL(1 + #f{1}{2} + #f{1}{4} + ⋯) < 2NL',
+  ['For N = 1024 and D4 (L = 4) that is fewer than 8192 multiplications, against about `10^6` for a dense matrix and about 5120 complex multiplications for an FFT of the same size. Reconstruction costs the same.','ولـ N = 1024 و D4 (L = 4) يكون ذلك أقل من 8192 ضرباً، مقابل نحو `10^6` لمصفوفة كثيفة ونحو 5120 ضرباً مركباً لـ FFT بالحجم نفسه. وإعادة البناء تكلف القدر نفسه.'],
+],[
+  Q('Bound the number of multiplications for N = 4096 with D4.','قدّر حد عدد عمليات الضرب لـ N = 4096 مع D4.','< 32768',['2NL = 2·4096·4'],['< 4096','< 16777216','< 8192']),
+  Q('How many multiplications does a dense 1024 × 1024 matrix–vector product need?','كم عملية ضرب يحتاجها ضرب مصفوفة كثيفة 1024 × 1024 في متجه؟','1048576',['1024^2'],['8192','10240','2048']),
+  Q('How many levels can a signal of length 1024 have with Haar?','كم مستوى يمكن أن يكون لإشارة طولها 1024 مع هار؟','10',['1024 = 2^{10}'],['1024','512','5']),
+  Q('With a filter of length 8 instead of 4, how does the cost change?','مع مرشح طوله 8 بدل 4 كيف تتغير الكلفة؟',['It doubles: the cost is proportional to L','تتضاعف: الكلفة تتناسب مع L'],['2NL'],[['It stays the same','تبقى نفسها'],['It is multiplied by 4','تُضرب في 4']]),
+]);
+
+lesson('509',49,[
+  ['In Python the package PyWavelets (``import pywt``) provides ``dwt``, ``idwt``, ``wavedec`` and ``waverec``; in MATLAB the Wavelet Toolbox has ``dwt``, ``idwt``, ``wavedec`` and ``waverec`` with the same meaning. A multilevel transform returns the list `[a_J, d_J, …, d_1]`, coarsest first:','في بايثون توفر حزمة PyWavelets (``import pywt``) الدوال ``dwt`` و ``idwt`` و ``wavedec`` و ``waverec``، وفي MATLAB توفر Wavelet Toolbox الدوال ``dwt`` و ``idwt`` و ``wavedec`` و ``waverec`` بالمعنى نفسه. والتحويل متعدد المستويات يعيد القائمة `[a_J, d_J, …, d_1]` الأخشن أولاً:'],
+  '$ c = pywt.wavedec(x, \'db2\', mode=\'periodization\', level=2)   # [a2, d2, d1]\nx = pywt.waverec(c, \'db2\', mode=\'periodization\')',
+  ['In MATLAB, ``[c, l] = wavedec(x, 2, \'db2\')`` stacks the coefficients in c and their lengths in l. The boundary mode must be the same in both directions. ``pywt.wavelist()`` lists the families, and ``pywt.Wavelet(\'db2\').dec_lo`` gives the filter.','وفي MATLAB تجمع ``[c, l] = wavedec(x, 2, \'db2\')`` المعاملات في c وأطوالها في l. ويجب أن يكون وضع الحدود نفسه في الاتجاهين. و ``pywt.wavelist()`` تعرض العائلات، و ``pywt.Wavelet(\'db2\').dec_lo`` تعطي المرشح.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [4.243 9.899] [-1.414 -1.414]',[['One Haar level of `(2, 4, 6, 8)`.','مستوى هار واحد لـ `(2, 4, 6, 8)`.']],['$ [3. 7.] [-1. -1.]','$ [6 14] [-2 -2]','$ [4.243 9.899] [1.414 1.414]'],'import pywt\ncA, cD = pywt.dwt([2, 4, 6, 8], \'haar\')\nprint(cA.round(3), cD.round(3))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [4, 4, 8]',[['Periodization halves the length at each level: 16 → 8 → 4.','التدوير ينصّف الطول عند كل مستوى: 16 → 8 → 4.']],['$ [8, 4, 4]','$ [4, 8, 16]','$ [5, 5, 9]'],'import numpy as np\nimport pywt\nc = pywt.wavedec(np.arange(16.0), \'db2\', mode=\'periodization\', level=2)\nprint([len(a) for a in c])'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [16.    -6.    -1.414 -1.414] 296.0',[['The full Haar transform keeps the energy `4^2 + 6^2 + 10^2 + 12^2 = 296`.','تحويل هار الكامل يحفظ الطاقة `4^2 + 6^2 + 10^2 + 12^2 = 296`.']],['$ [8. -3. -1. -1.] 75.0','$ [16. -6. -1.414 -1.414] 148.0','$ [16. 6. 1.414 1.414] 296.0'],'import numpy as np\nimport pywt\nx = np.array([4.0, 6, 10, 12])\nc = np.concatenate(pywt.wavedec(x, \'haar\'))\nprint(c.round(3), (c**2).sum().round(6))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['Perfect reconstruction with the same mode.','إعادة بناء تامة بالوضع نفسه.']],['$ False','$ [1. 2. 3. 4. 5. 6. 7. 8.]','$ 8'],'import numpy as np\nimport pywt\nx = np.array([1.0, 2, 3, 4, 5, 6, 7, 8])\nc = pywt.wavedec(x, \'db2\', mode=\'periodization\')\nprint(np.allclose(pywt.waverec(c, \'db2\', mode=\'periodization\'), x))'),
+]);
+
+lesson('509',50,[
+  ['Worked problems for Unit 5: filtering, downsampling, energy and cost.','مسائل محلولة للوحدة 5: الترشيح وإنقاص العينات والطاقة والكلفة.'],
+  'a_j[k] = Σ_nh_{n−2k}a_{j+1}[n],     d_j[k] = Σ_ng_{n−2k}a_{j+1}[n],     ‖a_{j+1}‖^2 = ‖a_j‖^2 + ‖d_j‖^2',
+],[
+  Q('Compute the full Haar transform of `(1, 2, 3, 4, 5, 6, 7, 8)`: give `a_0` and `d_0`.','احسب تحويل هار الكامل لـ `(1, 2, 3, 4, 5, 6, 7, 8)`: أعط `a_0` و `d_0`.','a_0 = 9#r{2} ≈ 12.728,   d_0 = −4#r{2} ≈ −5.657',['a_0 = #f{36}{2#r{2}},   d_0 = #f{10 − 26}{2#r{2}}'],['a_0 = 4.5,   d_0 = −2','a_0 = 36,   d_0 = −16','a_0 = 9#r{2},   d_0 = 4#r{2}']),
+  Q('For the same signal, what are the finest details `d_2`?','للإشارة نفسها ما التفاصيل الأدق `d_2`؟','(−#f{1}{#r{2}}, −#f{1}{#r{2}}, −#f{1}{#r{2}}, −#f{1}{#r{2}})',['#f{1 − 2}{#r{2}}, …'],['(−1, −1, −1, −1)','(0, 0, 0, 0)','(−2, −2)']),
+  Q('Check the energy split for `(2, 4, 6, 8)`: `‖x‖^2 = ‖a‖^2 + ‖d‖^2`.','تحقق من تقسيم الطاقة لـ `(2, 4, 6, 8)`: `‖x‖^2 = ‖a‖^2 + ‖d‖^2`.','120 = (18 + 98) + (2 + 2)',['a = (3#r{2}, 7#r{2}),   d = (−#r{2}, −#r{2})'],['120 = 116','120 = 60 + 60','100 = 96 + 4']),
+  Q('Why is D4 better than Haar for compressing a smooth signal?','لماذا يكون D4 أفضل من هار لضغط إشارة ملساء؟',['D4 has two vanishing moments, so details of locally linear parts vanish; Haar only kills constants','لـ D4 عزمان منعدمان فتنعدم تفاصيل الأجزاء الخطية محلياً، وهار يلغي الثوابت فقط'],[['More small coefficients can be dropped.','يمكن حذف معاملات صغيرة أكثر.']],[['D4 is shorter','D4 أقصر'],['D4 is symmetric','D4 متماثل']]),
+]);
+
 export const MS509 = true;
