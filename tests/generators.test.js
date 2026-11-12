@@ -4,7 +4,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { G } from '../src/generators.js';
-import { CURRICULUM } from '../src/curriculum.js';
+import { CURRICULUM as PLAN } from '../src/curriculum.js';
+// the bachelor's plan and the service course; the master's programme (lessons with fixed banks) has its own tests in masters.test.js
+const CURRICULUM = PLAN.filter(l => l.level !== "Master's Programme");
 
 /* ---- helpers for parsing the HTML the generators emit ---- */
 const plain = h => enOnly(h)
@@ -826,8 +828,8 @@ test('MATH 416 — separable Fredholm equation: u(x) = kx satisfies the equation
 
 test('curriculum — plan levels in order, every listed topic has a generator and a label', async () => {
   const { TOPIC_LABELS } = await import('../src/curriculum.js');
-  assert.deepEqual(CURRICULUM.map(l => l.level),
-    ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5', 'Level 6', 'Level 7', 'Level 8', 'Electives', 'Business Administration Dept.']);
+  assert.deepEqual(PLAN.map(l => l.level),
+    ['Level 1', 'Level 2', 'Level 3', 'Level 4', 'Level 5', 'Level 6', 'Level 7', 'Level 8', 'Electives', 'Business Administration Dept.', "Master's Programme"]);
   for (const l of CURRICULUM) for (const c of l.courses) for (const t of c.topics) {
     assert.equal(typeof G[t], 'function', `${c.code}: missing generator ${t}`);
     assert.ok(TOPIC_LABELS[t], `${c.code}: missing label ${t}`);
@@ -1416,7 +1418,8 @@ test('booklet: every topic has an overview and the cover art is valid SVG', asyn
 test('interactive app: the standalone bundle evaluates and generates questions', async () => {
   const { bundle } = await import('../src/bundle.js');
   const fs = await import('node:fs');
-  const names = ['helpers', 'viz', 'proofs', 'intros', 'generators', 'answer', 'practice'], src = {};
+  const MS = fs.readdirSync(new URL('../src/', import.meta.url)).filter(f => /^ms\d{3}\.js$/.test(f)).sort().map(f => f.slice(0, -3));
+  const names = ['helpers', 'viz', 'proofs', 'mscore', ...MS, 'masters', 'intros', 'generators', 'answer', 'practice'], src = {};
   for (const n of names) src[n] = fs.readFileSync(new URL(`../src/${n}.js`, import.meta.url), 'utf8');
   const code = bundle(src, names);
   assert.ok(!/<\/script/i.test(code));
@@ -1424,6 +1427,8 @@ test('interactive app: the standalone bundle evaluates and generates questions',
   assert.equal(typeof m.practice.mountPractice, 'function');
   const o = m.generators.G.simplexMethod(2);
   assert.ok(o.q && o.a && o.s);
+  const l = m.generators.G.ms507_001(2);                                    // a master's lesson works in the app too
+  assert.ok(l.q && l.a && l.s);
   assert.equal(m.answer.checkAnswer('8/5', m.answer.answerSpec('<b>1.6</b>')), true);
 });
 

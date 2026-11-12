@@ -230,6 +230,9 @@
   .search-results[hidden]{display:none}
   .choices, .pchoices{direction:ltr;text-align:left}
   .choices .opt{unicode-bidi:isolate}
+  /* a long Arabic sentence as an option: wrap it as one right-aligned block beside its letter */
+  html[data-lang="ar"] .choices .opt .i18n.in>[lang="ar"]{display:inline-block;vertical-align:top;max-width:calc(100% - 2.4em);text-align:right}
+  @supports (baseline-source:first){ html[data-lang="ar"] .choices .opt .i18n.in>[lang="ar"]{vertical-align:baseline;baseline-source:first} }
   body.pdf-export .sheet{box-shadow:none;border:0;border-radius:0}
   body.pdf-export #out>.sheet + .sheet{margin-top:0}
   body.pdf-export .bk-scale{transform:none!important}
@@ -565,3 +568,16 @@
     .clo::placeholder{color:transparent}
     .bub.on,table.stbl.ttab tr,table.xh-student th,table.xh-marks th,table.bp thead th,.xh-instr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   }
+
+/* ---- master's lessons (masters.js): overview lines, code, unit headings and lessons not written yet ---- */
+  .ms-p{display:block;margin:0 0 6px}
+  .ms-f{display:block;text-align:center;margin:6px 0 8px;font-family:var(--font-math);font-size:1.06em;overflow-x:auto}
+  .ms-code{display:block;white-space:pre;direction:ltr;text-align:left;font:13px/1.55 ui-monospace,Menlo,Consolas,"Courier New",monospace;
+    background:#f3f5f9;border:1px solid #e1e6ef;border-radius:6px;padding:7px 10px;margin:6px 0 8px;overflow-x:auto;color:#1c2a44;unicode-bidi:isolate}
+  .ms-ic{font:.9em ui-monospace,Menlo,Consolas,"Courier New",monospace;background:#f3f5f9;border:1px solid #e1e6ef;border-radius:4px;padding:0 4px;
+    direction:ltr;unicode-bidi:isolate;white-space:pre-wrap;color:#1c2a44}
+  .trow.unit{grid-template-columns:1fr;background:#eef2f8;font-weight:700;font-size:12.5px;color:var(--ink);padding:7px 10px}
+  .trow.soon{grid-template-columns:24px 1fr auto;color:var(--muted)}
+  .trow.soon>span:nth-child(2){opacity:.75}
+  .soon-tag{font-size:11px;border:1px solid #d5dbe6;border-radius:999px;padding:1px 8px;white-space:nowrap}
+  @media print{ .ms-code,.ms-ic{background:#fff} }

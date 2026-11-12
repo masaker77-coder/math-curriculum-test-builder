@@ -9,6 +9,7 @@ import { guideHTML } from './guide.js';
 import { bundle } from './bundle.js';
 import { wordDoc, moodleXML, blackboardTXT } from './export.js';
 import { LANGS, tr, pickLang } from './i18n.js';
+import { MS_FILES } from './masters.js';
 
 /* ============================ UI WIRING (Test Builder) ============================ */
 const el = id => document.getElementById(id);
@@ -27,6 +28,8 @@ const MODES = {
   app:      { app:true, count:1, title:'titleApp' },   // interactive practice app (preview + standalone download)
 };
 const isBook = () => !!MODES[state.mode].book;
+const isLesson = t => /^ms\d{3}_\d{3}$/.test(String(t));   // a master's lesson (masters.js)
+const isSoon = t => !G[t];                               // listed in the road map, content not written yet
 const isProof = t => String(t).startsWith('proof_');   // a proof is always one essay question, whatever count is entered
 const LONG = ['lpFormulate','lpGraphical','simplexMethod','decisionCriteria','decisionTree','transportNW','transportLeastCost','transportVogel','transportCompare','assignmentHungarian','rectangle','triangleArea','circle','pythagorean','slope','derivative',
               'systems','proportions','integral','defIntegral','trigRatios',
@@ -83,9 +86,11 @@ function setLang(l){
   el('lang').value=state.lang; applyLang();
 }
 
-function buildChoices(correctHtml, gen, d){
+function buildChoices(correctHtml, gen, d, wrong){
   const correct = strip(correctHtml);
   const seen = new Set([correct]); const distract=[];
+  (wrong||[]).forEach(w=>{ const o=strip(w); if(!seen.has(o) && distract.length<3){ seen.add(o); distract.push(o); } });   // a lesson's own wrong answers
+  if(wrong) return shuffled([{html:correct, correct:true}, ...distract.map(x=>({html:x, correct:false}))]);
   for(let t=0; t<50 && distract.length<3; t++){
     const o = strip(gen(d).a);
     if(!seen.has(o)){ seen.add(o); distract.push(o); }
@@ -107,14 +112,17 @@ function parseCustom(){
 /* a topic's items: its essay questions first, then its multiple-choice ones */
 const nEss = s => s.nEssay!=null ? s.nEssay : (s.mc ? 0 : s.count);
 const nMc  = s => s.nMc!=null ? s.nMc : (s.mc ? s.count : 0);
-const sectionItems = s => [...genItems(s.topic, nEss(s), s.diff, false), ...genItems(s.topic, nMc(s), s.diff, true)];
+/* worked examples and booklets present a master's lesson in the order of the lesson itself */
+const inLessonOrder = (topic, items) => isLesson(topic) && isBook() ? items.sort((a,b)=>a.o-b.o) : items;
+const sectionItems = s => inLessonOrder(s.topic, [...genItems(s.topic, nEss(s), s.diff, false), ...genItems(s.topic, nMc(s), s.diff, true)]);
 const tagUid = it => { if(!it.uid) it.uid='i'+Math.random().toString(36).slice(2,10); return it; };
 function genItems(topic, count, d, mc){
-  const gen=G[topic]; const items=[];
+  const gen=G[topic]; const items=[]; if(!gen) return items;
   const seen=new Set();
   for(let i=0;i<count;i++){
     let it=gen(d); for(let k=0; k<20 && seen.has(it.q); k++) it=gen(d);   // avoid repeating a question (topics with few variants, e.g. proofs)
-    seen.add(it.q); if(mc) it.choices=buildChoices(it.a, gen, d); items.push(tagUid(it));
+    if(seen.has(it.q) && isLesson(topic)) break;                          // a lesson's bank is used up: stop instead of repeating
+    seen.add(it.q); if(mc) it.choices=buildChoices(it.a, gen, d, it.w); items.push(tagUid(it));
   }
   return items;
 }
@@ -145,8 +153,10 @@ function buildTopicList(keep, resetCounts){
   box.classList.toggle('book', isBook());
   box.classList.toggle('app', !!MODES[state.mode].app);
   box.innerHTML=`<div class="trow head"><input type="checkbox" id="tAll" title="${T('selectAll')}"><span>${T('topic')}</span><span>${T(isBook()?'examplesCol':'essay')}</span><span>${T('mcShort')}</span></div>`+
-    c.topics.map(t=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:isBook()?0:1};
-      return `<div class="trow${p.on?' on':''}" data-t="${t}"><input type="checkbox" class="tchk"${p.on?' checked':''}><span>${topicLabel(t)}</span>
+    c.topics.map((t,ti)=>{ const p=prev[t]||{on:false,essay:defaultCount(),mc:isBook()?0:1};
+      const unit = c.units && ti%10===0 && c.units[ti/10] ? `<div class="trow unit"><span>${pickLang(c.units[ti/10][0], c.units[ti/10][1], state.lang)}</span></div>` : '';
+      if(isSoon(t)) return unit+`<div class="trow soon" data-soon="1"><input type="checkbox" disabled><span>${topicLabel(t)}</span><span class="soon-tag">${T('soon')}</span></div>`;
+      return unit+`<div class="trow${p.on?' on':''}" data-t="${t}"><input type="checkbox" class="tchk"${p.on?' checked':''}><span>${topicLabel(t)}</span>
         <input type="number" class="tess" min="0" max="40" value="${isProof(t)?1:p.essay}" title="${T('essay')}"${isProof(t)?' disabled':''}>
         <input type="number" class="tmc" min="0" max="40" value="${isProof(t)?0:p.mc}" title="${T('mcType')}"${isProof(t)?' disabled':''}></div>`; }).join('');
   box.querySelectorAll('.tchk').forEach(ch=>ch.onchange=()=>ch.closest('.trow').classList.toggle('on',ch.checked));
@@ -174,7 +184,7 @@ function runSearch(){
     el('bLevel').value=b.dataset.li; buildCourseSelect();
     el('bCourse').value=`${b.dataset.li}:${b.dataset.ci}`; buildTopicList(false);
     const row=el('topicList').querySelector(`.trow[data-t="${b.dataset.t}"]`);
-    if(row){ row.querySelector('.tchk').checked=true; row.classList.add('on'); row.scrollIntoView({block:'nearest'}); }
+    if(row && row.querySelector('.tchk')){ row.querySelector('.tchk').checked=true; row.classList.add('on'); row.scrollIntoView({block:'nearest'}); }
     el('bSearch').value=''; box.hidden=true; box.innerHTML='';
   });
 }
@@ -184,7 +194,7 @@ function sectionFor(topic, nEssay, nMcq){
   const {li,c}=selectedCourse(), d=parseInt(el('bDiff').value)||2;
   return { level:CURRICULUM[li].level, code:c.code, title:c.title, titleAr:c.ar, topic,
     label:TOPIC_LABELS[topic]||topic, count:nEssay+nMcq, nEssay, nMc:nMcq, diff:d,
-    items:[...genItems(topic,nEssay,d,false), ...genItems(topic,nMcq,d,true)] };
+    items:inLessonOrder(topic, [...genItems(topic,nEssay,d,false), ...genItems(topic,nMcq,d,true)]) };
 }
 function addSelected(replace){
   const picks=checkedTopics();
@@ -198,7 +208,7 @@ function addSelected(replace){
 /* nothing picked yet: fill the assessment with different topics of the current course, one item each */
 function autoPick(n){
   const {c}=selectedCourse(); if(!c||!c.topics.length) return;
-  const pool=shuffled(c.topics);
+  const pool=shuffled(c.topics.filter(t=>G[t])); if(!pool.length) return;
   for(let i=0;i<n;i++) test.sections.push(sectionFor(pool[i%pool.length], 1, 0));
 }
 /* fewer items than the preset number of questions: add items to the chosen topics in turn until it is reached */
@@ -337,7 +347,7 @@ function practiceHTML(parts, vLabel){
   const multiPart=parts.length>1;
   const entries=[];
   const partsHtml=parts.map((p,pi)=>{
-    const long=p.custom?false:(LONG.includes(p.topic)||p.topic.startsWith('proof_'));
+    const long=p.custom?false:(LONG.includes(p.topic)||p.topic.startsWith('proof_')||isLesson(p.topic));
     const lis=p.items.map((it,ii)=>{ const lbl=qLabel(pi, p.items.length>1?ii:-1); entries.push({it, label:lbl});
       return `<li style="min-height:${sp}px"><span class="ql">${lbl}</span><span class="qbody" dir="${dirFor(it.q)}">${it.q}${choicesHTML(it)}</span>${swapBtn(it)}</li>`; }).join('');
     return `<div class="part"><ol class="problems labeled ${long?'single':''}">${lis}</ol></div>`;
@@ -658,7 +668,7 @@ function updateTotal(){
   el('totalMarks').textContent=fmtMarks((parseFloat(el('marks').value)||0)*q);
 }
 const guideStats = () => { const all=CURRICULUM.flatMap(l=>l.courses), t=new Set(all.flatMap(c=>c.topics));
-  return { courses:all.filter(c=>c.topics.length).length, topics:[...t].filter(x=>!x.startsWith('proof_')).length, proofs:[...t].filter(x=>x.startsWith('proof_')).length }; };
+  return { courses:all.filter(c=>c.topics.length).length, topics:[...t].filter(x=>!x.startsWith('proof_') && G[x]).length, proofs:[...t].filter(x=>x.startsWith('proof_')).length }; };
 let secOf=new Map();
 const swapBtn = it => { const s=secOf.get(it.uid); return s && !s.custom && !isProof(s.topic)
   ? `<button class="swap noprint" type="button" data-swap="${it.uid}" title="${T('swapQ')}" aria-label="${T('swapQ')}">&#8635;</button>` : ''; };
@@ -707,12 +717,15 @@ function appView(){
 async function downloadApp(){
   const btn=el('appDl'), label=btn.textContent; btn.disabled=true; btn.textContent='…';
   try{
-    const names=['helpers','viz','proofs','intros','generators','answer','practice'], src={};
+    const cfg={...appConfig(), lang:state.lang==='en'?'en':'ar', standalone:true}, ar=cfg.lang==='ar';
+    // a master's course file is carried only if the app uses one of its lessons; the others become empty modules
+    const msUsed=new Set(cfg.topics.map(o=>(/^ms(\d{3})_/.exec(o.t)||[])[1]).filter(Boolean));
+    const names=['helpers','viz','proofs','mscore',...MS_FILES,'masters','intros','generators','answer','practice'], src={};
     await Promise.all(names.map(async n=>{
+      const ms=/^ms(\d{3})$/.exec(n); if(ms && !msUsed.has(ms[1])){ src[n]=`export const MS${ms[1]} = true;`; return; }
       if(window.__APP_SRC && window.__APP_SRC[n]){ src[n]=window.__APP_SRC[n]; return; }   // offline single-file build carries its sources
       const r=await fetch(new URL(`./${n}.js`, import.meta.url)); if(!r.ok) throw new Error(n); src[n]=await r.text(); }));
     const css=[...document.styleSheets].map(ss=>{ try{ return [...ss.cssRules].map(r=>r.cssText).join('\n'); }catch(e){ return ''; } }).join('\n');
-    const cfg={...appConfig(), lang:state.lang==='en'?'en':'ar', standalone:true}, ar=cfg.lang==='ar';
     const html=`<!doctype html><html lang="${ar?'ar':'en'}" dir="${ar?'rtl':'ltr'}" data-lang="${cfg.lang}"><head><meta charset="utf-8">`+
       `<meta name="viewport" content="width=device-width, initial-scale=1"><title>${(ar?cfg.title[1]:cfg.title[0]).replace(/</g,'&lt;')}</title>`+
       `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">`+

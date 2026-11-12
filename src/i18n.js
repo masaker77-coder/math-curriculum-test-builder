@@ -48,6 +48,7 @@ export const UI = {
                  'اختر المقرر (أو جميع المقررات)، وحدّد موضوعاً أو أكثر، واكتب بجانب كل موضوع عدد الأسئلة ونوعها (مقالي أو اختيار من متعدد). ثم اختر: ورقة تدريب، أو واجب (5 أسئلة، درجتان)، أو اختبار فصلي (3 × 5 درجات)، أو اختبار نهائي (5 × 10 درجات). للتصدير: طباعة / PDF ← «حفظ بصيغة PDF».'],
   noTopics:     ['— no auto-generated topics yet —', '— لا توجد مواضيع مولّدة —'],
   empty:        ['(empty)', '(فارغ)'],
+  soon:         ['soon', 'قريباً'],
   noMatch:      ['No matching topics.', 'لا توجد مواضيع مطابقة.'],
   noParts:      ['No parts yet — pick a level, course and topic above, then “Add to test”.', 'لا توجد أجزاء بعد — اختر المستوى والمقرر والموضوع ثم «أضف إلى الاختبار».'],
   emptyTest:    ['Your test is empty. Add a topic above to begin building.', 'الاختبار فارغ. أضف موضوعاً من الأعلى للبدء.'],

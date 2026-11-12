@@ -1,10 +1,11 @@
 /* Service worker: lets the installed app open without internet. Pages and scripts are fetched from the network
    first (so a new version shows up at once) and kept in the cache as a fallback; the web fonts are served from
    the cache once they have been loaded. */
-const CACHE = 'mtb-v2';
+const CACHE = 'mtb-v3';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './src/styles.css', './src/compat.js',
   './src/main.js', './src/ui.js', './src/generators.js', './src/helpers.js', './src/viz.js', './src/proofs.js', './src/intros.js',
   './src/curriculum.js', './src/i18n.js', './src/cover.js', './src/practice.js', './src/answer.js', './src/bundle.js', './src/guide.js', './src/export.js',
+  './src/masters.js', './src/mscore.js', './src/ms501.js', './src/ms502.js', './src/ms503.js', './src/ms504.js', './src/ms505.js', './src/ms506.js', './src/ms507.js', './src/ms508.js', './src/ms509.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/favicon-32.png'];
 
 self.addEventListener('install', e => {
