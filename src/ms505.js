@@ -372,4 +372,225 @@ lesson('505',20,[
   Q('What should a docstring of a numerical function contain?','ماذا يجب أن يحوي توثيق دالة عددية؟',['What it computes, the meaning and type of each argument, and what it returns','ماذا تحسب، ومعنى كل متغير ونوعه، وماذا تعيد'],[['Also the interval or assumptions, for example t in [0, 1].','وأيضاً المجال أو الافتراضات مثل t في [0, 1].']],[['The author’s name only','اسم الكاتب فقط'],['The code again','الكود مرة أخرى']]),
 ]);
 
+/* ---- 505 · Unit 3 (lessons 21–30): NumPy;  Unit 4 (lessons 31–40): Matplotlib ---- */
+lesson('505',21,[
+  ['NumPy’s ``ndarray`` holds numbers of one type in a block of memory. Every array has a shape, a number of dimensions and a data type:','المصفوفة ``ndarray`` في NumPy تحمل أعداداً من نوع واحد في كتلة من الذاكرة. ولكل مصفوفة شكل وعدد أبعاد ونوع بيانات:'],
+  '$ import numpy as np\na = np.array([1, 2, 3])\nA = np.array([[1.0, 2.0], [3.0, 4.0]])\na.shape, a.ndim, a.dtype     # (3,), 1, int64\nA.shape, A.size              # (2, 2), 4',
+  ['A shape ``(3,)`` is a 1-D array of 3 numbers, not a row or a column. Mixing integers and floats gives a float array; the convention ``import numpy as np`` is universal.','والشكل ``(3,)`` مصفوفة أحادية من 3 أعداد لا صف ولا عمود. وخلط الأعداد الصحيحة والعشرية يعطي مصفوفة عشرية، والاصطلاح ``import numpy as np`` عالمي.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (2, 3) 2 6',[['2 rows, 3 columns.','صفان وثلاثة أعمدة.']],['$ (3, 2) 2 6','$ (2, 3) 6 2','$ (6,) 1 6'],'import numpy as np\nA = np.array([[1, 2, 3], [4, 5, 6]])\nprint(A.shape, A.ndim, A.size)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ float64',[['One float makes the whole array float.','عدد عشري واحد يجعل المصفوفة كلها عشرية.']],['$ int64','$ object','$ mixed'],'import numpy as np\nprint(np.array([1, 2.5, 3]).dtype)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [2 4 6]',[['Arithmetic on an array acts on every element.','الحساب على المصفوفة يعمل على كل عنصر.']],['$ [1, 2, 3, 1, 2, 3]','$ [2, 4, 6]','$ 12'],'import numpy as np\nprint(np.array([1, 2, 3]) * 2)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1, 2, 3, 1, 2, 3]',[['For a list, ``*`` repeats it.','للقائمة ``*`` تكررها.']],['$ [2, 4, 6]','$ [2 4 6]','$ Error'],'print([1, 2, 3] * 2)'),
+]);
+
+lesson('505',22,[
+  ['Arrays are rarely typed by hand. The constructors:','نادراً ما تُكتب المصفوفات يدوياً. والمنشئات:'],
+  '$ np.arange(5)              # [0 1 2 3 4]\nnp.arange(0, 1, 0.25)     # [0.   0.25 0.5  0.75]   (stop excluded)\nnp.linspace(0, 1, 5)      # [0.   0.25 0.5  0.75 1.  ]  (ends included)\nnp.zeros((2, 3)), np.ones(4), np.eye(3)',
+  ['For grids prefer ``linspace``: you choose the number of points and both ends are included. With a float step, ``arange`` can give one point more or less than expected because of rounding.','وللشبكات فضّل ``linspace``: تختار عدد النقاط ويُشمل الطرفان. ومع خطوة عشرية قد تعطي ``arange`` نقطة زائدة أو ناقصة بسبب التقريب.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0.0, 0.25, 0.5, 0.75, 1.0]',[['5 points with both ends.','5 نقاط مع الطرفين.']],['$ [0.0, 0.2, 0.4, 0.6, 0.8]','$ [0.0, 0.25, 0.5, 0.75]','$ [0.25, 0.5, 0.75, 1.0]'],'import numpy as np\nprint(np.linspace(0, 1, 5).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 10',[['0, 0.1, …, 0.9: the stop 1 is excluded.','0 و 0.1 و … و 0.9: النهاية 1 مستبعدة.']],['$ 11','$ 9','$ 1'],'import numpy as np\nprint(len(np.arange(0, 1, 0.1)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[1.0, 0.0], [0.0, 1.0]]',[['The identity matrix, as floats.','المصفوفة المحايدة بأعداد عشرية.']],['$ [[1, 1], [1, 1]]','$ [1.0, 1.0]','$ [[0.0, 1.0], [1.0, 0.0]]'],'import numpy as np\nprint(np.eye(2).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (2, 3) 0.0',[['A shape is given as a tuple.','الشكل يُعطى صفاً.']],['$ (3, 2) 0.0','$ (6,) 0','$ (2, 3) 1.0'],'import numpy as np\nz = np.zeros((2, 3))\nprint(z.shape, z.sum())'),
+]);
+
+lesson('505',23,[
+  ['Indexing works as for lists, with one index per dimension. A slice of an array is a view: it shares the memory of the original:','الفهرسة كما في القوائم مع فهرس لكل بعد. ومقطع المصفوفة عرض (view) يشارك ذاكرة الأصل:'],
+  '$ a = np.arange(10)\na[2:5]          # [2 3 4]\na[::-1]         # reversed\nA = np.arange(6).reshape(2, 3)\nA[1, 2], A[0, :], A[:, 1]     # 5, [0 1 2], [1 4]',
+  ['Changing a view changes the original; use ``.copy()`` when you need an independent array. Fancy indexing with a list of indices, ``a[[0, 2]]``, always makes a copy.','وتغيير العرض يغيّر الأصل، فاستخدم ``.copy()`` حين تحتاج مصفوفة مستقلة. والفهرسة بقائمة فهارس ``a[[0, 2]]`` تنشئ نسخة دائماً.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [99, 1, 2, 3]',[['b is a view of a.','b عرض لـ a.']],['$ [0, 1, 2, 3]','$ [99]','$ [99, 99, 99, 3]'],'import numpy as np\na = np.arange(4)\nb = a[:3]\nb[0] = 99\nprint(a.tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0, 1, 2, 3]',[['``copy`` makes an independent array.','``copy`` تنشئ مصفوفة مستقلة.']],['$ [99, 1, 2, 3]','$ [99, 1, 2]','$ Error'],'import numpy as np\na = np.arange(4)\nb = a[:3].copy()\nb[0] = 99\nprint(a.tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 5 [1, 4]',[['Row 1, column 2; and the whole column 1.','الصف 1 والعمود 2، والعمود 1 كاملاً.']],['$ 4 [3, 4, 5]','$ 5 [0, 1, 2]','$ 6 [1, 4]'],'import numpy as np\nA = np.arange(6).reshape(2, 3)\nprint(A[1, 2], A[:, 1].tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [9, 7, 5, 3, 1]',[['From the end, in steps of −2.','من النهاية بخطوة −2.']],['$ [1, 3, 5, 7, 9]','$ [9, 8, 7, 6, 5]','$ [0, 2, 4, 6, 8]'],'import numpy as np\nprint(np.arange(10)[::-2].tolist())'),
+]);
+
+lesson('505',24,[
+  ['Operations between arrays act element by element. When shapes differ, NumPy broadcasts: dimensions of size 1 are stretched to match:','العمليات بين المصفوفات تعمل عنصراً بعنصر. وحين تختلف الأشكال يبث NumPy: الأبعاد ذات الحجم 1 تُمد لتتطابق:'],
+  '$ x = np.array([1.0, 2.0, 3.0])\nx + 1, x * x, 1 / x\ncol = np.arange(3)[:, None]      # shape (3, 1)\nrow = np.arange(2)[None, :]      # shape (1, 2)\ncol + row                        # shape (3, 2): [[0 1] [1 2] [2 3]]',
+  ['Broadcasting builds tables without loops: ``x[:, None] - x[None, :]`` is the matrix of all differences `x_i − x_j`, the first step of a differentiation matrix.','والبث يبني الجداول دون حلقات: ``x[:, None] - x[None, :]`` مصفوفة كل الفروق `x_i − x_j`، وهي أول خطوة في مصفوفة التفاضل.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[0, 1], [1, 2], [2, 3]]',[['(3, 1) + (1, 2) gives (3, 2).','(3, 1) + (1, 2) تعطي (3, 2).']],['$ [0, 2]','$ [[0, 1, 2], [1, 2, 3]]','$ Error'],'import numpy as np\nprint((np.arange(3)[:, None] + np.arange(2)[None, :]).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[0, -1, -2], [1, 0, -1], [2, 1, 0]]',[['Entry (i, j) is `x_i − x_j`.','العنصر (i, j) هو `x_i − x_j`.']],['$ [[0, 1, 2], [-1, 0, 1], [-2, -1, 0]]','$ [0, 0, 0]','$ [[0, 0, 0], [0, 0, 0], [0, 0, 0]]'],'import numpy as np\nx = np.arange(3)\nprint((x[:, None] - x[None, :]).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ ValueError',[['Shapes (3,) and (2,) cannot be broadcast.','الشكلان (3,) و (2,) لا يمكن بثهما.']],['$ [5, 7]','$ [5, 7, 3]','$ [1, 2, 3, 4, 5]'],'import numpy as np\ntry:\n    np.array([1, 2, 3]) + np.array([4, 5])\nexcept ValueError:\n    print("ValueError")'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1.0, 0.5, 0.25]',[['Element-wise division.','قسمة عنصراً بعنصر.']],['$ [1, 2, 4]','$ 1.75','$ [0.25, 0.5, 1.0]'],'import numpy as np\nprint((1 / np.array([1.0, 2.0, 4.0])).tolist())'),
+]);
+
+lesson('505',25,[
+  ['Vectorized code replaces a Python loop by one array operation. It is shorter and typically 10–100 times faster, because the loop runs in compiled code:','الكود المتجهي يستبدل حلقة بايثون بعملية مصفوفية واحدة، وهو أقصر وأسرع عادة 10 إلى 100 مرة لأن الحلقة تعمل في كود مترجم:'],
+  '$ x = np.linspace(-1, 1, 1_000_000)\n# loop\np2 = [ (3 * xi**2 - 1) / 2 for xi in x ]\n# vectorized\np2 = (3 * x**2 - 1) / 2',
+  ['Write formulas for whole arrays from the start: the Gauss rule becomes ``w @ f(x)``, the error ``np.max(np.abs(u - uex))``, and a basis table ``P[:, k]`` for all nodes at once.','واكتب الصيغ لمصفوفات كاملة من البداية: قاعدة جاوس تصبح ``w @ f(x)``، والخطأ ``np.max(np.abs(u - uex))``، وجدول الأساس ``P[:, k]`` لكل العقد دفعة واحدة.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.666667',['∫_{−1}^{1} x^2 dx = #f{2}{3}'],['$ 0.333333','$ 2.000000','$ 1.000000'],'import numpy as np\nx, w = np.polynomial.legendre.leggauss(3)\nprint(f"{w @ x**2:.6f}")'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['The loop and the vectorized formula give the same numbers.','الحلقة والصيغة المتجهية تعطيان الأعداد نفسها.']],['$ False','$ 0','$ Error'],'import numpy as np\nx = np.linspace(-1, 1, 11)\na = np.array([(3 * xi**2 - 1) / 2 for xi in x])\nb = (3 * x**2 - 1) / 2\nprint(np.allclose(a, b))'),
+  Q('Write the maximum error between arrays ``u`` and ``uex`` without a loop.','اكتب أكبر خطأ بين المصفوفتين ``u`` و ``uex`` دون حلقة.','$ np.max(np.abs(u - uex))',[['Every operation acts on the whole array.','كل عملية تعمل على المصفوفة كاملة.']],['$ max(u - uex)','$ np.abs(np.max(u) - np.max(uex))','$ for i in u: max(abs(i))']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.718282',['∫_0^1 e^x dx = e − 1'],['$ 2.718282','$ 1.000000','$ 0.718282'],'import numpy as np\nx, w = np.polynomial.legendre.leggauss(5)\nt, wt = (x + 1) / 2, w / 2\nprint(f"{wt @ np.exp(t):.6f}")'),
+]);
+
+lesson('505',26,[
+  ['NumPy’s mathematical functions act on whole arrays: ``np.sin``, ``np.cos``, ``np.exp``, ``np.log``, ``np.sqrt``, ``np.abs``. Special functions such as `Γ` are in ``scipy.special``:','دوال NumPy الرياضية تعمل على مصفوفات كاملة: ``np.sin`` و ``np.cos`` و ``np.exp`` و ``np.log`` و ``np.sqrt`` و ``np.abs``. والدوال الخاصة مثل `Γ` في ``scipy.special``:'],
+  '$ t = np.linspace(0, 1, 5)\nnp.sqrt(t), np.exp(-t)\nfrom scipy.special import gamma\ngamma(np.array([0.5, 1.5, 2.5]))     # [1.772 0.886 1.329]',
+  ['Invalid operations give ``nan`` (not a number) or ``inf`` with a warning instead of an error, for example ``np.sqrt(-1.0)``. Check results with ``np.isfinite``.','والعمليات غير الصالحة تعطي ``nan`` (ليس عدداً) أو ``inf`` مع تحذير بدل الخطأ، مثل ``np.sqrt(-1.0)``. فافحص النتائج بـ ``np.isfinite``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1.0, 2.0, 3.0]',[['Element-wise square roots.','جذور تربيعية عنصراً بعنصر.']],['$ 6.0','$ [1, 4, 9]','$ [1.0, 1.414, 1.732]'],'import numpy as np\nprint(np.sqrt(np.array([1.0, 4.0, 9.0])).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ nan',[['No error, only a warning (silenced here).','لا خطأ، تحذير فقط (مكتوم هنا).']],['$ ValueError','$ 1j','$ 0.0'],'import numpy as np\nwith np.errstate(invalid="ignore"):\n    print(np.sqrt(-1.0))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1.7725, 0.8862, 1.3293]',['Γ(#f{1}{2}) = #r{π},   Γ(#f{3}{2}) = #f{#r{π}}{2},   Γ(#f{5}{2}) = #f{3#r{π}}{4}'],['$ [1.0, 1.0, 2.0]','$ [0.5, 1.5, 2.5]','$ [1.7725, 1.7725, 1.7725]'],'import numpy as np\nfrom scipy.special import gamma\nprint(np.round(gamma(np.array([0.5, 1.5, 2.5])), 4).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [True, False, False]',[['``inf`` and ``nan`` are not finite.','``inf`` و ``nan`` ليسا منتهيين.']],['$ [True, True, False]','$ [False, True, True]','$ True'],'import numpy as np\nprint(np.isfinite(np.array([1.0, np.inf, np.nan])).tolist())'),
+]);
+
+lesson('505',27,[
+  ['Reductions summarize an array, along all elements or along one axis:','الاختزالات تلخص مصفوفة على كل العناصر أو على محور واحد:'],
+  '$ A = np.array([[1, 2], [3, 4]])\nA.sum(), A.mean(), A.max()      # 10, 2.5, 4\nA.sum(axis=0)                   # [4 6]   (down the columns)\nA.sum(axis=1)                   # [3 7]   (along the rows)\nnp.cumsum([1, 2, 3]), np.diff([1, 4, 9])   # [1 3 6], [3 5]',
+  ['``axis=0`` collapses the rows (one result per column), ``axis=1`` collapses the columns. ``argmax`` gives the position of the maximum, useful for locating the largest error.','و ``axis=0`` تطوي الصفوف (نتيجة لكل عمود)، و ``axis=1`` تطوي الأعمدة. و ``argmax`` تعطي موضع الأكبر، وهذا مفيد لتحديد موقع أكبر خطأ.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [4, 6] [3, 7]',[['Column sums, then row sums.','مجاميع الأعمدة ثم مجاميع الصفوف.']],['$ [3, 7] [4, 6]','$ 10 10','$ [1, 2] [3, 4]'],'import numpy as np\nA = np.array([[1, 2], [3, 4]])\nprint(A.sum(axis=0).tolist(), A.sum(axis=1).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2 0.3',[['The largest error is at index 2.','أكبر خطأ عند الفهرس 2.']],['$ 0.3 2','$ 3 0.3','$ 2 0.1'],'import numpy as np\nerr = np.array([0.1, -0.2, 0.3, -0.05])\nk = np.argmax(np.abs(err))\nprint(k, err[k])'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1, 3, 6, 10] [3, 5, 7]',[['Running sums; successive differences.','مجاميع تراكمية، وفروق متتالية.']],['$ 10 [3, 5, 7]','$ [1, 3, 6, 10] [1, 4, 9]','$ [1, 2, 3, 4] [3, 5, 7]'],'import numpy as np\nprint(np.cumsum([1, 2, 3, 4]).tolist(), np.diff([1, 4, 9, 16]).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3.5 5.0',[['The mean of all six entries, then the mean of the second row.','متوسط العناصر الستة ثم متوسط الصف الثاني.']],['$ 3.5 2.0','$ 21 15','$ 5.0 3.5'],'import numpy as np\nA = np.array([[1, 2, 3], [4, 5, 6]])\nprint(A.mean(), A[1].mean())'),
+]);
+
+lesson('505',28,[
+  ['A comparison on an array gives a boolean array, a mask, which selects elements:','المقارنة على مصفوفة تعطي مصفوفة منطقية (قناعاً) تختار العناصر:'],
+  '$ a = np.array([3, -1, 4, -1, 5])\na > 0                 # [ True False  True False  True]\na[a > 0]              # [3 4 5]\nnp.where(a > 0, a, 0) # [3 0 4 0 5]\nnp.count_nonzero(a < 0), (a > 0).any(), (a > 0).all()',
+  ['Combine masks with ``&`` (and), ``|`` (or), ``~`` (not), with brackets around each comparison: ``(x >= 0) & (x <= 1)``.','وادمج الأقنعة بـ ``&`` (و) و ``|`` (أو) و ``~`` (ليس) مع أقواس حول كل مقارنة: ``(x >= 0) & (x <= 1)``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [3, 4, 5]',[['The mask keeps the positive values.','القناع يبقي القيم الموجبة.']],['$ [True, False, True, False, True]','$ [0, 2, 4]','$ [-1, -1]'],'import numpy as np\na = np.array([3, -1, 4, -1, 5])\nprint(a[a > 0].tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [3, 0, 4, 0, 5]',[['Negative entries replaced by 0.','العناصر السالبة استُبدلت بـ 0.']],['$ [3, 4, 5]','$ [0, -1, 0, -1, 0]','$ [3, -1, 4, -1, 5]'],'import numpy as np\na = np.array([3, -1, 4, -1, 5])\nprint(np.where(a > 0, a, 0).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3',[['The interior nodes in (0, 1): 0.25, 0.5, 0.75.','العقد الداخلية في (0, 1): 0.25 و 0.5 و 0.75.']],['$ 5','$ 4','$ 2'],'import numpy as np\nx = np.linspace(0, 1, 5)\nprint(np.count_nonzero((x > 0) & (x < 1)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True False',[['Some, but not all, are negative.','بعضها سالب لا كلها.']],['$ False True','$ True True','$ 2 5'],'import numpy as np\na = np.array([3, -1, 4, -1, 5])\nprint((a < 0).any(), (a < 0).all())'),
+]);
+
+lesson('505',29,[
+  ['Reshaping changes the shape without changing the data; stacking joins arrays:','تغيير الشكل يغيّر الشكل دون تغيير البيانات، والرص يضم المصفوفات:'],
+  '$ a = np.arange(6)\nA = a.reshape(2, 3)         # [[0 1 2] [3 4 5]]\nA.T                         # transpose, shape (3, 2)\nA.ravel()                   # rows stacked:    [0 1 2 3 4 5]\nA.ravel(order="F")          # columns stacked: [0 3 1 4 2 5]\nnp.vstack([a, a]), np.hstack([a, a]), np.column_stack([a, a])',
+  ['``ravel(order="F")`` is the column stacking `vec(𝒴)` used with Kronecker products, which is MATLAB’s and Mathematica’s ``Flatten[Transpose[…]]`` order; the default ``ravel()`` stacks rows.','و ``ravel(order="F")`` هي رص الأعمدة `vec(𝒴)` المستخدم مع ضروب كرونيكر، وهو ترتيب MATLAB و ``Flatten[Transpose[…]]`` في Mathematica، أما ``ravel()`` الافتراضية فترص الصفوف.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0, 3, 1, 4, 2, 5]',[['Column by column.','عموداً بعد عمود.']],['$ [0, 1, 2, 3, 4, 5]','$ [5, 4, 3, 2, 1, 0]','$ [0, 2, 4, 1, 3, 5]'],'import numpy as np\nA = np.arange(6).reshape(2, 3)\nprint(A.ravel(order="F").tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (3, 2)',[['The transpose swaps the dimensions.','المنقولة تبدّل البعدين.']],['$ (2, 3)','$ (6,)','$ (3, 3)'],'import numpy as np\nprint(np.arange(6).reshape(2, 3).T.shape)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (2, 3) (6,) (3, 2)',[['vstack adds rows, hstack joins end to end, column_stack makes columns.','vstack تضيف صفوفاً، و hstack تضم طرفاً بطرف، و column_stack تصنع أعمدة.']],['$ (3, 2) (6,) (2, 3)','$ (2, 3) (2, 3) (3, 2)','$ (6,) (6,) (6,)'],'import numpy as np\na = np.arange(3)\nv, h = np.vstack([a, a]), np.hstack([a, a])\nc = np.column_stack([a, a])\nprint(v.shape, h.shape, c.shape)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ ValueError',[['6 elements cannot form a 4 × 2 array.','6 عناصر لا تصنع مصفوفة 4 × 2.']],['$ (4, 2)','$ [[0, 1], [2, 3], [4, 5], [0, 0]]','$ None'],'import numpy as np\ntry:\n    np.arange(6).reshape(4, 2)\nexcept ValueError:\n    print("ValueError")'),
+]);
+
+lesson('505',30,[
+  ['Floats carry 53 binary digits, about 16 decimal digits. The machine epsilon `ε ≈ 2.2 × 10^{−16}` is the gap between 1 and the next float:','الأعداد العشرية العائمة تحمل 53 رقماً ثنائياً أي نحو 16 رقماً عشرياً. وإبسيلون الآلة `ε ≈ 2.2 × 10^{−16}` هو الفجوة بين 1 والعدد التالي:'],
+  '$ np.finfo(float).eps     # 2.220446049250313e-16\n0.1 + 0.2                # 0.30000000000000004\n(1 + 1e-16) - 1          # 0.0\nnp.isclose(0.1 + 0.2, 0.3)   # True',
+  ['Subtracting nearly equal numbers loses digits (cancellation): `(1 − cos x)/x^2` computed directly for `x = 10^{−8}` gives 0 instead of 0.5. Rewriting it as `2 sin^2(x/2)/x^2` avoids the subtraction.','وطرح أعداد متقاربة جداً يفقد أرقاماً (الإلغاء): `(1 − cos x)/x^2` محسوبة مباشرة عند `x = 10^{−8}` تعطي 0 بدل 0.5. وإعادة كتابتها `2 sin^2(x/2)/x^2` تتجنب الطرح.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.0 0.5',[['The direct formula loses everything to cancellation; the rewritten one is accurate.','الصيغة المباشرة تفقد كل شيء بالإلغاء، والمعاد كتابتها دقيقة.']],['$ 0.5 0.5','$ 0.0 0.0','$ 1.0 0.5'],'import numpy as np\nx = 1e-8\na = (1 - np.cos(x)) / x**2\nb = 2 * np.sin(x / 2)**2 / x**2\nprint(a, round(b, 12))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.0',[['`10^{−16}` is below half of ε, so `1 + 10^{−16}` rounds to 1.','`10^{−16}` أقل من نصف ε فيقرَّب `1 + 10^{−16}` إلى 1.']],['$ 1e-16','$ 1.0','$ 2.220446049250313e-16'],'print((1 + 1e-16) - 1)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ False True',[['Never test floats with ``==``; use a tolerance.','لا تختبر الأعداد العشرية بـ ``==``، واستخدم سماحية.']],['$ True True','$ False False','$ True False'],'import numpy as np\nprint(0.1 + 0.2 == 0.3, np.isclose(0.1 + 0.2, 0.3))'),
+  Q('A computed error stops at about `10^{−15}` however large N is. Why?','خطأ محسوب يتوقف عند نحو `10^{−15}` مهما كبر N. لماذا؟',['Rounding error: the method is already exact to machine precision','خطأ التقريب: الطريقة مضبوطة أصلاً بدقة الآلة'],[['A small multiple of ε is the floor of double precision.','مضاعف صغير لـ ε هو أرضية الدقة المزدوجة.']],[['The method diverges','الطريقة متباعدة'],['N is too small','N صغير جداً']]),
+]);
+
+lesson('505',31,[
+  ['Matplotlib draws figures. The object-oriented style creates a figure and axes and calls methods on the axes:','Matplotlib ترسم الأشكال. والأسلوب الكائني ينشئ شكلاً ومحاور ويستدعي دوال المحاور:'],
+  '$ import numpy as np\nimport matplotlib.pyplot as plt\nx = np.linspace(-1, 1, 200)\nfig, ax = plt.subplots()\nax.plot(x, (3 * x**2 - 1) / 2)\nplt.show()                      # or fig.savefig("p2.png")',
+  ['``ax.plot`` joins the points in order, so use enough of them (200 is plenty for a smooth curve). ``plt.show()`` opens a window or shows the figure in Jupyter.','و ``ax.plot`` تصل النقاط بالترتيب، فاستخدم عدداً كافياً منها (200 تكفي لمنحنى أملس). و ``plt.show()`` تفتح نافذة أو تعرض الشكل في Jupyter.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1 Line2D',[['plot returns a list with one line object.','plot تعيد قائمة فيها كائن خط واحد.']],['$ 200 Line2D','$ 1 Figure','$ 0 None'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nimport numpy as np\nfig, ax = plt.subplots()\nlines = ax.plot(np.linspace(0, 1, 200), np.linspace(0, 1, 200)**2)\nprint(len(lines), type(lines[0]).__name__)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 200',[['One x value for each sample point.','قيمة x لكل نقطة عينة.']],['$ 1','$ 2','$ 100'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nimport numpy as np\nfig, ax = plt.subplots()\n(line,) = ax.plot(np.linspace(0, 1, 200), np.zeros(200))\nprint(len(line.get_xdata()))'),
+  Q('Why can a curve drawn with ``np.linspace(0, 1, 5)`` look broken?','لماذا قد يبدو منحنى مرسوم بـ ``np.linspace(0, 1, 5)`` مكسوراً؟',['plot joins only 5 points with straight segments','plot تصل 5 نقاط فقط بقطع مستقيمة'],[['Use a few hundred points for a smooth curve.','استخدم بضع مئات من النقاط لمنحنى أملس.']],[['linspace is wrong','linspace خاطئة'],['The axes are too small','المحاور صغيرة جداً']]),
+  Q('Which backend lets a script save figures without a display?','أي محرك يسمح للسكربت بحفظ الأشكال دون شاشة؟','$ matplotlib.use("Agg")',[['Used on servers and in tests.','يُستخدم على الخوادم وفي الاختبارات.']],['$ plt.show()','$ matplotlib.use("Screen")','$ plt.figure(display=False)']),
+]);
+
+lesson('505',32,[
+  ['Labels and legends make a figure readable:','العناوين والمفاتيح تجعل الشكل مقروءاً:'],
+  '$ ax.plot(x, y1, "b-", label="exact")\nax.plot(x, y2, "r--o", label="approximate", markersize=4)\nax.set_xlabel("t");  ax.set_ylabel("y")\nax.set_title("Solution");  ax.legend();  ax.grid(True)',
+  ['A format string combines colour, line style and marker: ``"r--o"`` is red, dashed, with circles. Keyword arguments (``color``, ``linestyle``, ``marker``, ``linewidth``) do the same more explicitly.','وسلسلة التنسيق تجمع اللون ونمط الخط والعلامة: ``"r--o"`` أحمر متقطع بدوائر. والمتغيرات المسماة (``color`` و ``linestyle`` و ``marker`` و ``linewidth``) تفعل الشيء نفسه بوضوح أكبر.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ r -- o',[['Colour, style and marker of the line.','لون الخط ونمطه وعلامته.']],['$ red dashed circle','$ b - None','$ r - o'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\n(l,) = ax.plot([0, 1], [0, 1], "r--o")\nprint(l.get_color(), l.get_linestyle(), l.get_marker())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [\'exact\', \'approximate\']',[['The legend shows the labels in plotting order.','المفتاح يعرض التسميات بترتيب الرسم.']],['$ [\'approximate\', \'exact\']','$ []','$ [\'line0\', \'line1\']'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.plot([0, 1], [0, 1], label="exact")\nax.plot([0, 1], [1, 0], label="approximate")\nleg = ax.legend()\nprint([t.get_text() for t in leg.get_texts()])'),
+  Q('Why does ``ax.legend()`` show nothing?','لماذا لا تُظهر ``ax.legend()`` شيئاً؟',['The curves were plotted without ``label=``','رُسمت المنحنيات دون ``label=``'],[['A warning says no artists with labels were found.','يقول تحذير إنه لم يُعثر على عناصر لها تسميات.']],[['legend needs plt.show()','legend تحتاج plt.show()'],['The figure is too small','الشكل صغير جداً']]),
+  Q('Which call puts the label `t` on the horizontal axis?','أي استدعاء يضع التسمية `t` على المحور الأفقي؟','$ ax.set_xlabel("t")',[['``set_ylabel`` for the vertical axis.','و ``set_ylabel`` للمحور الرأسي.']],['$ ax.xlabel = "t"','$ ax.set_title("t")','$ plt.label("t")']),
+]);
+
+lesson('505',33,[
+  ['``plt.subplots(rows, cols)`` returns a figure and an array of axes, one per panel:','``plt.subplots(rows, cols)`` تعيد شكلاً ومصفوفة محاور، واحداً لكل لوحة:'],
+  '$ fig, axs = plt.subplots(2, 2, figsize=(8, 6), sharex=True)\nfor n, ax in enumerate(axs.flat):\n    ax.plot(x, legendre(n, x));  ax.set_title(f"P_{n}")\nfig.tight_layout()',
+  ['``axs.flat`` walks through all panels; ``sharex``/``sharey`` give common axes; ``tight_layout`` prevents overlapping labels. Several curves in one panel are just several plot calls on the same axes.','و ``axs.flat`` تمر على كل اللوحات، و ``sharex``/``sharey`` تعطي محاور مشتركة، و ``tight_layout`` تمنع تداخل التسميات. وعدة منحنيات في لوحة واحدة هي عدة استدعاءات plot على المحاور نفسها.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (2, 3) 6',[['An array of axes, one per panel.','مصفوفة محاور، واحد لكل لوحة.']],['$ (3, 2) 6','$ (6,) 6','$ 2 3'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nfig, axs = plt.subplots(2, 3)\nprint(axs.shape, len(axs.flat))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3',[['Three plot calls on one axes give three lines.','ثلاثة استدعاءات plot على محاور واحدة تعطي ثلاثة خطوط.']],['$ 1','$ 0','$ 9'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nfor k in range(3):\n    ax.plot([0, 1], [k, k])\nprint(len(ax.get_lines()))'),
+  Q('Which call fixes overlapping titles and labels between panels?','أي استدعاء يصلح تداخل العناوين والتسميات بين اللوحات؟','$ fig.tight_layout()',[['Or create the figure with ``layout="constrained"``.','أو أنشئ الشكل بـ ``layout="constrained"``.']],['$ plt.show()','$ fig.clear()','$ ax.grid()']),
+  Q('What is ``axs`` for ``plt.subplots(1, 1)``?','ما ``axs`` عند ``plt.subplots(1, 1)``؟',['A single Axes object, not an array','كائن Axes واحد لا مصفوفة'],[['Use ``squeeze=False`` to always get an array.','استخدم ``squeeze=False`` لتحصل دائماً على مصفوفة.']],[['An array of shape (1, 1)','مصفوفة شكلها (1, 1)'],['None','لا شيء']]),
+]);
+
+lesson('505',34,[
+  ['Errors span many orders of magnitude, so they are plotted on logarithmic axes. ``semilogy`` uses a log scale for y, ``loglog`` for both:','الأخطاء تمتد عبر رتب كثيرة فتُرسم على محاور لوغاريتمية. و ``semilogy`` تستخدم مقياساً لوغاريتمياً لـ y، و ``loglog`` للمحورين:'],
+  '$ N = np.array([4, 8, 12, 16])\nerr = np.array([1.2e-3, 1.1e-6, 1.3e-9, 1.2e-12])\nax.semilogy(N, err, "o-")\nax.set_xlabel("N");  ax.set_ylabel("max error")',
+  ['On ``semilogy`` a spectral rate `e_N ~ ρ^{−N}` is a straight line; on ``loglog`` an algebraic rate `e_N ~ N^{−p}` is a straight line of slope −p.','وفي ``semilogy`` يكون المعدل الطيفي `e_N ~ ρ^{−N}` خطاً مستقيماً، وفي ``loglog`` يكون المعدل الجبري `e_N ~ N^{−p}` خطاً مستقيماً ميله −p.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ linear log',[['semilogy changes only the y scale.','semilogy تغيّر مقياس y فقط.']],['$ log log','$ log linear','$ linear linear'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.semilogy([4, 8], [1e-3, 1e-6])\nprint(ax.get_xscale(), ax.get_yscale())'),
+  Q('Fit the slope of `log_{10} e` against N for the data above.','قدّر ميل `log_{10} e` مقابل N للبيانات أعلاه.','$ -0.75',[['`ρ = 10^{0.75} ≈ 5.6`.','`ρ = 10^{0.75} ≈ 5.6`.']],['$ -3.0','$ 0.75','$ -1.5'],'import numpy as np\nN = np.array([4, 8, 12, 16])\nerr = np.array([1.2e-3, 1.1e-6, 1.3e-9, 1.2e-12])\nprint(round(np.polyfit(N, np.log10(err), 1)[0], 2))'),
+  Q('Which plot makes `e_N = 5N^{−3}` a straight line?','أي رسم يجعل `e_N = 5N^{−3}` خطاً مستقيماً؟','$ ax.loglog(N, err)',['log e = log 5 − 3 log N'],['$ ax.semilogy(N, err)','$ ax.plot(N, err)','$ ax.semilogx(N, err)']),
+  Q('Why do zero errors break a log plot?','لماذا تفسد الأخطاء الصفرية الرسم اللوغاريتمي؟',['`log 0` is not defined, so those points are dropped','`log 0` غير معرّف فتُحذف تلك النقاط'],[['Replace exact zeros by a small floor such as ε, or mark them separately.','استبدل الأصفار بأرضية صغيرة مثل ε أو علّمها منفصلة.']],[['They are drawn at 1','تُرسم عند 1'],['They are not a problem','ليست مشكلة']]),
+]);
+
+lesson('505',35,[
+  ['``scatter`` draws points with individual sizes or colours; ``plot`` with a marker and no line does the same for simple cases:','``scatter`` ترسم نقاطاً بأحجام أو ألوان فردية، و ``plot`` بعلامة ودون خط تفعل الشيء نفسه في الحالات البسيطة:'],
+  '$ x, w = np.polynomial.legendre.leggauss(8)\nax.scatter(x, w, s=40, c=w, cmap="viridis")\nax.plot(x, np.zeros_like(x), "k|", markersize=15)   # nodes on the axis',
+  ['Common markers: ``"o"`` circle, ``"s"`` square, ``"^"`` triangle, ``"x"``, ``"+"``, ``"|"``. Plotting nodes is a quick check that they cluster toward the ends as expected.','العلامات الشائعة: ``"o"`` دائرة، و ``"s"`` مربع، و ``"^"`` مثلث، و ``"x"`` و ``"+"`` و ``"|"``. ورسم العقد فحص سريع لتكاثفها نحو الطرفين كما يُتوقع.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 8',[['One point per node.','نقطة لكل عقدة.']],['$ 1','$ 16','$ 0'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nimport numpy as np\nx, w = np.polynomial.legendre.leggauss(8)\nfig, ax = plt.subplots()\nsc = ax.scatter(x, w)\nprint(len(sc.get_offsets()))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['Gauss–Legendre weights are largest in the middle.','أوزان جاوس–ليجندر أكبرها في الوسط.']],['$ False','$ 0.3626','$ 8'],'import numpy as np\nx, w = np.polynomial.legendre.leggauss(8)\nprint(w[3] > w[0])'),
+  Q('Which format draws only red squares, without a line?','أي تنسيق يرسم مربعات حمراء فقط دون خط؟','$ "rs"',[['Colour r and marker s; no line style.','اللون r والعلامة s دون نمط خط.']],['$ "r-s"','$ "sr--"','$ "red square"']),
+  Q('What does ``c=w, cmap="viridis"`` do in scatter?','ماذا يفعل ``c=w, cmap="viridis"`` في scatter؟',['Colours each point by its weight using the viridis colour map','يلوّن كل نقطة حسب وزنها باستخدام خريطة ألوان viridis'],[['Add ``fig.colorbar(sc)`` to show the scale.','أضف ``fig.colorbar(sc)`` لعرض المقياس.']],[['Sets the size of the points','يحدد حجم النقاط'],['Nothing','لا شيء']]),
+]);
+
+lesson('505',36,[
+  ['Functions of two variables need a grid. ``np.meshgrid`` builds the coordinate arrays:','دوال المتغيرين تحتاج شبكة، و ``np.meshgrid`` تبني مصفوفات الإحداثيات:'],
+  '$ x = np.linspace(0, 1, 41);  t = np.linspace(0, 1, 21)\nX, T = np.meshgrid(x, t)          # shapes (21, 41)\nU = T**1.5 * np.sin(np.pi * X)\nax.contourf(X, T, U, levels=20);  fig.colorbar(...)\nax3 = fig.add_subplot(projection="3d");  ax3.plot_surface(X, T, U)',
+  ['With the default indexing ``"xy"``, the first argument varies along the columns, so the arrays have shape (len(t), len(x)). Contour plots of `u(x, t)` show the whole space-time solution in one picture.','ومع الفهرسة الافتراضية ``"xy"`` يتغير المتغير الأول على الأعمدة، فيكون شكل المصفوفات (len(t), len(x)). ورسوم الكنتور لـ `u(x, t)` تعرض الحل الزمكاني كله في صورة واحدة.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (21, 41)',[['Rows follow t, columns follow x.','الصفوف تتبع t والأعمدة تتبع x.']],['$ (41, 21)','$ (41, 41)','$ (862,)'],'import numpy as np\nX, T = np.meshgrid(np.linspace(0, 1, 41), np.linspace(0, 1, 21))\nprint(X.shape)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0.0, 0.5, 1.0] [0.0, 0.0, 0.0]',[['The first row of X is the x grid, the first row of T is t = 0.','الصف الأول من X شبكة x، والصف الأول من T هو t = 0.']],['$ [0.0, 0.0, 0.0] [0.0, 0.5, 1.0]','$ [0.0, 1.0] [0.0, 1.0]','$ [0.0, 0.5, 1.0] [0.0, 1.0, 2.0]'],'import numpy as np\nX, T = np.meshgrid(np.linspace(0, 1, 3), np.linspace(0, 2, 5))\nprint(X[0].tolist(), T[0].tolist())'),
+  Q('Evaluate `u = t^{3/2} sin(πx)` at the grid point `(x, t) = (0.5, 1)`.','احسب `u = t^{3/2} sin(πx)` عند نقطة الشبكة `(x, t) = (0.5, 1)`.','$ 1.0',['1·sin(#f{π}{2})'],['$ 0.0','$ 0.5','$ 1.5'],'import numpy as np\nX, T = np.meshgrid(np.linspace(0, 1, 3), np.linspace(0, 1, 3))\nU = T**1.5 * np.sin(np.pi * X)\nprint(round(U[2, 1], 6))'),
+  Q('Which call creates 3-D axes for ``plot_surface``?','أي استدعاء ينشئ محاور ثلاثية لـ ``plot_surface``؟','$ fig.add_subplot(projection="3d")',[['Built into Matplotlib.','مدمج في Matplotlib.']],['$ plt.subplots(3)','$ fig.add_axes3d()','$ ax.set_zlim()']),
+]);
+
+lesson('505',37,[
+  ['A matrix can be shown as a picture: ``imshow`` colours each entry, ``spy`` marks the nonzero ones:','يمكن عرض المصفوفة صورةً: ``imshow`` تلوّن كل عنصر، و ``spy`` تعلّم غير الصفرية:'],
+  '$ D2 = second_derivative_matrix(12)\nax1.imshow(np.log10(np.abs(D2) + 1e-16), cmap="magma");  fig.colorbar(...)\nax2.spy(D2, markersize=4)',
+  ['``spy`` shows structure at a glance: the strictly lower triangular, checkerboard pattern of Theorem 3.1, the bands of a Galerkin matrix, or the blocks of a Kronecker system. ``imshow`` of the logarithm shows how fast the entries grow.','و ``spy`` تُظهر البنية بنظرة: نمط رقعة الشطرنج المثلثي السفلي تماماً في النظرية 3.1، أو أشرطة مصفوفة جاليركن، أو كتل نظام كرونيكر. و ``imshow`` للوغاريتم تُظهر سرعة نمو العناصر.'],
+],[
+  Q('For the matrix `D^{(2)}` of Theorem 3.1 with N = 4, how many nonzero entries does ``spy`` show?','لمصفوفة `D^{(2)}` في النظرية 3.1 مع N = 4 كم عنصراً غير صفري تُظهر ``spy``؟','$ 4',[['Pairs (r, j) with r − j even and positive: (2,0), (3,1), (4,0), (4,2).','الأزواج (r, j) التي فيها r − j زوجي موجب: (2,0) و (3,1) و (4,0) و (4,2).']],['$ 6','$ 10','$ 2'],'import numpy as np\nN = 4\nD = np.zeros((N + 1, N + 1))\nfor r in range(N + 1):\n    for j in range(r):\n        if (r - j) % 2 == 0:\n            D[r, j] = 4 * (r - j) / 2 * (2 * j + 1) * (r + j + 1)\nprint(np.count_nonzero(D))'),
+  Q('Why plot ``np.log10(np.abs(A) + 1e-16)`` rather than A?','لماذا نرسم ``np.log10(np.abs(A) + 1e-16)`` بدل A؟',['The entries span many orders of magnitude; the logarithm makes all of them visible, and the small shift avoids `log 0`','العناصر تمتد عبر رتب كثيرة، واللوغاريتم يُظهرها كلها، والإزاحة الصغيرة تتجنب `log 0`'],[['Otherwise only the largest entries are visible.','وإلا تظهر أكبر العناصر فقط.']],[['To make it faster','لتسريعه'],['imshow needs negative values','imshow تحتاج قيماً سالبة']]),
+  Q('What pattern does ``spy`` show for `I ⊗ T` with T tridiagonal?','أي نمط تُظهره ``spy`` لـ `I ⊗ T` مع T ثلاثية القطر؟',['Tridiagonal blocks along the diagonal','كتل ثلاثية القطر على القطر'],[['One copy of T per diagonal block.','نسخة من T لكل كتلة قطرية.']],[['A full matrix','مصفوفة كاملة'],['A single band','شريط واحد']]),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 10',[['A 4 × 4 tridiagonal matrix: 4 + 3 + 3.','مصفوفة 4 × 4 ثلاثية القطر: 4 + 3 + 3.']],['$ 16','$ 4','$ 12'],'import numpy as np\nT = 2 * np.eye(4) - np.eye(4, k=1) - np.eye(4, k=-1)\nprint(np.count_nonzero(T))'),
+]);
+
+lesson('505',38,[
+  ['Mathematical text uses LaTeX-like syntax between dollar signs in a raw string; Matplotlib renders it without a LaTeX installation:','النص الرياضي يستخدم صيغة شبيهة بـ LaTeX بين علامتي دولار في نص خام، وترسمه Matplotlib دون تثبيت LaTeX:'],
+  '$ ax.set_xlabel(r"$t$")\nax.set_ylabel(r"$\\lambda t^{\\lambda - 1}$")\nax.set_title(r"$E_{1/2}(-t^{1/2})$")',
+  ['Arabic needs two extra steps, because Matplotlib draws characters one by one: join the letters with ``arabic_reshaper.reshape`` and reorder them right to left with ``bidi.algorithm.get_display``, and use a font that has Arabic glyphs, such as Amiri or Noto Naskh Arabic.','والعربية تحتاج خطوتين إضافيتين لأن Matplotlib ترسم الحروف واحداً واحداً: صِل الحروف بـ ``arabic_reshaper.reshape`` ورتبها من اليمين إلى اليسار بـ ``bidi.algorithm.get_display``، واستخدم خطاً فيه حروف عربية مثل Amiri أو Noto Naskh Arabic.'],
+],[
+  Q('Why is the label written as a raw string ``r"..."``?','لماذا تُكتب التسمية نصاً خاماً ``r"..."``؟',['So that backslashes such as ``\\lambda`` reach Matplotlib unchanged','حتى تصل الشرطات المائلة مثل ``\\lambda`` إلى Matplotlib دون تغيير'],[['In a normal string ``\\t`` would be a tab.','في النص العادي ``\\t`` تصبح مسافة جدولة.']],[['To make it bold','لجعله عريضاً'],['It is required for every label','إلزامي لكل تسمية']]),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1 4',[['``"\\t"`` is one tab character; the raw string ``r"\\tau"`` keeps the backslash, so it has 4 characters.','``"\\t"`` حرف جدولة واحد، والنص الخام ``r"\\tau"`` يبقي الشرطة المائلة ففيه 4 حروف.']],['$ 2 4','$ 1 3','$ 2 3'],'print(len("\\t"), len(r"\\tau"))'),
+  Q('Which two steps make Arabic text display correctly in a figure?','أي خطوتين تجعلان النص العربي يظهر صحيحاً في شكل؟',['Reshape the letters (arabic_reshaper) and reorder them right to left (python-bidi), with an Arabic font','وصل الحروف (arabic_reshaper) وترتيبها من اليمين إلى اليسار (python-bidi) مع خط عربي'],[['Without them the letters appear separated and reversed.','دونهما تظهر الحروف منفصلة ومعكوسة.']],[['Only a larger font size','حجم خط أكبر فقط'],['Nothing: it works directly','لا شيء: يعمل مباشرة']]),
+  Q('Write the label `‖u − u_N‖_∞` in Matplotlib mathtext.','اكتب التسمية `‖u − u_N‖_∞` بصيغة mathtext في Matplotlib.','$ r"$\\|u - u_N\\|_\\infty$"',[['``\\|`` is the double bar, ``\\infty`` the infinity sign.','``\\|`` الخط المزدوج و ``\\infty`` علامة اللانهاية.']],['$ "$||u - u_N||_inf$"','$ r"\\|u - u_N\\|_\\infty"','$ r"$|u - u_N|^\\infty$"']),
+]);
+
+lesson('505',39,[
+  ['Figures for a paper are saved in a vector format at the final size, so that text matches the paper’s fonts:','أشكال البحث تُحفظ بصيغة متجهية بحجمها النهائي حتى يطابق النص خطوط البحث:'],
+  '$ fig, ax = plt.subplots(figsize=(3.5, 2.6))     # inches: one journal column\n...\nfig.savefig("convergence.pdf", bbox_inches="tight")\nfig.savefig("convergence.png", dpi=300)',
+  ['``bbox_inches="tight"`` removes empty margins. PDF and SVG stay sharp at any zoom; PNG at 300 dpi is fine for slides. Set the size first rather than scaling the picture later, which would change the font sizes.','و ``bbox_inches="tight"`` تحذف الهوامش الفارغة. و PDF و SVG تبقيان حادتين بأي تكبير، و PNG بدقة 300 نقطة مناسبة للعروض. وحدد الحجم أولاً بدل تحجيم الصورة لاحقاً لأن ذلك يغيّر أحجام الخطوط.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1050, 780]',[['3.5 × 300 and 2.6 × 300 pixels.','3.5 × 300 و 2.6 × 300 نقطة.']],['$ [350, 260]','$ [3.5, 2.6]','$ [300, 300]'],'import matplotlib\nmatplotlib.use("Agg")\nimport matplotlib.pyplot as plt\nfig = plt.figure(figsize=(3.5, 2.6), dpi=300)\nprint([int(v) for v in fig.get_size_inches() * fig.dpi])'),
+  Q('Which format should be used in a LaTeX paper?','أي صيغة تُستخدم في بحث LaTeX؟','$ PDF',[['A vector format.','صيغة متجهية.']],['$ JPG','$ BMP','$ GIF']),
+  Q('What does ``bbox_inches="tight"`` do?','ماذا تفعل ``bbox_inches="tight"``؟',['It trims the empty space around the figure','تقص المساحة الفارغة حول الشكل'],[['The saved file fits its content.','الملف المحفوظ يناسب محتواه.']],[['It enlarges the fonts','تكبّر الخطوط'],['It compresses the file','تضغط الملف']]),
+  Q('Why set ``figsize`` to the final size instead of scaling later?','لماذا نحدد ``figsize`` بالحجم النهائي بدل التحجيم لاحقاً؟',['Scaling changes the font size; at the final size the text matches the paper','التحجيم يغيّر حجم الخط، وبالحجم النهائي يطابق النص البحث'],[['A one-column figure is about 3.5 inches wide.','الشكل بعرض عمود واحد نحو 3.5 بوصة.']],[['To make the file smaller','لتصغير الملف'],['It does not matter','لا يهم']]),
+]);
+
+lesson('505',40,[
+  ['The standard convergence figure: error against N on ``semilogy`` (spectral) or ``loglog`` (algebraic), one marker per run, labelled axes, a grid, and a reference line for the expected rate:','شكل التقارب القياسي: الخطأ مقابل N في ``semilogy`` (طيفي) أو ``loglog`` (جبري)، بعلامة لكل تشغيل، ومحاور مسماة، وشبكة، وخط مرجعي للمعدل المتوقع:'],
+  '$ fig, ax = plt.subplots(figsize=(3.5, 2.6))\nax.semilogy(N, err, "o-", label="mapped Legendre")\nax.semilogy(N, 10.0**(-0.75 * N), "k--",\n            label=r"$\\rho^{-N},\\ \\rho = 10^{0.75}$")\nax.set_xlabel("$N$");  ax.set_ylabel("max error")\nax.grid(True, which="both", alpha=0.3);  ax.legend()\nfig.savefig("conv.pdf", bbox_inches="tight")',
+  ['The observed rate comes from a straight-line fit of the logarithm: ``np.polyfit(N, np.log10(err), 1)`` for spectral, ``np.polyfit(np.log10(N), np.log10(err), 1)`` for algebraic convergence.','والمعدل الملاحظ يأتي من ملاءمة خط مستقيم للوغاريتم: ``np.polyfit(N, np.log10(err), 1)`` للتقارب الطيفي، و ``np.polyfit(np.log10(N), np.log10(err), 1)`` للجبري.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -4.0',[['The slope of `log e` against `log N`.','ميل `log e` مقابل `log N`.']],['$ 4.0','$ -1.0','$ -16.0'],'import numpy as np\nN = np.array([8, 16, 32, 64])\nerr = 3.0 * N**-4.0\nprint(round(np.polyfit(np.log10(N), np.log10(err), 1)[0], 6))'),
+  Q('Errors fall by a constant factor for each added term. Which plot shows this best?','الأخطاء تصغر بعامل ثابت لكل حد مضاف. أي رسم يُظهر ذلك أفضل؟','$ semilogy',[['Exponential decay is a straight line on a semi-log plot.','التناقص الأسي خط مستقيم في الرسم نصف اللوغاريتمي.']],['$ loglog','$ plot','$ semilogx']),
+  Q('Why draw a reference line such as `ρ^{−N}`?','لماذا يُرسم خط مرجعي مثل `ρ^{−N}`؟',['It shows the reader the predicted rate next to the measured one','يُظهر للقارئ المعدل المتوقع بجانب المقاس'],[['Parallel lines mean the predicted rate is achieved.','الخطوط المتوازية تعني تحقق المعدل المتوقع.']],[['To fill the figure','لملء الشكل'],['It is required by journals','تشترطه المجلات']]),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 5.6',[['The fitted slope is about −0.748, so `ρ = 10^{0.748} ≈ 5.6`.','الميل الملاءم نحو −0.748 فيكون `ρ = 10^{0.748} ≈ 5.6`.']],['$ 0.75','$ 10.0','$ 1.78'],'import numpy as np\nN = np.array([4, 8, 12, 16])\nerr = np.array([1.2e-3, 1.1e-6, 1.3e-9, 1.2e-12])\nslope = np.polyfit(N, np.log10(err), 1)[0]\nprint(round(10**(-slope), 2))'),
+]);
+
 export const MS505 = true;
