@@ -207,4 +207,169 @@ lesson('508',5,[
     ['^CD^{α} t^{kα} = #f{Γ(kα + 1)}{Γ(kα − α + 1)} t^{kα−α}', ['Dividing by `Γ(kα + 1)` and including the sign `(−1)^k = −(−1)^{k−1}` gives `^CD^{α} y = −y`.','وبالقسمة على `Γ(kα + 1)` وإدخال الإشارة `(−1)^k = −(−1)^{k−1}` نحصل على `^CD^{α} y = −y`.']]),
 ]);
 
+/* ---- 508 · Unit 1 (lessons 6–10) and Unit 2 (lessons 11–20) ---- */
+lesson('508',6,[
+  ['The equation `^CD^{α}y = λy`, `y(0) = ψ_0` (0 < α ≤ 1) has the solution','المعادلة `^CD^{α}y = λy` مع `y(0) = ψ_0` (0 < α ≤ 1) حلها'],
+  'y(t) = ψ_0 E_{α}(λt^{α}) = ψ_0 Σ_{k=0}^{∞} #f{λ^k t^{kα}}{Γ(kα + 1)}',
+  ['`E_{α}(λt^{α})` is the fractional exponential: for α = 1 it is `e^{λt}`. For λ > 0 it grows like `e^{λ^{1/α}t}/α`; for λ < 0 it decays, but only algebraically, like `t^{−α}/(|λ|Γ(1 − α))`, a long memory that the exponential does not have.','و `E_{α}(λt^{α})` هي الأسية الكسرية: عند α = 1 تساوي `e^{λt}`. وعند λ > 0 تنمو مثل `e^{λ^{1/α}t}/α`، وعند λ < 0 تتناقص لكن جبرياً فقط مثل `t^{−α}/(|λ|Γ(1 − α))`، وهي ذاكرة طويلة لا تملكها الأسية.'],
+],[
+  Q('Solve `^CD^{1/2}y = y`, `y(0) = 1`, and give `y(1)`.','حل `^CD^{1/2}y = y` مع `y(0) = 1` وأعط `y(1)`.','y(1) = E_{1/2}(1) = e(1 + erf 1) ≈ 5.0090',['E_{1/2}(z) = e^{z^2} erfc(−z),   z = 1'],['e ≈ 2.7183','E_{1/2}(−1) ≈ 0.4276','≈ 1.5']),
+  Q('Write the solution of `^CD^{α}y = −2y`, `y(0) = 3`.','اكتب حل `^CD^{α}y = −2y` مع `y(0) = 3`.','y = 3E_{α}(−2t^{α})',['ψ_0 = 3,   λ = −2'],['y = 3e^{−2t}','y = E_{α}(−2t^{α}) + 3','y = 3E_{α}(−2t)']),
+  Q('For α = 1/2, λ = −1, which decays faster for large t, `E_{1/2}(−t^{1/2})` or `e^{−t}`?','عند α = 1/2 و λ = −1 أيهما يتناقص أسرع لـ t كبيرة: `E_{1/2}(−t^{1/2})` أم `e^{−t}`؟',['`e^{−t}`: the Mittag-Leffler function decays only like `t^{−1/2}/Γ(1/2)`','`e^{−t}`: دالة ميتاج–ليفلر تتناقص فقط مثل `t^{−1/2}/Γ(1/2)`'],['E_{α}(−t^{α}) ~ #f{t^{−α}}{Γ(1 − α)}'],[['Both the same','الاثنتان متماثلتان'],['`E_{1/2}(−t^{1/2})`','`E_{1/2}(−t^{1/2})`']]),
+  Q('Write the first three terms of `E_{α}(λt^{α})`.','اكتب الحدود الثلاثة الأولى لـ `E_{α}(λt^{α})`.','1 + #f{λt^{α}}{Γ(α + 1)} + #f{λ^2 t^{2α}}{Γ(2α + 1)}',['k = 0, 1, 2'],['1 + λt^{α} + λ^2 t^{2α}','1 + #f{λt}{Γ(α + 1)} + #f{λ^2 t^2}{Γ(2α + 1)}','1 + #f{λt^{α}}{α!} + #f{λ^2 t^{2α}}{(2α)!}']),
+]);
+
+lesson('508',7,[
+  ['For the linear equation `^CD^{α}y = λy + g(t)`, `y(0) = ψ_0`, the solution is the homogeneous part plus a convolution with the two-parameter Mittag-Leffler function:','للمعادلة الخطية `^CD^{α}y = λy + g(t)` مع `y(0) = ψ_0` يكون الحل الجزء المتجانس مضافاً إليه التفاف مع دالة ميتاج–ليفلر ذات الوسيطين:'],
+  'y(t) = ψ_0 E_{α}(λt^{α}) + ∫_0^t (t − s)^{α−1} E_{α,α}(λ(t − s)^{α}) g(s) ds',
+  ['Here `E_{α,β}(z) = Σ z^k/Γ(αk + β)`. For λ = 0 the kernel is `(t − s)^{α−1}/Γ(α)` and the formula reduces to `y = ψ_0 + D^{−α}g`. A constant source can often be handled by shifting y by the steady state.','وهنا `E_{α,β}(z) = Σ z^k/Γ(αk + β)`. وعند λ = 0 تكون النواة `(t − s)^{α−1}/Γ(α)` وتؤول الصيغة إلى `y = ψ_0 + D^{−α}g`. والمصدر الثابت يُعالج غالباً بإزاحة y بالحالة المستقرة.'],
+],[
+  Q('Solve `^CD^{α}y = 1 − y`, `y(0) = 0`.','حل `^CD^{α}y = 1 − y` مع `y(0) = 0`.','y = 1 − E_{α}(−t^{α})',['z = 1 − y:   ^CD^{α}z = −z,   z(0) = 1'],['y = E_{α}(−t^{α})','y = 1 + E_{α}(−t^{α})','y = 1 − e^{−t}']),
+  Q('Give `y(1)` for that solution with α = 1/2.','أعط `y(1)` لذلك الحل عند α = 1/2.','≈ 0.5724',['1 − E_{1/2}(−1) = 1 − 0.427584'],['≈ 0.4276','≈ 0.6321','≈ 1']),
+  Q('Reduce `E_{α,α}(0·z)` and the kernel for λ = 0.','اختصر `E_{α,α}(0·z)` والنواة عند λ = 0.','E_{α,α}(0) = #f{1}{Γ(α)}',['k = 0:   #f{1}{Γ(α)}',['The kernel becomes `(t − s)^{α−1}/Γ(α)`, the Riemann–Liouville integral.','فتصبح النواة `(t − s)^{α−1}/Γ(α)`، تكامل ريمان–ليوفيل.']],['E_{α,α}(0) = 1','E_{α,α}(0) = 0','E_{α,α}(0) = Γ(α)']),
+  Q('Solve `^CD^{1/2}y = 2`, `y(0) = 1`.','حل `^CD^{1/2}y = 2` مع `y(0) = 1`.','y = 1 + #f{4#r{t}}{#r{π}}',['y = 1 + 2D^{−1/2}1 = 1 + #f{2t^{1/2}}{Γ(3/2)}'],['y = 1 + 2#r{t}','y = 1 + #f{2#r{t}}{#r{π}}','y = 1 + 2t']),
+]);
+
+lesson('508',8,[
+  ['Even with smooth data the solution of a fractional equation is usually not smooth at t = 0. For `^CD^{α}y = −y`, `y(0) = 1`:','حتى مع معطيات ملساء لا يكون حل المعادلة الكسرية أملس عادة عند t = 0. فلـ `^CD^{α}y = −y` مع `y(0) = 1`:'],
+  'y = 1 − #f{t^{α}}{Γ(α + 1)} + …,     y′(t) ≈ −#f{t^{α−1}}{Γ(α)} → −∞   (t → 0)',
+  ['The derivative is infinite at the start, so polynomials in t converge only algebraically. This is the main difficulty of numerical methods for fractional equations, and the reason for graded meshes (Unit 6) and for the variable `s = t^{λ}` (Unit 7).','فالمشتقة لانهائية عند البداية فتتقارب كثيرات الحدود في t جبرياً فقط. وهذه الصعوبة الرئيسة للطرق العددية للمعادلات الكسرية، وسبب الشبكات المتدرجة (الوحدة 6) والمتغير `s = t^{λ}` (الوحدة 7).'],
+],[
+  Q('For α = 1/2, how does `y′(t)` behave near 0?','عند α = 1/2 كيف تسلك `y′(t)` قرب 0؟','y′(t) ≈ −#f{1}{#r{πt}}',['−#f{t^{−1/2}}{Γ(1/2)}'],['y′(t) ≈ −1','y′(t) ≈ −#f{1}{2}#r{t}','y′(0) = 0']),
+  Q('Which power appears first in the solution of `^CD^{α}y = g` with smooth g and `y(0) = ψ_0`?','أي قوة تظهر أولاً في حل `^CD^{α}y = g` مع g ملساء و `y(0) = ψ_0`؟','t^{α}',['D^{−α}g(0) = #f{g(0)t^{α}}{Γ(α + 1)}'],['t','t^2','t^{1−α}']),
+  Q('What convergence rate do Legendre polynomials in t give for `#r{t}` on [0, 1]?','أي معدل تقارب تعطيه كثيرات ليجندر في t للدالة `#r{t}` على [0, 1]؟',['Algebraic, like a negative power of N, not exponential','جبري مثل قوة سالبة لـ N لا أسي'],[['An end singularity of order 1/2.','انفراد طرفي من الرتبة 1/2.']],[['Exponential','أسي'],['None: it diverges','لا شيء: يتباعد']]),
+  Q('In which variable is `y = E_{1/2}(−t^{1/2})` smooth?','في أي متغير تكون `y = E_{1/2}(−t^{1/2})` ملساء؟','s = t^{1/2}',['y = E_{1/2}(−s) = Σ #f{(−s)^k}{Γ(k/2 + 1)}'],['t','t^2','log t']),
+]);
+
+lesson('508',9,[
+  ['Fractional equations are classified like ordinary ones:','تُصنَّف المعادلات الكسرية كالعادية:'],
+  ['Linear: `^CD^{α}y = a(t)y + g`; nonlinear: `^CD^{α}y = f(t, y)`; multi-term: `Σ_i a_i ^CD^{α_i}y = g`; partial: `^CD_t^{α}u = u_{xx} + g`.','خطية: `^CD^{α}y = a(t)y + g`، وغير خطية: `^CD^{α}y = f(t, y)`، ومتعددة الحدود: `Σ_i a_i ^CD^{α_i}y = g`، وجزئية: `^CD_t^{α}u = u_{xx} + g`.'],
+  ['The number of initial conditions is set by the highest order: `⌈α_max⌉` values `y(0), y′(0), …`. Orders between 1 and 2 give wave-like (oscillation) equations, orders below 1 relaxation or sub-diffusion.','وعدد الشروط الابتدائية تحدده أعلى رتبة: `⌈α_max⌉` قيمة `y(0) و y′(0) و …`. والرتب بين 1 و 2 تعطي معادلات موجية (اهتزازية)، والرتب الأقل من 1 استرخاء أو انتشاراً بطيئاً.'],
+],[
+  Q('How many initial conditions does `^CD^{1.8}y + ^CD^{0.5}y + y = g` need?','كم شرطاً ابتدائياً تحتاج `^CD^{1.8}y + ^CD^{0.5}y + y = g`؟','2',['⌈1.8⌉ = 2:   y(0),  y′(0)'],['1','3','0']),
+  Q('Is `^CD^{α}y = t^2 y + sin t` linear?','هل `^CD^{α}y = t^2 y + sin t` خطية؟',['Yes: y appears to the first power, with a variable coefficient','نعم: y تظهر بالقوة الأولى بمعامل متغير'],[['The source sin t does not affect linearity.','المصدر sin t لا يؤثر في الخطية.']],[['No: it has t^2','لا: فيها t^2'],['No: it has sin t','لا: فيها sin t']]),
+  Q('Classify `^CD_t^{0.7}u = u_{xx} − u^3`.','صنّف `^CD_t^{0.7}u = u_{xx} − u^3`.',['A nonlinear time-fractional partial differential equation','معادلة تفاضلية جزئية كسرية زمنية غير خطية'],[['Sub-diffusion with a cubic reaction.','انتشار بطيء مع تفاعل تكعيبي.']],[['A linear ordinary equation','معادلة عادية خطية'],['A multi-term ordinary equation','معادلة عادية متعددة الحدود']]),
+  Q('What behaviour does an order between 1 and 2 describe?','أي سلوك تصفه رتبة بين 1 و 2؟',['Damped oscillation, between relaxation (α = 1) and waves (α = 2)','اهتزاز متخامد بين الاسترخاء (α = 1) والموجات (α = 2)'],[['The fractional oscillation equation of Unit 3.','معادلة الاهتزاز الكسرية في الوحدة 3.']],[['Pure diffusion','انتشار خالص'],['Exponential growth','نمو أسي']]),
+]);
+
+lesson('508',10,[
+  ['A manufactured test problem is checked at one sample point before any solver is run. For `^CD^{1/2}u + u = f` with `u = t^2`:','مسألة الاختبار المصنّعة تُفحص عند نقطة عينة واحدة قبل تشغيل أي حلّال. فلـ `^CD^{1/2}u + u = f` مع `u = t^2`:'],
+  'f(t) = #f{Γ(3)}{Γ(5/2)} t^{3/2} + t^2 = #f{8}{3#r{π}} t^{3/2} + t^2',
+  ['Evaluate both sides at, say, t = 1 with independent tools (the power rule and a quadrature of the Caputo integral). A wrong source term is the most common reason why a correct solver seems not to converge.','واحسب الطرفين عند t = 1 مثلاً بأدوات مستقلة (قاعدة القوة وتربيع لتكامل كابوتو). والحد المصدري الخاطئ أشهر سبب لظهور حلّال صحيح كأنه لا يتقارب.'],
+],[
+  Q('Compute `f(1)`.','احسب `f(1)`.','#f{8}{3#r{π}} + 1 ≈ 2.5045',['#f{8}{3·1.7725} = 1.5045'],['#f{8}{3#r{π}} ≈ 1.5045','2','3']),
+  Q('Compute `^CD^{1/2}t^2` at t = 1 directly from the definition `(1/Γ(1/2))∫_0^1 (1 − s)^{−1/2}·2s ds`.','احسب `^CD^{1/2}t^2` عند t = 1 مباشرة من التعريف `(1/Γ(1/2))∫_0^1 (1 − s)^{−1/2}·2s ds`.','#f{8}{3#r{π}}',['∫_0^1 (1 − s)^{−1/2} 2s ds = 2B(2, #f{1}{2}) = 2·#f{4}{3}','#f{8/3}{#r{π}}'],['#f{4}{3#r{π}}','#f{2}{#r{π}}','#f{8}{3}']),
+  Q('Write f for `^CD^{α}u = −u + f` with `u = t^{α} + 1`.','اكتب f لـ `^CD^{α}u = −u + f` مع `u = t^{α} + 1`.','f = Γ(α + 1) + t^{α} + 1',['^CD^{α}t^{α} = Γ(α + 1),   ^CD^{α}1 = 0'],['f = Γ(α + 1)','f = t^{α} + 1','f = Γ(α + 1) − t^{α} − 1']),
+  Q('Why check f by an independent method?','لماذا نتحقق من f بطريقة مستقلة؟',['A wrong f makes a correct solver look wrong; two methods only agree if f is right','الـ f الخاطئة تجعل الحلّال الصحيح يبدو خاطئاً، والطريقتان لا تتفقان إلا إذا كانت f صحيحة'],[['For example the power rule against quadrature.','مثل قاعدة القوة مقابل التربيع.']],[['To save time','لتوفير الوقت'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('508',11,[
+  ['The initial-value problem `^CD^{α}y = f(t, y)`, `y(0) = ψ_0` (0 < α ≤ 1) is equivalent to the Volterra integral equation','مسألة القيمة الابتدائية `^CD^{α}y = f(t, y)` مع `y(0) = ψ_0` (0 < α ≤ 1) تكافئ معادلة فولتيرا التكاملية'],
+  'y(t) = ψ_0 + #f{1}{Γ(α)} ∫_0^t (t − s)^{α−1} f(s, y(s)) ds',
+  ['Apply `D^{−α}` and Lemma 2.1 to go one way, `^CD^{α}` to go back. The kernel `(t − s)^{α−1}` is weakly singular; for `1 < α < 2` the term `tψ_1` is added. Theory and many numerical methods work with this form.','نطبق `D^{−α}` والتمهيدية 2.1 للاتجاه الأول و `^CD^{α}` للعودة. والنواة `(t − s)^{α−1}` شاذة ضعيفاً، وعند `1 < α < 2` يُضاف الحد `tψ_1`. والنظرية وكثير من الطرق العددية تعمل بهذه الصيغة.'],
+],[
+  Q('Write the Volterra form for `^CD^{α}y = −y^2`, `y(0) = 1`.','اكتب صيغة فولتيرا لـ `^CD^{α}y = −y^2` مع `y(0) = 1`.','y(t) = 1 − #f{1}{Γ(α)}∫_0^t (t − s)^{α−1} y(s)^2 ds',['f(s, y) = −y^2'],['y(t) = 1 + #f{1}{Γ(α)}∫_0^t (t − s)^{α−1} y(s)^2 ds','y(t) = 1 − ∫_0^t y(s)^2 ds','y(t) = −#f{1}{Γ(α)}∫_0^t (t − s)^{α} y(s)^2 ds']),
+  Q('What extra term appears for `1 < α < 2` with `y(0) = ψ_0`, `y′(0) = ψ_1`?','أي حد إضافي يظهر عند `1 < α < 2` مع `y(0) = ψ_0` و `y′(0) = ψ_1`؟','tψ_1',['D^{−α}^CD^{α}y = y − ψ_0 − tψ_1'],['ψ_1','t^{α}ψ_1','#f{ψ_1}{Γ(α)}']),
+  Q('Why is the kernel called weakly singular?','لماذا تسمى النواة شاذة ضعيفاً؟',['`(t − s)^{α−1}` is infinite at s = t but integrable, since α − 1 > −1','`(t − s)^{α−1}` لانهائية عند s = t لكنها قابلة للتكامل لأن α − 1 > −1'],['∫_0^t (t − s)^{α−1} ds = #f{t^{α}}{α}'],[['It is bounded','محدودة'],['It is not integrable','غير قابلة للتكامل']]),
+  Q('Compute `(1/Γ(1/2))∫_0^1 (1 − s)^{−1/2} ds`.','احسب `(1/Γ(1/2))∫_0^1 (1 − s)^{−1/2} ds`.','#f{2}{#r{π}} ≈ 1.1284',['#f{2}{Γ(1/2)}'],['2','#f{1}{#r{π}}','1']),
+]);
+
+lesson('508',12,[
+  ['If f is continuous and Lipschitz in y, `|f(t, y) − f(t, z)| ≤ L|y − z|`, the problem `^CD^{α}y = f(t, y)`, `y(0) = ψ_0` has a unique continuous solution on [0, T] for every T. The proof uses the Volterra form and a contraction in a weighted norm.','إذا كانت f متصلة وتحقق شرط ليبشتز في y أي `|f(t, y) − f(t, z)| ≤ L|y − z|` فإن للمسألة `^CD^{α}y = f(t, y)` مع `y(0) = ψ_0` حلاً متصلاً وحيداً على [0, T] لكل T. والبرهان يستخدم صيغة فولتيرا وانكماشاً في معيار موزون.'],
+  '|f(t, y) − f(t, z)| ≤ L|y − z|',
+  ['Without the Lipschitz condition solutions can fail to be unique, as for ordinary equations: `^CD^{α}y = y^{1/2}`, `y(0) = 0` has the zero solution and a non-trivial one.','ودون شرط ليبشتز قد لا يكون الحل وحيداً كما في المعادلات العادية: `^CD^{α}y = y^{1/2}` مع `y(0) = 0` لها الحل الصفري وحل غير بديهي.'],
+],[
+  Q('Find a Lipschitz constant of `f(t, y) = −y + sin y`.','أوجد ثابت ليبشتز لـ `f(t, y) = −y + sin y`.','L = 2',['|∂_y f| = |−1 + cos y| ≤ 2'],['L = 1','L = 0','L = π']),
+  Q('Is `f(t, y) = y^2` Lipschitz on all of ℝ?','هل `f(t, y) = y^2` تحقق شرط ليبشتز على ℝ كلها؟',['No, only on bounded sets; solutions exist locally and may blow up','لا، على المجموعات المحدودة فقط، والحلول موجودة محلياً وقد تنفجر'],['|y^2 − z^2| = |y + z||y − z|'],[['Yes, with L = 2','نعم مع L = 2'],['Yes, with L = 1','نعم مع L = 1']]),
+  Q('Give the non-trivial solution of `^CD^{α}y = y^{1/2}`, `y(0) = 0`, in the form `y = ct^{2α}`.','أعط الحل غير البديهي لـ `^CD^{α}y = y^{1/2}` مع `y(0) = 0` بالصورة `y = ct^{2α}`.','c = (#f{Γ(α + 1)}{Γ(2α + 1)})^2',['c#f{Γ(2α + 1)}{Γ(α + 1)}t^{α} = c^{1/2}t^{α}'],['c = #f{Γ(α + 1)}{Γ(2α + 1)}','c = 1','c = Γ(α + 1)^2']),
+  Q('What does non-uniqueness of that problem show?','ماذا يبيّن عدم وحدانية تلك المسألة؟',['The Lipschitz condition cannot simply be dropped: `y^{1/2}` is not Lipschitz at y = 0','لا يمكن حذف شرط ليبشتز ببساطة: `y^{1/2}` لا تحقق شرط ليبشتز عند y = 0'],[['Its derivative is infinite there.','مشتقتها لانهائية هناك.']],[['Fractional equations never have unique solutions','المعادلات الكسرية ليس لها حل وحيد أبداً'],['The theorem is wrong','المبرهنة خاطئة']]),
+]);
+
+lesson('508',13,[
+  ['Picard iteration on the Volterra form, `y_{k+1} = ψ_0 + D^{−α}f(·, y_k)`, converges for Lipschitz f. The error after k steps is bounded by','تكرار بيكار على صيغة فولتيرا `y_{k+1} = ψ_0 + D^{−α}f(·, y_k)` يتقارب لـ f التي تحقق شرط ليبشتز. والخطأ بعد k خطوة محدود بـ'],
+  '|y − y_k| ≤ C #f{(LT^{α})^k}{Γ(kα + 1)}',
+  ['The Gamma function in the denominator beats any power, so the iteration always converges, but for large `LT^{α}` many steps are needed. For linear f the iterates are exactly the partial sums of the Mittag-Leffler series.','ودالة جاما في المقام تغلب أي قوة فيتقارب التكرار دائماً، لكن لـ `LT^{α}` كبيرة نحتاج خطوات كثيرة. وللدالة f الخطية تكون التكرارات هي المجاميع الجزئية لمتسلسلة ميتاج–ليفلر بالضبط.'],
+],[
+  Q('Evaluate the bound factor `(LT^{α})^k/Γ(kα + 1)` for L = T = 1, α = 1/2, k = 5.','احسب عامل الحد `(LT^{α})^k/Γ(kα + 1)` عند L = T = 1 و α = 1/2 و k = 5.','#f{1}{Γ(3.5)} ≈ 0.301',['Γ(3.5) = #f{15#r{π}}{8} ≈ 3.323'],['#f{1}{5!} ≈ 0.0083','1','#f{1}{Γ(5)} ≈ 0.042']),
+  Q('Carry out the second Picard step for `y = 1 + D^{−α}y`.','نفّذ الخطوة الثانية من بيكار لـ `y = 1 + D^{−α}y`.','y_2 = 1 + #f{t^{α}}{Γ(α + 1)} + #f{t^{2α}}{Γ(2α + 1)}',['y_1 = 1 + #f{t^{α}}{Γ(α + 1)},   D^{−α}t^{α} = #f{Γ(α + 1)}{Γ(2α + 1)}t^{2α}'],['y_2 = 1 + t^{α} + t^{2α}','y_2 = 1 + #f{t^{α}}{Γ(α)} + #f{t^{2α}}{Γ(2α)}','y_2 = 1 − #f{t^{α}}{Γ(α + 1)} + #f{t^{2α}}{Γ(2α + 1)}']),
+  Q('Why does Picard iteration converge on every interval, unlike for ordinary equations where a small interval is often assumed?','لماذا يتقارب تكرار بيكار على كل مجال، بخلاف المعادلات العادية التي يُفترض فيها غالباً مجال صغير؟',['`(LT^{α})^k/Γ(kα + 1) → 0` for every T','`(LT^{α})^k/Γ(kα + 1) → 0` لكل T'],[['For α = 1 this is `(LT)^k/k!`, as for ordinary equations with the sharper estimate.','عند α = 1 هذا `(LT)^k/k!` كما في المعادلات العادية بالتقدير الأدق.']],[['Because α < 1','لأن α < 1'],['It does not converge','لا يتقارب']]),
+  Q('For which f are the Picard iterates exactly partial sums of `E_{α}`?','لأي f تكون تكرارات بيكار هي المجاميع الجزئية لـ `E_{α}` بالضبط؟','f(t, y) = λy',[['Each step adds one term `λ^k t^{kα}/Γ(kα + 1)`.','كل خطوة تضيف حداً `λ^k t^{kα}/Γ(kα + 1)`.']],['f(t, y) = y^2','f(t, y) = t','f(t, y) = sin y']),
+]);
+
+lesson('508',14,[
+  ['Solutions depend continuously on the initial value and on f. For two solutions with data `ψ_0`, `ψ̃_0` and the same Lipschitz f:','الحلول تعتمد اعتماداً متصلاً على القيمة الابتدائية وعلى f. ولحلين بمعطيين `ψ_0` و `ψ̃_0` و f نفسها التي تحقق شرط ليبشتز:'],
+  '|y(t) − ỹ(t)| ≤ |ψ_0 − ψ̃_0| E_{α}(Lt^{α})',
+  ['The factor `E_{α}(Lt^{α})` replaces `e^{Lt}` of the classical estimate. A perturbation `ε` of f adds a term `ε t^{α}E_{α,α+1}(Lt^{α})`. Well-posedness is what makes numerical approximation meaningful.','والعامل `E_{α}(Lt^{α})` يحل محل `e^{Lt}` في التقدير الكلاسيكي. واضطراب `ε` في f يضيف حداً `ε t^{α}E_{α,α+1}(Lt^{α})`. والطرح الجيد هو ما يجعل التقريب العددي ذا معنى.'],
+],[
+  Q('Bound `|y(1) − ỹ(1)|` for `|ψ_0 − ψ̃_0| = 10^{−3}`, L = 1, α = 1/2.','قدّر `|y(1) − ỹ(1)|` لـ `|ψ_0 − ψ̃_0| = 10^{−3}` و L = 1 و α = 1/2.','≈ 5.0 × 10^{−3}',['10^{−3}·E_{1/2}(1) = 10^{−3}·5.009'],['10^{−3}','≈ 2.7 × 10^{−3}','≈ 0.43 × 10^{−3}']),
+  Q('Which function replaces `e^{Lt}` in the estimate?','أي دالة تحل محل `e^{Lt}` في التقدير؟','E_{α}(Lt^{α})',[['It reduces to `e^{Lt}` for α = 1.','وتؤول إلى `e^{Lt}` عند α = 1.']],['e^{Lt^{α}}','t^{α}','E_{α}(−Lt^{α})']),
+  Q('For the linear problem `^CD^{α}y = −y`, what is the exact difference of two solutions?','للمسألة الخطية `^CD^{α}y = −y` ما الفرق المضبوط بين حلين؟','(ψ_0 − ψ̃_0)E_{α}(−t^{α})',[['Here the difference decays, better than the general bound.','هنا يتناقص الفرق، أفضل من الحد العام.']],['(ψ_0 − ψ̃_0)E_{α}(t^{α})','ψ_0 − ψ̃_0','0']),
+  Q('What does well-posedness give a numerical method?','ماذا يعطي الطرح الجيد للطريقة العددية؟',['Small errors in data and rounding cause only small errors in the solution','الأخطاء الصغيرة في المعطيات والتقريب لا تسبب إلا أخطاء صغيرة في الحل'],[['Otherwise no computed result could be trusted.','وإلا لا يمكن الثقة بأي نتيجة محسوبة.']],[['Exact results','نتائج مضبوطة'],['Faster solvers','حلّالات أسرع']]),
+]);
+
+lesson('508',15,[
+  ['The solution depends continuously on the order α as well. For `^CD^{α}y = −y`, `y(0) = 1` the values at t = 1:','ويعتمد الحل اعتماداً متصلاً على الرتبة α أيضاً. فلـ `^CD^{α}y = −y` مع `y(0) = 1` القيم عند t = 1:'],
+  'α = 0.5:  0.4276,     α = 0.7:  0.3996,     α = 0.9:  0.3761,     α = 1:  e^{−1} = 0.3679',
+  ['This continuity is what allows the order to be identified from data (Unit 10): a measured curve determines α by fitting. Near t = 0 smaller α decays faster, for large t it decays more slowly.','وهذا الاتصال ما يسمح بتحديد الرتبة من البيانات (الوحدة 10): المنحنى المقاس يحدد α بالملاءمة. وقرب t = 0 تتناقص الحالة ذات α الأصغر أسرع، ولـ t الكبيرة أبطأ.'],
+],[
+  Q('Which order gives the largest `y(1)` among the values above?','أي رتبة تعطي أكبر `y(1)` بين القيم أعلاه؟','α = 0.5',['0.4276 > 0.3996 > 0.3761 > 0.3679'],['α = 1','α = 0.9','α = 0.7']),
+  Q('Estimate `dy(1)/dα` between α = 0.9 and α = 1.','قدّر `dy(1)/dα` بين α = 0.9 و α = 1.','≈ −0.082',['#f{0.3679 − 0.3761}{0.1}'],['≈ 0.082','≈ −0.82','≈ 0']),
+  Q('Near t = 0, which decays faster, α = 0.5 or α = 1?','قرب t = 0 أيهما يتناقص أسرع: α = 0.5 أم α = 1؟','α = 0.5',[['`1 − t^{1/2}/Γ(3/2)` against `1 − t`: for small t, `t^{1/2} ≫ t`.','`1 − t^{1/2}/Γ(3/2)` مقابل `1 − t`: لـ t صغيرة يكون `t^{1/2} ≫ t`.']],['α = 1',['Both the same','الاثنتان متماثلتان'],['Neither decays','لا يتناقص أي منهما']]),
+  Q('Why does continuous dependence on α matter for applications?','لماذا يهم الاعتماد المتصل على α للتطبيقات؟',['The order can then be estimated from measured data by fitting','فيمكن تقدير الرتبة من البيانات المقاسة بالملاءمة'],[['An inverse problem.','مسألة عكسية.']],[['It makes α an integer','يجعل α عدداً صحيحاً'],['It does not matter','لا يهم']]),
+]);
+
+lesson('508',16,[
+  ['For smooth f the solution of `^CD^{α}y = f(t, y)` has an expansion in mixed powers:','للدوال الملساء f يكون لحل `^CD^{α}y = f(t, y)` مفكوك بقوى مختلطة:'],
+  'y(t) = Σ_{j,k ≥ 0} c_{jk} t^{j + kα}',
+  ['For the multi-term problems of the paper the exponents are combinations of the orders and their differences, `β_1, β_2, …`. All of them are multiples of `λ = gcd(β_1, β_2, …)`, which is why `s = t^{λ}` turns the solution into a smooth (even polynomial) function.','ولمسائل البحث متعددة الحدود تكون الأسس تركيبات من الرتب وفروقها `β_1, β_2, …`، وكلها مضاعفات لـ `λ = gcd(β_1, β_2, …)`، ولهذا يحوّل `s = t^{λ}` الحل إلى دالة ملساء (بل كثيرة حدود أحياناً).'],
+],[
+  Q('List the first exponents `j + kα` for α = 1/2.','اذكر أول الأسس `j + kα` عند α = 1/2.','0, #f{1}{2}, 1, #f{3}{2}, 2, …',[['All multiples of 1/2.','كلها مضاعفات لـ 1/2.']],['0, 1, 2, 3, …','0, #f{1}{2}, #f{1}{4}, …','#f{1}{2}, #f{3}{2}, #f{5}{2}, …']),
+  Q('Which λ makes every `t^{j + kα}` with α = 2/3 a power of `s = t^{λ}`?','أي λ تجعل كل `t^{j + kα}` مع α = 2/3 قوة لـ `s = t^{λ}`؟','λ = #f{1}{3}',['gcd(1, #f{2}{3})'],['λ = #f{2}{3}','λ = 1','λ = #f{1}{6}']),
+  Q('For α = 0.6, is `t^{0.6}` a polynomial in `s = t^{0.2}`?','عند α = 0.6 هل `t^{0.6}` كثيرة حدود في `s = t^{0.2}`؟',['Yes: `t^{0.6} = s^3`','نعم: `t^{0.6} = s^3`'],['0.6 = 3·0.2'],[['No','لا'],['Only for t > 1','فقط عند t > 1']]),
+  Q('Why is `λ = gcd` the natural choice rather than a smaller common divisor?','لماذا λ = gcd الاختيار الطبيعي بدل قاسم مشترك أصغر؟',['A smaller λ also works but raises the degrees in s and the number of terms needed','λ الأصغر تصلح أيضاً لكنها ترفع الدرجات في s وعدد الحدود اللازمة'],['λ = #f{1}{4}:   t^{1/2} = s^2'],[['A smaller λ fails','λ الأصغر تفشل'],['gcd is required by the theory','gcd تشترطه النظرية']]),
+]);
+
+lesson('508',17,[
+  ['The fractional Gronwall inequality: if `u ≥ 0` is continuous and `u(t) ≤ a + b D^{−α}u(t)` with constants a, b ≥ 0, then','متباينة جرونوال الكسرية: إذا كانت `u ≥ 0` متصلة و `u(t) ≤ a + b D^{−α}u(t)` مع ثابتين a, b ≥ 0 فإن'],
+  'u(t) ≤ a E_{α}(bt^{α})',
+  ['It is the main tool for stability and error estimates: write the error equation in Volterra form, bound f by its Lipschitz constant, and apply Gronwall. For α = 1 it is the classical `u ≤ ae^{bt}`.','وهي الأداة الرئيسة لتقديرات الاستقرار والخطأ: اكتب معادلة الخطأ بصيغة فولتيرا وحدّ f بثابت ليبشتز ثم طبّق جرونوال. وعند α = 1 هي `u ≤ ae^{bt}` الكلاسيكية.'],
+],[
+  Q('Apply Gronwall to `u ≤ 0.01 + 2D^{−1/2}u` and bound u(1).','طبّق جرونوال على `u ≤ 0.01 + 2D^{−1/2}u`. قدّر u(1).','u(1) ≤ 0.01E_{1/2}(2) ≈ 1.09',['E_{1/2}(2) = e^4 erfc(−2) ≈ 108.94'],['u(1) ≤ 0.01e^2 ≈ 0.074','u(1) ≤ 0.01','u(1) ≤ 0.02']),
+  Q('What does the inequality give for a = 0?','ماذا تعطي المتباينة عند a = 0؟','u ≡ 0',['u ≤ 0·E_{α}(bt^{α})'],['u ≤ b','u ≤ E_{α}(bt^{α})',['Nothing','لا شيء']]),
+  Q('Reduce Gronwall to α = 1.','اختصر جرونوال إلى α = 1.','u(t) ≤ ae^{bt}',['E_1(bt) = e^{bt}'],['u(t) ≤ a + bt','u(t) ≤ ae^{b}','u(t) ≤ abt']),
+  Q('How is Gronwall used to prove uniqueness?','كيف تُستخدم جرونوال لإثبات الوحدانية؟',['The difference of two solutions satisfies `|e| ≤ L D^{−α}|e|`, so a = 0 gives e ≡ 0','الفرق بين حلين يحقق `|e| ≤ L D^{−α}|e|` فإن a = 0 يعطي e ≡ 0'],[['Same initial value, same f.','القيمة الابتدائية نفسها و f نفسها.']],[['By Picard iteration only','بتكرار بيكار فقط'],['It is not used','لا تُستخدم']]),
+]);
+
+lesson('508',18,[
+  ['Comparison principle: for `0 < α ≤ 1`, if `^CD^{α}u ≥ ^CD^{α}v` on (0, T] and `u(0) ≥ v(0)`, then `u ≥ v`. More generally, sub- and super-solutions of `^CD^{α}y = f(t, y)` bound the solution when f is Lipschitz:','مبدأ المقارنة: عند `0 < α ≤ 1` إذا كان `^CD^{α}u ≥ ^CD^{α}v` على (0, T] و `u(0) ≥ v(0)` فإن `u ≥ v`. وعموماً تحدّ الحلول الدنيا والعليا لـ `^CD^{α}y = f(t, y)` الحل حين تحقق f شرط ليبشتز:'],
+  '^CD^{α}v ≤ f(t, v),   v(0) ≤ ψ_0   ⇒   v ≤ y',
+  ['Comparison gives positivity and bounds without solving: for example a population model with `f ≥ 0` at y = 0 keeps y ≥ 0.','والمقارنة تعطي الموجبية والحدود دون حل: فمثلاً نموذج سكاني فيه `f ≥ 0` عند y = 0 يبقي y ≥ 0.'],
+],[
+  Q('With `^CD^{α}y = 1 − y`, `y(0) = 0`, show `0 ≤ y ≤ 1` by comparison.','مع `^CD^{α}y = 1 − y` و `y(0) = 0` أثبت `0 ≤ y ≤ 1` بالمقارنة.',['v = 0 is a sub-solution and w = 1 a super-solution','v = 0 حل أدنى و w = 1 حل أعلى'],['^CD^{α}0 = 0 ≤ 1 − 0,   ^CD^{α}1 = 0 ≥ 1 − 1'],[['By the Gronwall inequality only','بمتباينة جرونوال فقط'],['It is false','خاطئ']]),
+  Q('Check against the exact solution: is `1 − E_{1/2}(−1)` in [0, 1]?','تحقق مقابل الحل المضبوط: هل `1 − E_{1/2}(−1)` في [0, 1]؟',['Yes: it is about 0.5724','نعم: نحو 0.5724'],['1 − 0.4276'],[['No','لا'],['It equals 1','تساوي 1']]),
+  Q('What does comparison say for `^CD^{α}u ≥ 0`, `u(0) ≥ 0`?','ماذا تقول المقارنة لـ `^CD^{α}u ≥ 0` و `u(0) ≥ 0`؟','u ≥ 0',['v = 0'],['u ≤ 0','u = 0',['Nothing','لا شيء']]),
+  Q('For a logistic model `^CD^{α}y = y(1 − y)`, `y(0) = 0.2`, which bounds follow?','لنموذج لوجستي `^CD^{α}y = y(1 − y)` مع `y(0) = 0.2` أي الحدود تنتج؟','0 ≤ y ≤ 1',[['0 and 1 are equilibria, hence sub- and super-solutions.','0 و 1 نقطتا اتزان فهما حلان أدنى وأعلى.']],['y ≥ 1','y ≤ 0.2','0.2 ≤ y ≤ 2']),
+]);
+
+lesson('508',19,[
+  ['With the Riemann–Liouville derivative the problem changes: `^{RL}D^{α}y = f`, with an initial condition on `D^{α−1}y` (for 0 < α < 1, the limit of `t^{1−α}y`):','مع مشتقة ريمان–ليوفيل تتغير المسألة: `^{RL}D^{α}y = f` بشرط ابتدائي على `D^{α−1}y` (عند 0 < α < 1، نهاية `t^{1−α}y`):'],
+  '^{RL}D^{α}y = ^CD^{α}y + #f{y(0)}{Γ(1 − α)} t^{−α},     ^{RL}D^{1/2}1 = #f{t^{−1/2}}{#r{π}}',
+  ['The RL derivative of a constant is not zero, and RL solutions are typically singular at t = 0 (like `t^{α−1}`). Caputo’s form accepts the physical initial values `y(0), y′(0)`, which is why it is used in the paper.','مشتقة ريمان–ليوفيل للثابت ليست صفراً، وحلول ريمان–ليوفيل شاذة عادة عند t = 0 (مثل `t^{α−1}`). وصيغة كابوتو تقبل القيم الابتدائية الفيزيائية `y(0) و y′(0)`، ولهذا تُستخدم في البحث.'],
+],[
+  Q('Compute `^{RL}D^{1/2}1`.','احسب `^{RL}D^{1/2}1`.','#f{1}{#r{πt}}',['#f{t^{−1/2}}{Γ(1/2)}'],['0','#f{2#r{t}}{#r{π}}','1']),
+  Q('Solve `^{RL}D^{α}y = 0` for 0 < α < 1.','حل `^{RL}D^{α}y = 0` عند 0 < α < 1.','y = ct^{α−1}',['^{RL}D^{α}t^{α−1} = 0'],['y = c','y = ct^{α}','y = 0']),
+  Q('Relate the two derivatives of `y = 1 + t`.','اربط المشتقتين لـ `y = 1 + t`.','^{RL}D^{α}y = ^CD^{α}y + #f{t^{−α}}{Γ(1 − α)}',['y(0) = 1'],['^{RL}D^{α}y = ^CD^{α}y','^{RL}D^{α}y = ^CD^{α}y + t^{−α}','^{RL}D^{α}y = ^CD^{α}y − #f{t^{α}}{Γ(1 + α)}']),
+  Q('Why does the paper use Caputo derivatives?','لماذا يستخدم البحث مشتقات كابوتو؟',['They take the ordinary initial values `ψ_0`, `ψ_1`, which have a physical meaning','تأخذ القيم الابتدائية العادية `ψ_0` و `ψ_1` ذات المعنى الفيزيائي'],[['And Lemma 2.1 gives a clean integrated form.','والتمهيدية 2.1 تعطي صيغة تكاملية نظيفة.']],[['They are easier to compute','أسهل حساباً'],['RL derivatives do not exist','مشتقات ريمان–ليوفيل غير موجودة']]),
+]);
+
+lesson('508',20,[
+  ['Worked problems combining Units 1 and 2: power rules, integrated forms, Mittag-Leffler solutions and the basic estimates.','مسائل محلولة تجمع الوحدتين 1 و 2: قواعد القوة والصيغ التكاملية وحلول ميتاج–ليفلر والتقديرات الأساسية.'],
+  '^CD^{α}t^{β} = #f{Γ(β + 1)}{Γ(β + 1 − α)} t^{β−α},     y = ψ_0 E_{α}(λt^{α}),     |e| ≤ aE_{α}(Lt^{α})',
+],[
+  Q('Solve `^CD^{1/2}y = −y + 1`, `y(0) = 2`.','حل `^CD^{1/2}y = −y + 1` مع `y(0) = 2`.','y = 1 + E_{1/2}(−t^{1/2})',['z = y − 1:   ^CD^{1/2}z = −z,   z(0) = 1'],['y = 2E_{1/2}(−t^{1/2})','y = 1 − E_{1/2}(−t^{1/2})','y = 2 + E_{1/2}(−t^{1/2})']),
+  Q('Compute `^CD^{3/2}t^3`.','احسب `^CD^{3/2}t^3`.','#f{8}{#r{π}} t^{3/2}',['#f{Γ(4)}{Γ(5/2)} = #f{6}{3#r{π}/4} = #f{8}{#r{π}}'],['#f{16}{#r{π}} t^{3/2}','#f{6}{#r{π}} t^{3/2}','#f{4}{#r{π}} t^{3/2}']),
+  Q('Write the integrated form of `^CD^{1.5}y + y = 0`, `y(0) = 1`, `y′(0) = 0`.','اكتب الصيغة التكاملية لـ `^CD^{1.5}y + y = 0` مع `y(0) = 1` و `y′(0) = 0`.','y = 1 − D^{−1.5}y',['D^{−1.5}^CD^{1.5}y = y − 1 − 0·t'],['y = 1 + D^{−1.5}y','y = 1 + t − D^{−1.5}y','y = −D^{1.5}y']),
+  Q('Give the solution of that problem.','أعط حل تلك المسألة.','y = E_{1.5}(−t^{1.5})',[['Damped oscillation between relaxation and waves.','اهتزاز متخامد بين الاسترخاء والموجات.']],['y = cos(t^{1.5})','y = e^{−t^{1.5}}','y = E_{1.5}(−t)']),
+]);
+
 export const MS508 = true;
