@@ -1341,4 +1341,123 @@ lesson('502',80,[
     [['Beyond the rounding level more terms only add cost and conditioning problems.','بعد مستوى التقريب لا تضيف الحدود الإضافية إلا التكلفة ومشاكل الشرط.']], [['Never','أبداً'],['After n = 10 always','بعد n = 10 دائماً']]),
 ]);
 
+/* ---- 502 · Unit 9 (lessons 81–90): integral, fractional and partial equations ---- */
+lesson('502',81,[
+  ['A Fredholm equation of the second kind has fixed limits:','معادلة فريدهولم من النوع الثاني حدودها ثابتة:'],
+  'y(x) = f(x) + λ ∫_0^1 K(x, t) y(t) dt',
+  ['With `y = c^T Φ`, `f = f^T Φ` and the kernel expanded in the basis, the integral becomes a matrix and the equation becomes `(I − λ𝒦) c = f`. For a separable kernel such as `K = xt` the equation can even be solved by hand: the integral is a constant times x.','ومع `y = c^T Φ` و `f = f^T Φ` ونشر النواة في الأساس يصبح التكامل مصفوفة وتصبح المعادلة `(I − λ𝒦) c = f`. وللنواة القابلة للفصل مثل `K = xt` يمكن حل المعادلة يدوياً: التكامل ثابت مضروب في x.'],
+],[
+  Q('Solve `y(x) = x + ∫_0^1 x t y(t) dt`.','حل `y(x) = x + ∫_0^1 x t y(t) dt`.','y = #f{3x}{2}',
+    ['y = x + Ax,   A = ∫_0^1 t y(t) dt', 'A = ∫_0^1 t(1 + A)t dt = #f{1 + A}{3}  ⇒  A = #f{1}{2}'], ['y = x','y = 2x','y = #f{x}{2}']),
+  Q('Write the solution `y = 3x/2` in the Bernstein basis of degree 1.','اكتب الحل `y = 3x/2` في أساس بيرنشتاين من الدرجة 1.','c = (0,  #f{3}{2})',['#f{3}{2}x = 0·B_{0,1} + #f{3}{2}B_{1,1}'],['c = (#f{3}{2},  0)','c = (0,  3)','c = (#f{3}{4},  #f{3}{4})']),
+  Q('For which λ has `y(x) = x + λ∫_0^1 x t y(t) dt` no solution?','لأي λ لا يكون للمعادلة `y(x) = x + λ∫_0^1 x t y(t) dt` حل؟','λ = 3',
+    ['A = #f{1}{3} + #f{λA}{3}  ⇒  A(1 − #f{λ}{3}) = #f{1}{3}', ['At λ = 3 the left side is 0: λ = 3 is an eigenvalue of the kernel.','عند λ = 3 يكون الطرف الأيسر صفراً: λ = 3 قيمة ذاتية للنواة.']], ['λ = 1','λ = #f{1}{3}','λ = 0']),
+  Q('In matrix form, which matrix must be inverted?','بصيغة المصفوفات، أي مصفوفة يجب عكسها؟','I − λ𝒦',[['The unknown appears on both sides; collecting it gives `(I − λ𝒦)c = f`.','المجهول في الطرفين، وجمعه يعطي `(I − λ𝒦)c = f`.']],['λ𝒦','𝒦 − I','I + λ𝒦']),
+]);
+
+lesson('502',82,[
+  ['A Volterra equation has a variable upper limit:','معادلة فولتيرا حدها الأعلى متغير:'],
+  'y(x) = f(x) + ∫_0^x K(x, t) y(t) dt',
+  ['For `K = 1` the integral is `D^{−1} y`, so with the integration matrix the equation becomes `c^T(I − I_{(−1)}) = f^T`. For `y = 1 + ∫_0^x y` (exact `e^x`) and n = 1, with `I_{(−1)} = (1/12, 7/12; −1/12, 5/12)`, the solution is `c = (6/7, 18/7)`.','وعند `K = 1` يكون التكامل `D^{−1} y`، فبمصفوفة التكامل تصبح المعادلة `c^T(I − I_{(−1)}) = f^T`. وللمعادلة `y = 1 + ∫_0^x y` (حلها `e^x`) عند n = 1 ومع `I_{(−1)} = (1/12, 7/12; −1/12, 5/12)` يكون الحل `c = (6/7, 18/7)`.'],
+],[
+  Q('Find the exact solution of `y = 1 + ∫_0^x y(t) dt`.','أوجد الحل المضبوط لـ `y = 1 + ∫_0^x y(t) dt`.','y = e^x',['y′ = y,   y(0) = 1'],['y = 1 + x','y = e^{−x}','y = 1']),
+  Q('Solve `c^T(I − I_{(−1)}) = (1, 1)` for n = 1.','حل `c^T(I − I_{(−1)}) = (1, 1)` عند n = 1.','c = (#f{6}{7},  #f{18}{7})',
+    ['#f{11}{12}c_0 + #f{1}{12}c_1 = 1,   −#f{7}{12}c_0 + #f{7}{12}c_1 = 1', 'c_1 = c_0 + #f{12}{7},   12c_0 + #f{12}{7} = 12  ⇒  c_0 = #f{6}{7}'], ['c = (1,  e)','c = (1,  2)','c = (#f{6}{7},  #f{12}{7})']),
+  Q('With `c = (6/7, 18/7)`, compare `y(1)` with e.','مع `c = (6/7, 18/7)` قارن `y(1)` بالعدد e.','y(1) ≈ 2.571  vs  2.718',['y(1) = c_1 = #f{18}{7}'],['y(1) ≈ 0.857  vs  2.718','y(1) = e','y(1) ≈ 3.429  vs  2.718']),
+  Q('What is the difference between Fredholm and Volterra equations?','ما الفرق بين معادلتي فريدهولم وفولتيرا؟',['Fredholm: fixed limits; Volterra: the upper limit is the variable x','فريدهولم: حدود ثابتة؛ فولتيرا: الحد الأعلى هو المتغير x'],
+    [['Volterra equations describe processes with memory of the past only, like fractional integrals.','معادلات فولتيرا تصف عمليات تتذكر الماضي فقط، مثل التكاملات الكسرية.']], [['Volterra equations are always linear','معادلات فولتيرا خطية دائماً']]),
+]);
+
+lesson('502',83,[
+  ['An integro-differential equation contains both a derivative and an integral of the unknown, for example','المعادلة التكاملية التفاضلية تحتوي مشتقة المجهول وتكامله معاً، مثل'],
+  'y′(x) = 1 + ∫_0^x y(t) dt,   y(0) = 0',
+  ['Differentiating gives `y″ = y` with `y(0) = 0`, `y′(0) = 1`, so `y = sinh x`. Numerically there is no need to differentiate: with operational matrices the equation reads `c^T D = 1^T + c^T I_{(−1)}`, together with `c_0 = 0`.','وبالاشتقاق نجد `y″ = y` مع `y(0) = 0` و `y′(0) = 1` فيكون `y = sinh x`. وعددياً لا حاجة إلى الاشتقاق: بالمصفوفات التشغيلية تصبح المعادلة `c^T D = 1^T + c^T I_{(−1)}` مع `c_0 = 0`.'],
+],[
+  Q('Find `y′(0)` from the equation.','أوجد `y′(0)` من المعادلة.','1',['y′(0) = 1 + ∫_0^0 y dt = 1'],['0','2','−1']),
+  Q('Solve the equation exactly and give `y(1)`.','حل المعادلة بدقة وأعط `y(1)`.','y = sinh x;   y(1) ≈ 1.1752',['y″ = y,   y(0) = 0,   y′(0) = 1'],['y = e^x;   y(1) ≈ 2.7183','y = cosh x;   y(1) ≈ 1.5431','y = x;   y(1) = 1']),
+  Q('What does the constant 1 become in the Bernstein basis of degree n?','إلامَ يتحول الثابت 1 في أساس بيرنشتاين من الدرجة n؟','(1,  1,  …,  1)',['Σ_i B_{i,n} = 1'],['(1,  0,  …,  0)','(0,  …,  0,  1)','(1,  #f{1}{n},  …)']),
+  Q('Write the matrix equation for `y′ = 1 + ∫_0^x y`.','اكتب المعادلة المصفوفية لـ `y′ = 1 + ∫_0^x y`.','c^T(D − I_{(−1)}) = 1^T',['c^T D = 1^T + c^T I_{(−1)}'],['c^T(D + I_{(−1)}) = 1^T','c^T D = 1^T','(D − I) c = 1']),
+]);
+
+lesson('502',84,[
+  ['For a fractional equation `^CD^{α} y = f(t, y)` with `0 < α ≤ 1`, Lemma 2.1 gives the integrated form:','للمعادلة الكسرية `^CD^{α} y = f(t, y)` مع `0 < α ≤ 1` تعطي اللمة 2.1 الصيغة التكاملية:'],
+  'y = y(0) + D^{−α} f(t, y)',
+  ['With the Bernstein integration matrix this becomes `c^T = y(0)·1^T + (coefficients of f)^T I_{(−α)}`. For a linear f the system is linear in c. Since solutions behave like `t^{α}`, the fractional basis `B_{i,n}(t^{λ})` with λ = α is often used instead of plain polynomials.','ومع مصفوفة تكامل بيرنشتاين تصبح `c^T = y(0)·1^T + (معاملات f)^T I_{(−α)}`. وإذا كانت f خطية كان النظام خطياً في c. ولأن الحلول تسلك مثل `t^{α}` يُستخدم كثيراً الأساس الكسري `B_{i,n}(t^{λ})` مع λ = α بدل الكثيرات العادية.'],
+],[
+  Q('Write the integrated form of `^CD^{1/2} y + y = 1`, `y(0) = 0`.','اكتب الصيغة التكاملية للمسألة `^CD^{1/2} y + y = 1` و `y(0) = 0`.','y = D^{−1/2}(1 − y)',['^CD^{1/2} y = 1 − y,   y(0) = 0'],['y = 1 − D^{1/2} y','y = D^{−1/2} y','y = 1 + D^{−1/2} y']),
+  Q('Write the matrix equation of that problem.','اكتب المعادلة المصفوفية لتلك المسألة.','c^T(I + I_{(−1/2)}) = 1^T I_{(−1/2)}',['c^T = (1 − y)^T I_{(−1/2)} = 1^T I_{(−1/2)} − c^T I_{(−1/2)}'],['c^T I_{(−1/2)} = 1^T','c^T(I − I_{(−1/2)}) = 1^T','c^T = 1^T']),
+  Q('What is the exact solution of `^CD^{1/2} y + y = 1`, `y(0) = 0`?','ما الحل المضبوط للمسألة `^CD^{1/2} y + y = 1` و `y(0) = 0`؟','y = 1 − E_{1/2}(−#r{t})',['y = 1 − z,   ^CD^{1/2} z = −z,   z(0) = 1'],['y = 1 − e^{−t}','y = E_{1/2}(−#r{t})','y = #r{t}']),
+  Q('Which λ suits the fractional Bernstein basis here?','أي λ يناسب أساس بيرنشتاين الكسري هنا؟','λ = #f{1}{2}',[['The solution is a series in `t^{1/2}`.','الحل متسلسلة في `t^{1/2}`.']],['λ = 1','λ = 2','λ = #f{1}{4}']),
+]);
+
+lesson('502',85,[
+  ['Multi-term equations are integrated with the highest order, exactly as in Course 501. For `^CD^{1.5} y + ^CD^{0.5} y + y = g`, `y(0) = ψ_0`, `y′(0) = ψ_1`:','المعادلات متعددة الحدود تُكامل بأعلى رتبة كما في المقرر 501. وللمسألة `^CD^{1.5} y + ^CD^{0.5} y + y = g` مع `y(0) = ψ_0` و `y′(0) = ψ_1`:'],
+  'y + D^{−1}(y − ψ_0) + D^{−1.5} y = D^{−1.5} g + ψ_0 + ψ_1 t',
+  ['So two integration matrices appear, `I_{(−1)}` and `I_{(−1.5)}`, and the initial values move to the right-hand side.','فتظهر مصفوفتا تكامل `I_{(−1)}` و `I_{(−1.5)}`، وتنتقل القيم الابتدائية إلى الطرف الأيمن.'],
+],[
+  Q('Which integration matrices appear?','أي مصفوفات تكامل تظهر؟','I_{(−1)},   I_{(−1.5)}',['D^{−1.5}·^CD^{0.5} = D^{−1}(…),   D^{−1.5}·y'],['I_{(−0.5)},   I_{(−1.5)}','I_{(−1)}','I_{(−1.5)},   I_{(−2)}']),
+  Q('Which initial terms come from `D^{−1.5} ^CD^{1.5} y`?','أي حدود ابتدائية تأتي من `D^{−1.5} ^CD^{1.5} y`؟','ψ_0 + ψ_1 t',['y − ψ_0 − ψ_1 t'],['ψ_0','ψ_1','0']),
+  Q('Which initial term comes from `D^{−1.5} ^CD^{0.5} y`?','أي حد ابتدائي يأتي من `D^{−1.5} ^CD^{0.5} y`؟','D^{−1} ψ_0 = ψ_0 t',['D^{−1}(y − ψ_0)'],['ψ_0 + ψ_1 t','ψ_1','0']),
+  Q('With n = 6, how large is the linear system?','عند n = 6 ما حجم النظام الخطي؟','7 × 7',['n + 1 = 7'],['6 × 6','14 × 14','49 × 49']),
+]);
+
+lesson('502',86,[
+  ['Functions of two variables use the tensor-product basis:','دوال المتغيرين تستخدم أساس الضرب التنسوري:'],
+  'u(x, t) ≈ Σ_{i=0}^{m} Σ_{j=0}^{n} c_{ij} B_{i,m}(x) B_{j,n}(t) = Φ_m(x)^T C Φ_n(t)',
+  ['Derivatives act on one side of C: `∂u/∂x = Φ_m^T D_m^T C Φ_n` and `∂u/∂t = Φ_m^T C D_n Φ_n`. Boundary values in x are the first and last rows of C, the initial values the first column.','والمشتقات تعمل على جهة واحدة من C: `∂u/∂x = Φ_m^T D_m^T C Φ_n` و `∂u/∂t = Φ_m^T C D_n Φ_n`. والقيم الحدية في x هي الصفان الأول والأخير من C، والقيم الابتدائية العمود الأول.'],
+],[
+  Q('How many coefficients has u for m = 4, n = 3?','كم معاملاً لـ u عند m = 4 و n = 3؟','20',['(m + 1)(n + 1) = 5·4'],['12','7','16']),
+  Q('What is `u(0, 0)`?','ما `u(0, 0)`؟','c_{00}',['B_{i,m}(0) B_{j,n}(0) = δ_{i0}δ_{j0}'],['c_{mn}','0','c_{0n}']),
+  Q('Write `u = xt` with m = n = 1.','اكتب `u = xt` عند m = n = 1.','C = #m{0, 0 ;; 0, 1}',['xt = B_{1,1}(x) B_{1,1}(t)'],['C = #m{1, 0 ;; 0, 0}','C = #m{0, 1 ;; 1, 0}','C = #m{1, 1 ;; 1, 1}']),
+  Q('Which part of C holds the values `u(0, t)`?','أي جزء من C يحمل القيم `u(0, t)`؟',['The first row','الصف الأول'],['u(0, t) = Σ_j c_{0j} B_{j,n}(t)'],[['The first column','العمود الأول'],['The diagonal','القطر']]),
+]);
+
+lesson('502',87,[
+  ['The heat equation `u_t = u_{xx}` on `0 < x < 1` with `u(0, t) = u(1, t) = 0` and `u(x, 0) = sin πx` has the exact solution','معادلة الحرارة `u_t = u_{xx}` على `0 < x < 1` مع `u(0, t) = u(1, t) = 0` و `u(x, 0) = sin πx` حلها المضبوط'],
+  'u(x, t) = e^{−π^2 t} sin πx',
+  ['With the tensor basis the boundary conditions fix the first and last rows of C to zero, the initial condition fixes the first column, and the equation `C D_n = D_m^{2T} C` (in its integrated or collocated form) gives the rest. The smooth solution makes the method converge spectrally in both variables.','ومع الأساس التنسوري تثبّت الشروط الحدية الصفين الأول والأخير من C بالأصفار، والشرط الابتدائي العمود الأول، والمعادلة `C D_n = D_m^{2T} C` (بصيغتها التكاملية أو المجمّعة) تعطي الباقي. والحل الأملس يجعل الطريقة تتقارب طيفياً في المتغيرين.'],
+],[
+  Q('Evaluate the exact solution at x = 1/2, t = 0.1.','احسب الحل المضبوط عند x = 1/2 و t = 0.1.','e^{−0.98696} ≈ 0.3727',['e^{−π^2·0.1}·sin #f{π}{2}'],['≈ 0.9048','≈ 0.0987','1']),
+  Q('Which entries of C are fixed by the boundary conditions?','أي عناصر C تتحدد بالشروط الحدية؟',['The first and last rows: `c_{0j} = c_{mj} = 0`','الصفان الأول والأخير: `c_{0j} = c_{mj} = 0`'],['u(0, t) = Σ_j c_{0j}B_{j,n}(t) = 0'],[['The first and last columns','العمودان الأول والأخير'],['The diagonal','القطر']]),
+  Q('Which entries does the initial condition fix?','أي عناصر يثبّتها الشرط الابتدائي؟',['The first column `c_{i0}`, the Bernstein coefficients of `sin πx`','العمود الأول `c_{i0}`، وهي معاملات بيرنشتاين لـ `sin πx`'],['u(x, 0) = Σ_i c_{i0}B_{i,m}(x)'],[['The last column','العمود الأخير'],['The first row','الصف الأول']]),
+  Q('At what rate does the exact solution decay in time?','بأي معدل يتناقص الحل المضبوط مع الزمن؟','e^{−π^2 t}',['u_t = −π^2 u'],['e^{−πt}','e^{−t}','e^{−2t}']),
+]);
+
+lesson('502',88,[
+  ['The time-fractional diffusion equation `^CD_t^{α} u = u_{xx} + g` is solved in the integrated form `u = u(x, 0) + D_t^{−α}(u_{xx} + g)`, exactly the structure of Course 501, with Bernstein matrices instead of Legendre ones. To test a code, manufacture a solution; for `u = t sin πx`:',
+   'معادلة الانتشار الكسرية زمنياً `^CD_t^{α} u = u_{xx} + g` تُحل بالصيغة التكاملية `u = u(x, 0) + D_t^{−α}(u_{xx} + g)`، وهي بنية المقرر 501 نفسها مع مصفوفات بيرنشتاين بدل ليجندر. ولاختبار البرنامج نصنع حلاً، فمع `u = t sin πx`:'],
+  'g = ^CD_t^{α} u − u_{xx} = #f{t^{1−α}}{Γ(2 − α)} sin πx + π^2 t sin πx',
+  ['For α = 1/2 this is `1.1284#r{t} sin πx + π^2 t sin πx`.','وعند α = 1/2 يكون `1.1284#r{t} sin πx + π^2 t sin πx`.'],
+],[
+  Q('Compute `^CD^{1/2} t`.','احسب `^CD^{1/2} t`.','#f{t^{1/2}}{Γ(3/2)} ≈ 1.1284#r{t}',['#f{Γ(2)}{Γ(3/2)}t^{1/2}'],['t^{1/2}','0.8862#r{t}','#f{t^{3/2}}{Γ(5/2)}']),
+  Q('Evaluate g at t = 1/4, x = 1/2 for α = 1/2.','احسب g عند t = 1/4 و x = 1/2 مع α = 1/2.','≈ 3.0316',['1.1284·0.5 + π^2·0.25 = 0.5642 + 2.4674'],['≈ 2.4674','≈ 0.5642','≈ 1.9032']),
+  Q('Write the integrated form for `^CD_t^{α} u = u_{xx} + g`.','اكتب الصيغة التكاملية لـ `^CD_t^{α} u = u_{xx} + g`.','u = u(x, 0) + D_t^{−α}(u_{xx} + g)',['D_t^{−α} ^CD_t^{α} u = u − u(x, 0)'],['u = D_t^{α} u_{xx}','u = u_{xx} + g','u = u(x, 0) + u_{xx}']),
+  Q('Why is `u = t sin πx` a weak test for λ = 1/2?','لماذا يكون `u = t sin πx` اختباراً ضعيفاً عند λ = 1/2؟',['Its time part `t = s^2` lies exactly in the time space, so it does not test the singular behaviour','جزؤه الزمني `t = s^2` يقع تماماً في الفضاء الزمني فلا يختبر السلوك الشاذ'],
+    [['A solution like `t^{1.3} sin πx` is a stronger test.','الحل مثل `t^{1.3} sin πx` اختبار أقوى.']], [['Because sin πx is not a polynomial','لأن sin πx ليست كثيرة حدود'],['It is a strong test','إنه اختبار قوي']]),
+]);
+
+lesson('502',89,[
+  ['Optimal control: minimise `J = ∫_0^1 (x^2 + u^2) dt` subject to `x′ = u`, `x(0) = 1`. The Euler–Lagrange equation gives `x″ = x`, `x′(1) = 0`, so','التحكم الأمثل: تقليل `J = ∫_0^1 (x^2 + u^2) dt` بشرط `x′ = u` و `x(0) = 1`. ومعادلة أويلر–لاغرانج تعطي `x″ = x` و `x′(1) = 0`، فيكون'],
+  'x^*(t) = #f{cosh(1 − t)}{cosh 1},   J^* = tanh 1 ≈ 0.7616',
+  ['A direct method writes `x = Σ c_i B_{i,n}(t)` with `c_0 = 1`, so that `u = x′` is a Bernstein polynomial too, and J becomes a quadratic function of the free coefficients: minimising it is one linear solve. Even n = 1 gives a good first answer.','والطريقة المباشرة تكتب `x = Σ c_i B_{i,n}(t)` مع `c_0 = 1`، فيكون `u = x′` كثيرة بيرنشتاين أيضاً، وتصبح J دالة تربيعية في المعاملات الحرة: وتقليلها حل خطي واحد. وحتى n = 1 تعطي جواباً أولياً جيداً.'],
+],[
+  Q('With n = 1, `x = (1 − t) + c_1 t`. Write J in terms of `a = c_1 − 1`.','عند n = 1 تكون `x = (1 − t) + c_1 t`. اكتب J بدلالة `a = c_1 − 1`.','J = 1 + a + #f{4}{3}a^2',['x = 1 + at,   u = a', '∫_0^1 (1 + at)^2 dt + a^2 = 1 + a + #f{a^2}{3} + a^2'],['J = 1 + a^2','J = 1 + 2a + a^2','J = a + #f{a^2}{3}']),
+  Q('Minimise that J.','قلّل J تلك.','a = −#f{3}{8},   J = #f{13}{16} = 0.8125',['1 + #f{8}{3}a = 0  ⇒  a = −#f{3}{8}', 'J = 1 − #f{3}{8} + #f{4}{3}·#f{9}{64} = 0.8125'],['a = −#f{1}{2},   J = 0.8333','a = 0,   J = 1','a = −#f{3}{8},   J = 0.7616']),
+  Q('Compare `x(1)` from n = 1 with the optimal `x^*(1)`.','قارن `x(1)` من n = 1 بالقيمة المثلى `x^*(1)`.','0.625  vs  #f{1}{cosh 1} ≈ 0.6481',['c_1 = 1 + a = #f{5}{8}'],['0.5  vs  0.6481','0.6481  vs  0.6481','0.375  vs  0.6481']),
+  Q('Why is J quadratic in the coefficients?','لماذا J تربيعية في المعاملات؟',['x and u are linear in c, and J integrates their squares','x و u خطيتان في c، و J تكامل مربعيهما'],
+    [['So the minimum solves a symmetric linear system.','فالحد الأدنى يحل نظاماً خطياً متماثلاً.']], [['Because the problem is nonlinear','لأن المسألة غير خطية']]),
+]);
+
+lesson('502',90,[
+  ['Bernstein, Legendre and Chebyshev bases of degree n span the same space `Π_n`, so Galerkin or collocation with good points give the same polynomial and the same spectral accuracy. They differ in structure:','أسس بيرنشتاين وليجندر وتشيبيشيف من الدرجة n تولّد الفضاء نفسه `Π_n`، فيعطي جاليركن أو التجميع بنقاط جيدة كثيرة الحدود نفسها والدقة الطيفية نفسها. وتختلف في البنية:'],
+  ['Bernstein: non-negative, boundary values are end coefficients, shape control, exact product formula; but the Gram matrix is ill-conditioned and the matrices are dense. Legendre: orthogonal, sparse Galerkin matrices (Shen’s basis), stable. Chebyshev: fast transforms (FFT), explicit nodes.',
+   'بيرنشتاين: غير سالبة، والقيم الحدية معاملات الأطراف، وتحكم بالشكل، وصيغة ضرب مضبوطة، لكن مصفوفة جرام رديئة الشرط والمصفوفات ممتلئة. ليجندر: متعامدة، ومصفوفات جاليركن قليلة العناصر (أساس شين)، ومستقرة. تشيبيشيف: تحويلات سريعة (FFT) وعقد صريحة.'],
+],[
+  Q('Do Galerkin solutions of degree n differ between the Bernstein and Legendre bases (in exact arithmetic)?','هل تختلف حلول جاليركن من الدرجة n بين أساسي بيرنشتاين وليجندر (في حساب مضبوط)؟',['No: same space, same Galerkin polynomial','لا: الفضاء نفسه وكثيرة جاليركن نفسها'],
+    [['Only the coordinates and the conditioning differ.','الإحداثيات والشرط فقط مختلفان.']], [['Yes, Bernstein is less accurate','نعم، بيرنشتاين أقل دقة']]),
+  Q('Which basis gives boundary values as single coefficients?','أي أساس يعطي القيم الحدية معاملاتٍ مفردة؟',['Bernstein','بيرنشتاين'],['y(0) = c_0,   y(1) = c_n'],[['Legendre','ليجندر'],['Chebyshev','تشيبيشيف']]),
+  Q('Which basis allows FFT-based transforms?','أي أساس يسمح بالتحويلات المعتمدة على FFT؟',['Chebyshev','تشيبيشيف'],['T_n(cos θ) = cos nθ'],[['Bernstein','بيرنشتاين'],['Legendre','ليجندر']]),
+  Q('Which basis gives a diagonal stiffness matrix for `−y″`?','أي أساس يعطي مصفوفة جساءة قطرية لـ `−y″`؟',['Legendre, through Shen’s combinations','ليجندر، عبر تراكيب شين'],['(φ_k′, φ_j′) = (4k + 6)δ_{jk}'],[['Bernstein','بيرنشتاين'],['Chebyshev','تشيبيشيف']]),
+]);
+
 export const MS502 = true;
