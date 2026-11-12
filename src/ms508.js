@@ -247,7 +247,7 @@ lesson('508',9,[
   ['The number of initial conditions is set by the highest order: `⌈α_max⌉` values `y(0), y′(0), …`. Orders between 1 and 2 give wave-like (oscillation) equations, orders below 1 relaxation or sub-diffusion.','وعدد الشروط الابتدائية تحدده أعلى رتبة: `⌈α_max⌉` قيمة `y(0) و y′(0) و …`. والرتب بين 1 و 2 تعطي معادلات موجية (اهتزازية)، والرتب الأقل من 1 استرخاء أو انتشاراً بطيئاً.'],
 ],[
   Q('How many initial conditions does `^CD^{1.8}y + ^CD^{0.5}y + y = g` need?','كم شرطاً ابتدائياً تحتاج `^CD^{1.8}y + ^CD^{0.5}y + y = g`؟','2',['⌈1.8⌉ = 2:   y(0),  y′(0)'],['1','3','0']),
-  Q('Is `^CD^{α}y = t^2 y + sin t` linear?','هل `^CD^{α}y = t^2 y + sin t` خطية؟',['Yes: y appears to the first power, with a variable coefficient','نعم: y تظهر بالقوة الأولى بمعامل متغير'],[['The source sin t does not affect linearity.','المصدر sin t لا يؤثر في الخطية.']],[['No: it has t^2','لا: فيها t^2'],['No: it has sin t','لا: فيها sin t']]),
+  Q('Is `^CD^{α}y = t^2 y + sin t` linear?','هل `^CD^{α}y = t^2 y + sin t` خطية؟',['Yes: y appears to the first power, with a variable coefficient','نعم: y تظهر بالقوة الأولى بمعامل متغير'],[['The source sin t does not affect linearity.','المصدر sin t لا يؤثر في الخطية.']],[['No: it has `t^2`','لا: فيها `t^2`'],['No: it has sin t','لا: فيها sin t']]),
   Q('Classify `^CD_t^{0.7}u = u_{xx} − u^3`.','صنّف `^CD_t^{0.7}u = u_{xx} − u^3`.',['A nonlinear time-fractional partial differential equation','معادلة تفاضلية جزئية كسرية زمنية غير خطية'],[['Sub-diffusion with a cubic reaction.','انتشار بطيء مع تفاعل تكعيبي.']],[['A linear ordinary equation','معادلة عادية خطية'],['A multi-term ordinary equation','معادلة عادية متعددة الحدود']]),
   Q('What behaviour does an order between 1 and 2 describe?','أي سلوك تصفه رتبة بين 1 و 2؟',['Damped oscillation, between relaxation (α = 1) and waves (α = 2)','اهتزاز متخامد بين الاسترخاء (α = 1) والموجات (α = 2)'],[['The fractional oscillation equation of Unit 3.','معادلة الاهتزاز الكسرية في الوحدة 3.']],[['Pure diffusion','انتشار خالص'],['Exponential growth','نمو أسي']]),
 ]);
@@ -431,7 +431,7 @@ lesson('508',25,[
 lesson('508',26,[
   ['The Bagley–Torvik equation models a plate moving in a viscous fluid:','معادلة باجلي–تورفيك تنمذج صفيحة تتحرك في مائع لزج:'],
   'A y″ + B ^CD^{3/2}y + C y = f(t),     y(0) = ψ_0,   y′(0) = ψ_1',
-  ['It is the classic test of numerical methods for multi-term equations. With A = B = C = 1, f = 1 + t, ψ_0 = ψ_1 = 1 the exact solution is `y = 1 + t`, since `y″ = 0` and `^CD^{3/2}(1 + t) = 0`.','وهي الاختبار الكلاسيكي للطرق العددية للمعادلات متعددة الحدود. ومع A = B = C = 1 و f = 1 + t و ψ_0 = ψ_1 = 1 يكون الحل المضبوط `y = 1 + t` لأن `y″ = 0` و `^CD^{3/2}(1 + t) = 0`.'],
+  ['It is the classic test of numerical methods for multi-term equations. With A = B = C = 1, f = 1 + t, `ψ_0 = ψ_1 = 1` the exact solution is `y = 1 + t`, since `y″ = 0` and `^CD^{3/2}(1 + t) = 0`.','وهي الاختبار الكلاسيكي للطرق العددية للمعادلات متعددة الحدود. ومع A = B = C = 1 و f = 1 + t و `ψ_0 = ψ_1 = 1` يكون الحل المضبوط `y = 1 + t` لأن `y″ = 0` و `^CD^{3/2}(1 + t) = 0`.'],
 ],[
   Q('Check `y = 1 + t` for `y″ + ^CD^{3/2}y + y = 1 + t`.','تحقق من `y = 1 + t` لـ `y″ + ^CD^{3/2}y + y = 1 + t`.','0 + 0 + (1 + t) = 1 + t',[['`^CD^{3/2}` of a linear function is 0.','`^CD^{3/2}` لدالة خطية صفر.']],['0 + 1 + (1 + t)','1 + 0 + (1 + t)','0 + #f{t^{−1/2}}{Γ(1/2)} + (1 + t)']),
   Q('Why is `^CD^{3/2}(1 + t) = 0`?','لماذا يكون `^CD^{3/2}(1 + t) = 0`؟',['The Caputo derivative of order 3/2 differentiates twice first, and `(1 + t)″ = 0`','مشتقة كابوتو من الرتبة 3/2 تشتق مرتين أولاً و `(1 + t)″ = 0`'],['^CD^{3/2}y = D^{−1/2}y″'],[['Because 3/2 > 1','لأن 3/2 > 1'],['It is not zero','ليست صفراً']]),
@@ -458,7 +458,7 @@ lesson('508',28,[
   Q('Compute `^CD^{1/2}t^{1/2}`.','احسب `^CD^{1/2}t^{1/2}`.','Γ(#f{3}{2}) = #f{#r{π}}{2}',['#f{Γ(3/2)}{Γ(1)}t^{0}'],['0','#f{1}{2}t^{−1/2}','1']),
   Q('Is `^CD^{1/2}^CD^{1/2}t^{1/2}` equal to `(t^{1/2})′`?','هل `^CD^{1/2}^CD^{1/2}t^{1/2}` تساوي `(t^{1/2})′`؟',['No: it is 0, while the derivative is `t^{−1/2}/2`','لا: هي 0 بينما المشتقة `t^{−1/2}/2`'],[['The Caputo derivative of a constant vanishes.','مشتقة كابوتو للثابت تنعدم.']],[['Yes','نعم'],['Only at t = 1','فقط عند t = 1']]),
   Q('Check `^CD^{1/2}(2#r{t}/#r{π}) = 1`.','تحقق من `^CD^{1/2}(2#r{t}/#r{π}) = 1`.','#f{2}{#r{π}}·#f{Γ(3/2)}{Γ(1)} = 1',['Γ(3/2) = #f{#r{π}}{2}'],['#f{2}{#r{π}}·Γ(3/2) = #f{1}{2}','#f{2}{#r{π}}','0']),
-  Q('When does `^CD^{α}^CD^{β}y = ^CD^{α+β}y` hold (α + β ≤ 1)?','متى تصح `^CD^{α}^CD^{β}y = ^CD^{α+β}y` (α + β ≤ 1)؟',['When y is smooth enough that no singular term appears, for example y ∈ C^1','حين تكون y ملساء بما يكفي فلا يظهر حد شاذ، مثل y ∈ C^1'],[['It fails for `t^{1/2}`.','تفشل لـ `t^{1/2}`.']],[['Always','دائماً'],['Never','أبداً']]),
+  Q('When does `^CD^{α}^CD^{β}y = ^CD^{α+β}y` hold (α + β ≤ 1)?','متى تصح `^CD^{α}^CD^{β}y = ^CD^{α+β}y` (α + β ≤ 1)؟',['When y is smooth enough that no singular term appears, for example `y ∈ C^1`','حين تكون y ملساء بما يكفي فلا يظهر حد شاذ، مثل `y ∈ C^1`'],[['It fails for `t^{1/2}`.','تفشل لـ `t^{1/2}`.']],[['Always','دائماً'],['Never','أبداً']]),
 ]);
 
 lesson('508',29,[
@@ -704,7 +704,7 @@ lesson('508',50,[
 lesson('508',51,[
   ['The fractional Euler (rectangle) method approximates the Volterra form with f frozen on each subinterval. On a uniform mesh `t_n = nh`:','طريقة أويلر الكسرية (المستطيل) تقرّب صيغة فولتيرا مع تثبيت f على كل مجال جزئي. وعلى شبكة منتظمة `t_n = nh`:'],
   'y_{n+1} = ψ_0 + #f{h^{α}}{Γ(α + 1)} Σ_{j=0}^{n} b_{n,j} f(t_j, y_j),     b_{n,j} = (n + 1 − j)^{α} − (n − j)^{α}',
-  ['The weights come from integrating the kernel exactly over each subinterval. The method is explicit and of order 1 for smooth f; for the non-smooth solutions of fractional equations its observed order at fixed t is also about 1 (for `^CD^{1/2}y = −y`: errors 2.0, 1.0, 0.50, 0.25 × 10^{−3} for N = 40, …, 320).','والأوزان تأتي من تكامل النواة بالضبط على كل مجال جزئي. والطريقة صريحة ومن الرتبة 1 للدوال f الملساء، ولحلول المعادلات الكسرية غير الملساء تكون رتبتها الملاحظة عند t ثابتة نحو 1 أيضاً (لـ `^CD^{1/2}y = −y`: الأخطاء 2.0 و 1.0 و 0.50 و 0.25 × 10^{−3} لـ N = 40 حتى 320).'],
+  ['The weights come from integrating the kernel exactly over each subinterval. The method is explicit and of order 1 for smooth f; for the non-smooth solutions of fractional equations its observed order at fixed t is also about 1 (for `^CD^{1/2}y = −y`: errors 2.0, 1.0, 0.50, 0.25 × `10^{−3}` for N = 40, …, 320).','والأوزان تأتي من تكامل النواة بالضبط على كل مجال جزئي. والطريقة صريحة ومن الرتبة 1 للدوال f الملساء، ولحلول المعادلات الكسرية غير الملساء تكون رتبتها الملاحظة عند t ثابتة نحو 1 أيضاً (لـ `^CD^{1/2}y = −y`: الأخطاء 2.0 و 1.0 و 0.50 و 0.25 × `10^{−3}` لـ N = 40 حتى 320).'],
 ],[
   Q('Write the first step `y_1`.','اكتب الخطوة الأولى `y_1`.','y_1 = ψ_0 + #f{h^{α}}{Γ(α + 1)} f(t_0, ψ_0)',['n = 0:   b_{0,0} = 1'],['y_1 = ψ_0 + h f(t_0, ψ_0)','y_1 = ψ_0 + h^{α} f(t_0, ψ_0)','y_1 = #f{h^{α}}{Γ(α)} f(t_0, ψ_0)']),
   Q('Compute `b_{1,0}` and `b_{1,1}` for α = 1/2.','احسب `b_{1,0}` و `b_{1,1}` عند α = 1/2.','#r{2} − 1 ≈ 0.414,   1',['b_{1,0} = 2^{1/2} − 1^{1/2},   b_{1,1} = 1^{1/2} − 0'],['1,   1','0.5,   0.5','#r{2},   1']),
@@ -726,7 +726,7 @@ lesson('508',52,[
 lesson('508',53,[
   ['The L1 scheme approximates y by a piecewise linear function and integrates the Caputo kernel exactly:','مخطط L1 يقرّب y بدالة خطية مجزأة ويكامل نواة كابوتو بالضبط:'],
   '^CD^{α}y(t_n) ≈ #f{h^{−α}}{Γ(2 − α)} Σ_{k=0}^{n−1} b_k (y_{n−k} − y_{n−k−1}),     b_k = (k + 1)^{1−α} − k^{1−α}',
-  ['For smooth y it has order `2 − α`. For `^CD^{1/2}y = −y` (solution `E_{1/2}(−t^{1/2})`, singular at 0) the observed order at t = 1 on a uniform mesh drops to about 1: errors 1.83, 0.90, 0.44, 0.22 × 10^{−3} for N = 40, …, 320.','وللدوال الملساء y رتبته `2 − α`. ولـ `^CD^{1/2}y = −y` (الحل `E_{1/2}(−t^{1/2})` الشاذ عند 0) تنخفض الرتبة الملاحظة عند t = 1 على شبكة منتظمة إلى نحو 1: الأخطاء 1.83 و 0.90 و 0.44 و 0.22 × 10^{−3} لـ N = 40 حتى 320.'],
+  ['For smooth y it has order `2 − α`. For `^CD^{1/2}y = −y` (solution `E_{1/2}(−t^{1/2})`, singular at 0) the observed order at t = 1 on a uniform mesh drops to about 1: errors 1.83, 0.90, 0.44, 0.22 × `10^{−3}` for N = 40, …, 320.','وللدوال الملساء y رتبته `2 − α`. ولـ `^CD^{1/2}y = −y` (الحل `E_{1/2}(−t^{1/2})` الشاذ عند 0) تنخفض الرتبة الملاحظة عند t = 1 على شبكة منتظمة إلى نحو 1: الأخطاء 1.83 و 0.90 و 0.44 و 0.22 × `10^{−3}` لـ N = 40 حتى 320.'],
 ],[
   Q('Compute `b_0, b_1, b_2` for α = 1/2.','احسب `b_0, b_1, b_2` عند α = 1/2.','1,   0.414,   0.318',['b_k = #r{k + 1} − #r{k}'],['1,   0.5,   0.333','1,   1,   1','0.5,   0.25,   0.125']),
   Q('What is the order of L1 for smooth solutions with α = 0.3?','ما رتبة L1 للحلول الملساء مع α = 0.3؟','1.7',['2 − α'],['0.3','2','1']),
@@ -752,7 +752,7 @@ lesson('508',55,[
   ['Constant `p_j` gives the fractional Euler method, linear `p_j` the trapezoidal (ABM) corrector, quadratic `p_j` higher orders. The kernel integrals are explicit powers, so the weights are exact.','و `p_j` الثابتة تعطي طريقة أويلر الكسرية، والخطية مصحح شبه المنحرف (ABM)، والتربيعية رتباً أعلى. وتكاملات النواة قوى صريحة فتكون الأوزان مضبوطة.'],
 ],[
   Q('Compute `∫_0^h (h − s)^{α−1} ds`.','احسب `∫_0^h (h − s)^{α−1} ds`.','#f{h^{α}}{α}',['[−#f{(h − s)^{α}}{α}]_0^h'],['h^{α}','#f{h^{α−1}}{α − 1}','h']),
-  Q('Which product integration rule gives the fractional Euler method?','أي قاعدة تكامل ضربي تعطي طريقة أويلر الكسرية؟',['A constant `p_j = f(t_j, y_j)` on each subinterval','`p_j = f(t_j, y_j)` ثابتة على كل مجال جزئي'],[['The rectangle rule.','قاعدة المستطيل.']],[['A linear p_j','p_j خطية'],['A spline','شريحة']]),
+  Q('Which product integration rule gives the fractional Euler method?','أي قاعدة تكامل ضربي تعطي طريقة أويلر الكسرية؟',['A constant `p_j = f(t_j, y_j)` on each subinterval','`p_j = f(t_j, y_j)` ثابتة على كل مجال جزئي'],[['The rectangle rule.','قاعدة المستطيل.']],[['A linear `p_j`','`p_j` خطية'],['A spline','شريحة']]),
   Q('Why integrate the kernel exactly instead of using Gauss quadrature on the whole integrand?','لماذا تُكامل النواة بالضبط بدل تربيع جاوس على المكامل كله؟',['The kernel is singular at s = t; ordinary rules would converge slowly','النواة شاذة عند s = t، والقواعد العادية تتقارب ببطء'],[['Only the smooth factor is approximated.','العامل الأملس وحده يُقرَّب.']],[['It is faster','أسرع'],['Gauss is not allowed','جاوس غير مسموح']]),
   Q('What does a linear `p_j` give?','ماذا تعطي `p_j` الخطية؟',['The trapezoidal corrector of the ABM method','مصحح شبه المنحرف في طريقة ABM'],[['Order up to `1 + α` for smooth f.','رتبة حتى `1 + α` للدوال f الملساء.']],[['The fractional Euler method','طريقة أويلر الكسرية'],['The L1 scheme','مخطط L1']]),
 ]);
@@ -782,7 +782,7 @@ lesson('508',57,[
 lesson('508',58,[
   ['A graded mesh clusters the points near t = 0, where the solution is singular. With the exponent below, L1 recovers its full order 2 − α:','الشبكة المتدرجة تكثّف النقاط قرب t = 0 حيث الحل شاذ. ومع الأس أدناه يستعيد L1 رتبته الكاملة 2 − α:'],
   't_j = T (#f{j}{N})^{r},     r = #f{2 − α}{α}   ⇒   O(N^{α−2})',
-  ['For `^CD^{1/2}y = −y` with r = 3 the L1 errors at t = 1 become 6.5, 2.3, 0.81, 0.29 × 10^{−4} for N = 40, …, 320: order 1.5 = 2 − α, against 1 on the uniform mesh. Correction terms (starting weights) are an alternative that keeps a uniform mesh.','ولـ `^CD^{1/2}y = −y` مع r = 3 تصبح أخطاء L1 عند t = 1 هي 6.5 و 2.3 و 0.81 و 0.29 × 10^{−4} لـ N = 40 حتى 320: رتبة 1.5 = 2 − α مقابل 1 على الشبكة المنتظمة. وحدود التصحيح (أوزان البدء) بديل يحافظ على شبكة منتظمة.'],
+  ['For `^CD^{1/2}y = −y` with r = 3 the L1 errors at t = 1 become 6.5, 2.3, 0.81, 0.29 × `10^{−4}` for N = 40, …, 320: order 1.5 = 2 − α, against 1 on the uniform mesh. Correction terms (starting weights) are an alternative that keeps a uniform mesh.','ولـ `^CD^{1/2}y = −y` مع r = 3 تصبح أخطاء L1 عند t = 1 هي 6.5 و 2.3 و 0.81 و 0.29 × `10^{−4}` لـ N = 40 حتى 320: رتبة 1.5 = 2 − α مقابل 1 على الشبكة المنتظمة. وحدود التصحيح (أوزان البدء) بديل يحافظ على شبكة منتظمة.'],
 ],[
   Q('Compute the grading exponent r for α = 1/2.','احسب أس التدرج r عند α = 1/2.','3',['#f{2 − 0.5}{0.5}'],['2','1.5','4']),
   Q('Give the first mesh point `t_1` for N = 10, T = 1, r = 3.','أعط أول نقطة شبكة `t_1` عند N = 10 و T = 1 و r = 3.','0.001',['(#f{1}{10})^3'],['0.1','0.01','0.0001']),
@@ -806,10 +806,121 @@ lesson('508',60,[
   't^{α−1} ≈ Σ_{l=1}^{L} ω_l e^{−s_l t},     O(N^2)  →  O(N L),     L ~ log N',
   ['Each exponential term is updated recursively in O(1), so long simulations become feasible. Other options: FFT-based evaluation of the convolution (`O(N log^2 N)`) and the short-memory principle (cut the history, at the price of accuracy).','وكل حد أسي يُحدَّث تكرارياً بتكلفة O(1) فتصبح المحاكاة الطويلة ممكنة. ومن الخيارات الأخرى حساب الالتفاف بـ FFT (`O(N log^2 N)`) ومبدأ الذاكرة القصيرة (قص التاريخ على حساب الدقة).'],
 ],[
-  Q('How many operations does a direct scheme need for N = 10^5 steps?','كم عملية يحتاجها مخطط مباشر لـ N = 10^5 خطوة؟','≈ 5 × 10^9',['#f{N^2}{2}'],['≈ 10^5','≈ 10^{11}','≈ 10^6']),
+  Q('How many operations does a direct scheme need for `N = 10^5` steps?','كم عملية يحتاجها مخطط مباشر لـ `N = 10^5` خطوة؟','≈ 5 × 10^9',['#f{N^2}{2}'],['≈ 10^5','≈ 10^{11}','≈ 10^6']),
   Q('With a sum of L = 40 exponentials, about how many?','مع مجموع من L = 40 أسية كم تقريباً؟','≈ 4 × 10^6',['N L'],['≈ 5 × 10^9','≈ 40','≈ 10^5']),
   Q('Why can each exponential term be updated in O(1)?','لماذا يمكن تحديث كل حد أسي بتكلفة O(1)؟',['`e^{−s(t + h)} = e^{−sh}e^{−st}`: the history integral of an exponential satisfies a one-step recursion','`e^{−s(t + h)} = e^{−sh}e^{−st}`: تكامل التاريخ لأسية يحقق علاقة تكرار بخطوة واحدة'],[['Memory becomes a few numbers per term.','تصبح الذاكرة بضعة أعداد لكل حد.']],[['Because L is small','لأن L صغير'],['It cannot','لا يمكن']]),
   Q('What is the drawback of the short-memory principle?','ما عيب مبدأ الذاكرة القصيرة؟',['It neglects the old history, which the algebraic tail makes important','يهمل التاريخ القديم الذي يجعله الذيل الجبري مهماً'],[['The error does not vanish as h → 0.','الخطأ لا ينعدم عندما h → 0.']],[['It is slow','بطيء'],['None','لا عيب']]),
+]);
+
+/* ---- 508 · Unit 7 (lessons 61–70): spectral methods for initial-value problems ---- */
+lesson('508',61,[
+  ['Spectral methods expand the solution in orthogonal polynomials and converge exponentially for smooth functions. But the solution of a fractional equation contains `t^{α}`, and a polynomial in t represents `t^{1/2}` badly near 0. The maximum error of the Legendre expansion of `t^{1/2}` on [0, 1]:','الطرق الطيفية تنشر الحل بكثيرات حدود متعامدة وتتقارب أسياً للدوال الملساء. لكن حل المعادلة الكسرية يحتوي `t^{α}`، وكثيرة الحدود في t تمثل `t^{1/2}` تمثيلاً سيئاً قرب 0. أكبر خطأ لمفكوك ليجندر لـ `t^{1/2}` على [0, 1]:'],
+  'M = 4, 8, 16:     0.101,   0.056,   0.029     (~ M^{−1})',
+  ['The error halves when M doubles and sits at t = 0. For `^CD^{1/2}y + y = 0` the spectral solution in t has errors 1.3, 0.41, `0.11 × 10^{−2}` at t = 1 for M = 4, 8, 16: only algebraic convergence.','والخطأ ينتصف عند مضاعفة M ويقع عند t = 0. ولـ `^CD^{1/2}y + y = 0` تكون أخطاء الحل الطيفي في t عند t = 1 هي 1.3 و 0.41 و `0.11 × 10^{−2}` لـ M = 4 و 8 و 16: تقارب جبري فقط.'],
+],[
+  Q('What rate do the errors 0.101, 0.056, 0.029 show?','أي معدل تُظهره الأخطاء 0.101 و 0.056 و 0.029؟','~ M^{−1}',['#f{0.101}{0.056} ≈ 1.8 ≈ 2'],['~ e^{−M}','~ M^{−2}','~ M^{−1/2}']),
+  Q('Where is the error of the expansion of `t^{1/2}` largest?','أين يكون خطأ مفكوك `t^{1/2}` أكبر؟','t = 0',[['The derivative of `t^{1/2}` is infinite there.','مشتقة `t^{1/2}` لانهائية هناك.']],['t = 1','t = #f{1}{2}',['everywhere equally','في كل مكان بالتساوي']]),
+  Q('How many correct digits does doubling M give for an error ~ `M^{−1}`?','كم رقماً صحيحاً تعطيه مضاعفة M لخطأ ~ `M^{−1}`؟','log_{10} 2 ≈ 0.3',[['Ten times more work for one digit.','عشرة أضعاف العمل لرقم واحد.']],['1','2','M']),
+  Q('Which function would a Legendre expansion in t represent with exponential accuracy?','أي دالة يمثلها مفكوك ليجندر في t بدقة أسية؟','e^{−t}',[['It is analytic on [0, 1].','تحليلية على [0, 1].']],['t^{1/2}','E_{1/2}(−t^{1/2})','t^{0.3}']),
+]);
+
+lesson('508',62,[
+  ['The cure is a change of variable. With `u = t^{λ}` the powers `t^{kλ}` become ordinary powers `u^k`, and a solution of the form `Σ a_k t^{kλ}` becomes a smooth function of u:','العلاج تغيير المتغير. مع `u = t^{λ}` تصبح القوى `t^{kλ}` قوى عادية `u^k`، والحل من الصورة `Σ a_k t^{kλ}` يصبح دالة ملساء في u:'],
+  'E_{1/2}(−t^{1/2}) = 1 − 1.1284 u + u^2 − 0.7523 u^3 + #f{1}{2}u^4 − …,     u = t^{1/2}',
+  ['Fractional integrals keep this structure when `μ/λ` is a whole number: `D^{−μ} t^{kλ} = #f{Γ(kλ + 1)}{Γ(kλ + μ + 1)} u^{k+μ/λ}`. So the equation can be solved with polynomials in u.','والتكاملات الكسرية تحافظ على هذه البنية عندما يكون `μ/λ` عدداً صحيحاً: `D^{−μ} t^{kλ} = #f{Γ(kλ + 1)}{Γ(kλ + μ + 1)} u^{k+μ/λ}`. فيمكن حل المعادلة بكثيرات حدود في u.'],
+],[
+  Q('Write `t^{3/2}` in the variable `u = t^{1/2}`.','اكتب `t^{3/2}` بالمتغير `u = t^{1/2}`.','u^3',['(t^{1/2})^3'],['u^{3/2}','u^6','u^{1/3}']),
+  Q('Compute `D^{−1/2} t^{1/2}` in terms of u.','احسب `D^{−1/2} t^{1/2}` بدلالة u.','#f{#r{π}}{4}·2u^2 = #f{#r{π}}{2}u^2 ≈ 0.8862 u^2',['#f{Γ(3/2)}{Γ(2)} t,   t = u^2'],['u','#f{u^2}{Γ(2)}','0.5642 u']),
+  Q('Explain the coefficient 1.1284 in the expansion above.','فسّر المعامل 1.1284 في المفكوك أعلاه.','#f{1}{Γ(3/2)} = #f{2}{#r{π}}',['E_{1/2}(−u) = Σ #f{(−u)^k}{Γ(k/2 + 1)},   k = 1'],['#f{1}{Γ(1/2)}','#r{π}','#f{1}{2}']),
+  Q('For λ = 1/2, which μ keeps `D^{−μ}u^k` a polynomial in u?','عند λ = 1/2 أي μ تُبقي `D^{−μ}u^k` كثيرة حدود في u؟',['Any multiple of 1/2: `μ/λ` must be a whole number','أي مضاعف لـ 1/2: يجب أن يكون `μ/λ` عدداً صحيحاً'],[['For example μ = 1/2, 1, 3/2, 2.','مثلاً μ = 1/2 و 1 و 3/2 و 2.']],[['Only μ = 1','فقط μ = 1'],['Any μ','أي μ']]),
+]);
+
+lesson('508',63,[
+  ['The fractional Legendre functions are Legendre polynomials in u, shifted to [0, 1]. They are orthogonal with the weight `λt^{λ−1}`, which is just du, and the solution is expanded as in (2.10) of the paper:','دوال ليجندر الكسرية هي كثيرات ليجندر في u مزاحة إلى [0, 1]. وهي متعامدة بالوزن `λt^{λ−1}` الذي هو du نفسه، ويُنشر الحل كما في (2.10) في البحث:'],
+  'L_j^{λ}(t) = P_j(2t^{λ} − 1),     y(t) ≈ Σ_{j=0}^{M} c_j L_j^{λ}(t),     c_j = (2j + 1)∫_0^1 y(t) L_j^{λ}(t) λt^{λ−1} dt',
+  ['The first functions: `L_0 = 1`, `L_1 = 2u − 1`, `L_2 = 6u^2 − 6u + 1`. All of them equal 1 at t = 1 and `(−1)^j` at t = 0, which makes evaluating the expansion at the ends easy.','والدوال الأولى: `L_0 = 1` و `L_1 = 2u − 1` و `L_2 = 6u^2 − 6u + 1`. وكلها تساوي 1 عند t = 1 و `(−1)^j` عند t = 0، فيسهل حساب المفكوك عند الطرفين.'],
+],[
+  Q('Expand `t^{1/2}` with λ = 1/2.','انشر `t^{1/2}` مع λ = 1/2.','t^{1/2} = #f{1}{2}L_0 + #f{1}{2}L_1',['u = #f{1}{2} + #f{1}{2}(2u − 1)'],['t^{1/2} = L_1','t^{1/2} = L_0 + L_1','t^{1/2} = #f{1}{2}L_1']),
+  Q('Expand `t` with λ = 1/2.','انشر `t` مع λ = 1/2.','t = #f{1}{3}L_0 + #f{1}{2}L_1 + #f{1}{6}L_2',['u^2 = #f{1}{3} + (u − #f{1}{2}) + (u^2 − u + #f{1}{6})'],['t = L_2','t = #f{1}{2}L_0 + #f{1}{2}L_2','t = #f{1}{6}L_0 + #f{1}{3}L_1 + #f{1}{2}L_2']),
+  Q('If `y = Σ c_j L_j^{λ}`, what is y(1)?','إذا كانت `y = Σ c_j L_j^{λ}` فما y(1)؟','y(1) = Σ c_j',['L_j^{λ}(1) = P_j(1) = 1'],['y(1) = c_0','y(1) = Σ (−1)^j c_j','y(1) = 0']),
+  Q('Compute `∫_0^1 L_1^{λ}(t)^2 λt^{λ−1} dt`.','احسب `∫_0^1 L_1^{λ}(t)^2 λt^{λ−1} dt`.','#f{1}{3}',['∫_0^1 (2u − 1)^2 du'],['1','#f{1}{2}','#f{λ}{3}']),
+]);
+
+lesson('508',64,[
+  ['Choose λ so that every power in the problem is a whole multiple of it: the orders of the derivatives and the powers expected in the solution and the data:','اختر λ بحيث تكون كل قوة في المسألة مضاعفاً صحيحاً لها: رتب المشتقات والقوى المتوقعة في الحل والمعطيات:'],
+  'λ = gcd(β_1, β_2, …)',
+  ['For `^CD^{1/2}y + y = 0`, λ = 1/2. With orders 1/2 and 1/3, λ = 1/6. A small λ makes the basis fit but slows convergence at small M, so λ should be as large as the problem allows (Unit 9 measures this).','ولـ `^CD^{1/2}y + y = 0` تكون λ = 1/2. ومع الرتبتين 1/2 و 1/3 تكون λ = 1/6. والقيمة الصغيرة لـ λ تجعل الأساس مناسباً لكنها تبطئ التقارب عند M صغير، فيجب أن تكون λ أكبر ما تسمح به المسألة (الوحدة 9 تقيس ذلك).'],
+],[
+  Q('Find λ for orders 1/2 and 1/3.','أوجد λ للرتبتين 1/2 و 1/3.','#f{1}{6}',['gcd(#f{3}{6}, #f{2}{6})'],['#f{1}{2}','#f{1}{3}','#f{5}{6}']),
+  Q('Find λ for the Bagley–Torvik equation `y″ + ^CD^{3/2}y + y = f`.','أوجد λ لمعادلة باغلي–تورفيك `y″ + ^CD^{3/2}y + y = f`.','#f{1}{2}',['gcd(2, #f{3}{2})'],['#f{3}{2}','1','#f{1}{4}']),
+  Q('Find λ for orders 0.4 and 1.4 with data containing `t^3`.','أوجد λ للرتبتين 0.4 و 1.4 مع معطيات تحتوي `t^3`.','0.2',['gcd(0.4, 1.4, 3) = 0.2'],['0.4','1','0.1']),
+  Q('Why not always take λ very small?','لماذا لا نأخذ λ صغيرة جداً دائماً؟',['A smaller λ needs more terms: it loses at small M','λ الأصغر تحتاج حدوداً أكثر: تخسر عند M صغير'],[['The basis then spans many powers the solution does not have.','فيغطي الأساس قوى كثيرة لا يملكها الحل.']],[['It changes the solution','يغيّر الحل'],['λ must be 1/2','يجب أن تكون λ = 1/2']]),
+]);
+
+lesson('508',65,[
+  ['Theorem 3.2 turns the fractional integral of the basis into a matrix: `D^{−μ}𝔏_{M,λ} ≈ I_{(−μ)}𝔏_{M,λ}`. Row i contains the coefficients of `D^{−μ}L_i^{λ}`. For λ = μ = 1/2 and M = 2:','النظرية 3.2 تحوّل التكامل الكسري للأساس إلى مصفوفة: `D^{−μ}𝔏_{M,λ} ≈ I_{(−μ)}𝔏_{M,λ}`. والصف i يحتوي معاملات `D^{−μ}L_i^{λ}`. عند λ = μ = 1/2 و M = 2:'],
+  'I_{(−1/2)} = #m{0.56419, 0.56419, 0 ;; 0.02663, 0.32204, 0.29541 ;; −0.07989, −0.06341, 0.24215}',
+  ['Rows with `i + μ/λ ≤ M` are exact, here rows 0 and 1; the last row is truncated. In double precision the explicit double sum for the entries cancels badly: `|E_{i,k}|` reaches `6.5 × 10^7` at M = 12, so the entries should be computed in higher precision or by stable quadrature.','والصفوف التي تحقق `i + μ/λ ≤ M` مضبوطة، وهي هنا الصفان 0 و 1، والصف الأخير مقطوع. وفي الدقة المضاعفة يعاني المجموع المزدوج الصريح للعناصر من إلغاء شديد: `|E_{i,k}|` تبلغ `6.5 × 10^7` عند M = 12، فيجب حساب العناصر بدقة أعلى أو بتربيع مستقر.'],
+],[
+  Q('Check row 0: expand `D^{−1/2}1`.','تحقق من الصف 0: انشر `D^{−1/2}1`.','#f{u}{Γ(3/2)} = 0.56419(L_0 + L_1)',['D^{−1/2}1 = #f{t^{1/2}}{Γ(3/2)},   u = #f{1}{2}(L_0 + L_1)'],['L_0 + L_1','0.56419 L_0','#f{u}{Γ(1/2)}']),
+  Q('Why is the entry in row 0, column 2 zero?','لماذا العنصر في الصف 0 والعمود 2 صفر؟',['`D^{−1/2}1` is of degree 1 in u, so it has no `L_2` part','`D^{−1/2}1` من الدرجة 1 في u فلا جزء له في `L_2`'],[['Exact rows contain only the needed degrees.','الصفوف المضبوطة تحتوي الدرجات اللازمة فقط.']],[['By rounding','بالتقريب'],['Because `L_2(1) = 0`','لأن `L_2(1) = 0`']]),
+  Q('Which rows of `I_{(−1/2)}` are exact for M = 5 and λ = 1/2?','أي صفوف `I_{(−1/2)}` مضبوطة عند M = 5 و λ = 1/2؟','i = 0, 1, 2, 3, 4',['i + 1 ≤ 5'],['i = 0, …, 5',['i = 0 only','i = 0 فقط'],'i = 0, 1, 2']),
+  Q('Use row 0 to compute `(D^{−1/2}1)(1)`.','استخدم الصف 0 لحساب `(D^{−1/2}1)(1)`.','0.56419 + 0.56419 = 1.12838 = #f{1}{Γ(3/2)}',[['Every `L_j` equals 1 at t = 1.','كل `L_j` تساوي 1 عند t = 1.']],['0.56419','0.88623','1']),
+]);
+
+lesson('508',66,[
+  ['For `^CD^{α}y + y = 0`, `y(0) = 1`, the integrated form is `y + D^{−α}y = 1`. Insert `y = c^T𝔏` and use Theorem 3.2:','لـ `^CD^{α}y + y = 0` مع `y(0) = 1` تكون الصيغة التكاملية `y + D^{−α}y = 1`. عوّض `y = c^T𝔏` واستخدم النظرية 3.2:'],
+  'c^T(I + I_{(−α)})𝔏 = e_0^T𝔏     ⇒     (I + I_{(−α)}^T)c = e_0',
+  ['For α = λ = 1/2 the error at t = 1 is `5.8 × 10^{−2}`, `1.2 × 10^{−2}`, `2.8 × 10^{−4}`, `5.7 × 10^{−8}`, `2.4 × 10^{−16}` for M = 1, 2, 4, 8, 16. The initial value is not imposed exactly: y(0) = 0.919, 0.985, 0.9997 for M = 1, 2, 4, and it converges with the rest of the solution.','وعند α = λ = 1/2 يكون الخطأ عند t = 1 هو `5.8 × 10^{−2}` و `1.2 × 10^{−2}` و `2.8 × 10^{−4}` و `5.7 × 10^{−8}` و `2.4 × 10^{−16}` لـ M = 1 و 2 و 4 و 8 و 16. والقيمة الابتدائية لا تُفرض بالضبط: y(0) = 0.919 و 0.985 و 0.9997 لـ M = 1 و 2 و 4، وهي تتقارب مع بقية الحل.'],
+],[
+  Q('With M = 1, `I + I_{(−1/2)}^T = #m{1.56419, 0.02663 ;; 0.56419, 1.32204}`. Solve for c.','مع M = 1 تكون `I + I_{(−1/2)}^T = #m{1.56419, 0.02663 ;; 0.56419, 1.32204}`. أوجد c.','c ≈ (0.6440, −0.2748)',['c_1 = −0.42676c_0,   1.55283c_0 = 1'],['c ≈ (1, 0)','c ≈ (0.6440, 0.2748)','c ≈ (0.5642, 0.5642)']),
+  Q('Evaluate this approximation at t = 1 and give its error.','احسب هذا التقريب عند t = 1 وأعط خطأه.','0.3692,   |0.3692 − 0.4276| ≈ 0.058',['y(1) = c_0 + c_1,   E_{1/2}(−1) = 0.4276'],['0.9188,   0.49','0.4276,   0','0.6440,   0.22']),
+  Q('Evaluate it at t = 0.','احسبه عند t = 0.','0.9188',['y(0) = c_0 − c_1'],['1','0.3692','0.6440']),
+  Q('How many correct digits does each term add between M = 8 and M = 16?','كم رقماً صحيحاً يضيف كل حد بين M = 8 و M = 16؟','≈ 1',['#f{log_{10}(5.7 × 10^{−8}) − log_{10}(2.4 × 10^{−16})}{8} ≈ #f{8.4}{8}'],['≈ 0.3','≈ 2','≈ 8']),
+]);
+
+lesson('508',67,[
+  ['A multi-term equation is integrated with the highest order. For Bagley–Torvik, `y″ + ^CD^{3/2}y + y = 1 + t`, `y(0) = y′(0) = 1` (exact solution `1 + t`), apply `D^{−2}`:','المعادلة متعددة الحدود تُكامل بأعلى رتبة. ولمعادلة باغلي–تورفيك `y″ + ^CD^{3/2}y + y = 1 + t` مع `y(0) = y′(0) = 1` (الحل المضبوط `1 + t`) طبّق `D^{−2}`:'],
+  'y + D^{−1/2}y + D^{−2}y = 1 + t + D^{−1/2}(1 + t) + #f{t^2}{2} + #f{t^3}{6}',
+  ['Each operator becomes a matrix, `(I + I_{(−1/2)}^T + I_{(−2)}^T)c = h`, with λ = 1/2. Since `1 + t = 1 + u^2` lies in the space, the computed coefficients for M = 2 are exactly `(4/3, 1/2, 1/6)`: the projected equation is satisfied by the exact solution.','وكل مؤثر يصبح مصفوفة `(I + I_{(−1/2)}^T + I_{(−2)}^T)c = h` مع λ = 1/2. ولأن `1 + t = 1 + u^2` في الفضاء تكون المعاملات المحسوبة عند M = 2 هي بالضبط `(4/3, 1/2, 1/6)`: المعادلة المُسقطة يحققها الحل المضبوط.'],
+],[
+  Q('What does `D^{−2}y″` give?','ماذا يعطي `D^{−2}y″`؟','y − 1 − t',['y − y(0) − y′(0)t'],['y','y − 1','y″']),
+  Q('What does `D^{−2} ^CD^{3/2}y` give?','ماذا يعطي `D^{−2} ^CD^{3/2}y`؟','D^{−1/2}(y − 1 − t)',['D^{−1/2}D^{−3/2} ^CD^{3/2}y'],['D^{−1/2}y','y − 1 − t','D^{−7/2}y']),
+  Q('Check the integrated form with `y = 1 + t`.','تحقق من الصيغة التكاملية مع `y = 1 + t`.','D^{−2}(1 + t) = #f{t^2}{2} + #f{t^3}{6}',[['The other terms cancel against the left-hand side.','بقية الحدود تُلغى مع الطرف الأيسر.']],['D^{−2}(1 + t) = t^2','D^{−2}(1 + t) = 0','D^{−2}(1 + t) = #f{t^2}{2}']),
+  Q('Why are the coefficients `(4/3, 1/2, 1/6)`?','لماذا المعاملات `(4/3, 1/2, 1/6)`؟','1 + u^2 = (1 + #f{1}{3})L_0 + #f{1}{2}L_1 + #f{1}{6}L_2',['u^2 = #f{1}{3}L_0 + #f{1}{2}L_1 + #f{1}{6}L_2'],['1 + u^2 = L_0 + L_2','1 + u^2 = #f{4}{3}L_0 + L_1','1 + u^2 = 2L_0']),
+]);
+
+lesson('508',68,[
+  ['Instead of projecting, collocation forces the residual of the integrated equation to vanish at M + 1 points: the roots of `L_{M+1}^{λ}`, which are Legendre points mapped by `t = u^{1/λ}`:','بدل الإسقاط يُجبر التجميع باقي المعادلة التكاملية على الانعدام عند M + 1 نقطة: جذور `L_{M+1}^{λ}`، وهي نقاط ليجندر المحوّلة بـ `t = u^{1/λ}`:'],
+  'M = 1,   λ = #f{1}{2}:     u = #f{3 ∓ #r{3}}{6} = 0.2113, 0.7887,     t = u^2 = 0.0447, 0.6220',
+  ['The mapped points cluster near t = 0, where the solution varies fastest. For a linear equation the residual `c^T(I + I_{(−α)})𝔏 − 1` is a polynomial of degree M in u; vanishing at M + 1 points makes it zero, so collocation gives exactly the tau solution of Lesson 66.','والنقاط المحوّلة تتكثف قرب t = 0 حيث يتغير الحل أسرع. وللمعادلة الخطية يكون الباقي `c^T(I + I_{(−α)})𝔏 − 1` كثيرة حدود من الدرجة M في u، وانعدامه عند M + 1 نقطة يجعله صفراً، فيعطي التجميع حل الدرس 66 نفسه.'],
+],[
+  Q('Find the mapped points for M = 2, λ = 1/2.','أوجد النقاط المحوّلة عند M = 2 و λ = 1/2.','t = 0.0127,   0.25,   0.7873',['u = #f{1}{2} ∓ #f{1}{2}#r{#f{3}{5}},   #f{1}{2};     t = u^2'],['t = 0.1127,   0.5,   0.8873','t = 0,   0.5,   1','t = 0.25,   0.5,   0.75']),
+  Q('With λ = 1/4, where does the point u = 1/2 go?','مع λ = 1/4 إلى أين تذهب النقطة u = 1/2؟','t = #f{1}{16}',['t = u^4'],['t = #f{1}{2}','t = #f{1}{4}','t = #f{1}{8}']),
+  Q('Why does collocation give the same solution as the tau system for a linear problem?','لماذا يعطي التجميع حل نظام تاو نفسه للمسألة الخطية؟',['The residual is a polynomial of degree M in u with M + 1 roots, so it is zero','الباقي كثيرة حدود من الدرجة M في u لها M + 1 جذراً فهو صفر'],[['Both then solve the same equations.','فكلاهما يحل المعادلات نفسها.']],[['By chance','مصادفة'],['It does not','لا يعطيه']]),
+  Q('What is the advantage of collocation over projection?','ما ميزة التجميع على الإسقاط؟',['No integrals of the data are needed, and nonlinear terms are evaluated at points','لا تلزم تكاملات للمعطيات، والحدود غير الخطية تُحسب عند نقاط'],[['This is why it is used for nonlinear equations (Lesson 69).','ولهذا يُستخدم للمعادلات غير الخطية (الدرس 69).']],[['It is always more accurate','أدق دائماً'],['It needs fewer unknowns','يحتاج مجاهيل أقل']]),
+]);
+
+lesson('508',69,[
+  ['For a nonlinear equation such as `^CD^{1/2}y = −y^2`, `y(0) = 1`, the integrated form `y = 1 − D^{−1/2}(y^2)` is collocated at the mapped points. `y^2` is taken from its values at the points, and the nonlinear system is solved by Newton’s method:','للمعادلة غير الخطية مثل `^CD^{1/2}y = −y^2` مع `y(0) = 1` تُجمَّع الصيغة التكاملية `y = 1 − D^{−1/2}(y^2)` عند النقاط المحوّلة. وتؤخذ `y^2` من قيمها عند النقاط، ويُحل النظام غير الخطي بطريقة نيوتن:'],
+  'F(c) = V c − 1 + V I_{(−1/2)}^T V^{−1}(V c)^2 = 0,     V_{rj} = L_j^{λ}(t_r)',
+  ['Newton converges in about six iterations from `c = e_0`. The value `y(1) = 0.563521` agrees with a graded L1 computation; the spectral errors are `1.7 × 10^{−2}`, `1.6 × 10^{−3}`, `1.3 × 10^{−5}`, `1.1 × 10^{−7}`, `8.3 × 10^{−10}` for M = 2, 4, 8, 12, 16.','ونيوتن يتقارب في نحو ست تكرارات بدءاً من `c = e_0`. والقيمة `y(1) = 0.563521` تتفق مع حساب L1 على شبكة متدرجة، والأخطاء الطيفية `1.7 × 10^{−2}` و `1.6 × 10^{−3}` و `1.3 × 10^{−5}` و `1.1 × 10^{−7}` و `8.3 × 10^{−10}` لـ M = 2 و 4 و 8 و 12 و 16.'],
+],[
+  Q('Write the integrated form of `^CD^{α}y = −y^2`, `y(0) = 1`.','اكتب الصيغة التكاملية لـ `^CD^{α}y = −y^2` مع `y(0) = 1`.','y = 1 − D^{−α}(y^2)',['D^{−α} ^CD^{α}y = y − 1'],['y = 1 + D^{−α}y','y = −D^{α}(y^2)','y = 1 − y^2']),
+  Q('What starting guess does `c = e_0` represent?','أي تخمين ابتدائي يمثله `c = e_0`؟','y ≡ 1',['L_0 = 1'],['y ≡ 0','y = t','y = e^{−t}']),
+  Q('How fast do the errors fall from M = 8 to M = 16?','بأي سرعة تتناقص الأخطاء من M = 8 إلى M = 16؟',['About 0.5 digit per term, at a constant rate: exponential convergence','نحو 0.5 رقم لكل حد بمعدل ثابت: تقارب أسي'],['#f{log_{10}(1.3 × 10^{−5}) − log_{10}(8.3 × 10^{−10})}{8} ≈ #f{4.2}{8}'],[['About 4 digits per term','نحو 4 أرقام لكل حد'],['Algebraically','جبرياً']]),
+  Q('Why is a graded L1 computation a good independent check?','لماذا يكون حساب L1 على شبكة متدرجة فحصاً مستقلاً جيداً؟',['It uses a different discretisation, so agreement is unlikely to be a shared error','يستخدم تقطيعاً مختلفاً فيبعد أن يكون الاتفاق خطأ مشتركاً'],[['Its error for N = 640 is about `6 × 10^{−6}`.','خطؤه عند N = 640 نحو `6 × 10^{−6}`.']],[['It is exact','مضبوط'],['It is faster','أسرع']]),
+]);
+
+lesson('508',70,[
+  ['Measure the error against an exact solution (or a reference of higher accuracy) on a fine set of points, and plot it against M on a semi-logarithmic scale. Geometric decay is a straight line there, algebraic decay a curve:','قِس الخطأ مقابل حل مضبوط (أو مرجع أدق) على مجموعة كثيفة من النقاط، وارسمه مقابل M بمقياس نصف لوغاريتمي. والتناقص الهندسي خط مستقيم فيه، والتناقص الجبري منحنى:'],
+  'e_M = max_t |y(t) − y_M(t)|,     e_M ≈ Cρ^{−M},     e_M ≈ CM^{−p}',
+  ['A straight line means the basis fits the solution: λ = 1/2 for `^CD^{1/2}y + y = 0` gains about one digit per term. A curve that flattens means a mismatch (λ = 1 gives 1.3, 0.41, `0.11 × 10^{−2}` at M = 4, 8, 16) or rounding: in double precision the explicit matrix formula stalls near `10^{−8}` beyond M ≈ 10.','الخط المستقيم يعني أن الأساس يناسب الحل: λ = 1/2 لـ `^CD^{1/2}y + y = 0` تكسب نحو رقم لكل حد. والمنحنى الذي يتسطح يعني عدم توافق (λ = 1 تعطي 1.3 و 0.41 و `0.11 × 10^{−2}` عند M = 4 و 8 و 16) أو خطأ تقريب: في الدقة المضاعفة تستقر الصيغة الصريحة للمصفوفة قرب `10^{−8}` بعد M ≈ 10.'],
+],[
+  Q('Estimate p from the λ = 1 errors `4.1 × 10^{−3}` and `1.1 × 10^{−3}` at M = 8, 16.','قدّر p من أخطاء λ = 1 وهي `4.1 × 10^{−3}` و `1.1 × 10^{−3}` عند M = 8 و 16.','p ≈ 1.9',['log_2 #f{4.1}{1.1} = log_2 3.7'],['p ≈ 1','p ≈ 3.7','p ≈ 0.5']),
+  Q('Estimate ρ from `e_4 = 2.8 × 10^{−4}` and `e_8 = 5.7 × 10^{−8}`.','قدّر ρ من `e_4 = 2.8 × 10^{−4}` و `e_8 = 5.7 × 10^{−8}`.','ρ ≈ 8.4',['ρ^4 = #f{2.8 × 10^{−4}}{5.7 × 10^{−8}} ≈ 4900'],['ρ ≈ 4900','ρ ≈ 2','ρ ≈ 70']),
+  Q('The error stops decreasing at `10^{−8}` in double precision but not in higher precision. What is the cause?','يتوقف الخطأ عن التناقص عند `10^{−8}` في الدقة المضاعفة لا في الدقة الأعلى. ما السبب؟',['Cancellation in the explicit formula for the matrix entries','الإلغاء في الصيغة الصريحة لعناصر المصفوفة'],[['The method itself still converges.','الطريقة نفسها ما زالت تتقارب.']],[['The solution is not smooth','الحل غير أملس'],['λ is wrong','λ خاطئة']]),
+  Q('Why measure the error on many points, not only at t = 1?','لماذا يُقاس الخطأ على نقاط كثيرة لا عند t = 1 فقط؟',['The error can be much larger elsewhere, for example near t = 0','قد يكون الخطأ أكبر بكثير في مكان آخر، مثلاً قرب t = 0'],[['A single point can also hit a lucky zero of the error.','ونقطة واحدة قد تصادف صفراً محظوظاً للخطأ.']],[['t = 1 is always the worst','t = 1 الأسوأ دائماً'],['It is not needed','لا حاجة']]),
 ]);
 
 export const MS508 = true;
