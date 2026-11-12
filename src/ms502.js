@@ -779,4 +779,153 @@ lesson('502',40,[
     [['Interpolation can overshoot; the Bernstein operator cannot.','الاستكمال قد يتجاوز، أما مؤثر بيرنشتاين فلا.']], [['High-degree interpolation at equally spaced points','الاستكمال عالي الدرجة بنقاط متساوية التباعد'],['Least squares with many terms','المربعات الصغرى بحدود كثيرة']]),
 ]);
 
+/* ---- 502 · Unit 5 (lessons 41–50): Bézier curves ---- */
+lesson('502',41,[
+  ['A Bézier curve uses points of the plane (or space) as Bernstein coefficients, the control points:','منحنى بيزييه يستخدم نقاطاً في المستوى (أو الفضاء) معاملاتٍ لبيرنشتاين، وهي نقاط التحكم:'],
+  'P(t) = Σ_{i=0}^{n} P_i B_{i,n}(t),   0 ≤ t ≤ 1,   P(0) = P_0,   P(1) = P_n',
+  ['The curve starts at the first control point, ends at the last, and is pulled towards the others without passing through them. Moving one control point changes the whole curve smoothly, most strongly near `t = i/n`. Fonts, car bodies and graphics software are built this way.',
+   'يبدأ المنحنى عند أول نقطة تحكم وينتهي عند آخرها، وينجذب نحو البقية دون أن يمر بها. وتحريك نقطة تحكم واحدة يغير المنحنى كله بنعومة، وبأشد قوة قرب `t = i/n`. وهكذا تُبنى الخطوط الطباعية وهياكل السيارات وبرامج الرسوم.'],
+],[
+  Q('For control points (0, 0), (1, 2), (2, 0), find `P(1/2)`.','لنقاط التحكم (0, 0) و (1, 2) و (2, 0) أوجد `P(1/2)`.','(1, 1)',
+    ['B_{i,2}(#f{1}{2}) = #f{1}{4}, #f{1}{2}, #f{1}{4}', '#f{1}{4}(0, 0) + #f{1}{2}(1, 2) + #f{1}{4}(2, 0) = (1, 1)'], ['(1, 2)','(1, 0.5)','(0.5, 1)']),
+  Q('For control points (0, 0), (1, 1), (2, 1), (3, 0), find `P(1/2)`.','لنقاط التحكم (0, 0) و (1, 1) و (2, 1) و (3, 0) أوجد `P(1/2)`.','(1.5, 0.75)',
+    ['B_{i,3}(#f{1}{2}) = #f{1}{8}, #f{3}{8}, #f{3}{8}, #f{1}{8}', 'x = #f{0 + 3 + 6 + 3}{8} = 1.5,   y = #f{0 + 3 + 3 + 0}{8} = 0.75'], ['(1.5, 1)','(1.5, 0.5)','(1, 0.75)']),
+  Q('Where does a Bézier curve with control points `P_0, …, P_5` start and end?','أين يبدأ منحنى بيزييه بنقاط التحكم `P_0, …, P_5` وأين ينتهي؟','P(0) = P_0,   P(1) = P_5',
+    ['B_{i,n}(0) = δ_{i0},   B_{i,n}(1) = δ_{in}'], ['P(0) = P_1,   P(1) = P_4','P(0) = P_5,   P(1) = P_0','P(0) = 0,   P(1) = 0']),
+  Q('What is a Bézier curve of degree 1?','ما منحنى بيزييه من الدرجة 1؟',['The straight segment from `P_0` to `P_1`','القطعة المستقيمة من `P_0` إلى `P_1`'],
+    ['P(t) = (1 − t)P_0 + tP_1'], [['A parabola','قطع مكافئ'],['A circle','دائرة']]),
+]);
+
+lesson('502',42,[
+  ['De Casteljau’s algorithm evaluates `P(t)` by repeated linear interpolation of the control points:','خوارزمية دي كاستلجو تحسب `P(t)` باستكمال خطي متكرر لنقاط التحكم:'],
+  'P_i^{(0)} = P_i,   P_i^{(r)} = (1 − t) P_i^{(r−1)} + t P_{i+1}^{(r−1)},   P(t) = P_0^{(n)}',
+  ['Geometrically: divide each leg of the control polygon in the ratio t : (1 − t), join the new points, and repeat until one point is left. It costs `O(n^2)` operations, uses only convex combinations, and is the standard stable way to evaluate Bézier curves.',
+   'هندسياً: نقسم كل ضلع من مضلع التحكم بنسبة t : (1 − t)، ونصل النقاط الجديدة، ونكرر حتى تبقى نقطة واحدة. وتكلفتها `O(n^2)` عملية، ولا تستخدم إلا تراكيب محدبة، وهي الطريقة المستقرة المعيارية لحساب منحنيات بيزييه.'],
+],[
+  Q('Use de Casteljau at t = 1/4 for the control points (0, 0), (1, 2), (2, 0).','استخدم دي كاستلجو عند t = 1/4 لنقاط التحكم (0, 0) و (1, 2) و (2, 0).','(0.5, 0.75)',
+    ['r = 1:   (0.25, 0.5),   (1.25, 1.5)', 'r = 2:   0.75(0.25, 0.5) + 0.25(1.25, 1.5) = (0.5, 0.75)', ['Check: `x = 2t`, `y = 4t(1 − t) = 0.75`.','تحقق: `x = 2t` و `y = 4t(1 − t) = 0.75`.']],
+    ['(0.5, 1)','(0.25, 0.5)','(0.5, 0.5)']),
+  Q('Use de Casteljau at t = 1/2 for (0, 0), (1, 1), (2, 1), (3, 0).','استخدم دي كاستلجو عند t = 1/2 للنقاط (0, 0) و (1, 1) و (2, 1) و (3, 0).','(1.5, 0.75)',
+    ['r = 1:   (0.5, 0.5),   (1.5, 1),   (2.5, 0.5)', 'r = 2:   (1, 0.75),   (2, 0.75)', 'r = 3:   (1.5, 0.75)'], ['(1.5, 1)','(1, 0.75)','(2, 0.75)']),
+  Q('How many linear interpolations does de Casteljau need for degree n?','كم استكمالاً خطياً تحتاج خوارزمية دي كاستلجو للدرجة n؟','#f{n(n + 1)}{2}',
+    ['n + (n − 1) + ⋯ + 1 = #f{n(n + 1)}{2}'], ['n','n^2','2^n']),
+  Q('Why can de Casteljau’s algorithm never produce a point outside the convex hull of the control points?','لماذا لا تنتج خوارزمية دي كاستلجو نقطة خارج الغلاف المحدب لنقاط التحكم؟',['Every intermediate point is a convex combination of control points','كل نقطة وسطية تركيب محدب لنقاط التحكم'],
+    [['Convex combinations of points of a convex set stay in the set.','التراكيب المحدبة لنقاط مجموعة محدبة تبقى فيها.']], [['Because t is rational','لأن t نسبي'],['It can','يمكن أن تنتج']]),
+]);
+
+lesson('502',43,[
+  ['The intermediate points of de Casteljau’s algorithm at a parameter t contain more than `P(t)`: they are the control points of the two pieces of the curve.','النقاط الوسطية في خوارزمية دي كاستلجو عند المعامل t تحتوي أكثر من `P(t)`: إنها نقاط التحكم لجزأي المنحنى.'],
+  ['Left piece, then right piece:','الجزء الأيسر، ثم الجزء الأيمن:'],
+  'P_0^{(0)}, P_0^{(1)}, …, P_0^{(n)}     and     P_0^{(n)}, P_1^{(n−1)}, …, P_n^{(0)}',
+  ['Repeated subdivision makes the control polygons converge quickly to the curve. This is used to draw curves, to find intersections (discard pieces whose hulls do not meet) and to find roots of polynomials in Bernstein form.','والتقسيم المتكرر يجعل مضلعات التحكم تقترب بسرعة من المنحنى. ويُستخدم هذا لرسم المنحنيات، ولإيجاد التقاطعات (نستبعد الأجزاء التي لا تلتقي أغلفتها)، ولإيجاد جذور كثيرات الحدود في صيغة بيرنشتاين.'],
+],[
+  Q('Subdivide the curve with control points (0, 0), (1, 2), (2, 0) at t = 1/2. Give the left control polygon.','قسّم المنحنى ذا نقاط التحكم (0, 0) و (1, 2) و (2, 0) عند t = 1/2. أعط مضلع التحكم الأيسر.','(0, 0),  (0.5, 1),  (1, 1)',
+    ['r = 1:   (0.5, 1),   (1.5, 1);     r = 2:   (1, 1)'], ['(0, 0),  (1, 2),  (1, 1)','(0, 0),  (0.5, 1),  (1, 2)','(0, 0),  (1, 1),  (2, 0)']),
+  Q('Give the right control polygon of the same subdivision.','أعط مضلع التحكم الأيمن للتقسيم نفسه.','(1, 1),  (1.5, 1),  (2, 0)',
+    [['It runs along the last points of each level.','يسير على آخر نقاط كل مستوى.']], ['(1, 1),  (2, 0),  (1.5, 1)','(1, 2),  (1.5, 1),  (2, 0)','(1, 1),  (1, 2),  (2, 0)']),
+  Q('After subdividing at t = 1/2, which point is shared by the two pieces?','بعد التقسيم عند t = 1/2 أي نقطة يشترك فيها الجزآن؟','P(1/2)',
+    ['P_0^{(n)} = P(#f{1}{2})'], ['P_0','P_n','P_1']),
+  Q('Why is subdivision useful to find a root of `p = Σ c_i B_{i,n}` in [0, 1]?','لماذا يفيد التقسيم في إيجاد جذر `p = Σ c_i B_{i,n}` في [0, 1]؟',['A piece whose coefficients all have one sign has no root and can be discarded','الجزء الذي معاملاته كلها بإشارة واحدة لا جذر فيه فيُستبعد'],
+    [['Repeating on the remaining pieces localizes the root quickly (Bézier clipping).','والتكرار على الأجزاء الباقية يحدد الجذر بسرعة (قص بيزييه).']], [['It gives the exact root in one step','يعطي الجذر المضبوط في خطوة واحدة']]),
+]);
+
+lesson('502',44,[
+  ['Derivatives of a Bézier curve are again Bézier curves, with the differences of the control points:','مشتقات منحنى بيزييه منحنيات بيزييه أيضاً، بفروق نقاط التحكم:'],
+  'P′(t) = n Σ_{i=0}^{n−1} (P_{i+1} − P_i) B_{i,n−1}(t),   P′(0) = n(P_1 − P_0),   P′(1) = n(P_n − P_{n−1})',
+  ['So the first leg of the control polygon gives the tangent at the start, and the last leg the tangent at the end. The second derivative at the start is `n(n − 1)(P_2 − 2P_1 + P_0)`.','إذن الضلع الأول لمضلع التحكم يعطي المماس عند البداية، والأخير المماس عند النهاية. والمشتقة الثانية عند البداية `n(n − 1)(P_2 − 2P_1 + P_0)`.'],
+],[
+  Q('Find `P′(0)` for the control points (0, 0), (1, 2), (2, 0).','أوجد `P′(0)` لنقاط التحكم (0, 0) و (1, 2) و (2, 0).','(2, 4)',
+    ['2[(1, 2) − (0, 0)]'], ['(1, 2)','(2, 0)','(4, 2)']),
+  Q('Find `P′(1/2)` for the same curve.','أوجد `P′(1/2)` للمنحنى نفسه.','(2, 0)',
+    ['2[#f{1}{2}(1, 2) + #f{1}{2}(1, −2)] = (2, 0)', ['The tangent at the top is horizontal.','المماس عند القمة أفقي.']], ['(0, 0)','(2, 4)','(1, 0)']),
+  Q('Find `P′(0)` for the cubic with control points (0, 0), (1, 1), (2, 1), (3, 0).','أوجد `P′(0)` للمنحنى التكعيبي ذي نقاط التحكم (0, 0) و (1, 1) و (2, 1) و (3, 0).','(3, 3)',
+    ['3[(1, 1) − (0, 0)]'], ['(1, 1)','(3, 0)','(6, 6)']),
+  Q('Find `P″(0)` for the same cubic.','أوجد `P″(0)` للمنحنى التكعيبي نفسه.','(0, −6)',
+    ['6[(2, 1) − 2(1, 1) + (0, 0)] = 6(0, −1)'], ['(0, 6)','(6, 0)','(0, −3)']),
+]);
+
+lesson('502',45,[
+  ['Degree elevation adds a control point without changing the curve:','رفع الدرجة يضيف نقطة تحكم دون تغيير المنحنى:'],
+  'P_i^{*} = #f{i}{n + 1} P_{i−1} + (1 − #f{i}{n + 1}) P_i,   i = 0, …, n + 1',
+  ['It gives more freedom for later editing and is needed to join curves of different degrees. Degree reduction is the reverse: it is exact only if the curve really has the lower degree; otherwise one chooses the closest curve of lower degree (least squares), and the end points are usually kept.','وهو يعطي حرية أكبر للتعديل لاحقاً، ويلزم لوصل منحنيات بدرجات مختلفة. وخفض الدرجة هو العكس: لا يكون مضبوطاً إلا إذا كانت درجة المنحنى فعلاً أقل، وإلا نختار أقرب منحنى بدرجة أقل (المربعات الصغرى) مع الإبقاء على الطرفين عادةً.'],
+],[
+  Q('Elevate the quadratic (0, 0), (1, 2), (2, 0) to degree 3.','ارفع المنحنى التربيعي (0, 0) و (1, 2) و (2, 0) إلى الدرجة 3.','(0, 0),  (#f{2}{3}, #f{4}{3}),  (#f{4}{3}, #f{4}{3}),  (2, 0)',
+    ['P_1^* = #f{1}{3}(0, 0) + #f{2}{3}(1, 2)', 'P_2^* = #f{2}{3}(1, 2) + #f{1}{3}(2, 0)'],
+    ['(0, 0),  (1, 2),  (1, 2),  (2, 0)','(0, 0),  (#f{1}{3}, #f{2}{3}),  (#f{2}{3}, #f{4}{3}),  (2, 0)','(0, 0),  (1, 1),  (1, 1),  (2, 0)']),
+  Q('After elevating a curve of degree 4 twice, how many control points are there?','بعد رفع منحنى من الدرجة 4 مرتين كم نقطة تحكم يوجد؟','7',['4 + 2 + 1 = 7'],['6','5','9']),
+  Q('Can the cubic (0, 0), (1, 3), (2, 3), (3, 0) be reduced exactly to degree 2?','هل يمكن خفض المنحنى التكعيبي (0, 0) و (1, 3) و (2, 3) و (3, 0) بدقة إلى الدرجة 2؟',['Yes: it is the elevation of (0, 0), (1.5, 4.5), (3, 0)','نعم: إنه رفع للمنحنى (0, 0) و (1.5, 4.5) و (3, 0)'],
+    ['#f{1}{3}(0, 0) + #f{2}{3}(1.5, 4.5) = (1, 3),   #f{2}{3}(1.5, 4.5) + #f{1}{3}(3, 0) = (2, 3)'], [['No','لا']]),
+  Q('Which control points never change in degree elevation?','أي نقاط التحكم لا تتغير أبداً في رفع الدرجة؟','P_0^* = P_0,   P_{n+1}^* = P_n',
+    [['The curve keeps its end points.','المنحنى يحتفظ بطرفيه.']], ['P_1^* = P_1','P_i^* = P_i','P_0^* = (0, 0)']),
+]);
+
+lesson('502',46,[
+  ['Complex shapes are made by joining Bézier pieces. If one piece ends at `P_n` and the next starts at `Q_0`:','الأشكال المعقدة تُصنع بوصل قطع بيزييه. إذا انتهت قطعة عند `P_n` وبدأت التالية عند `Q_0`:'],
+  'C^0:  Q_0 = P_n,     C^1:  Q_1 − Q_0 = P_n − P_{n−1}',
+  ['and, for two cubics, C² continuity also needs `Q_2 = P_1 − 4P_2 + 4P_3`','وللمنحنيين التكعيبيين يحتاج الاتصال C² أيضاً `Q_2 = P_1 − 4P_2 + 4P_3`'],
+  ['(for pieces of the same degree and equal parameter intervals). C¹ means the three points `P_{n−1}`, `P_n = Q_0`, `Q_1` are collinear and equally spaced; only collinearity gives the weaker geometric continuity G¹.','(للقطع ذات الدرجة نفسها ومجالات المعامل المتساوية). C¹ تعني أن النقاط الثلاث `P_{n−1}` و `P_n = Q_0` و `Q_1` على استقامة واحدة ومتساوية التباعد، والاستقامة وحدها تعطي الاتصال الهندسي الأضعف G¹.'],
+],[
+  Q('A quadratic ends with `P_1 = (1, 2)`, `P_2 = (2, 0)`. Find `Q_1` of the next quadratic for C¹ continuity.','منحنى تربيعي ينتهي بـ `P_1 = (1, 2)` و `P_2 = (2, 0)`. أوجد `Q_1` للمنحنى التربيعي التالي من أجل اتصال C¹.','Q_1 = (3, −2)',
+    ['Q_1 = Q_0 + (P_2 − P_1) = (2, 0) + (1, −2)'], ['Q_1 = (1, 2)','Q_1 = (3, 2)','Q_1 = (2, −2)']),
+  Q('For cubics with `P_1 = (1, 1)`, `P_2 = (2, 1)`, `P_3 = (3, 0)`, find `Q_1` and `Q_2` for C² continuity.','للمنحنيات التكعيبية مع `P_1 = (1, 1)` و `P_2 = (2, 1)` و `P_3 = (3, 0)` أوجد `Q_1` و `Q_2` من أجل اتصال C².','Q_1 = (4, −1),   Q_2 = (5, −3)',
+    ['Q_1 = 2P_3 − P_2 = (4, −1)', 'Q_2 = P_1 − 4P_2 + 4P_3 = (1, 1) − (8, 4) + (12, 0) = (5, −3)'], ['Q_1 = (4, −1),   Q_2 = (5, −1)','Q_1 = (4, 1),   Q_2 = (5, 3)','Q_1 = (3, 0),   Q_2 = (4, −1)']),
+  Q('`P_{n−1} = (0, 0)`, `P_n = (1, 1)`, `Q_1 = (3, 3)`. Is the joint C¹, G¹, or neither?','`P_{n−1} = (0, 0)` و `P_n = (1, 1)` و `Q_1 = (3, 3)`. هل الوصلة C¹ أم G¹ أم لا هذا ولا ذاك؟',['G¹ only: collinear, but `Q_1 − Q_0 = (2, 2) ≠ (1, 1)`','G¹ فقط: على استقامة واحدة لكن `Q_1 − Q_0 = (2, 2) ≠ (1, 1)`'],
+    [['Same direction, different length.','الاتجاه نفسه والطول مختلف.']], [['C¹','C¹'],['Neither','لا هذا ولا ذاك']]),
+  Q('Why are cubic pieces the usual choice in design?','لماذا القطع التكعيبية هي الاختيار المعتاد في التصميم؟',['They are the lowest degree that allows C² joints with free control points','لأنها أدنى درجة تسمح بوصلات C² مع نقاط تحكم حرة'],
+    [['Each cubic has 4 control points: 3 are fixed by C² at a joint, one stays free for shaping.','لكل منحنى تكعيبي 4 نقاط تحكم: 3 تثبتها شروط C² عند الوصلة، وتبقى واحدة حرة للتشكيل.']], [['They pass through all control points','لأنها تمر بكل نقاط التحكم']]),
+]);
+
+lesson('502',47,[
+  ['Polynomial curves cannot draw a circle exactly. Rational Bézier curves can, by giving each control point a weight `w_i > 0`:','المنحنيات كثيرة الحدود لا ترسم الدائرة بدقة، أما منحنيات بيزييه الكسرية فترسمها بإعطاء كل نقطة تحكم وزناً `w_i > 0`:'],
+  'P(t) = #f{Σ_i w_i P_i B_{i,n}(t)}{Σ_i w_i B_{i,n}(t)}',
+  ['With all weights equal it is an ordinary Bézier curve; a larger weight pulls the curve towards its point. The quadratic with control points (1, 0), (1, 1), (0, 1) and weights `1, #r{2}/2, 1` is exactly a quarter of the unit circle. Every conic section is a rational quadratic Bézier curve.','ومع أوزان متساوية يكون منحنى بيزييه عادياً، والوزن الأكبر يجذب المنحنى نحو نقطته. والمنحنى التربيعي ذو نقاط التحكم (1, 0) و (1, 1) و (0, 1) والأوزان `1, #r{2}/2, 1` هو ربع دائرة الوحدة تماماً. وكل قطع مخروطي منحنى بيزييه تربيعي كسري.'],
+],[
+  Q('Compute `P(1/2)` for the quarter circle above.','احسب `P(1/2)` لربع الدائرة السابق.','(0.7071, 0.7071)',
+    [['Numerator:','البسط:'], '#f{1}{4}(1, 0) + #f{#r{2}}{2}·#f{1}{2}(1, 1) + #f{1}{4}(0, 1) = (0.6036, 0.6036)', ['Denominator:','المقام:'], '#f{1}{4} + 0.3536 + #f{1}{4} = 0.8536', ['The ratio `(0.7071, 0.7071)` lies on the unit circle.','النسبة `(0.7071, 0.7071)` تقع على دائرة الوحدة.']],
+    ['(0.75, 0.75)','(0.5, 0.5)','(1, 1)']),
+  Q('With all weights equal to 1, what is the rational curve?','إذا كانت كل الأوزان 1 فما المنحنى الكسري؟',['The ordinary Bézier curve','منحنى بيزييه العادي'],
+    ['Σ w_i B_{i,n} = 1'], [['A circle','دائرة'],['A straight line','مستقيم']]),
+  Q('If the middle weight of a rational quadratic is increased, what happens to the curve?','إذا زاد الوزن الأوسط لمنحنى تربيعي كسري فماذا يحدث للمنحنى؟',['It moves towards the middle control point','يقترب من نقطة التحكم الوسطى'],
+    [['In the limit `w_1 → ∞` the curve becomes the control polygon.','وفي النهاية `w_1 → ∞` يصبح المنحنى مضلع التحكم.']], [['It moves away from it','يبتعد عنها'],['Nothing changes','لا شيء يتغير']]),
+  Q('Check that `P(1/2)` of the quarter circle has distance 1 from the origin.','تحقق أن `P(1/2)` لربع الدائرة يبعد 1 عن الأصل.','1',
+    ['#r{0.7071^2 + 0.7071^2} = #r{1} = 1'], ['0.7071','#r{2}','0.5']),
+]);
+
+lesson('502',48,[
+  ['A tensor-product Bézier surface uses a grid of control points and the product of two bases:','سطح بيزييه بالضرب التنسوري يستخدم شبكة من نقاط التحكم وضرب أساسين:'],
+  'S(u, v) = Σ_{i=0}^{m} Σ_{j=0}^{n} P_{ij} B_{i,m}(u) B_{j,n}(v),   0 ≤ u, v ≤ 1',
+  ['It has `(m + 1)(n + 1)` control points, passes through the four corner points, and its four boundary curves are the Bézier curves of the edge rows and columns. All curve algorithms (de Casteljau, derivatives, elevation) work row by row and then column by column.','وله `(m + 1)(n + 1)` نقطة تحكم، ويمر بنقاط الأركان الأربع، ومنحنياته الحدية الأربعة هي منحنيات بيزييه لصفوف الحواف وأعمدتها. وكل خوارزميات المنحنيات (دي كاستلجو والمشتقات والرفع) تعمل صفاً صفاً ثم عموداً عموداً.'],
+],[
+  Q('A bilinear patch has `P_{00} = (0, 0, 0)`, `P_{10} = (1, 0, 0)`, `P_{01} = (0, 1, 0)`, `P_{11} = (1, 1, 1)`. Find `S(1/2, 1/2)`.','رقعة ثنائية الخطية فيها `P_{00} = (0, 0, 0)` و `P_{10} = (1, 0, 0)` و `P_{01} = (0, 1, 0)` و `P_{11} = (1, 1, 1)`. أوجد `S(1/2, 1/2)`.','(0.5, 0.5, 0.25)',
+    ['#f{1}{4}[P_{00} + P_{10} + P_{01} + P_{11}] = #f{1}{4}(2, 2, 1)'], ['(0.5, 0.5, 0.5)','(0.5, 0.5, 0)','(1, 1, 1)']),
+  Q('How many control points has a bicubic patch?','كم نقطة تحكم لرقعة ثنائية التكعيب؟','16',['(3 + 1)(3 + 1)'],['9','12','64']),
+  Q('What is `S(0, 0)`?','ما `S(0, 0)`؟','P_{00}',['B_{i,m}(0) B_{j,n}(0) = δ_{i0} δ_{j0}'],['P_{mn}','0','P_{0n}']),
+  Q('What is the boundary curve `S(u, 0)`?','ما المنحنى الحدي `S(u, 0)`؟',['The Bézier curve of the control points `P_{00}, P_{10}, …, P_{m0}`','منحنى بيزييه لنقاط التحكم `P_{00}, P_{10}, …, P_{m0}`'],
+    ['B_{j,n}(0) = δ_{j0}  ⇒  S(u, 0) = Σ_i P_{i0} B_{i,m}(u)'], [['A straight line','مستقيم'],['The Bézier curve of `P_{00}, …, P_{0n}`','منحنى بيزييه للنقاط `P_{00}, …, P_{0n}`']]),
+]);
+
+lesson('502',49,[
+  ['On a triangle, points are described by barycentric coordinates `(u, v, w)` with `u + v + w = 1`, and the Bernstein polynomials of degree n are','على المثلث توصف النقاط بالإحداثيات المركزية `(u, v, w)` حيث `u + v + w = 1`، وكثيرات حدود بيرنشتاين من الدرجة n هي'],
+  'B_{ijk}^{n}(u, v, w) = #f{n!}{i! j! k!} u^i v^j w^k,   i + j + k = n',
+  ['There are `(n + 1)(n + 2)/2` of them, they are non-negative on the triangle and add up to 1 by the trinomial theorem. They are the basis of triangular Bézier patches and of high-order finite elements on triangles.','وعددها `(n + 1)(n + 2)/2`، وهي غير سالبة على المثلث ومجموعها 1 بنظرية ذات الحدود الثلاثة. وهي أساس رقع بيزييه المثلثية والعناصر المنتهية عالية الرتبة على المثلثات.'],
+],[
+  Q('How many triangular Bernstein polynomials of degree 2 are there?','كم كثيرة حدود بيرنشتاين مثلثية من الدرجة 2 يوجد؟','6',['#f{3·4}{2} = 6'],['3','9','4']),
+  Q('Evaluate `B_{110}^2` at the centroid.','احسب `B_{110}^2` عند مركز الثقل.','#f{2}{9}',['#f{2!}{1!1!0!}·#f{1}{3}·#f{1}{3} = #f{2}{9}'],['#f{1}{9}','#f{1}{3}','#f{4}{9}']),
+  Q('What is `Σ_{i+j+k=n} B_{ijk}^n(u, v, w)`?','ما `Σ_{i+j+k=n} B_{ijk}^n(u, v, w)`؟','1',['(u + v + w)^n = 1'],['n','3^n','#f{(n + 1)(n + 2)}{2}']),
+  Q('What is `B_{200}^2` at the vertex `u = 1`?','ما `B_{200}^2` عند الرأس `u = 1`؟','1',['u = 1,   v = w = 0:   u^2 = 1'],['0','#f{1}{2}','2']),
+]);
+
+lesson('502',50,[
+  ['A single Bézier curve has global control: every control point affects the whole curve, and long curves need high degree. B-splines fix this: they are piecewise polynomials of degree p joined with `C^{p−1}` smoothness at knots, with basis functions that are non-negative, sum to 1, and are non-zero only on p + 1 knot intervals (local control).',
+   'منحنى بيزييه الواحد تحكّمه شامل: كل نقطة تحكم تؤثر في المنحنى كله، والمنحنيات الطويلة تحتاج درجة عالية. والشرائح B تعالج ذلك: كثيرات حدود قطعية من الدرجة p موصولة باتصال `C^{p−1}` عند العقد، ودوالها الأساسية غير سالبة ومجموعها 1 ولا تكون غير صفرية إلا على p + 1 مجالاً بين العقد (تحكم محلي).'],
+  ['A Bézier curve of degree p is the B-spline with knots `0, …, 0, 1, …, 1` (each repeated p + 1 times). Converting a B-spline to Bézier pieces (knot insertion) lets all the Bézier tools be used piece by piece.','ومنحنى بيزييه من الدرجة p هو الشريحة B ذات العقد `0, …, 0, 1, …, 1` (كل منها مكررة p + 1 مرة). وتحويل الشريحة B إلى قطع بيزييه (إدراج العقد) يسمح باستخدام كل أدوات بيزييه قطعةً قطعة.'],
+],[
+  Q('How many knot intervals does one cubic B-spline basis function cover?','كم مجالاً بين العقد تغطي دالة أساسية واحدة لشريحة B تكعيبية؟','4',['p + 1 = 4'],['3','2','1']),
+  Q('Moving one control point of a cubic B-spline changes how many curve segments?','تحريك نقطة تحكم واحدة لشريحة B تكعيبية يغير كم قطعة من المنحنى؟','4',
+    [['Exactly the segments where its basis function is non-zero.','تماماً القطع التي تكون فيها دالته الأساسية غير صفرية.']], ['1','2','8']),
+  Q('Which smoothness do cubic B-splines have at simple knots?','ما نعومة الشرائح B التكعيبية عند العقد البسيطة؟','C^2',['C^{p−1} = C^2'],['C^1','C^3','C^0']),
+  Q('Which knot vector turns the B-spline of degree 2 into a Bézier curve?','أي متجه عقد يجعل الشريحة B من الدرجة 2 منحنى بيزييه؟','(0, 0, 0, 1, 1, 1)',
+    [['Each end knot repeated p + 1 = 3 times, no interior knots.','كل عقدة طرفية مكررة p + 1 = 3 مرات، دون عقد داخلية.']], ['(0, 1, 2, 3)','(0, 0, 1, 1)','(0, 0.5, 1)']),
+]);
+
 export const MS502 = true;

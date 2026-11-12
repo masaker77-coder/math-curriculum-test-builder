@@ -72,6 +72,15 @@ test('lesson content: bilingual text, balanced math marks, answers, steps and di
   }
 });
 
+test('the course files hold lesson data only, not computed strings', async () => {
+  const fs = await import('node:fs');
+  for (const f of fs.readdirSync(new URL('../src/', import.meta.url)).filter(f => /^ms\d{3}\.js$/.test(f))) {
+    const src = fs.readFileSync(new URL(`../src/${f}`, import.meta.url), 'utf8');
+    const m = src.match(/'\s*\.(replace|map|length|concat|slice)\b/);
+    assert.ok(!m, `${f}: a lesson string is computed (${m && m[0]}): write the text out`);
+  }
+});
+
 // a plain math string is shown as it is in both languages, so it must not carry English words
 const MATHWORD = /^(sinh|cosh|tanh|sign|sgn|gcd|lcm|log|max|min|exp|erf|erfc|arg|det|diag|span|dim|deg|mod|sup|inf|lim|cond|rank|trace|const|Var|Cov)$/;
 test('plain math strings carry no English words (they are shown unchanged in Arabic)', () => {
