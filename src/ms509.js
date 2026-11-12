@@ -925,4 +925,114 @@ lesson('509',70,[
   Q('Why is lifting invertible even with rounding?','لماذا يكون الرفع قابلاً للعكس حتى مع التقريب؟',['Each step adds a function of the other half; subtracting the same rounded value undoes it','كل خطوة تضيف دالة في النصف الآخر، وطرح القيمة المقربة نفسها يلغيها'],[['The rounding is computed from values that are known at inversion time.','التقريب يُحسب من قيم معلومة وقت العكس.']],[['Rounding errors cancel by chance','أخطاء التقريب تُلغى مصادفة'],['It is not','ليس قابلاً للعكس']]),
 ]);
 
+/* ---- 509 · Unit 8 (lessons 71–80): two dimensions and applications ---- */
+lesson('509',71,[
+  ['In two dimensions, products of the 1-D functions give one scaling function and three wavelets at each level:','في بعدين تعطي ضروب الدوال أحادية البعد دالة تقييس واحدة وثلاث مويجات عند كل مستوى:'],
+  'Φ = φ(x)φ(y),     Ψ^{H} = φ(x)ψ(y),     Ψ^{V} = ψ(x)φ(y),     Ψ^{D} = ψ(x)ψ(y)',
+  ['`Ψ^{H}` responds to horizontal edges (change in y), `Ψ^{V}` to vertical edges (change in x), and `Ψ^{D}` to diagonal detail. On the unit square level j has `3·4^j` wavelets, and the products of orthonormal bases are orthonormal.','و `Ψ^{H}` تستجيب للحواف الأفقية (التغير في y)، و `Ψ^{V}` للحواف الرأسية (التغير في x)، و `Ψ^{D}` للتفاصيل القطرية. وعلى مربع الوحدة في المستوى j عدد `3·4^j` مويجة، وضروب الأسس المتعامدة المعيارية متعامدة معيارية.'],
+],[
+  Q('How many 2-D wavelets does level 2 have on the unit square?','كم مويجة ثنائية البعد في المستوى 2 على مربع الوحدة؟','48',['3·4^2'],['12','16','64']),
+  Q('Compute `‖Ψ^{D}‖` for Haar.','احسب `‖Ψ^{D}‖` لهار.','1',['‖ψ(x)ψ(y)‖^2 = ‖ψ‖^2‖ψ‖^2'],['2','#f{1}{2}','#r{2}']),
+  Q('Which wavelet sees the edge of the image `1_{y > 1/2}`?','أي مويجة ترى حافة الصورة `1_{y > 1/2}`؟','Ψ^{H} = φ(x)ψ(y)',[['The image changes only in y: a horizontal edge.','الصورة تتغير في y فقط: حافة أفقية.']],['Ψ^{V} = ψ(x)φ(y)','Ψ^{D} = ψ(x)ψ(y)','Φ = φ(x)φ(y)']),
+  Q('Compute `⟨1_{y > 1/2}, Ψ^{V}⟩` for Haar on the unit square.','احسب `⟨1_{y > 1/2}, Ψ^{V}⟩` لهار على مربع الوحدة.','0',['∫ψ(x) dx = 0'],['#f{1}{2}','−#f{1}{2}','1']),
+]);
+
+lesson('509',72,[
+  ['The 2-D transform filters the rows and then the columns, giving four subbands; the next level repeats on the LL band. For a 2 × 2 block with Haar:','التحويل ثنائي البعد يرشّح الصفوف ثم الأعمدة فيعطي أربعة نطاقات، والمستوى التالي يتكرر على النطاق LL. ولكتلة 2 × 2 مع هار:'],
+  '#m{a, b ;; c, d}  →  LL = #f{a + b + c + d}{2},   H = #f{a + b − c − d}{2},   V = #f{a − b + c − d}{2},   D = #f{a − b − c + d}{2}',
+  ['For `#m{1, 2 ;; 3, 4}` this gives LL = 5, H = −2, V = −1, D = 0 (as ``pywt.dwt2`` returns). An n × n image keeps `n^2` coefficients in total, and the cost is `O(n^2)`.','ولـ `#m{1, 2 ;; 3, 4}` يعطي هذا LL = 5 و H = −2 و V = −1 و D = 0 (كما تعيد ``pywt.dwt2``). والصورة n × n تحتفظ بـ `n^2` معاملاً إجمالاً، والكلفة `O(n^2)`.'],
+],[
+  Q('Transform the block `#m{4, 4 ;; 4, 4}`.','حوّل الكتلة `#m{4, 4 ;; 4, 4}`.','LL = 8,   H = V = D = 0',['#f{16}{2}'],['LL = 4,   H = V = D = 0','LL = 16,   H = V = D = 0','LL = 8,   H = V = D = 8']),
+  Q('Transform the block `#m{1, 0 ;; 0, 1}`.','حوّل الكتلة `#m{1, 0 ;; 0, 1}`.','LL = 1,   H = 0,   V = 0,   D = 1',['D = #f{1 − 0 − 0 + 1}{2}'],['LL = 1,   H = 1,   V = 1,   D = 0','LL = 2,   D = 2','LL = 0,   D = 1']),
+  Q('Check the energy for `#m{1, 2 ;; 3, 4}`.','تحقق من الطاقة لـ `#m{1, 2 ;; 3, 4}`.','25 + 4 + 1 + 0 = 30 = 1 + 4 + 9 + 16',[['The 2-D Haar step is orthogonal.','خطوة هار ثنائية البعد متعامدة.']],['30 = 25','10 = 5 + 5','5 = 5']),
+  Q('How many coefficients are in the LL band after three levels of a 512 × 512 image?','كم معاملاً في النطاق LL بعد ثلاثة مستويات لصورة 512 × 512؟','4096',['(512/8)^2 = 64^2'],['262144','32768','512']),
+]);
+
+lesson('509',73,[
+  ['Image compression with wavelets: transform, keep (or quantise) the large coefficients, and encode their values and positions. For a 128 × 128 test image (a smooth pattern plus a diagonal edge) with the bior4.4 wavelet, the quality `PSNR = 10 log_{10}((max − min)^2/MSE)` for the share of coefficients kept:','ضغط الصور بالمويجات: حوّل واحتفظ بالمعاملات الكبيرة (أو كمّمها) ثم رمّز قيمها ومواضعها. ولصورة اختبار 128 × 128 (نمط أملس مع حافة قطرية) ومويجة bior4.4 تكون الجودة `PSNR = 10 log_{10}((max − min)^2/MSE)` لنسبة المعاملات المحفوظة:'],
+  '2 %  →  30.2 dB,     5 %  →  38.0 dB,     10 %  →  47.1 dB',
+  ['Above about 35 dB differences are hard to see. JPEG 2000 uses the 9/7 (lossy) or 5/3 (lossless) biorthogonal filters and a bit-plane coder; unlike block-based JPEG it shows no 8 × 8 blocks at high compression.','وفوق نحو 35 dB يصعب رؤية الفروق. ويستخدم JPEG 2000 المرشحين ثنائيي التعامد 9/7 (مع فقد) أو 5/3 (دون فقد) ومرمّز مستويات البت، وبخلاف JPEG المبني على الكتل لا يُظهر كتل 8 × 8 عند الضغط العالي.'],
+],[
+  Q('What compression ratio does keeping 5 % of the coefficients mean (ignoring positions)?','ما نسبة الضغط التي يعنيها الاحتفاظ بـ 5 % من المعاملات (مع تجاهل المواضع)؟','20 : 1',['#f{100}{5}'],['5 : 1','95 : 1','2 : 1']),
+  Q('How many coefficients are kept at 2 % of a 128 × 128 image?','كم معاملاً يُحتفظ به عند 2 % من صورة 128 × 128؟','≈ 328',['0.02·16384'],['≈ 128','≈ 2560','≈ 32']),
+  Q('An MSE of 0.001 for an image with range 2: compute the PSNR.','MSE قدره 0.001 لصورة مداها 2: احسب PSNR.','10 log_{10} 4000 ≈ 36.0 dB',['#f{2^2}{0.001} = 4000'],['30 dB','40 dB','26 dB']),
+  Q('Why do wavelets avoid the block artefacts of JPEG?','لماذا تتجنب المويجات تشوهات الكتل في JPEG؟',['The basis functions overlap and have many scales, instead of independent 8 × 8 blocks','دوال الأساس متداخلة ولها مقاييس كثيرة بدل كتل 8 × 8 مستقلة'],[['Errors are spread smoothly.','الأخطاء تنتشر بنعومة.']],[['They use more bits','تستخدم بتات أكثر'],['They do not','لا تتجنبها']]),
+]);
+
+lesson('509',74,[
+  ['Thresholding sets small coefficients to zero. Hard thresholding keeps the large ones unchanged; soft thresholding also shrinks them by T:','العتبة تجعل المعاملات الصغيرة صفراً. العتبة القاسية تُبقي الكبيرة دون تغيير، واللينة تقلصها أيضاً بمقدار T:'],
+  'η_H(x) = x·1_{|x| > T},     η_S(x) = sign(x) max(|x| − T, 0)',
+  ['Hard thresholding keeps the size of the true features but is discontinuous at ±T, which can create spurious oscillations; soft thresholding is continuous and gives smoother results but biases the large coefficients downward by T. For `x = (3, −0.5, 1.2, −2)` and T = 1: hard gives `(3, 0, 1.2, −2)`, soft gives `(2, 0, 0.2, −1)`.','والعتبة القاسية تحافظ على حجم الملامح الحقيقية لكنها غير متصلة عند ±T وقد تولد تذبذبات زائفة، واللينة متصلة وتعطي نتائج أنعم لكنها تنحاز بالمعاملات الكبيرة إلى الأسفل بمقدار T. ولـ `x = (3, −0.5, 1.2, −2)` و T = 1: القاسية تعطي `(3, 0, 1.2, −2)` واللينة `(2, 0, 0.2, −1)`.'],
+],[
+  Q('Apply soft thresholding with T = 1 to `(3, −0.5, 1.2, −2)`.','طبّق العتبة اللينة مع T = 1 على `(3, −0.5, 1.2, −2)`.','(2, 0, 0.2, −1)',['sign(x)(|x| − 1)_+'],['(3, 0, 1.2, −2)','(2, −0.5, 0.2, −1)','(2, 0, 0.2, 1)']),
+  Q('Apply hard thresholding with T = 1.5 to `(3, −0.5, 1.2, −2)`.','طبّق العتبة القاسية مع T = 1.5 على `(3, −0.5, 1.2, −2)`.','(3, 0, 0, −2)',['|x| > 1.5'],['(1.5, 0, 0, −0.5)','(3, 0, 1.2, −2)','(3, −0.5, 0, −2)']),
+  Q('Which rule is continuous in x?','أي القاعدتين متصلة في x؟',['Soft thresholding','العتبة اللينة'],[['`η_S(±T) = 0` from both sides; `η_H` jumps from 0 to ±T.','`η_S(±T) = 0` من الجهتين، و `η_H` تقفز من 0 إلى ±T.']],[['Hard thresholding','العتبة القاسية'],['Both','كلتاهما']]),
+  Q('What is the bias of soft thresholding on a large coefficient?','ما انحياز العتبة اللينة على معامل كبير؟','T',['|η_S(x)| = |x| − T'],['0','2T','#f{T}{2}']),
+]);
+
+lesson('509',75,[
+  ['Donoho and Johnstone’s denoising: transform the noisy signal, estimate the noise level from the median (med) of the finest details, threshold all detail levels, and reconstruct:','إزالة الضجيج لدونوهو وجونستون: حوّل الإشارة الضجيجية، وقدّر مستوى الضجيج من التفاصيل الأدق، وطبّق العتبة على كل مستويات التفاصيل، ثم أعد البناء:'],
+  'σ̂ = #f{med|d_1|}{0.6745},     T = σ̂#r{2 ln N}',
+  ['For a piecewise smooth signal of 1024 samples with noise σ = 0.1 (db4, six levels): `σ̂ = 0.101`, T = 0.378, and only 34 coefficients survive. The RMS error drops from 0.097 to 0.037 (hard) or 0.059 (soft). The finest level is used for σ̂ because it is almost pure noise.','ولإشارة ملساء قطعياً من 1024 عينة مع ضجيج σ = 0.1 (db4 وستة مستويات): `σ̂ = 0.101` و T = 0.378، ولا يبقى إلا 34 معاملاً. وينخفض خطأ RMS من 0.097 إلى 0.037 (قاسية) أو 0.059 (لينة). ويُستخدم المستوى الأدق لـ σ̂ لأنه ضجيج شبه خالص.'],
+],[
+  Q('Compute the universal threshold for N = 1024 and σ = 0.1.','احسب العتبة الشاملة لـ N = 1024 و σ = 0.1.','≈ 0.372',['0.1#r{2 ln 1024} = 0.1#r{13.86}'],['≈ 0.1','≈ 0.693','≈ 1.39']),
+  Q('The finest details have `median|d_1| = 0.2`. Estimate σ.','للتفاصيل الأدق `median|d_1| = 0.2`. قدّر σ.','≈ 0.297',['#f{0.2}{0.6745}'],['0.2','0.135','0.6745']),
+  Q('Why is the median used rather than the standard deviation of `d_1`?','لماذا يُستخدم الوسيط بدل الانحراف المعياري لـ `d_1`؟',['It is robust: the few large coefficients of true features do not inflate it','قوي: المعاملات الكبيرة القليلة للملامح الحقيقية لا تضخمه'],[['0.6745 is the median of |Z| for a standard normal Z.','0.6745 وسيط |Z| لمتغير طبيعي معياري Z.']],[['It is faster','أسرع'],['By convention','اصطلاحاً']]),
+  Q('Why does `σ#r{2 ln N}` remove almost all pure-noise coefficients?','لماذا تزيل `σ#r{2 ln N}` كل معاملات الضجيج الخالص تقريباً؟',['The maximum of N Gaussian noise values is about `σ#r{2 ln N}`','أكبر قيمة لـ N قيمة ضجيج جاوسي نحو `σ#r{2 ln N}`'],[['With an orthogonal transform the noise stays white with level σ.','مع تحويل متعامد يبقى الضجيج أبيض بالمستوى σ.']],[['It is the mean of the noise','متوسط الضجيج'],['It does not','لا تزيلها']]),
+]);
+
+lesson('509',76,[
+  ['Edges are singularities, and wavelets locate them by their large coefficients across scales. Mallat’s modulus-maxima method uses a wavelet that is the derivative of a smoothing function θ:','الحواف نقاط انفراد، والمويجات تحددها بمعاملاتها الكبيرة عبر المقاييس. وطريقة القيم العظمى للمقياس لمالات تستخدم مويجة هي مشتقة دالة تنعيم θ:'],
+  'ψ = −θ′     ⇒     Wf(a, b) = a^{3/2}#f{d}{db}(f * θ_a)(b),     θ_a(t) = #f{1}{a}θ(#f{t}{a})',
+  ['The maxima of `|Wf(a, ·)|` are the points of steepest change of the smoothed f, and following them from coarse to fine scales separates real edges (which persist) from noise (which disappears). In 2-D the two derivatives give the gradient, as in the Canny detector.','والقيم العظمى لـ `|Wf(a, ·)|` نقاط أشد تغير لـ f المنعّمة، وتتبعها من المقاييس الخشنة إلى الدقيقة يفصل الحواف الحقيقية (التي تبقى) عن الضجيج (الذي يختفي). وفي بعدين تعطي المشتقتان التدرج كما في كاشف Canny.'],
+],[
+  Q('Which smoothing function θ gives `ψ = te^{−t^2/2}`?','أي دالة تنعيم θ تعطي `ψ = te^{−t^2/2}`؟','θ = e^{−t^2/2}',['−θ′ = te^{−t^2/2}'],['θ = te^{−t^2/2}','θ = (1 − t^2)e^{−t^2/2}','θ = e^{−t}']),
+  Q('Where does `|Wf(a, ·)|` peak for a step at `t_0`?','أين يبلغ `|Wf(a, ·)|` قمته لقفزة عند `t_0`؟','b = t_0',[['The smoothed step is steepest at the jump.','القفزة المنعّمة أشد انحداراً عند موضعها.']],['b = t_0 ± a','b = 0',['everywhere equally','في كل مكان بالتساوي']]),
+  Q('How do maxima caused by white noise behave as a decreases?','كيف تسلك القيم العظمى الناتجة عن الضجيج الأبيض عندما a تتناقص؟',['They grow like `a^{−1/2}` relative to edges and do not form persistent chains','تنمو مثل `a^{−1/2}` نسبياً إلى الحواف ولا تكوّن سلاسل دائمة'],[['Noise has α = −1/2; edges keep α = 0.','للضجيج α = −1/2، والحواف تحافظ على α = 0.']],[['They disappear','تختفي'],['They behave like edges','تسلك مثل الحواف']]),
+  Q('In 2-D, which combination of the two detail images gives the edge strength?','في بعدين أي تركيب لصورتي التفاصيل يعطي قوة الحافة؟','#r{W_x^2 + W_y^2}',[['The modulus of the wavelet gradient.','مقياس التدرج المويجي.']],['W_x + W_y','W_xW_y','max(W_x, W_y)']),
+]);
+
+lesson('509',77,[
+  ['A multiresolution decomposition splits a time series into a smooth trend and details at each scale:','التحليل متعدد التمييز يقسم سلسلة زمنية إلى اتجاه أملس وتفاصيل عند كل مقياس:'],
+  'x = A_J + D_J + D_{J−1} + ⋯ + D_1,     D_j:   2^j ≤ T < 2^{j+1}',
+  ['Here T is the period in samples. For daily data, `D_3` holds periods of 8 to 16 days and `A_6` the trend beyond 64 days. In practice the non-decimated (maximal overlap) transform is preferred: it is shift-invariant and gives one value per sample at every level, at cost `O(N log N)`.','و T هنا الدورة بالعينات. وللبيانات اليومية يحمل `D_3` دورات من 8 إلى 16 يوماً و `A_6` الاتجاه بعد 64 يوماً. وعملياً يُفضّل التحويل غير المُنقَص (أقصى تداخل): لا يتغير بالإزاحة ويعطي قيمة لكل عينة عند كل مستوى بكلفة `O(N log N)`.'],
+],[
+  Q('For monthly data, which level holds an annual cycle (12 months)?','للبيانات الشهرية أي مستوى يحمل دورة سنوية (12 شهراً)؟','D_3',['8 ≤ 12 < 16'],['D_2','D_4','D_{12}']),
+  Q('For hourly data, which level contains the daily cycle (24 h)?','للبيانات الساعية أي مستوى يحتوي الدورة اليومية (24 ساعة)؟','D_4',['16 ≤ 24 < 32'],['D_3','D_5','D_{24}']),
+  Q('Why is the ordinary DWT not shift-invariant?','لماذا لا يكون DWT العادي ثابتاً تحت الإزاحة؟',['Downsampling depends on whether the signal starts at an even or odd sample','إنقاص العينات يعتمد على بدء الإشارة عند عينة زوجية أو فردية'],[['Shifting by one sample can change the coefficients a lot.','الإزاحة بعينة واحدة قد تغيّر المعاملات كثيراً.']],[['Because of the boundaries','بسبب الحدود'],['It is','بل هو ثابت']]),
+  Q('How many coefficients does a non-decimated transform of N samples with J levels have?','كم معاملاً للتحويل غير المُنقَص لـ N عينة مع J مستوى؟','N(J + 1)',[['N per detail level plus N for the trend.','N لكل مستوى تفاصيل زائد N للاتجاه.']],['N','2N','N^2']),
+]);
+
+lesson('509',78,[
+  ['Wavelets help linear algebra in two ways. First, many operators become nearly sparse in a wavelet basis (Lesson 79). Second, a diagonal rescaling of the wavelet basis preconditions elliptic problems:','المويجات تساعد الجبر الخطي بطريقتين. أولاً: مؤثرات كثيرة تصبح شبه متفرقة في أساس مويجي (الدرس 79). ثانياً: إعادة تحجيم قطرية للأساس المويجي تُحسّن شرط المسائل الإهليلجية:'],
+  'κ(A) ≈ #f{4}{π^2h^2},     κ(D^{−1}A_{w}D^{−1}) = O(1),     D = diag(2^j)',
+  ['For the 1-D Laplacian with h = 1/1024 the condition number is about `4.2 × 10^5`, so the number of conjugate-gradient iterations grows like `#r{κ} ~ h^{−1}`. In a scaled wavelet basis the condition number stays bounded as h → 0, and the iteration count no longer depends on h.','وللابلاسي أحادي البعد مع h = 1/1024 يكون عدد الشرط نحو `4.2 × 10^5`، فيحتاج التدرج المترافق عدداً من التكرارات ينمو مثل `#r{κ} ~ h^{−1}`. وفي أساس مويجي مُحجّم يبقى عدد الشرط محدوداً عندما h → 0 ولا يعود عدد التكرارات معتمداً على h.'],
+],[
+  Q('Compute the condition number estimate for h = 1/100.','احسب تقدير عدد الشرط عند h = 1/100.','≈ 4053',['#f{4·10^4}{π^2}'],['≈ 100','≈ 10^4','≈ 400']),
+  Q('How does the number of conjugate-gradient iterations grow for that matrix?','كيف ينمو عدد تكرارات التدرج المترافق لتلك المصفوفة؟','~ h^{−1}',['~ #r{κ},   κ ~ h^{−2}'],['~ h^{−2}','~ log h','O(1)']),
+  Q('Why is the scaling `2^j` the right one for a second-order operator?','لماذا يكون التحجيم `2^j` هو الصحيح لمؤثر من الرتبة الثانية؟',['`⟨Aψ_{j,k}, ψ_{j,k}⟩ ~ 4^j`, so dividing by `2^j` on both sides makes the diagonal O(1)','`⟨Aψ_{j,k}, ψ_{j,k}⟩ ~ 4^j` فالقسمة على `2^j` من الجهتين تجعل القطر O(1)'],[['The energy norm is the `H^1` norm, with weight `4^j` (Lesson 67).','معيار الطاقة هو معيار `H^1` بالوزن `4^j` (الدرس 67).']],[['By convention','اصطلاحاً'],['It is not','ليس صحيحاً']]),
+  Q('What does an O(1) condition number buy?','ماذا يشتري عدد شرط O(1)؟',['An iteration count independent of the mesh size','عدد تكرارات مستقل عن حجم الشبكة'],[['Total cost O(N) with fast transforms.','كلفة كلية O(N) مع التحويلات السريعة.']],[['An exact solution','حلاً مضبوطاً'],['Nothing','لا شيء']]),
+]);
+
+lesson('509',79,[
+  ['Integral operators with kernels smooth away from the diagonal, such as `K(x, y) = 1/(x − y)` or `log|x − y|`, have dense matrices but nearly sparse wavelet representations (Beylkin, Coifman and Rokhlin):','المؤثرات التكاملية ذات النوى الملساء بعيداً عن القطر مثل `K(x, y) = 1/(x − y)` أو `log|x − y|` مصفوفاتها كثيفة لكن تمثيلاتها المويجية شبه متفرقة (بيلكين وكويفمان وروخلين):'],
+  '|⟨Kψ_λ, ψ_{λ′}⟩| ≤ #f{C}{(1 + d(λ, λ′))^{p+1}}',
+  ['The vanishing moments kill the smooth part of K. For the 256 × 256 matrix `1/(i − j)` (db4, five levels), entries above `10^{−3}` of the maximum fall from 99.6 % to 9.7 %, and above `10^{−5}` to 18 %. Dropping the rest gives fast matrix–vector products with controlled error, `O(N log N)` or `O(N)` operations.','والعزوم المنعدمة تلغي الجزء الأملس من K. وللمصفوفة 256 × 256 `1/(i − j)` (db4 وخمسة مستويات) تنخفض المداخل التي تتجاوز `10^{−3}` من القيمة العظمى من 99.6 % إلى 9.7 %، والتي تتجاوز `10^{−5}` إلى 18 %. وحذف الباقي يعطي ضرب مصفوفة في متجه سريعاً بخطأ مضبوط بعدد عمليات `O(N log N)` أو `O(N)`.'],
+],[
+  Q('How many entries of the 256 × 256 matrix remain at the `10^{−3}` level?','كم مدخلاً يبقى من المصفوفة 256 × 256 عند المستوى `10^{−3}`؟','≈ 6400',['0.097·65536'],['≈ 65000','≈ 256','≈ 650']),
+  Q('Why does the matrix `1/(i − j)` have almost no small entries in the standard basis?','لماذا لا تكاد المصفوفة `1/(i − j)` تملك مداخل صغيرة في الأساس القياسي؟',['Its entries decay only like `1/|i − j|`, all above `1/256`','مداخلها تتناقص مثل `1/|i − j|` فقط وكلها فوق `1/256`'],[['Far entries are small but not negligible.','المداخل البعيدة صغيرة لكنها غير مهملة.']],[['It is diagonal','قطرية'],['It is sparse','متفرقة']]),
+  Q('Which property of the wavelet makes the far blocks small?','أي خاصية للمويجة تجعل الكتل البعيدة صغيرة؟',['Vanishing moments: K is smooth there and its Taylor part is annihilated','العزوم المنعدمة: K ملساء هناك وجزء تايلور منها يُلغى'],[['More moments give faster decay.','عزوم أكثر تعطي تناقصاً أسرع.']],[['Compact support only','الحامل المحدود فقط'],['Symmetry','التماثل']]),
+  Q('What is the cost of a dense matrix–vector product for N = 4096, and roughly for the compressed one at 10 %?','ما كلفة ضرب مصفوفة كثيفة في متجه لـ N = 4096، وتقريباً للمضغوطة عند 10 %؟','1.7 × 10^7   and   1.7 × 10^6',['4096^2 ≈ 1.68 × 10^7'],['4096   and   410','10^4   and   10^3','1.7 × 10^7   and   1.7 × 10^7']),
+]);
+
+lesson('509',80,[
+  ['Worked problems for Unit 8: 2-D transforms, thresholds and compression.','مسائل محلولة للوحدة 8: التحويلات ثنائية البعد والعتبات والضغط.'],
+  'LL = #f{a + b + c + d}{2},     η_S(x) = sign(x)(|x| − T)_+,     T = σ̂#r{2 ln N}',
+],[
+  Q('Transform `#m{5, 1 ;; 5, 1}` with 2-D Haar.','حوّل `#m{5, 1 ;; 5, 1}` بهار ثنائي البعد.','LL = 6,   H = 0,   V = 4,   D = 0',['V = #f{5 − 1 + 5 − 1}{2}'],['LL = 6,   H = 4,   V = 0,   D = 0','LL = 12,   V = 8','LL = 6,   H = V = D = 2']),
+  Q('Which edge does that block contain?','أي حافة تحتوي تلك الكتلة؟',['A vertical edge: the values change from left to right','حافة رأسية: القيم تتغير من اليسار إلى اليمين'],[['Only V is non-zero.','V فقط غير صفري.']],[['A horizontal edge','حافة أفقية'],['No edge','لا حافة']]),
+  Q('Compute the universal threshold for a 256 × 256 image with σ = 2.','احسب العتبة الشاملة لصورة 256 × 256 مع σ = 2.','2#r{2 ln 65536} ≈ 9.42',['N = 65536,   ln N ≈ 11.09'],['≈ 4.71','≈ 2','≈ 22.2']),
+  Q('Soft-threshold the details `(0.5, −4, 12)` with T = 3.','طبّق العتبة اللينة على التفاصيل `(0.5, −4, 12)` مع T = 3.','(0, −1, 9)',['sign(x)(|x| − 3)_+'],['(0, −4, 12)','(0, 1, 9)','(−2.5, −1, 9)']),
+]);
+
 export const MS509 = true;
