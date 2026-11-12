@@ -466,7 +466,7 @@ lesson('504',28,[
 
 lesson('504',29,[
   ['Orthogonality is checked by computing a table of inner products. The result should be a diagonal matrix with the norms on the diagonal:','يُتحقق من التعامد بحساب جدول الضروب الداخلية، ويجب أن تكون النتيجة مصفوفة قطرية والمعايير على قطرها:'],
-  '$ Table[Integrate[LegendreP[m, x] LegendreP[n, x], {x, -1, 1}], {m, 0, 2}, {n, 0, 2}]\n(* {{2, 0, 0}, {0, 2/3, 0}, {0, 0, 2/5}} *)',
+  '$ Table[Integrate[LegendreP[m, x] LegendreP[n, x], {x, -1, 1}],\n  {m, 0, 2}, {n, 0, 2}]\n(* {{2, 0, 0}, {0, 2/3, 0}, {0, 0, 2/5}} *)',
   ['For other families include the weight in the integrand, and for shifted or fractional families change the interval and the weight together.','وللعائلات الأخرى أدخل الوزن في التكامل، وللعائلات المزاحة أو الكسرية غيّر المجال والوزن معاً.'],
 ],[
   Q('What is the output of ``Integrate[ChebyshevT[1, x]^2/Sqrt[1 - x^2], {x, -1, 1}]``?','ما مخرج ``Integrate[ChebyshevT[1, x]^2/Sqrt[1 - x^2], {x, -1, 1}]``؟','$ Pi/2',['∫ #f{x^2}{#r{1 − x^2}} dx = #f{π}{2}'],['$ Pi','$ 2/3','$ 0']),
@@ -477,7 +477,7 @@ lesson('504',29,[
 
 lesson('504',30,[
   ['A reliable way to check an identity: (1) write both sides as expressions; (2) for numeric n compute ``Expand[lhs - rhs]`` in a Table; (3) for symbolic parameters try ``FullSimplify`` with assumptions; (4) always add a numerical spot check at random points.','طريقة موثوقة للتحقق من متطابقة: (1) اكتب الطرفين مقدارين، (2) لـ n عددي احسب ``Expand[lhs - rhs]`` في Table، (3) للوسائط الرمزية جرّب ``FullSimplify`` مع الافتراضات، (4) أضف دائماً فحصاً عددياً عند نقاط عشوائية.'],
-  '$ Table[Expand[(n + 1) LegendreP[n + 1, x] - (2 n + 1) x LegendreP[n, x] + n LegendreP[n - 1, x]], {n, 1, 5}]\n(* {0, 0, 0, 0, 0} *)',
+  '$ Table[Expand[(n + 1) LegendreP[n + 1, x] - (2 n + 1) x LegendreP[n, x]\n    + n LegendreP[n - 1, x]], {n, 1, 5}]\n(* {0, 0, 0, 0, 0} *)',
   ['A numerical check gives a tiny number such as `10^{−16}` instead of 0; compare with a tolerance, not with ``==``.','والفحص العددي يعطي عدداً صغيراً جداً مثل `10^{−16}` بدل 0، فقارن بسماحية لا بـ ``==``.'],
 ],[
   Q('Why is ``Expand`` needed in the table?','لماذا نحتاج ``Expand`` في الجدول؟',['Without it the difference stays as an unexpanded sum of products and is not shown as 0','دونها يبقى الفرق مجموع ضروب غير منشور ولا يظهر صفراً'],[['Mathematica does not expand products automatically.','لا ينشر Mathematica الضروب تلقائياً.']],[['To make the computation exact','لجعل الحساب مضبوطاً'],['It is not needed','لا حاجة إليها']]),
@@ -576,7 +576,7 @@ lesson('504',38,[
 
 lesson('504',39,[
   ['Results are presented as tables. ``Grid`` gives full control over the layout, ``TableForm`` a quick view:','تُعرض النتائج جداول. ``Grid`` تعطي تحكماً كاملاً في التخطيط، و ``TableForm`` عرضاً سريعاً:'],
-  '$ Grid[{{"N", "error"}, {4, 1.2*^-3}, {8, 2.1*^-6}}, Frame -> All]\nTableForm[{{4, 1.2*^-3}, {8, 2.1*^-6}}, TableHeadings -> {None, {"N", "error"}}]',
+  '$ Grid[{{"N", "error"}, {4, 1.2*^-3}, {8, 2.1*^-6}}, Frame -> All]\nTableForm[{{4, 1.2*^-3}, {8, 2.1*^-6}},\n  TableHeadings -> {None, {"N", "error"}}]',
   ['Numbers are formatted with ``ScientificForm[x, k]`` and ``NumberForm[x, k]``. Like MatrixForm, these wrappers are for display only.','وتُنسَّق الأعداد بـ ``ScientificForm[x, k]`` و ``NumberForm[x, k]``. ومثل MatrixForm فهذه الأغلفة للعرض فقط.'],
 ],[
   Q('What is the display of ``NumberForm[N[Pi], 4]``?','ما عرض ``NumberForm[N[Pi], 4]``؟','$ 3.142',[['Four significant digits.','أربعة أرقام معنوية.']],['$ 3.1416','$ 3.14','$ 3.1415']),
@@ -665,7 +665,7 @@ lesson('504',46,[
 
 lesson('504',47,[
   ['Bonnet’s recurrence `nP_n = (2n − 1)xP_{n−1} − (n − 1)P_{n−2}` becomes a memoized definition:','علاقة بونيه `nP_n = (2n − 1)xP_{n−1} − (n − 1)P_{n−2}` تصبح تعريفاً بحفظ النتائج:'],
-  '$ p[0] = 1;  p[1] = x;\np[n_Integer?Positive] := p[n] = Expand[((2 n - 1) x p[n - 1] - (n - 1) p[n - 2])/n]\np[4] == Expand[LegendreP[4, x]]     (* True *)',
+  '$ p[0] = 1;  p[1] = x;\np[n_Integer?Positive] := p[n] =\n  Expand[((2 n - 1) x p[n - 1] - (n - 1) p[n - 2])/n]\np[4] == Expand[LegendreP[4, x]]     (* True *)',
   ['``Expand`` keeps each stored polynomial small; without it the expressions grow as nested products. Deep recursion is limited by ``$RecursionLimit`` (1024 by default), but with memoization you can build up from small n.','و ``Expand`` تبقي كل كثيرة مخزنة صغيرة، ودونها تكبر المقادير ضروباً متداخلة. والتكرار العميق محدود بـ ``$RecursionLimit`` (1024 افتراضياً)، لكن مع حفظ النتائج يمكن البناء تصاعدياً من n صغير.'],
 ],[
   Q('What is the output of ``p[5] /. x -> 1``?','ما مخرج ``p[5] /. x -> 1``؟','$ 1',['P_n(1) = 1'],['$ 5','$ 0','$ 1/5']),
@@ -753,7 +753,7 @@ lesson('504',54,[
 
 lesson('504',55,[
   ['Matrices defined by a formula are built with ``Table`` or ``Array``:','المصفوفات المعرّفة بقانون تُبنى بـ ``Table`` أو ``Array``:'],
-  '$ Table[1/(i + j - 1), {i, 3}, {j, 3}]   (* the Hilbert matrix *)\nArray[f, {2, 2}]                        (* {{f[1, 1], f[1, 2]}, {f[2, 1], f[2, 2]}} *)\nTable[If[j < i && OddQ[i - j], 2 (2 j - 1), 0], {i, 4}, {j, 4}]',
+  '$ Table[1/(i + j - 1), {i, 3}, {j, 3}]   (* the Hilbert matrix *)\nArray[f, {2, 2}]     (* {{f[1, 1], f[1, 2]}, {f[2, 1], f[2, 2]}} *)\nTable[If[j < i && OddQ[i - j], 2 (2 j - 1), 0], {i, 4}, {j, 4}]',
   ['The last line is the shifted Legendre derivative matrix (Course 503, Lesson 71) with indices shifted by one, because Mathematica counts from 1: entry `(i, j)` corresponds to `(n, k) = (i − 1, j − 1)`.','والسطر الأخير مصفوفة مشتقة ليجندر المزاحة (المقرر 503، الدرس 71) مع إزاحة الأدلة بواحد لأن Mathematica يعد من 1: العنصر `(i, j)` يقابل `(n, k) = (i − 1, j − 1)`.'],
 ],[
   Q('What is the output of ``Array[#1 + #2 &, {2, 2}]``?','ما مخرج ``Array[#1 + #2 &, {2, 2}]``؟','$ {{2, 3}, {3, 4}}',['i + j'],['$ {{0, 1}, {1, 2}}','$ {{1, 2}, {2, 3}}','$ {2, 3, 3, 4}']),
@@ -764,7 +764,7 @@ lesson('504',55,[
 
 lesson('504',56,[
   ['``SparseArray`` stores only the nonzero entries. Banded matrices are built with ``Band``:','``SparseArray`` تخزن العناصر غير الصفرية فقط. والمصفوفات الشريطية تُبنى بـ ``Band``:'],
-  '$ a = SparseArray[{Band[{1, 1}] -> 2, Band[{1, 2}] -> -1, Band[{2, 1}] -> -1}, {4, 4}];\nNormal[a]     (* the full matrix *)\nLinearSolve[a, b]',
+  '$ a = SparseArray[{Band[{1, 1}] -> 2, Band[{1, 2}] -> -1,\n   Band[{2, 1}] -> -1}, {4, 4}];\nNormal[a]     (* the full matrix *)\nLinearSolve[a, b]',
   ['Sparse matrices work with Dot, LinearSolve and Eigenvalues like ordinary ones, but save memory and time for large banded systems, such as Galerkin matrices with the basis `P_k − P_{k+2}`.','والمصفوفات القليلة العناصر تعمل مع Dot و LinearSolve و Eigenvalues كالعادية، لكنها توفر الذاكرة والوقت للأنظمة الشريطية الكبيرة مثل مصفوفات جاليركن بالأساس `P_k − P_{k+2}`.'],
 ],[
   Q('How many nonzero entries does the 4 × 4 matrix a have?','كم عنصراً غير صفري في المصفوفة a ذات 4 × 4؟','10',['4 + 3 + 3'],['16','4','12']),
@@ -786,7 +786,7 @@ lesson('504',57,[
 
 lesson('504',58,[
   ['Norms of vectors and matrices, and the condition number:','معايير المتجهات والمصفوفات وعدد الشرط:'],
-  '$ Norm[{1, -2, 2}]               (* 3:  the 2-norm *)\nNorm[{1, -2, 2}, Infinity]     (* 2 *)\nNorm[{1, -2, 2}, 1]            (* 5 *)\nsv = SingularValueList[N[m]];  Max[sv]/Min[sv]   (* the 2-norm condition number *)',
+  '$ Norm[{1, -2, 2}]               (* 3:  the 2-norm *)\nNorm[{1, -2, 2}, Infinity]     (* 2 *)\nNorm[{1, -2, 2}, 1]            (* 5 *)\nsv = SingularValueList[N[m]];\nMax[sv]/Min[sv]      (* the 2-norm condition number *)',
   ['``Norm[m]`` of a matrix is its largest singular value. The condition number `κ = σ_{max}/σ_{min}` estimates how many digits a linear solve loses: about `log_{10} κ`.','و ``Norm[m]`` لمصفوفة هي أكبر قيمة منفردة لها. وعدد الشرط `κ = σ_{max}/σ_{min}` يقدّر عدد الأرقام التي يفقدها الحل الخطي: نحو `log_{10} κ`.'],
 ],[
   Q('What is the output of ``Norm[{3, -4}, Infinity]``?','ما مخرج ``Norm[{3, -4}, Infinity]``؟','$ 4',['max(|3|, |−4|)'],['$ 5','$ 7','$ -4']),
@@ -820,7 +820,7 @@ lesson('504',60,[
 /* ---- 504 · Unit 7 (lessons 61–70): differential equations;  Unit 8 (lessons 71–80): numerical methods ---- */
 lesson('504',61,[
   ['``DSolve`` solves differential equations exactly. Derivatives are written ``y\'[x]``, ``y\'\'[x]``, and initial conditions are added to the list of equations:','``DSolve`` تحل المعادلات التفاضلية بالضبط. وتُكتب المشتقات ``y\'[x]`` و ``y\'\'[x]``، وتُضاف الشروط الابتدائية إلى قائمة المعادلات:'],
-  '$ DSolve[y\'[x] == y[x], y[x], x]                  (* {{y[x] -> E^x C[1]}} *)\nDSolve[{y\'[x] == -y[x], y[0] == 1}, y[x], x]     (* {{y[x] -> E^-x}} *)\nDSolve[y\'\'[x] + y[x] == 0, y[x], x]   (* {{y[x] -> C[1] Cos[x] + C[2] Sin[x]}} *)',
+  '$ DSolve[y\'[x] == y[x], y[x], x]                  (* {{y[x] -> E^x C[1]}} *)\nDSolve[{y\'[x] == -y[x], y[0] == 1}, y[x], x]     (* {{y[x] -> E^-x}} *)\nDSolve[y\'\'[x] + y[x] == 0, y[x], x]\n(* {{y[x] -> C[1] Cos[x] + C[2] Sin[x]}} *)',
   ['``C[1]``, ``C[2]`` are the free constants. Asking for ``y`` instead of ``y[x]`` returns a pure function, which can be substituted into derivatives and conditions to check the answer.','و ``C[1]`` و ``C[2]`` الثوابت الحرة. وطلب ``y`` بدل ``y[x]`` يعيد دالة صرفة يمكن تعويضها في المشتقات والشروط للتحقق من الجواب.'],
 ],[
   Q('What is the output of ``DSolve[{y\'[x] == 2 x, y[0] == 1}, y[x], x]``?','ما مخرج ``DSolve[{y\'[x] == 2 x, y[0] == 1}, y[x], x]``؟','$ {{y[x] -> 1 + x^2}}',['y = x^2 + C,   y(0) = 1'],['$ {{y[x] -> x^2}}','$ {{y[x] -> 2 x + 1}}','$ {{y[x] -> x^2 + C[1]}}']),
@@ -853,7 +853,7 @@ lesson('504',63,[
 
 lesson('504',64,[
   ['Systems are lists of equations and lists of unknowns:','الأنظمة قوائم معادلات وقوائم مجاهيل:'],
-  '$ DSolve[{x\'[t] == y[t], y\'[t] == -x[t], x[0] == 1, y[0] == 0}, {x[t], y[t]}, t]\n(* {{x[t] -> Cos[t], y[t] -> -Sin[t]}} *)\nMatrixExp[{{0, 1}, {-1, 0}} t]   (* {{Cos[t], Sin[t]}, {-Sin[t], Cos[t]}} *)',
+  '$ DSolve[{x\'[t] == y[t], y\'[t] == -x[t], x[0] == 1, y[0] == 0},\n  {x[t], y[t]}, t]\n(* {{x[t] -> Cos[t], y[t] -> -Sin[t]}} *)\nMatrixExp[{{0, 1}, {-1, 0}} t]   (* {{Cos[t], Sin[t]}, {-Sin[t], Cos[t]}} *)',
   ['A linear system `X′ = AX` has the solution `X = e^{At}X(0)`, which ``MatrixExp`` computes exactly. Nonlinear systems, such as predator–prey models, are solved with NDSolve.','والنظام الخطي `X′ = AX` حله `X = e^{At}X(0)` التي تحسبها ``MatrixExp`` بالضبط. والأنظمة غير الخطية مثل نماذج المفترس والفريسة تُحل بـ NDSolve.'],
 ],[
   Q('For the system above, what is `x(π)`?','للنظام أعلاه ما `x(π)`؟','−1',['cos π'],['1','0','π']),
@@ -864,7 +864,7 @@ lesson('504',64,[
 
 lesson('504',65,[
   ['NDSolve also solves time-dependent partial differential equations by the method of lines: space is discretized, and the resulting system of ordinary equations is integrated in time:','و NDSolve تحل المعادلات التفاضلية الجزئية الزمنية بطريقة الخطوط: يُقطَّع المكان ثم يُكامل نظام المعادلات العادية الناتج في الزمن:'],
-  '$ sol = NDSolve[{D[u[x, t], t] == D[u[x, t], x, x],\n   u[x, 0] == Sin[Pi x], u[0, t] == 0, u[1, t] == 0}, u, {x, 0, 1}, {t, 0, 1}];\nu[0.5, 0.1] /. First[sol]        (* ≈ 0.3727 *)',
+  '$ sol = NDSolve[{D[u[x, t], t] == D[u[x, t], x, x],\n   u[x, 0] == Sin[Pi x], u[0, t] == 0, u[1, t] == 0},\n  u, {x, 0, 1}, {t, 0, 1}];\nu[0.5, 0.1] /. First[sol]        (* ≈ 0.3727 *)',
   ['The initial and boundary conditions must agree at the corners; otherwise NDSolve warns with ``NDSolve::ibcinc``. NDSolve does not handle fractional time derivatives, which is one reason for writing your own spectral solver.','ويجب أن تتفق الشروط الابتدائية والحدية عند الأركان، وإلا تحذّر NDSolve بالرسالة ``NDSolve::ibcinc``. ولا تتعامل NDSolve مع المشتقات الزمنية الكسرية، وهذا أحد أسباب كتابة حلّال طيفي خاص.'],
 ],[
   Q('The exact solution is `e^{−π^2 t} sin(πx)`. What is `u(0.5, 0.1)`?','الحل المضبوط `e^{−π^2 t} sin(πx)`. ما `u(0.5, 0.1)`؟','≈ 0.3727',['e^{−0.98696}'],['≈ 0.9870','≈ 0.5','≈ 0.1']),
@@ -919,7 +919,7 @@ lesson('504',69,[
 
 lesson('504',70,[
   ['A convergence table lists the error for increasing N with the observed order:','جدول التقارب يعرض الخطأ لقيم N متزايدة مع الرتبة الملاحظة:'],
-  '$ data = Table[{n, err[n]}, {n, {4, 8, 16, 32}}];\nrows = Table[{data[[k, 1]], data[[k, 2]],\n   Log[data[[k - 1, 2]]/data[[k, 2]]]/Log[data[[k, 1]]/data[[k - 1, 1]]]}, {k, 2, 4}];\nGrid[Prepend[rows, {"N", "error", "order"}], Frame -> All]',
+  '$ data = Table[{n, err[n]}, {n, {4, 8, 16, 32}}];\nrows = Table[{data[[k, 1]], data[[k, 2]],\n   Log[data[[k - 1, 2]]/data[[k, 2]]]/\n   Log[data[[k, 1]]/data[[k - 1, 1]]]}, {k, 2, 4}];\nGrid[Prepend[rows, {"N", "error", "order"}], Frame -> All]',
   ['For spectral methods the order keeps growing with N; then show the error on ``ListLogPlot`` against N, where a straight line confirms exponential convergence.','وللطرق الطيفية تستمر الرتبة في الكبر مع N، فاعرض الخطأ في ``ListLogPlot`` مقابل N حيث يؤكد الخط المستقيم التقارب الأسي.'],
 ],[
   Q('Errors `10^{−3}` at N = 8 and `6.25 × 10^{−5}` at N = 16. What is the order?','الأخطاء `10^{−3}` عند N = 8 و `6.25 × 10^{−5}` عند N = 16. ما الرتبة؟','4',['#f{log 16}{log 2}'],['16','2','8']),
@@ -930,7 +930,7 @@ lesson('504',70,[
 
 lesson('504',71,[
   ['``FindRoot`` uses Newton’s method from one starting value, or a secant-type method from two. It also solves systems:','``FindRoot`` تستخدم طريقة نيوتن من قيمة ابتدائية واحدة أو طريقة من نوع القاطع من قيمتين، وتحل الأنظمة أيضاً:'],
-  '$ FindRoot[x^3 - 2 x - 5, {x, 2}]                       (* {x -> 2.09455} *)\nFindRoot[x^3 - 2 x - 5, {x, 2, 3}]                    (* secant start *)\nFindRoot[{x^2 + y^2 == 1, x == y}, {{x, 1}, {y, 0}}]  (* {x -> 0.707107, y -> 0.707107} *)',
+  '$ FindRoot[x^3 - 2 x - 5, {x, 2}]                       (* {x -> 2.09455} *)\nFindRoot[x^3 - 2 x - 5, {x, 2, 3}]                    (* secant start *)\nFindRoot[{x^2 + y^2 == 1, x == y}, {{x, 1}, {y, 0}}]\n(* {x -> 0.707107, y -> 0.707107} *)',
   ['Good starting values matter: for the zeros of `P_n` use the Chebyshev approximations `cos((4k − 1)π/(4n + 2))`.','والقيم الابتدائية الجيدة مهمة: لجذور `P_n` استخدم تقريبات تشيبيشيف `cos((4k − 1)π/(4n + 2))`.'],
 ],[
   Q('Find the largest zero of `P_4` starting from 0.9.','أوجد أكبر جذر لـ `P_4` بدءاً من 0.9.','$ FindRoot[LegendreP[4, x], {x, 0.9}]   (* {x -> 0.861136} *)',[['The Gauss–Legendre node for n = 4.','عقدة جاوس–ليجندر عند n = 4.']],['$ FindRoot[LegendreP[4, x], {x, 0.9}]   (* {x -> 0.339981} *)','$ Solve[LegendreP[4, x], {x, 0.9}]','$ FindRoot[LegendreP[4, 0.9], x]']),
@@ -941,7 +941,7 @@ lesson('504',71,[
 
 lesson('504',72,[
   ['``InterpolatingPolynomial`` gives the polynomial through given points in Newton’s nested form; ``Interpolation`` gives a piecewise (cubic by default) interpolating function:','``InterpolatingPolynomial`` تعطي كثيرة الحدود المارة بنقاط معطاة بصيغة نيوتن المتداخلة، و ``Interpolation`` تعطي دالة استكمال مجزأة (تكعيبية افتراضياً):'],
-  '$ p = InterpolatingPolynomial[{{0, 1}, {1, 3}, {2, 7}}, x]   (* 1 + x (1 + x) *)\nExpand[p]                                                 (* 1 + x + x^2 *)\nf = Interpolation[{{0, 1}, {1, 3}, {2, 7}, {3, 13}}];  f[1.5]',
+  '$ p = InterpolatingPolynomial[{{0, 1}, {1, 3}, {2, 7}}, x]\n(* 1 + x (1 + x) *)\nExpand[p]   (* 1 + x + x^2 *)\nf = Interpolation[{{0, 1}, {1, 3}, {2, 7}, {3, 13}}];  f[1.5]',
   ['High-degree interpolation at equally spaced points oscillates (Runge’s phenomenon); at Chebyshev or Legendre points it converges for smooth functions.','والاستكمال عالي الدرجة عند نقاط متساوية التباعد يتذبذب (ظاهرة رونغه)، وعند نقاط تشيبيشيف أو ليجندر يتقارب للدوال الملساء.'],
 ],[
   Q('What is ``p /. x -> 3``?','ما ``p /. x -> 3``؟','$ 13',['1 + 3·4'],['$ 7','$ 10','$ 9']),
@@ -952,7 +952,7 @@ lesson('504',72,[
 
 lesson('504',73,[
   ['The Gauss–Legendre nodes are the zeros of `P_n` and the weights are `w_i = 2/((1 − x_i^2)P_n′(x_i)^2)`:','عقد جاوس–ليجندر جذور `P_n` والأوزان `w_i = 2/((1 − x_i^2)P_n′(x_i)^2)`:'],
-  '$ gauss[n_] := Module[{x = Sort[x /. NSolve[LegendreP[n, x] == 0, x]]},\n  {x, 2/((1 - x^2) (D[LegendreP[n, y], y] /. y -> x)^2)}]\n{xs, ws} = gauss[3]     (* nodes -0.774597, 0., 0.774597; weights 0.555556, 0.888889, 0.555556 *)\nws . Exp[xs]            (* ≈ 2.35034 *)',
+  '$ gauss[n_] := Module[{x = Sort[x /. NSolve[LegendreP[n, x] == 0, x]]},\n  {x, 2/((1 - x^2) (D[LegendreP[n, y], y] /. y -> x)^2)}]\n{xs, ws} = gauss[3]\n(* nodes:   -0.774597, 0., 0.774597 *)\n(* weights: 0.555556, 0.888889, 0.555556 *)\nws . Exp[xs]            (* ≈ 2.35034 *)',
   ['Arithmetic on lists is Listable, so the weight formula works on the whole vector of nodes at once. The rule `Σ w_i f(x_i)` is exact for polynomials of degree ≤ 2n − 1.','والحساب على القوائم Listable فتعمل صيغة الأوزان على متجه العقد كله دفعة واحدة. والقاعدة `Σ w_i f(x_i)` مضبوطة لكثيرات الحدود ذات الدرجة ≤ 2n − 1.'],
 ],[
   Q('What are the exact weights for n = 3?','ما الأوزان المضبوطة عند n = 3؟','#f{5}{9},  #f{8}{9},  #f{5}{9}',[['They sum to 2.','مجموعها 2.']],['#f{1}{3},  #f{4}{3},  #f{1}{3}','#f{2}{3},  #f{2}{3},  #f{2}{3}','1,  1,  1']),
@@ -974,7 +974,7 @@ lesson('504',74,[
 
 lesson('504',75,[
   ['The differentiation matrix at nodes ``xs`` uses the barycentric weights `λ_j = 1/Π_{k≠j}(x_j − x_k)`:','مصفوفة التفاضل عند العقد ``xs`` تستخدم الأوزان الباريسنترية `λ_j = 1/Π_{k≠j}(x_j − x_k)`:'],
-  '$ diffMat[xs_] := Module[{n = Length[xs], lam, d},\n  lam = Table[1/Product[If[k == j, 1, xs[[j]] - xs[[k]]], {k, n}], {j, n}];\n  d = Table[If[i == j, 0, (lam[[j]]/lam[[i]])/(xs[[i]] - xs[[j]])], {i, n}, {j, n}];\n  d - DiagonalMatrix[Total[d, {2}]]]',
+  '$ diffMat[xs_] := Module[{n = Length[xs], lam, d},\n  lam = Table[1/Product[If[k == j, 1, xs[[j]] - xs[[k]]], {k, n}], {j, n}];\n  d = Table[If[i == j, 0, (lam[[j]]/lam[[i]])/(xs[[i]] - xs[[j]])],\n    {i, n}, {j, n}];\n  d - DiagonalMatrix[Total[d, {2}]]]',
   ['``Total[d, {2}]`` gives the row sums, and subtracting them on the diagonal makes every row sum to zero. The matrix is exact for polynomials of degree < n.','و ``Total[d, {2}]`` تعطي مجاميع الصفوف، وطرحها على القطر يجعل مجموع كل صف صفراً. والمصفوفة مضبوطة لكثيرات الحدود ذات الدرجة < n.'],
 ],[
   Q('What is ``diffMat[{-1, 1}]``?','ما ``diffMat[{-1, 1}]``؟','$ {{-1/2, 1/2}, {-1/2, 1/2}}',['#f{u_1 − u_0}{2}'],['$ {{1/2, -1/2}, {1/2, -1/2}}','$ {{-1, 1}, {-1, 1}}','$ {{0, 1/2}, {-1/2, 0}}']),
@@ -985,7 +985,7 @@ lesson('504',75,[
 
 lesson('504',76,[
   ['Finite differences for `−u″ = f`, `u(0) = u(1) = 0` with n interior points, `h = 1/(n + 1)`:','الفروق المحدودة لـ `−u″ = f` مع `u(0) = u(1) = 0` و n نقطة داخلية و `h = 1/(n + 1)`:'],
-  '$ fd[n_, f_] := Module[{h = 1/(n + 1), a, xs},\n  xs = h Range[n];\n  a = SparseArray[{Band[{1, 1}] -> 2, Band[{1, 2}] -> -1, Band[{2, 1}] -> -1}, {n, n}]/h^2;\n  {xs, LinearSolve[a, f /@ xs]}]',
+  '$ fd[n_, f_] := Module[{h = 1/(n + 1), a, xs},\n  xs = h Range[n];\n  a = SparseArray[{Band[{1, 1}] -> 2, Band[{1, 2}] -> -1,\n     Band[{2, 1}] -> -1}, {n, n}]/h^2;\n  {xs, LinearSolve[a, f /@ xs]}]',
   ['The error is `O(h^2)`: halving h divides it by about 4. Quadratic solutions are reproduced exactly at the grid points, because the second difference of a quadratic is exact.','والخطأ `O(h^2)`: تنصيف h يقسمه على نحو 4. والحلول التربيعية تُعاد بالضبط عند نقاط الشبكة لأن الفرق الثاني لكثيرة تربيعية مضبوط.'],
 ],[
   Q('With n = 3 and `f = 2`, what is `u(1/2)`?','مع n = 3 و `f = 2` ما `u(1/2)`؟','#f{1}{4}',['u = x(1 − x),   #f{1}{2}·#f{1}{2}',['Exact, the solution is quadratic.','مضبوط لأن الحل تربيعي.']],['#f{1}{2}','#f{3}{16}','#f{1}{8}']),
@@ -1018,7 +1018,7 @@ lesson('504',78,[
 
 lesson('504',79,[
   ['The tau method for `u′ + u = 0`, `u(0) = 1` on [0, 1] in shifted Legendre polynomials, written directly with Integrate and Solve:','طريقة تاو لـ `u′ + u = 0` مع `u(0) = 1` على [0, 1] بكثيرات ليجندر المزاحة، مكتوبة مباشرة بـ Integrate و Solve:'],
-  '$ n = 2;  ps[k_, t_] := LegendreP[k, 2 t - 1];\nu[t_] = Sum[c[k] ps[k, t], {k, 0, n}];\neqs = Append[Table[Integrate[(u\'[t] + u[t]) ps[k, t], {t, 0, 1}] == 0, {k, 0, n - 1}], u[0] == 1];\nsol = Solve[eqs, Table[c[k], {k, 0, n}]];\nu[1] /. First[sol]          (* 7/19 *)',
+  '$ n = 2;  ps[k_, t_] := LegendreP[k, 2 t - 1];\nu[t_] = Sum[c[k] ps[k, t], {k, 0, n}];\neqs = Append[Table[Integrate[(u\'[t] + u[t]) ps[k, t], {t, 0, 1}] == 0,\n    {k, 0, n - 1}], u[0] == 1];\nsol = Solve[eqs, Table[c[k], {k, 0, n}]];\nu[1] /. First[sol]          (* 7/19 *)',
   ['Exact arithmetic gives the rational answer 7/19 ≈ 0.36842; the error against `e^{−1}` is about `5 × 10^{−4}`. For large n replace Solve by CoefficientArrays and LinearSolve (Lesson 60).','والحساب المضبوط يعطي الجواب الكسري 7/19 ≈ 0.36842، وخطؤه مقابل `e^{−1}` نحو `5 × 10^{−4}`. ولـ n كبير استبدل Solve بـ CoefficientArrays و LinearSolve (الدرس 60).'],
 ],[
   Q('How many equations does ``eqs`` contain for n = 2?','كم معادلة في ``eqs`` عند n = 2؟','3',[['n residual equations and one condition.','n معادلة باقٍ وشرط واحد.']],['2','4','1']),
@@ -1036,6 +1036,227 @@ lesson('504',80,[
   Q('Why does ``SetPrecision[0.1, 30]`` show digits ``…5551…``?','لماذا تُظهر ``SetPrecision[0.1, 30]`` الأرقام ``…5551…``؟',['0.1 has no exact binary representation; these are the digits of the stored binary number','العدد 0.1 لا تمثيل ثنائياً مضبوطاً له، وهذه أرقام العدد الثنائي المخزن'],[['Use exact ``1/10`` to get zeros.','استخدم ``1/10`` المضبوط للحصول على أصفار.']],[['A bug','خلل'],['Rounding by SetPrecision','تقريب من SetPrecision']]),
   Q('How do you compute `#r{2}` to 50 digits?','كيف تحسب `#r{2}` بـ 50 رقماً؟','$ N[Sqrt[2], 50]',[['Exact input, then N with 50 digits.','مدخل مضبوط ثم N بـ 50 رقماً.']],['$ N[Sqrt[2.], 50]','$ SetPrecision[Sqrt[2.], 50]','$ Sqrt[N[2], 50]']),
   Q('Which option makes FindRoot work with 40 digits?','أي خيار يجعل FindRoot تعمل بـ 40 رقماً؟','$ WorkingPrecision -> 40',[['Give the starting value exactly too, for example 9/10.','وأعطِ القيمة الابتدائية مضبوطة أيضاً، مثل 9/10.']],['$ Precision -> 40','$ Digits -> 40','$ N -> 40']),
+]);
+
+/* ---- 504 · Unit 9 (lessons 81–90): the mapped Legendre code;  Unit 10 (lessons 91–100): mastery ---- */
+lesson('504',81,[
+  ['A notebook for the mapped Legendre method (Course 501) follows the same pipeline for every example:','دفتر طريقة ليجندر المحوّلة (المقرر 501) يتبع المراحل نفسها لكل مثال:'],
+  '$ (* 1 *) parameters: N, M, λ, γ, orders, coefficients\n(* 2 *) data: exact solution, g, ψ0, ψ1, φ0, φ1\n(* 3 *) the function h of the integrated form\n(* 4 *) basis functions and the numbers E[n, r]\n(* 5 *) matrices: D2 (Theorem 3.1), I (Theorem 3.2)\n(* 6 *) unknown matrix Y and the residual R\n(* 7 *) collocation points and equations\n(* 8 *) solve, (* 9 *) error and timing',
+  ['The initial conditions enter only through h; the boundary conditions give `2(M + 1)` equations and the residual `(N − 1)(M + 1)`, together `(N + 1)(M + 1)`, the number of unknowns.','والشروط الابتدائية تدخل عبر h فقط، والشروط الحدية تعطي `2(M + 1)` معادلة والباقي `(N − 1)(M + 1)`، ومجموعهما `(N + 1)(M + 1)` وهو عدد المجاهيل.'],
+],[
+  Q('Where do the initial conditions `ψ_0`, `ψ_1` enter?','أين يدخل الشرطان الابتدائيان `ψ_0` و `ψ_1`؟',['Only in the function h of the integrated form','فقط في الدالة h للصيغة التكاملية'],[['Lemma 2.1 leaves the initial values on the right-hand side.','اللمة 2.1 تترك القيم الابتدائية في الطرف الأيمن.']],[['As extra collocation equations','معادلات تجميع إضافية'],['In the matrix D2','في المصفوفة D2']]),
+  Q('How many unknowns are there for N = 8, M = 8?','كم مجهولاً عند N = 8 و M = 8؟','81',['(N + 1)(M + 1) = 9·9'],['64','72','90']),
+  Q('How many residual equations are there for N = 8, M = 8?','كم معادلة باقٍ عند N = 8 و M = 8؟','63',['(N − 1)(M + 1) = 7·9'],['81','18','64']),
+  Q('Which stage should be checked first when a notebook gives large errors?','أي مرحلة يجب فحصها أولاً حين يعطي الدفتر أخطاء كبيرة؟',['The data and h: check that the exact solution satisfies the problem with the computed g and h','البيانات و h: تحقق أن الحل المضبوط يحقق المسألة مع g و h المحسوبتين'],[['A wrong source term makes a correct solver look wrong (Lesson 68).','مصدر خاطئ يجعل الحلّال الصحيح يبدو خاطئاً (الدرس 68).']],[['The plotting code','كود الرسم'],['The timing','التوقيت']]),
+]);
+
+lesson('504',82,[
+  ['A notebook is readable only with a fixed name key, written at the top. This course uses:','الدفتر لا يُقرأ إلا بمفتاح أسماء ثابت مكتوب في أعلاه. ويستخدم هذا المقرر:'],
+  '$ n1, n2   (* space degrees N1, N2 (n2 only in 2-D) *)\nn3       (* time degree M *)\nT1       (* the matrix of Theorem 3.1, D2 *)\nT2       (* the matrix of Theorem 3.2, I(-mu) *)\nal1, bt1 (* Jacobi parameters of the basis; 0, 0 for Legendre *)',
+  ['Short names are fine if the key is there; without it, ``n1`` and ``n3`` are easy to swap. When you receive a notebook with other meanings, write its key first, before changing anything.','والأسماء القصيرة مقبولة إذا وُجد المفتاح، ودونه يسهل الخلط بين ``n1`` و ``n3``. وحين تستلم دفتراً بمعانٍ أخرى اكتب مفتاحه أولاً قبل تغيير أي شيء.'],
+],[
+  Q('In the 1-D problem with N = 10, M = 6, which values do ``n1`` and ``n3`` take?','في المسألة الأحادية مع N = 10 و M = 6 ما قيمتا ``n1`` و ``n3``؟','$ n1 = 10;  n3 = 6;',[['n1 is the space degree, n3 the time degree.','n1 درجة المكان و n3 درجة الزمن.']],['$ n1 = 6;  n3 = 10;','$ n1 = 10;  n2 = 6;','$ n1 = n3 = 16;']),
+  Q('What are ``al1`` and ``bt1`` for the paper’s method?','ما ``al1`` و ``bt1`` لطريقة البحث؟','$ al1 = 0;  bt1 = 0;',[['Legendre is Jacobi with α = β = 0 (Course 503).','ليجندر هي جاكوبي مع α = β = 0 (المقرر 503).']],['$ al1 = 1;  bt1 = 1;','$ al1 = mu;  bt1 = lam;','$ al1 = -1/2;  bt1 = -1/2;']),
+  Q('How many unknowns does the 2-D problem with ``n1 = n2 = 6`` and ``n3 = 4`` have?','كم مجهولاً للمسألة الثنائية مع ``n1 = n2 = 6`` و ``n3 = 4``؟','245',['(N_1 + 1)(N_2 + 1)(M + 1) = 7·7·5'],['144','196','175']),
+  Q('Why write the key before editing someone else’s notebook?','لماذا تكتب المفتاح قبل تعديل دفتر غيرك؟',['So that every change is made with the right meaning of each name','حتى يتم كل تغيير بالمعنى الصحيح لكل اسم'],[['Swapping two degrees silently changes the problem.','تبديل درجتين يغيّر المسألة دون أن يُلاحظ.']],[['To make it run faster','لتسريعه'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('504',83,[
+  ['The fractional Legendre functions are built from the numbers `E_{n,r} = (−1)^{n−r}(n + r)!/((n − r)!(r!)^2)`:','دوال ليجندر الكسرية تُبنى من الأعداد `E_{n,r} = (−1)^{n−r}(n + r)!/((n − r)!(r!)^2)`:'],
+  '$ cE[n_, r_] := (-1)^(n - r) (n + r)!/((n - r)! (r!)^2)\nfL[k_, t_] := Sum[cE[k, r] t^(r lam), {r, 0, k}]\nls[i_, x_] := Sum[(-1)^(i - p) (i + p)!/((i - p)! (p!)^2 gam^p) x^p,\n  {p, 0, i}]',
+  ['The name ``E`` cannot be used: it is Euler’s number and is protected, so the code calls the coefficients ``cE``. ``ls`` is the shifted Legendre polynomial `L_i^{γ}` on `[0, γ]`.','ولا يمكن استخدام الاسم ``E`` لأنه عدد أويلر ومحمي، فيسمي الكود المعاملات ``cE``. و ``ls`` هي كثيرة ليجندر المزاحة `L_i^{γ}` على `[0, γ]`.'],
+],[
+  Q('What is ``cE[2, 1]``?','ما ``cE[2, 1]``؟','$ -6',['(−1)^1 #f{3!}{1!·1}',['`P_2^*(t) = 6t^2 − 6t + 1`.','`P_2^*(t) = 6t^2 − 6t + 1`.']],['$ 6','$ -3','$ 1']),
+  Q('What happens with ``E[n_, r_] := …``?','ماذا يحدث مع ``E[n_, r_] := …``؟',['An error: the symbol E is protected','خطأ: الرمز E محمي'],[['The message is ``SetDelayed::write``.','والرسالة ``SetDelayed::write``.']],[['It works','يعمل'],['It redefines Euler’s number','يعيد تعريف عدد أويلر']]),
+  Q('With ``lam = 1/2``, what is ``fL[1, t]``?','مع ``lam = 1/2`` ما ``fL[1, t]``؟','$ -1 + 2 Sqrt[t]',['cE(1, 0) = −1,   cE(1, 1) = 2'],['$ -1 + 2 t','$ 2 Sqrt[t]','$ 1 - 2 Sqrt[t]']),
+  Q('Check the orthogonality of ``fL[1, t]`` and ``fL[2, t]`` for λ = 1/2.','تحقق من تعامد ``fL[1, t]`` و ``fL[2, t]`` عند λ = 1/2.','$ Integrate[lam t^(lam - 1) fL[1, t] fL[2, t], {t, 0, 1}]   (* 0 *)',[['The weight `λt^{λ−1}` is part of the integrand.','الوزن `λt^{λ−1}` جزء من التكامل.']],['$ Integrate[fL[1, t] fL[2, t], {t, 0, 1}]   (* 0 *)','$ Integrate[lam t^(lam - 1) fL[1, t] fL[2, t], {t, -1, 1}]','$ Integrate[fL[1, t] fL[2, t], {t, 0, lam}]']),
+]);
+
+lesson('504',84,[
+  ['Theorem 3.1 in code. With `r = j + 2s`, the entry `(4/γ^2)s(2j + 1)(2j + 2s + 1)` simplifies to `(4/γ^2)·((r − j)/2)(2j + 1)(r + j + 1)`:','النظرية 3.1 بالكود. مع `r = j + 2s` يُختصر العنصر `(4/γ^2)s(2j + 1)(2j + 2s + 1)` إلى `(4/γ^2)·((r − j)/2)(2j + 1)(r + j + 1)`:'],
+  '$ d2[r_, j_] := If[r > j && EvenQ[r - j],\n  4/gam^2 (r - j)/2 (2 j + 1) (r + j + 1), 0]\nT1 = Table[d2[r, j], {r, 0, n1}, {j, 0, n1}];\n(* check against direct differentiation *)\nTable[Expand[D[ls[r, x], {x, 2}]\n   - Sum[T1[[r + 1, j + 1]] ls[j, x], {j, 0, n1}]], {r, 0, n1}]',
+  ['Indices r, j start at 0 in the formula and at 1 in Mathematica lists, hence ``T1[[r + 1, j + 1]]``. The check must give a list of zeros.','والدليلان r و j يبدآن من 0 في الصيغة ومن 1 في قوائم Mathematica، ولهذا ``T1[[r + 1, j + 1]]``. ويجب أن يعطي الفحص قائمة أصفار.'],
+],[
+  Q('With ``gam = 1``, what is ``d2[2, 0]``?','مع ``gam = 1`` ما ``d2[2, 0]``؟','$ 12',['4·1·1·3'],['$ 6','$ 24','$ 0']),
+  Q('With ``gam = 2``, what is ``d2[4, 2]``?','مع ``gam = 2`` ما ``d2[4, 2]``؟','$ 35',['#f{4}{4}·1·5·7'],['$ 140','$ 70','$ 0']),
+  Q('What is ``d2[3, 0]``?','ما ``d2[3, 0]``؟','$ 0',[['r − j = 3 is odd.','r − j = 3 فردي.']],['$ 4','$ 18','$ 36']),
+  Q('Check that `2j + 2s + 1 = r + j + 1` when `r = j + 2s`.','تحقق أن `2j + 2s + 1 = r + j + 1` عندما `r = j + 2s`.','2j + 2s + 1 = j + (j + 2s) + 1',[['Replace `j + 2s` by r.','استبدل `j + 2s` بـ r.']],['2j + 2s + 1 = r + 2j + 1','2j + 2s + 1 = 2r + 1','2j + 2s + 1 = r − j + 1']),
+]);
+
+lesson('504',85,[
+  ['Theorem 3.2 in code: the fractional integration matrix for the fractional Legendre basis,','النظرية 3.2 بالكود: مصفوفة التكامل الكسري لأساس ليجندر الكسري،'],
+  '$ chi[i_, j_] := Sum[cE[i, k] cE[j, s] (2 j + 1) Gamma[k lam + 1]/\n    (Gamma[k lam + mu + 1] (1 + k + s + mu/lam)), {k, 0, i}, {s, 0, j}]\nT2 = N[Table[chi[i, j], {i, 0, n3}, {j, 0, n3}]];',
+  ['The hand example of the guide, M = 1, λ = 1/2, μ = 3/2, is the first test: it must give `#m{0.18806, 0.33851 ;; −0.01082, 0.01598}`. For integer μ/λ and large enough M the matrix is exact; otherwise every row carries a truncation error.','والمثال اليدوي في الدليل، M = 1 و λ = 1/2 و μ = 3/2، هو أول اختبار: يجب أن يعطي `#m{0.18806, 0.33851 ;; −0.01082, 0.01598}`. وعندما μ/λ عدد صحيح و M كبير بما يكفي تكون المصفوفة مضبوطة، وإلا يحمل كل صف خطأ قطع.'],
+],[
+  Q('Compute ``chi[0, 0]`` for λ = 1/2, μ = 3/2.','احسب ``chi[0, 0]`` عند λ = 1/2 و μ = 3/2.','#f{1}{4Γ(5/2)} ≈ 0.18806',['#f{Γ(1)}{Γ(5/2)(1 + 3)}'],['#f{1}{Γ(5/2)} ≈ 0.7523','#f{1}{4} = 0.25','#f{1}{3Γ(5/2)} ≈ 0.2508']),
+  Q('Compute ``chi[0, 1]`` for the same values.','احسب ``chi[0, 1]`` للقيم نفسها.','#f{3(−1/4 + 2/5)}{Γ(5/2)} ≈ 0.33851',['(2·1 + 1)(#f{cE(1, 0)}{4} + #f{cE(1, 1)}{5})/Γ(#f{5}{2})'],['#f{3(1/4 + 2/5)}{Γ(5/2)} ≈ 1.4669','#f{−1/4 + 2/5}{Γ(5/2)} ≈ 0.1128','0']),
+  Q('Why is ``N`` applied to the table?','لماذا تُطبَّق ``N`` على الجدول؟',['Exact Gamma values with fractional arguments make large symbolic sums that are slow to use later','قيم Gamma المضبوطة بمتغيرات كسرية تكوّن مجاميع رمزية كبيرة بطيئة الاستخدام لاحقاً'],[['For verification keep exact values, for solving use numbers.','للتحقق أبقِ القيم مضبوطة وللحل استخدم الأعداد.']],[['It is required by Gamma','Gamma تتطلبه'],['To make it exact','لجعلها مضبوطة']]),
+  Q('When is ``T2`` exact, with no truncation error?','متى تكون ``T2`` مضبوطة دون خطأ قطع؟',['When μ/λ is an integer and M is large enough','عندما يكون μ/λ عدداً صحيحاً و M كبيراً بما يكفي'],[['Then `t^{kλ+μ}` is again a power of `s = t^{λ}` inside the space.','فتكون `t^{kλ+μ}` قوة لـ `s = t^{λ}` داخل الفضاء.']],[['Always','دائماً'],['Never','أبداً']]),
+]);
+
+lesson('504',86,[
+  ['The known function h of the integrated form is projected onto the tensor basis:','الدالة المعلومة h للصيغة التكاملية تُسقط على الأساس التنسوري:'],
+  '$ hMat = Table[(2 k + 1) (2 i + 1)/gam *\n   NIntegrate[lam t^(lam - 1) h[x, t] fL[k, t] ls[i, x],\n     {t, 0, 1}, {x, 0, gam}],\n   {k, 0, n3}, {i, 0, n1}];',
+  ['The factors come from the norms `1/(2k + 1)` in time and `γ/(2i + 1)` in space. Projecting h is consistent with the expansion of the residual; evaluating h directly at the collocation points is a different scheme, and the guide found it about 14 times less accurate at N = 12.','والعوامل تأتي من المعيارين `1/(2k + 1)` في الزمن و `γ/(2i + 1)` في المكان. وإسقاط h يتسق مع مفكوك الباقي، أما حساب h مباشرة عند نقاط التجميع فطريقة مختلفة، ووجد الدليل أنها أقل دقة بنحو 14 مرة عند N = 12.'],
+],[
+  Q('Where does the factor `(2i + 1)/γ` come from?','من أين يأتي العامل `(2i + 1)/γ`؟',['From the norm `∫_0^{γ} (L_i^{γ})^2 dx = γ/(2i + 1)`','من المعيار `∫_0^{γ} (L_i^{γ})^2 dx = γ/(2i + 1)`'],[['Dividing by the norm gives the coefficient.','القسمة على المعيار تعطي المعامل.']],[['From the weight `λt^{λ−1}`','من الوزن `λt^{λ−1}`'],['From Theorem 3.1','من النظرية 3.1']]),
+  Q('Errors `3.55 × 10^{−11}` (h at the points) and `2.50 × 10^{−12}` (h projected) at N = 12. What is the ratio?','الأخطاء `3.55 × 10^{−11}` (h عند النقاط) و `2.50 × 10^{−12}` (h مسقطة) عند N = 12. ما النسبة؟','≈ 14',['#f{3.55}{0.25}'],['≈ 1.4','≈ 140','≈ 10']),
+  Q('What is the size of ``hMat`` for ``n1 = 8``, ``n3 = 6``?','ما حجم ``hMat`` عند ``n1 = 8`` و ``n3 = 6``؟','7 × 9',['(M + 1) × (N + 1)'],['9 × 7','8 × 6','63 × 1']),
+  Q('Why can Gauss quadrature replace NIntegrate here?','لماذا يمكن لتربيع جاوس أن يحل محل NIntegrate هنا؟',['h is smooth in `s = t^{λ}` and x, so a mapped Gauss rule in both variables is accurate and much faster','h ملساء في `s = t^{λ}` و x فقاعدة جاوس المحوّلة في المتغيرين دقيقة وأسرع بكثير'],[['One table of nodes and weights for all entries.','جدول واحد من العقد والأوزان لكل العناصر.']],[['NIntegrate is wrong','NIntegrate خاطئة'],['It cannot','لا يمكن']]),
+]);
+
+lesson('504',87,[
+  ['Collocation points: in time the roots of `L_{M+1}^{λ}`, in space the interior roots of `L_{N−1}^{γ}`, both obtained from Legendre roots z on `[−1, 1]`:','نقاط التجميع: في الزمن جذور `L_{M+1}^{λ}`، وفي المكان الجذور الداخلية لـ `L_{N−1}^{γ}`، وكلاهما من جذور ليجندر z على `[−1, 1]`:'],
+  '$ z[n_] := Sort[x /. NSolve[LegendreP[n, x] == 0, x]]\ntk = ((z[n3 + 1] + 1)/2)^(1/lam);     (* M + 1 time points *)\nxi = gam (z[n1 - 1] + 1)/2;          (* N - 1 space points *)',
+  ['The residual matrix is evaluated at every pair `(t_k, x_i)`, and the boundary conditions are imposed at every `t_k` at x = 0 and x = γ.','ويُحسب الباقي عند كل زوج `(t_k, x_i)`، وتُفرض الشروط الحدية عند كل `t_k` في x = 0 و x = γ.'],
+],[
+  Q('With λ = 1/2, map the Legendre root z = 0 to t.','مع λ = 1/2 حوّل جذر ليجندر z = 0 إلى t.','t = #f{1}{4}',['(#f{0 + 1}{2})^2'],['t = #f{1}{2}','t = 0','t = #f{1}{#r{2}}']),
+  Q('With γ = π, map z = 0 to x.','مع γ = π حوّل z = 0 إلى x.','x = #f{π}{2}',['π·#f{1}{2}'],['x = π','x = 0','x = #f{π}{4}']),
+  Q('How many collocation equations are there at one time point `t_k`?','كم معادلة تجميع عند نقطة زمنية واحدة `t_k`؟','N + 1',['(N − 1) + 2'],['N − 1','M + 1','2']),
+  Q('Why do smaller λ push the time points toward t = 0?','لماذا تدفع λ الأصغر نقاط الزمن نحو t = 0؟',['`t = s^{1/λ}` with `s ∈ (0, 1)`, and a larger power makes s smaller','`t = s^{1/λ}` مع `s ∈ (0, 1)`، والقوة الأكبر تصغّر s'],[['Exactly where the solution is singular.','تماماً حيث الحل شاذ.']],[['Because λ is negative','لأن λ سالبة'],['They move toward t = 1','تتحرك نحو t = 1']]),
+]);
+
+lesson('504',88,[
+  ['Every equation is linear in the unknown coefficients, so one direct solve replaces FindRoot:','كل معادلة خطية في المعاملات المجهولة، فيحل حل مباشر واحد محل FindRoot:'],
+  '$ vars = Flatten[Table[y[k, i], {k, 0, n3}, {i, 0, n1}]];\n{b, a} = Normal[CoefficientArrays[eqs, vars]];\nsol = LinearSolve[a, -b];',
+  ['Measurements in the guide showed that FindRoot itself was not the main cost: most of the time went into substituting the symbolic residual at the points. The fastest form builds the numeric matrices directly: basis values at the points times the operational matrices, assembled with Kronecker products.','وأظهرت قياسات الدليل أن FindRoot نفسها لم تكن التكلفة الكبرى: معظم الوقت ذهب في تعويض الباقي الرمزي عند النقاط. والصيغة الأسرع تبني المصفوفات العددية مباشرة: قيم الأساس عند النقاط مضروبة في المصفوفات التشغيلية ومجمعة بضروب كرونيكر.'],
+],[
+  Q('Why is a linear solve enough?','لماذا يكفي حل خطي؟',['The problem is linear in y, and every operator acts linearly on the coefficient matrix','المسألة خطية في y وكل مؤثر يعمل خطياً على مصفوفة المعاملات'],[['The paper’s “iteration method” is not needed.','لا حاجة إلى «الطريقة التكرارية» في البحث.']],[['Because N is small','لأن N صغير'],['It is not enough','لا يكفي']]),
+  Q('How many entries does ``vars`` have for ``n1 = 10``, ``n3 = 10``?','كم عنصراً في ``vars`` عند ``n1 = 10`` و ``n3 = 10``؟','121',['11·11'],['100','110','20']),
+  Q('Where did the guide find most of the time going?','أين وجد الدليل أن معظم الوقت يذهب؟',['Substituting the symbolic residual at the collocation points','تعويض الباقي الرمزي عند نقاط التجميع'],[['Not FindRoot itself.','لا FindRoot نفسها.']],[['FindRoot','FindRoot'],['Plotting','الرسم']]),
+  Q('What is the matrix form of `vec(A𝒴B)` used to assemble the system directly?','ما الصيغة المصفوفية لـ `vec(A𝒴B)` المستخدمة لتجميع النظام مباشرة؟','(B^T ⊗ A) vec(𝒴)',[['Lesson 57.','الدرس 57.']],['(A ⊗ B) vec(𝒴)','(A^T ⊗ B^T) vec(𝒴)','(B ⊗ A) vec(𝒴)']),
+]);
+
+lesson('504',89,[
+  ['Measure before optimizing:','قِس قبل أن تحسّن:'],
+  '$ AbsoluteTiming[LinearSolve[a, -b];]   (* {seconds, Null} *)\nTiming[expr]                         (* CPU time of the kernel *)\nTimeUsed[]                           (* CPU time since the kernel started *)',
+  ['``AbsoluteTiming`` is the wall-clock time and the right measure for a user. ``TimeUsed[]`` is cumulative for the whole session, so it is not the time of one computation: this mistake once made a notebook that runs in 0.3 s look like 72 s.','و ``AbsoluteTiming`` هي زمن الساعة الفعلي وهي المقياس الصحيح للمستخدم. و ``TimeUsed[]`` تراكمية للجلسة كلها فليست زمن حساب واحد: وهذا الخطأ جعل مرة دفتراً يعمل في 0.3 ثانية يبدو كأنه يستغرق 72 ثانية.'],
+],[
+  Q('What does ``AbsoluteTiming[expr]`` return?','ماذا تعيد ``AbsoluteTiming[expr]``؟','$ {seconds, result}',[['A pair: the elapsed time and the value of expr.','زوج: الزمن المنقضي وقيمة expr.']],['$ seconds','$ result','$ {result, seconds}']),
+  Q('Why put a semicolon inside ``AbsoluteTiming[…;]``?','لماذا توضع فاصلة منقوطة داخل ``AbsoluteTiming[…;]``؟',['To time the computation without displaying a large result','لقياس الحساب دون عرض نتيجة كبيرة'],[['The second entry is then Null.','يصبح العنصر الثاني Null.']],[['To make it faster','لتسريعه'],['It is required','إلزامية']]),
+  Q('Which measure reported 72 s for a notebook that runs in 0.3 s?','أي مقياس أعطى 72 ثانية لدفتر يعمل في 0.3 ثانية؟','$ TimeUsed[]',[['It is the total CPU time of the session.','وهو مجموع زمن المعالج للجلسة.']],['$ AbsoluteTiming','$ Timing','$ SessionTime[] - SessionTime[]']),
+  Q('Time only the assembly stage of a notebook.','قِس زمن مرحلة التجميع فقط في دفتر.','$ AbsoluteTiming[eqs = …;]',[['Wrap just that stage, not the whole notebook.','غلّف تلك المرحلة فقط لا الدفتر كله.']],['$ TimeUsed[]','$ AbsoluteTiming[Quit[]]','$ Timing[Print[eqs]]']),
+]);
+
+lesson('504',90,[
+  ['Reading someone else’s notebook: (1) ``Quit[]`` and run it from the top; (2) write its name key; (3) mark dead code, definitions that nothing uses; (4) look for hidden state and hand-derived formulas such as h; (5) compare one result with the paper; (6) list defects before fixing any.','قراءة دفتر كتبه غيرك: (1) ``Quit[]`` وشغّله من الأعلى، (2) اكتب مفتاح أسمائه، (3) علّم الكود الميت أي التعريفات التي لا يستخدمها شيء، (4) ابحث عن الحالة المخفية والصيغ المشتقة يدوياً مثل h، (5) قارن نتيجة واحدة بالبحث، (6) دوّن العيوب قبل إصلاح أي منها.'],
+  '$ Names["Global`*"]          (* every symbol the notebook created *)\n(* rerun of the paper’s Example 1, N = M = 10: *)\n(* notebook 2.5865*10^-9, Table 1 2.59*10^-9 *)',
+  ['A matching rerun confirms that the notebook reproduces the paper; only then are changes safe. Fix one defect at a time and rerun the comparison after each.','وإعادة التشغيل المطابقة تؤكد أن الدفتر يعيد إنتاج البحث، وعندها فقط تكون التغييرات آمنة. أصلح عيباً واحداً كل مرة وأعد المقارنة بعد كل إصلاح.'],
+],[
+  Q('What is dead code?','ما الكود الميت؟',['Definitions or cells whose results are never used','تعريفات أو خلايا لا تُستخدم نتائجها أبداً'],[['It can be removed without changing any output.','يمكن حذفه دون تغيير أي مخرج.']],[['Code with an error','كود فيه خطأ'],['Comments','التعليقات']]),
+  Q('Why run the notebook after ``Quit[]`` first?','لماذا تشغّل الدفتر بعد ``Quit[]`` أولاً؟',['To make sure it works without values left from earlier sessions','للتأكد أنه يعمل دون قيم متبقية من جلسات سابقة'],[['Hidden state shows up as errors.','الحالة المخفية تظهر أخطاءً.']],[['To make it faster','لتسريعه'],['It is not needed','لا حاجة']]),
+  Q('The notebook gives `2.5865 × 10^{−9}` and Table 1 gives `2.59 × 10^{−9}`. What does this show?','الدفتر يعطي `2.5865 × 10^{−9}` والجدول 1 يعطي `2.59 × 10^{−9}`. ماذا يبيّن هذا؟',['The notebook reproduces the published result','الدفتر يعيد إنتاج النتيجة المنشورة'],[['The table rounds to three digits.','الجدول يقرّب إلى ثلاثة أرقام.']],[['The paper is wrong','البحث خاطئ'],['Nothing','لا شيء']]),
+  Q('Why list all defects before fixing any?','لماذا تدوّن كل العيوب قبل إصلاح أي منها؟',['Some defects interact; a list shows which to fix first and keeps the original behaviour documented','بعض العيوب يتداخل، والقائمة تبيّن ما يُصلح أولاً وتوثق السلوك الأصلي'],[['Then fix one at a time and rerun.','ثم أصلح واحداً كل مرة وأعد التشغيل.']],[['To save time','لتوفير الوقت'],['It is not useful','لا فائدة']]),
+]);
+
+lesson('504',91,[
+  ['Most built-in mathematical functions are Listable: they act on each element of a list automatically, which is much faster than an explicit loop:','معظم الدوال الرياضية الجاهزة Listable: تعمل على كل عنصر في القائمة تلقائياً، وهذا أسرع بكثير من حلقة صريحة:'],
+  '$ Sin[Range[0., 1., 0.25]]          (* one call, five values *)\n{1, 2, 3}^2                        (* {1, 4, 9} *)\nSetAttributes[f, Listable]\nMemberQ[Attributes[Sin], Listable]  (* True *)',
+  ['Write formulas so that they work on whole vectors: nodes, weights and basis values become arrays, and the matrices of the method are products of arrays.','اكتب الصيغ بحيث تعمل على متجهات كاملة: العقد والأوزان وقيم الأساس تصبح مصفوفات، ومصفوفات الطريقة ضروب مصفوفات.'],
+],[
+  Q('What is the output of ``{1, 2, 3} + 10``?','ما مخرج ``{1, 2, 3} + 10``؟','$ {11, 12, 13}',[['Plus is Listable: 10 is added to each element.','Plus دالة Listable: يُضاف 10 لكل عنصر.']],['$ {1, 2, 3, 10}','$ 16','$ {11, 2, 3}']),
+  Q('Evaluate the basis value matrix `B_{ij} = P_j(x_i)` for nodes ``xs`` and degrees 0, …, n in one line.','احسب مصفوفة قيم الأساس `B_{ij} = P_j(x_i)` للعقد ``xs`` والدرجات 0, …, n في سطر واحد.','$ Transpose[Table[LegendreP[j, xs], {j, 0, n}]]',[['``LegendreP[j, xs]`` is a whole column.','``LegendreP[j, xs]`` عمود كامل.']],['$ Table[LegendreP[j, xs], {j, 0, n}, {i, n}]','$ LegendreP[Range[n], xs]','$ Do[LegendreP[j, xs], {j, 0, n}]']),
+  Q('What does ``SetAttributes[f, Listable]`` do?','ماذا تفعل ``SetAttributes[f, Listable]``؟',['It makes ``f[{a, b}]`` give ``{f[a], f[b]}``','تجعل ``f[{a, b}]`` تعطي ``{f[a], f[b]}``'],[['f is threaded over lists.','تُوزَّع f على القوائم.']],[['It makes f faster','تسرّع f'],['It protects f','تحمي f']]),
+  Q('What is the output of ``{1, 2} {3, 4}``?','ما مخرج ``{1, 2} {3, 4}``؟','$ {3, 8}',[['A space is Times, which is Listable: element by element.','المسافة Times وهي Listable: عنصراً بعنصر.']],['$ 11','$ {{3, 4}, {6, 8}}','$ {1, 2, 3, 4}']),
+]);
+
+lesson('504',92,[
+  ['Packed arrays store machine numbers compactly, and ``Compile`` turns numerical code into fast compiled code:','المصفوفات المحزومة تخزن أعداد الآلة بإحكام، و ``Compile`` تحوّل الكود العددي إلى كود مترجم سريع:'],
+  '$ cf = Compile[{{x, _Real}}, x^2 + Sin[x]];\ncf[1.]                                   (* 1.84147 *)\nDeveloper`PackedArrayQ[Range[10.^6]]     (* True *)\nDeveloper`PackedArrayQ[{1, 2.5, 1/3}]    (* False *)',
+  ['A list is packed only if all its entries are machine numbers of one type; one exact entry unpacks it and slows every later operation. Compile is useful for loops that cannot be vectorized, for example a recurrence evaluated at many points.','والقائمة تكون محزومة فقط إذا كانت كل عناصرها أعداد آلة من نوع واحد، وعنصر مضبوط واحد يفك حزمها ويبطئ كل عملية لاحقة. و Compile مفيدة للحلقات التي لا يمكن تحويلها إلى معالجة متجهية، مثل علاقة تكرار تُحسب عند نقاط كثيرة.'],
+],[
+  Q('What is ``cf[0.]``?','ما ``cf[0.]``؟','$ 0.',['0^2 + sin 0'],['$ 1.','$ cf[0.]','$ Null']),
+  Q('Why is ``{1, 2.5, 1/3}`` not packed?','لماذا ``{1, 2.5, 1/3}`` غير محزومة؟',['It mixes an integer, a real and an exact fraction','تخلط عدداً صحيحاً وعدداً حقيقياً وكسراً مضبوطاً'],[['``N[{1, 2.5, 1/3}]`` is packed.','``N[{1, 2.5, 1/3}]`` محزومة.']],[['It is too short','قصيرة جداً'],['It is packed','بل محزومة']]),
+  Q('What does the specification ``{{x, _Real}}`` tell Compile?','ماذا تخبر المواصفة ``{{x, _Real}}`` الدالة Compile؟',['The argument x is a machine real number','المتغير x عدد حقيقي آلي'],[['Compiled code needs the types in advance.','الكود المترجم يحتاج الأنواع مسبقاً.']],[['x is a list','x قائمة'],['x is exact','x مضبوط']]),
+  Q('Write a compiled Bonnet recurrence that returns `P_n(x)` for machine x.','اكتب علاقة بونيه مترجمة تعيد `P_n(x)` لـ x آلي.','$ Compile[{{n, _Integer}, {x, _Real}}, Module[{p0 = 1., p1 = x, p2}, Do[p2 = ((2 k - 1) x p1 - (k - 1) p0)/k; p0 = p1; p1 = p2, {k, 2, n}]; If[n == 0, 1., p1]]]',[['A loop that cannot be vectorized in n.','حلقة لا يمكن تحويلها إلى متجهية في n.']],['$ Compile[{n, x}, LegendreP[n, x]]','$ Compile[{{n, _Real}}, Do[…]]','$ Compile[LegendreP]']),
+]);
+
+lesson('504',93,[
+  ['Independent computations run in parallel on several kernels:','الحسابات المستقلة تعمل بالتوازي على عدة نوى:'],
+  '$ LaunchKernels[];\nerrs = ParallelTable[{n, solveError[n]}, {n, 4, 16, 2}];\nParallelMap[f, list]',
+  ['Parallelism helps when the tasks are independent and each takes long enough, such as one solve per N in a convergence table. In recent versions definitions are distributed to the subkernels automatically; otherwise use ``DistributeDefinitions``.','والتوازي يفيد حين تكون المهام مستقلة وتستغرق كل منها وقتاً كافياً، مثل حل واحد لكل N في جدول تقارب. وفي الإصدارات الحديثة توزَّع التعريفات على النوى الفرعية تلقائياً، وإلا فاستخدم ``DistributeDefinitions``.'],
+],[
+  Q('What is the ideal speed-up with 4 kernels?','ما التسريع المثالي مع 4 نوى؟','4',[['The real speed-up is smaller because of communication.','التسريع الفعلي أصغر بسبب الاتصال.']],['2','16','1']),
+  Q('Why does ``ParallelTable[i^2, {i, 10}]`` run slower than ``Table``?','لماذا تعمل ``ParallelTable[i^2, {i, 10}]`` أبطأ من ``Table``؟',['Each task is tiny, so sending it costs more than computing it','كل مهمة صغيرة جداً فإرسالها يكلف أكثر من حسابها'],[['Parallelize long, independent tasks.','وزّع المهام الطويلة المستقلة.']],[['ParallelTable is wrong','ParallelTable خاطئة'],['It does not','لا تعمل أبطأ']]),
+  Q('Which part of a convergence study is naturally parallel?','أي جزء من دراسة التقارب متوازٍ بطبيعته؟',['The solves for different N','الحلول لقيم N المختلفة'],[['They do not depend on each other.','لا يعتمد بعضها على بعض.']],[['One LinearSolve','LinearSolve واحدة'],['Plotting the table','رسم الجدول']]),
+  Q('When is ``DistributeDefinitions[f]`` needed?','متى نحتاج ``DistributeDefinitions[f]``؟',['When subkernels do not receive the definition of f automatically','حين لا تستقبل النوى الفرعية تعريف f تلقائياً'],[['For example with ParallelEvaluate in older versions.','مثلاً مع ParallelEvaluate في إصدارات أقدم.']],[['Always before Table','دائماً قبل Table'],['Never','أبداً']]),
+]);
+
+lesson('504',94,[
+  ['A package collects the functions of a project in one ``.wl`` file with a public interface:','الحزمة تجمع دوال مشروع في ملف ``.wl`` واحد بواجهة عامة:'],
+  '$ BeginPackage["MappedLegendre`"];\nsolve::usage = "solve[problem, n, m, lam] returns the coefficient matrix.";\nBegin["`Private`"];\n  cE[n_, r_] := (-1)^(n - r) (n + r)!/((n - r)! (r!)^2);\n  solve[p_, n_, m_, lam_] := …;\nEnd[];\nEndPackage[];',
+  ['Only the symbols mentioned before ``Begin`` (here ``solve``) are public; helpers such as ``cE`` stay private and cannot clash with the user’s names. Load the package with ``Get["MappedLegendre.wl"]``.','والرموز المذكورة قبل ``Begin`` فقط (هنا ``solve``) عامة، والمساعدة مثل ``cE`` تبقى خاصة ولا تتصادم مع أسماء المستخدم. وتُحمَّل الحزمة بـ ``Get["MappedLegendre.wl"]``.'],
+],[
+  Q('What does ``solve::usage`` provide?','ماذا يوفّر ``solve::usage``؟',['The text shown by ``?solve``','النص الذي يعرضه ``?solve``'],[['It documents the public function.','يوثّق الدالة العامة.']],[['A test','اختباراً'],['A default value','قيمة افتراضية']]),
+  Q('Is ``cE`` visible to the user after loading?','هل ``cE`` مرئية للمستخدم بعد التحميل؟',['No: it is defined in the private context','لا: معرّفة في السياق الخاص'],[['Only ``solve`` is exported.','``solve`` وحدها مُصدَّرة.']],[['Yes','نعم'],['Only after Quit','فقط بعد Quit']]),
+  Q('How is the package loaded?','كيف تُحمَّل الحزمة؟','$ Get["MappedLegendre.wl"]',[['Or ``Needs`` with the context name if it is on the path.','أو ``Needs`` باسم السياق إذا كانت على المسار.']],['$ Import["MappedLegendre"]','$ Load[MappedLegendre]','$ Begin["MappedLegendre.wl"]']),
+  Q('What is the main advantage of a package over copying cells between notebooks?','ما الميزة الأساسية للحزمة على نسخ الخلايا بين الدفاتر؟',['One tested copy of the code, used by every example','نسخة واحدة مختبرة من الكود تستخدمها كل الأمثلة'],[['A fix in the package fixes every notebook.','إصلاح في الحزمة يصلح كل الدفاتر.']],[['It runs faster','تعمل أسرع'],['It needs no tests','لا تحتاج اختبارات']]),
+]);
+
+lesson('504',95,[
+  ['``VerificationTest[input, expected]`` checks one fact and ``TestReport`` runs a list of tests:','``VerificationTest[input, expected]`` تتحقق من حقيقة واحدة و ``TestReport`` تشغّل قائمة اختبارات:'],
+  '$ VerificationTest[cE[2, 1], -6]\nVerificationTest[d2[2, 0] /. gam -> 1, 12]\nVerificationTest[N[chi[0, 0]], 0.18806,\n  SameTest -> (Abs[#1 - #2] < 10^-5 &)]\nTestReport[{…}]          (* number of successes and failures *)',
+  ['Numerical tests need a tolerance through ``SameTest``. Good tests are small, known by hand, and cover each formula of the method: coefficients, matrices, the hand example and one full solve.','والاختبارات العددية تحتاج سماحية عبر ``SameTest``. والاختبارات الجيدة صغيرة ومعروفة يدوياً وتغطي كل صيغة في الطريقة: المعاملات والمصفوفات والمثال اليدوي وحلاً كاملاً واحداً.'],
+],[
+  Q('Write a test that `P_3(1) = 1`.','اكتب اختباراً أن `P_3(1) = 1`.','$ VerificationTest[LegendreP[3, 1], 1]',[['An exact comparison is fine for exact values.','المقارنة المضبوطة مناسبة للقيم المضبوطة.']],['$ VerificationTest[LegendreP[3, 1] == 1]','$ Test[LegendreP[3, 1], 1]','$ Assert[LegendreP[3, 1] = 1]']),
+  Q('Why does ``VerificationTest[0.1 + 0.2, 0.3]`` need care?','لماذا يحتاج ``VerificationTest[0.1 + 0.2, 0.3]`` إلى عناية؟',['Rounding makes the two machine numbers differ slightly; use a tolerance','التقريب يجعل العددين الآليين مختلفين قليلاً، فاستخدم سماحية'],['0.1 + 0.2 = 0.30000000000000004'],[['It always fails','يفشل دائماً'],['It is exact','مضبوط']]),
+  Q('Which test checks the Theorem 3.2 hand example?','أي اختبار يتحقق من المثال اليدوي للنظرية 3.2؟','$ VerificationTest[N[chi[0, 1]], 0.33851, SameTest -> (Abs[#1 - #2] < 10^-5 &)]',[['λ = 1/2, μ = 3/2.','λ = 1/2 و μ = 3/2.']],['$ VerificationTest[chi[0, 1], 0.33851]','$ VerificationTest[N[chi[0, 1]] == 0.33851]','$ TestReport[chi[0, 1]]']),
+  Q('What does ``TestReport`` give?','ماذا تعطي ``TestReport``؟',['A summary object with the numbers of passed and failed tests','كائن ملخص بأعداد الاختبارات الناجحة والفاشلة'],[['Each failure can be inspected.','يمكن فحص كل فشل.']],[['Only True or False','True أو False فقط'],['The fastest test','أسرع اختبار']]),
+]);
+
+lesson('504',96,[
+  ['Separate the problem from the method: describe each example as data in an Association and write one solver for all of them:','افصل المسألة عن الطريقة: صِف كل مثال بيانات في Association واكتب حلّالاً واحداً لها كلها:'],
+  '$ ex1 = <|"exact" -> Function[{x, t}, t^3 x^2 (1 - x)^2 Exp[x]],\n   "orders" -> {1.9}, "gam" -> 1, "lam" -> 1/2|>;\nex1["gam"]           (* 1 *)\nsolve[ex1, 10, 10]',
+  ['Adding an example then means writing its data, not copying a notebook. The data also documents the problem in one place.','فيصبح إضافة مثال كتابة بياناته لا نسخ دفتر، والبيانات توثق المسألة في مكان واحد.'],
+],[
+  Q('What is ``ex1["lam"]``?','ما ``ex1["lam"]``؟','$ 1/2',[['A key lookup in the Association.','بحث بمفتاح في Association.']],['$ "lam"','$ lam','$ Missing["KeyAbsent", "lam"]']),
+  Q('What is ``ex1["mu"]``?','ما ``ex1["mu"]``؟','$ Missing["KeyAbsent", "mu"]',[['The key does not exist.','المفتاح غير موجود.']],['$ 0','$ Null','$ 1.9']),
+  Q('Evaluate the exact solution of ``ex1`` at `(x, t) = (1/2, 1)`.','احسب الحل المضبوط لـ ``ex1`` عند `(x, t) = (1/2, 1)`.','$ ex1["exact"][1/2, 1]   (* Sqrt[E]/16 *)',['1·#f{1}{4}·#f{1}{4}·e^{1/2}'],['$ ex1["exact"][1, 1/2]','$ ex1[exact][1/2, 1]','$ ex1["exact"] /. {x -> 1/2, t -> 1}']),
+  Q('What should change in the code when a new example is added?','ماذا يجب أن يتغير في الكود عند إضافة مثال جديد؟',['Only a new data Association; the solver stays the same','Association بيانات جديدة فقط، والحلّال يبقى كما هو'],[['If the solver must change, the problem class has grown.','إذا وجب تغيير الحلّال فقد اتسع صنف المسائل.']],[['A new copy of the solver','نسخة جديدة من الحلّال'],['The tests are deleted','تُحذف الاختبارات']]),
+]);
+
+lesson('504',97,[
+  ['The function h can be generated automatically from Lemma 2.1. Integrating by the top order `μ_s`, a Caputo term `D^{α}y` contributes `D^{−(μ_s−α)}y` minus initial values:','يمكن توليد الدالة h آلياً من اللمة 2.1. بالتكامل بأعلى رتبة `μ_s` يساهم حد كابوتو `D^{α}y` بـ `D^{−(μ_s−α)}y` مطروحاً منه قيم ابتدائية:'],
+  '$ init[al_, ms_] := If[al <= 1,\n   psi0 t^(ms - al)/Gamma[ms - al + 1],\n   psi0 t^(ms - al)/Gamma[ms - al + 1]\n     + psi1 t^(1 + ms - al)/Gamma[ms - al + 2]]',
+  ['An order in (0, 1] removes `ψ_0`, an order in (1, 2) removes `ψ_0` and `tψ_1`; the top term gives `ψ_0 + tψ_1`. Moving a left-hand term to the right flips its sign. Each notebook used to derive h by hand, which is where many errors come from.','الرتبة في (0, 1] تزيل `ψ_0`، والرتبة في (1, 2) تزيل `ψ_0` و `tψ_1`، والحد الأعلى يعطي `ψ_0 + tψ_1`. ونقل حد من الطرف الأيسر إلى الأيمن يقلب إشارته. وكان كل دفتر يشتق h يدوياً، ومن هنا يأتي كثير من الأخطاء.'],
+],[
+  Q('What is ``init[1/2, 3/2]``?','ما ``init[1/2, 3/2]``؟','$ psi0 t',['#f{ψ_0 t^{1}}{Γ(2)}'],['$ psi0 t^(1/2)/Gamma[3/2]','$ psi0 + t psi1','$ psi1 t']),
+  Q('What does the top term `D^{μ_s}y` with `1 < μ_s < 2` contribute to h?','ماذا يساهم الحد الأعلى `D^{μ_s}y` مع `1 < μ_s < 2` في h؟','ψ_0 + tψ_1',['y − ψ_0 − tψ_1'],['ψ_0','tψ_1','0']),
+  Q('What does `cD^{−μ_s}y` (the term c·y) contribute?','ماذا يساهم الحد `cD^{−μ_s}y` (أي الحد c·y)؟','0',[['No derivative, so no initial values.','لا مشتقة فلا قيم ابتدائية.']],['cψ_0','cψ_0 t^{μ_s}','c']),
+  Q('Check the formula with a test case before using it.','تحقق من الصيغة بحالة اختبار قبل استخدامها.',['Take an exact y, compute g, build h automatically and check that the integrated equation has zero residual','خذ y مضبوطة واحسب g وابنِ h آلياً وتحقق أن باقي المعادلة التكاملية صفر'],[['The guide checked all seven terms of h this way.','الدليل تحقق من حدود h السبعة بهذه الطريقة.']],[['Compare with the plot','قارن بالرسم'],['No check is needed','لا حاجة لتحقق']]),
+]);
+
+lesson('504',98,[
+  ['Results go into papers as LaTeX and into other programs as data:','النتائج تدخل البحوث بصيغة LaTeX وتدخل البرامج الأخرى بيانات:'],
+  '$ TeXForm[x^2/2]                 (* \\frac{x^2}{2} *)\nTeXForm[Sqrt[x]]               (* \\sqrt{x} *)\nExport["table.tex", tbl, "TeX"]\nCForm[x^2]                     (* Power(x,2) *)\nExport["errors.csv", errs]',
+  ['For an error table, format the numbers first (for example with ``ScientificForm``) and export the Grid; for MATLAB or Python export plain numbers as CSV.','ولجدول الأخطاء نسّق الأعداد أولاً (مثلاً بـ ``ScientificForm``) وصدّر Grid، ولـ MATLAB أو Python صدّر الأعداد مجردة بصيغة CSV.'],
+],[
+  Q('What is ``TeXForm[Pi^2/6]``?','ما ``TeXForm[Pi^2/6]``؟','$ \\frac{\\pi ^2}{6}',[['Mathematica writes `π` as ``\\pi``.','يكتب Mathematica `π` بالصورة ``\\pi``.']],['$ Pi^2/6','$ \\frac{Pi^2}{6}','$ \\pi^2/6']),
+  Q('Which form gives C code for an expression?','أي صيغة تعطي كود C لمقدار؟','$ CForm',[['``FortranForm`` gives Fortran.','``FortranForm`` تعطي Fortran.']],['$ TeXForm','$ InputForm','$ CCode']),
+  Q('Which format should be used to pass an error table to Python?','أي صيغة تُستخدم لنقل جدول أخطاء إلى Python؟','$ CSV',[['``numpy.loadtxt`` reads it directly.','``numpy.loadtxt`` تقرؤها مباشرة.']],['$ TeX','$ PDF','$ PNG']),
+  Q('Why format numbers before exporting a table to LaTeX?','لماذا تُنسَّق الأعداد قبل تصدير جدول إلى LaTeX؟',['Machine numbers would appear with all their digits or in Mathematica’s own notation','أعداد الآلة تظهر بكل أرقامها أو بطريقة Mathematica الخاصة'],[['Choose the digits the paper should show.','اختر الأرقام التي يجب أن يعرضها البحث.']],[['LaTeX cannot read numbers','LaTeX لا تقرأ الأعداد'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('504',99,[
+  ['Reproducing a table: run the method with the paper’s parameters and compare digit by digit. For Example 1 of the paper (exact solution `t^3x^2(1 − x)^2e^x`, ν = 1.9, λ = 1/2):','إعادة إنتاج جدول: شغّل الطريقة بوسائط البحث وقارن رقماً برقم. للمثال 1 في البحث (الحل المضبوط `t^3x^2(1 − x)^2e^x` و ν = 1.9 و λ = 1/2):'],
+  'N = M = 10:   2.5865 × 10^{−9}  ≈  2.59 × 10^{−9}',
+  ['The left value is a rerun of the notebook, the right one is Table 1 of the paper. A difference in the last printed digit is rounding; a factor of 10 or more points to a different scheme or a defect. Record the parameters, the version and the timing with every reproduced number.','القيمة اليسرى إعادة تشغيل للدفتر واليمنى من الجدول 1 في البحث. والاختلاف في آخر رقم مطبوع تقريب، أما عامل 10 أو أكثر فيدل على طريقة مختلفة أو عيب. وسجّل الوسائط والإصدار والتوقيت مع كل عدد مُعاد إنتاجه.'],
+],[
+  Q('Why is the time part of Example 1 exact for M ≥ 6 with λ = 1/2?','لماذا يكون الجزء الزمني في المثال 1 مضبوطاً عند M ≥ 6 مع λ = 1/2؟','t^3 = s^6',['s = t^{1/2}'],['t^3 = s^3','t^3 = s^{3/2}','t^3 = s^{12}']),
+  Q('So which part limits the accuracy in Example 1?','إذن أي جزء يحد الدقة في المثال 1؟',['The space approximation of `x^2(1 − x)^2e^x`','التقريب المكاني لـ `x^2(1 − x)^2e^x`'],[['The time part is exact.','الجزء الزمني مضبوط.']],[['The time part','الجزء الزمني'],['Nothing','لا شيء']]),
+  Q('Your code gives `2.00 × 10^{−9}` against the paper’s `2.59 × 10^{−9}`. Is this a reproduction?','كودك يعطي `2.00 × 10^{−9}` مقابل `2.59 × 10^{−9}` في البحث. هل هذه إعادة إنتاج؟',['Not exactly: same order of magnitude, but a different number points to a different detail of the scheme','ليست بالضبط: الرتبة نفسها لكن العدد المختلف يدل على تفصيل مختلف في الطريقة'],[['For example h evaluated at the points instead of projected.','مثل حساب h عند النقاط بدل إسقاطها.']],[['Yes, exactly','نعم بالضبط'],['No, the method is wrong','لا، الطريقة خاطئة']]),
+  Q('What should be recorded with every reproduced number?','ماذا يجب أن يُسجَّل مع كل عدد مُعاد إنتاجه؟',['The parameters (N, M, λ, orders), the software version and the timing','الوسائط (N و M و λ والرتب) وإصدار البرنامج والتوقيت'],[['So that anyone can rerun it.','حتى يستطيع أي أحد إعادته.']],[['Only the number','العدد فقط'],['The date','التاريخ']]),
+]);
+
+lesson('504',100,[
+  ['Capstone project: turn the notebooks into a tested package. Requirements: (1) a package ``MappedLegendre`` with ``solve``, ``h`` generated automatically, and the matrices T1 and T2; (2) a test file with the hand example, Theorem 3.1 checks and a full solve; (3) the three examples of the paper as data; (4) a convergence table with timing, exported to LaTeX; (5) a short report on λ.','المشروع الختامي: حوّل الدفاتر إلى حزمة مختبرة. المتطلبات: (1) حزمة ``MappedLegendre`` فيها ``solve`` و h مولّدة آلياً والمصفوفتان T1 و T2، (2) ملف اختبارات فيه المثال اليدوي وفحوص النظرية 3.1 وحل كامل، (3) أمثلة البحث الثلاثة بيانات، (4) جدول تقارب مع التوقيت مصدَّر إلى LaTeX، (5) تقرير قصير عن λ.'],
+  'y = t^{1+ν_1+ν_2} sin x,     ν_1 + ν_2 = 2.9   ⇒   y = t^{3.9} sin x',
+  ['This is Example 2 of the paper, the real test: `t^{3.9}` is not a polynomial in `t^{1/2}`. Study which λ makes the time part exact and how the error depends on λ and M.','وهذا هو المثال 2 في البحث، الاختبار الحقيقي: `t^{3.9}` ليست كثيرة حدود في `t^{1/2}`. ادرس أي λ يجعل الجزء الزمني مضبوطاً وكيف يعتمد الخطأ على λ و M.'],
+],[
+  Q('Which λ ≤ 1 makes `t^{3.9}` equal to `s^4`?','أي λ ≤ 1 تجعل `t^{3.9}` تساوي `s^4`؟','λ = 0.975',['#f{3.9}{4}'],['λ = 0.5','λ = 0.39','λ = 1']),
+  Q('With λ = 1/2, what is `t^{3.9}` in s?','مع λ = 1/2 ما `t^{3.9}` بدلالة s؟','s^{7.8}',['#f{3.9}{0.5} = 7.8'],['s^{7}','s^{8}','s^{1.95}']),
+  Q('Why is `s^{7.8}` a problem?','لماذا تمثل `s^{7.8}` مشكلة؟',['It is not a polynomial, so the time error decays only algebraically','ليست كثيرة حدود فيتناقص خطأ الزمن جبرياً فقط'],[['The other powers in h must also be considered when choosing λ.','ويجب مراعاة القوى الأخرى في h عند اختيار λ.']],[['It is too large','كبيرة جداً'],['It is not a problem','ليست مشكلة']]),
+  Q('Which item of the project protects every later change?','أي بند في المشروع يحمي كل تغيير لاحق؟',['The test file','ملف الاختبارات'],[['Every change is checked against known results.','كل تغيير يُفحص مقابل نتائج معروفة.']],[['The LaTeX table','جدول LaTeX'],['The timing','التوقيت']]),
 ]);
 
 export const MS504 = true;
