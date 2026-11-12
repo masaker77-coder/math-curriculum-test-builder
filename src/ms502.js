@@ -1209,4 +1209,136 @@ lesson('502',70,[
     ['(0, 0, 1)·D_2 = row 2 = (0, 1, 2)  ↔  2x'], [['The first row','الصف الأول'],['No row','لا صف']]),
 ]);
 
+/* ---- 502 · Unit 8 (lessons 71–80): solving differential equations ---- */
+lesson('502',71,[
+  ['Write the unknown as `y_n = Σ_{i=0}^{n} c_i B_{i,n}(x)` and put it in the equation `𝓛y = f`. The residual `R = 𝓛y_n − f` cannot vanish everywhere, so we ask it to vanish in a weaker sense, exactly as in Course 501:','نكتب المجهول `y_n = Σ_{i=0}^{n} c_i B_{i,n}(x)` ونعوّضه في المعادلة `𝓛y = f`. والباقي `R = 𝓛y_n − f` لا يمكن أن ينعدم في كل مكان، فنطلب انعدامه بمعنى أضعف كما في المقرر 501 تماماً:'],
+  ['Collocation: `R(x_k) = 0` at chosen points. Galerkin: `⟨R, B_{j,n}⟩ = 0` for the basis functions that satisfy the boundary conditions. Tau: R orthogonal to `Π_{n−m}`, plus m boundary or initial conditions.','التجميع: `R(x_k) = 0` عند نقاط مختارة. جاليركن: `⟨R, B_{j,n}⟩ = 0` لدوال الأساس التي تحقق الشروط الحدية. تاو: R عمودي على `Π_{n−m}` مع m شرطاً حدياً أو ابتدائياً.'],
+  ['The Bernstein basis adds one convenience: boundary and initial values are just end coefficients, `y(0) = c_0` and `y(1) = c_n`.','ويضيف أساس بيرنشتاين ميزة: القيم الحدية والابتدائية هي معاملات الطرفين فقط، `y(0) = c_0` و `y(1) = c_n`.'],
+],[
+  Q('For `y′ = y`, `y(0) = 3`, which coefficient is known before solving?','للمسألة `y′ = y` و `y(0) = 3` أي معامل معلوم قبل الحل؟','c_0 = 3',['y(0) = c_0'],['c_n = 3','c_1 = 3','c_0 = 0']),
+  Q('How many unknown coefficients remain for a first-order IVP with n = 5?','كم معاملاً مجهولاً يبقى لمسألة قيمة ابتدائية من الرتبة الأولى عند n = 5؟','5',['n + 1 − 1 = 5'],['6','4','10']),
+  Q('For a second-order BVP with `y(0) = a`, `y(1) = b` and n = 6, how many coefficients must be found from the equation?','لمسألة قيم حدية من الرتبة الثانية مع `y(0) = a` و `y(1) = b` عند n = 6، كم معاملاً يُحدَّد من المعادلة؟','5',['c_0 = a,   c_6 = b', ['The coefficients `c_1, …, c_5` remain.','تبقى المعاملات `c_1, …, c_5`.']],['7','6','4']),
+  Q('Which of the three methods needs no integrals?','أي الطرق الثلاث لا تحتاج تكاملات؟',['Collocation','التجميع'],[['Only point values of the residual are used.','لا تُستخدم إلا قيم الباقي عند النقاط.']],[['Galerkin','جاليركن'],['Tau','تاو']]),
+]);
+
+lesson('502',72,[
+  ['Collocation for `y′ = y`, `y(0) = 1` on [0, 1] with n = 2. The initial condition fixes `c_0 = 1`; the two other coefficients come from the equation at two points, say x = 1/2 and x = 1. With `y′ = 2[(c_1 − c_0)B_{0,1} + (c_2 − c_1)B_{1,1}]`:',
+   'التجميع للمسألة `y′ = y` و `y(0) = 1` على [0, 1] عند n = 2. الشرط الابتدائي يثبّت `c_0 = 1`، والمعاملان الآخران من المعادلة عند نقطتين، ولتكن x = 1/2 و x = 1. ومع `y′ = 2[(c_1 − c_0)B_{0,1} + (c_2 − c_1)B_{1,1}]`:'],
+  'x = 1:   2(c_2 − c_1) = c_2,     x = #f{1}{2}:   c_2 − c_0 = #f{c_0 + 2c_1 + c_2}{4}',
+  ['The solution is `c = (1, 5/4, 5/2)`, so `y(1) = 2.5` against e = 2.718: a quadratic is a rough approximation of `e^x`, but the error falls quickly with n.','والحل `c = (1, 5/4, 5/2)` فيكون `y(1) = 2.5` مقابل e = 2.718: كثيرة الحدود التربيعية تقريب خشن لـ `e^x` لكن الخطأ يتناقص بسرعة مع n.'],
+],[
+  Q('Solve the two collocation equations above.','حل معادلتي التجميع السابقتين.','c_1 = #f{5}{4},   c_2 = #f{5}{2}',
+    ['x = 1:  c_2 = 2c_1', 'x = #f{1}{2}:  4c_2 − 4 = 1 + 2c_1 + c_2  ⇒  3c_2 − 2c_1 = 5', '6c_1 − 2c_1 = 5  ⇒  c_1 = #f{5}{4}'],
+    ['c_1 = 1,   c_2 = 2','c_1 = #f{3}{2},   c_2 = 3','c_1 = #f{5}{4},   c_2 = #f{5}{4}']),
+  Q('With `c = (1, 5/4, 5/2)`, compute `y(1/2)`.','مع `c = (1, 5/4, 5/2)` احسب `y(1/2)`.','#f{3}{2}',['#f{1}{4}(1 + 2·#f{5}{4} + #f{5}{2}) = #f{6}{4}'],['#f{5}{4}','1.6487','2']),
+  Q('Write the derivative `y′(0)` in terms of the coefficients for n = 2.','اكتب المشتقة `y′(0)` بدلالة المعاملات عند n = 2.','y′(0) = 2(c_1 − c_0)',['n(c_1 − c_0)'],['y′(0) = c_1','y′(0) = 2c_1','y′(0) = c_1 − c_0']),
+  Q('How many collocation points are needed for `y′ = y`, `y(0) = 1` with n = 6?','كم نقطة تجميع تلزم للمسألة `y′ = y` و `y(0) = 1` عند n = 6؟','6',['n + 1 − 1 = 6', ['One equation per unknown coefficient.','معادلة لكل معامل مجهول.']],['7','5','12']),
+]);
+
+lesson('502',73,[
+  ['For a boundary-value problem the two end coefficients are given, and the interior ones come from the equation. For `−y″ = 1`, `y(0) = y(1) = 0` with n = 2:','لمسألة القيم الحدية يُعطى معاملا الطرفين، وتأتي المعاملات الداخلية من المعادلة. ولـ `−y″ = 1` و `y(0) = y(1) = 0` عند n = 2:'],
+  'c_0 = c_2 = 0,   y″ = 2(c_0 − 2c_1 + c_2) = −4c_1 = −1   ⇒   c_1 = #f{1}{4}',
+  ['so `y = (1/4)·2x(1 − x) = x(1 − x)/2`, the exact solution. For higher n, collocation at the interior Gauss or Chebyshev points gives spectral accuracy, since the space is the same `Π_n` as for Legendre.','إذن `y = (1/4)·2x(1 − x) = x(1 − x)/2` وهو الحل المضبوط. وعند n أعلى يعطي التجميع عند نقاط جاوس أو تشيبيشيف الداخلية دقة طيفية لأن الفضاء هو `Π_n` نفسه كما في ليجندر.'],
+],[
+  Q('Solve `y″ = 2`, `y(0) = 0`, `y(1) = 1` with n = 2.','حل `y″ = 2` و `y(0) = 0` و `y(1) = 1` عند n = 2.','c = (0,  0,  1):   y = x^2',
+    ['c_0 = 0,   c_2 = 1', '2(c_0 − 2c_1 + c_2) = 2  ⇒  c_1 = 0'], ['c = (0,  #f{1}{2},  1):   y = x','c = (0,  1,  1)','c = (1,  0,  0)']),
+  Q('Solve `y″ = 0`, `y(0) = 2`, `y(1) = 5` with n = 2.','حل `y″ = 0` و `y(0) = 2` و `y(1) = 5` عند n = 2.','c = (2,  #f{7}{2},  5)',
+    ['c_0 − 2c_1 + c_2 = 0  ⇒  c_1 = #f{2 + 5}{2}', ['The straight line `2 + 3x`; its middle coefficient is the average of the ends.','المستقيم `2 + 3x`، ومعامله الأوسط متوسط الطرفين.']], ['c = (2,  0,  5)','c = (2,  3,  5)','c = (2,  5,  5)']),
+  Q('For `−y″ = 1` with n = 2, which coefficient carries the solution?','للمسألة `−y″ = 1` عند n = 2 أي معامل يحمل الحل؟','c_1 = #f{1}{4}',['−4c_1 = −1'],['c_1 = #f{1}{2}','c_1 = 1','c_0 = #f{1}{4}']),
+  Q('With n = 4 and Dirichlet conditions, how many collocation points are used?','عند n = 4 مع شروط ديريشليه كم نقطة تجميع تُستخدم؟','3',['n + 1 − 2 = 3'],['5','4','2']),
+]);
+
+lesson('502',74,[
+  ['For Galerkin with homogeneous Dirichlet conditions the trial and test functions are the interior basis polynomials `B_{1,n}, …, B_{n−1,n}`, which vanish at both ends. For `−y″ = f`:','لطريقة جاليركن مع شروط ديريشليه المتجانسة تكون دوال التجربة والاختبار هي كثيرات الأساس الداخلية `B_{1,n}, …, B_{n−1,n}` التي تنعدم عند الطرفين. ولـ `−y″ = f`:'],
+  'Σ_i c_i ⟨B_{i,n}′, B_{j,n}′⟩ = ⟨f, B_{j,n}⟩,   1 ≤ i, j ≤ n − 1',
+  ['The stiffness matrix is symmetric, positive definite and fully explicit (products of Bernstein polynomials integrate in closed form), but it is not sparse or diagonal as with Shen’s Legendre basis.','ومصفوفة الجساءة متماثلة موجبة التعريف وصريحة تماماً (حواصل ضرب بيرنشتاين تُكامل بصيغ مغلقة)، لكنها ليست قليلة العناصر ولا قطرية كما مع أساس شين لليجندر.'],
+],[
+  Q('Compute `⟨B_{1,2}′, B_{1,2}′⟩`.','احسب `⟨B_{1,2}′, B_{1,2}′⟩`.','#f{4}{3}',['∫_0^1 (2 − 4x)^2 dx = 4 − 8 + #f{16}{3}'],['#f{2}{15}','4','#f{1}{3}']),
+  Q('Solve `−y″ = 1`, `y(0) = y(1) = 0` by Galerkin with n = 2.','حل `−y″ = 1` و `y(0) = y(1) = 0` بجاليركن عند n = 2.','c_1 = #f{1}{4}',['⟨1, B_{1,2}⟩ = #f{1}{3}', 'c_1 = #f{1/3}{4/3} = #f{1}{4}', ['The same exact solution as collocation.','الحل المضبوط نفسه الذي أعطاه التجميع.']],['c_1 = #f{1}{2}','c_1 = #f{1}{3}','c_1 = 1']),
+  Q('With n = 4, what is the size of the Galerkin system for a Dirichlet problem?','عند n = 4 ما حجم نظام جاليركن لمسألة ديريشليه؟','3 × 3',['B_{1,4}, B_{2,4}, B_{3,4}'],['5 × 5','4 × 4','2 × 2']),
+  Q('Why do `B_{1,n}, …, B_{n−1,n}` satisfy `y(0) = y(1) = 0` automatically?','لماذا تحقق `B_{1,n}, …, B_{n−1,n}` الشرطين `y(0) = y(1) = 0` تلقائياً؟',['Each has the factors x and `1 − x`','لكل منها العاملان x و `1 − x`'],['B_{i,n}(0) = δ_{i0},   B_{i,n}(1) = δ_{in}'],[['Because they are orthogonal','لأنها متعامدة'],['They do not','لا تحققهما']]),
+]);
+
+lesson('502',75,[
+  ['The Tau method with the operational matrix D: for `y′ + y = 0`, `y(0) = 1`, the residual is `R = c^T(D + I)Φ`. Tau asks R to be orthogonal to `Π_{n−1}` (n conditions) and adds `c_0 = 1`:','طريقة تاو بالمصفوفة التشغيلية D: للمسألة `y′ + y = 0` و `y(0) = 1` يكون الباقي `R = c^T(D + I)Φ`. وتطلب تاو تعامد R مع `Π_{n−1}` (n شرطاً) وتضيف `c_0 = 1`:'],
+  '∫_0^1 R x^k dx = 0,   k = 0, …, n − 1,     c_0 = 1',
+  ['The values of `y(1)` are `1/3`, `7/19 = 0.36842` and `71/193 = 0.367876` for n = 1, 2, 3, against `e^{−1} = 0.367879`: each degree adds about two digits.','وقيم `y(1)` هي `1/3` و `7/19 = 0.36842` و `71/193 = 0.367876` عند n = 1 و 2 و 3 مقابل `e^{−1} = 0.367879`: كل درجة تضيف نحو رقمين.'],
+],[
+  Q('Solve the Tau equations for n = 1.','حل معادلات تاو عند n = 1.','c = (1,  #f{1}{3})',
+    ['R = c_1 B_{0,1} + (2c_1 − c_0)B_{1,1}', '∫_0^1 R dx = #f{c_1 + 2c_1 − c_0}{2} = 0  ⇒  c_1 = #f{c_0}{3}'], ['c = (1,  0)','c = (1,  #f{1}{2})','c = (1,  #f{2}{3})']),
+  Q('For n = 2 the Tau solution is `c = (1, 10/19, 7/19)`. Find `y(1)` and its error.','عند n = 2 حل تاو هو `c = (1, 10/19, 7/19)`. أوجد `y(1)` وخطأه.','y(1) = #f{7}{19} ≈ 0.36842;   |y(1) − e^{−1}| ≈ 5.4 × 10^{−4}',
+    ['y(1) = c_2 = #f{7}{19}', '|0.36842 − 0.36788| ≈ 5.4 × 10^{−4}'], ['y(1) = #f{10}{19};   |y(1) − e^{−1}| ≈ 0.16','y(1) = 1;   |y(1) − e^{−1}| ≈ 0.63','y(1) = #f{7}{19};   0']),
+  Q('Write `c^T(D_1 + I)` for n = 1.','اكتب `c^T(D_1 + I)` عند n = 1.','(c_1,  2c_1 − c_0)',
+    ['D_1 + I = #m{0, −1 ;; 1, 2}', '(c_0, c_1)·#m{0, −1 ;; 1, 2} = (c_1,  −c_0 + 2c_1)'], ['(c_0,  c_1)','(c_0 + c_1,  c_1)','(−c_0,  c_1)']),
+  Q('How many Tau conditions plus initial conditions are there for a first-order IVP with n = 4?','كم شرط تاو وكم شرطاً ابتدائياً لمسألة قيمة ابتدائية من الرتبة الأولى عند n = 4؟','4 + 1 = 5',['k = 0, …, 3;   c_0 = y(0)'],['5 + 1 = 6','3 + 1 = 4','4 + 2 = 6']),
+]);
+
+lesson('502',76,[
+  ['Boundary conditions of every type become conditions on the first or last few coefficients:','الشروط الحدية بكل أنواعها تصبح شروطاً على أول المعاملات أو آخرها:'],
+  'y(0) = c_0,   y(1) = c_n,   y′(0) = n(c_1 − c_0),   y′(1) = n(c_n − c_{n−1})',
+  ['A Robin condition `a y(1) + b y′(1) = g` becomes `a c_n + b n(c_n − c_{n−1}) = g`. These rows replace the last residual equations, and they never mix interior coefficients: one of the practical strengths of the Bernstein basis.','وشرط روبن `a y(1) + b y′(1) = g` يصبح `a c_n + b n(c_n − c_{n−1}) = g`. وهذه الصفوف تحل محل آخر معادلات الباقي، ولا تخلط أبداً المعاملات الداخلية: وهذه إحدى نقاط قوة أساس بيرنشتاين العملية.'],
+],[
+  Q('With n = 3, `y(0) = 1` and `y′(0) = 2`, find `c_0` and `c_1`.','عند n = 3 مع `y(0) = 1` و `y′(0) = 2` أوجد `c_0` و `c_1`.','c_0 = 1,   c_1 = #f{5}{3}',['3(c_1 − 1) = 2'],['c_0 = 1,   c_1 = 3','c_0 = 1,   c_1 = 2','c_0 = 2,   c_1 = 1']),
+  Q('With n = 4, write the condition `y′(1) + y(1) = 0`.','عند n = 4 اكتب الشرط `y′(1) + y(1) = 0`.','5c_4 − 4c_3 = 0',['4(c_4 − c_3) + c_4 = 0'],['c_4 + c_3 = 0','4c_4 − c_3 = 0','c_4 = 0']),
+  Q('With n = 5 and `y(1) = 4`, which coefficient is fixed?','عند n = 5 و `y(1) = 4` أي معامل يتحدد؟','c_5 = 4',['y(1) = c_n'],['c_4 = 4','c_0 = 4','c_1 = 4']),
+  Q('With n = 2, `y(0) = 0` and `y′(0) = 0`, what is y if the equation forces `c_2 = 3`?','عند n = 2 مع `y(0) = 0` و `y′(0) = 0`، ما y إذا فرضت المعادلة `c_2 = 3`؟','y = 3x^2',['c_0 = 0,   c_1 = c_0 = 0,   c_2 = 3  ⇒  y = 3B_{2,2}'],['y = 3x','y = 3','y = 6x(1 − x)']),
+]);
+
+lesson('502',77,[
+  ['Nonlinear terms are handled with the product formula and Newton’s method. For example, for `y = c_0 B_{0,1} + c_1 B_{1,1}`:','الحدود غير الخطية تعالَج بصيغة الضرب وطريقة نيوتن. فمثلاً للدالة `y = c_0 B_{0,1} + c_1 B_{1,1}`:'],
+  'y^2 = c_0^2 B_{0,2} + c_0 c_1 B_{1,2} + c_1^2 B_{2,2}',
+  ['With collocation the nonlinearity is even simpler: evaluate `y(x_k)^2`. For `y′ = −y^2`, `y(0) = 1` (exact `1/(1 + x)`), one-point collocation at x = 1/2 with `y = 1 + ax` gives the quadratic `a^2 + 8a + 4 = 0`, so `a = −4 + #r{12} ≈ −0.536` and `y(1) ≈ 0.464` against 0.5.',
+   'ومع التجميع تكون اللاخطية أبسط: نحسب `y(x_k)^2`. وللمسألة `y′ = −y^2` و `y(0) = 1` (حلها المضبوط `1/(1 + x)`) يعطي التجميع بنقطة واحدة عند x = 1/2 مع `y = 1 + ax` المعادلة التربيعية `a^2 + 8a + 4 = 0` فيكون `a = −4 + #r{12} ≈ −0.536` و `y(1) ≈ 0.464` مقابل 0.5.'],
+],[
+  Q('Check the coefficients of `y^2` for `y = c_0 B_{0,1} + c_1 B_{1,1}`.','تحقق من معاملات `y^2` للدالة `y = c_0 B_{0,1} + c_1 B_{1,1}`.','(c_0^2,  c_0c_1,  c_1^2)',
+    ['y^2 = c_0^2 B_{0,1}^2 + 2c_0c_1 B_{0,1}B_{1,1} + c_1^2 B_{1,1}^2', 'B_{0,1}B_{1,1} = #f{1}{2}B_{1,2}  ⇒  2c_0c_1·#f{1}{2} = c_0c_1'],
+    ['(c_0^2,  2c_0c_1,  c_1^2)','(c_0,  c_0c_1,  c_1)','(c_0^2,  #f{1}{2}c_0c_1,  c_1^2)']),
+  Q('Derive the collocation equation for `y′ = −y^2` at x = 1/2 with `y = 1 + ax`.','اشتق معادلة التجميع للمسألة `y′ = −y^2` عند x = 1/2 مع `y = 1 + ax`.','a^2 + 8a + 4 = 0',
+    ['a = −(1 + #f{a}{2})^2 = −1 − a − #f{a^2}{4}', '#f{a^2}{4} + 2a + 1 = 0'], ['a^2 + 4a + 1 = 0','a^2 − 8a + 4 = 0','a + 1 = 0']),
+  Q('Solve it and find `y(1)`.','حلّها وأوجد `y(1)`.','a = −4 + #r{12} ≈ −0.536;   y(1) ≈ 0.464',
+    ['a = −4 ± #r{12}', ['The root near 0 is chosen, since y must decrease slowly from 1.','نختار الجذر القريب من 0 لأن y يجب أن تتناقص ببطء من 1.']], ['a = −4 − #r{12} ≈ −7.46;   y(1) ≈ −6.46','a = −0.5;   y(1) = 0.5','a = −1;   y(1) = 0']),
+  Q('Write Newton’s linearization of `y^2` around a guess `y_0`.','اكتب خطية نيوتن للحد `y^2` حول تخمين `y_0`.','y^2 ≈ y_0^2 + 2y_0(y − y_0)',
+    [['First-order Taylor expansion in the unknown.','مفكوك تايلور من الرتبة الأولى في المجهول.']], ['y^2 ≈ y_0^2','y^2 ≈ 2y_0 y','y^2 ≈ y_0 y']),
+]);
+
+lesson('502',78,[
+  ['For a system of m equations each unknown has its own coefficient vector, and the operational matrices act block by block. For `y_1′ = y_2`, `y_2′ = −y_1`:','لنظام من m معادلة يكون لكل مجهول متجه معاملات خاص به، وتعمل المصفوفات التشغيلية كتلةً كتلة. وللنظام `y_1′ = y_2` و `y_2′ = −y_1`:'],
+  'c_1^T D = c_2^T,     c_2^T D = −c_1^T',
+  ['together with the initial values `y_1(0)`, `y_2(0)`.','مع القيمتين الابتدائيتين `y_1(0)` و `y_2(0)`.'],
+  ['There are `m(n + 1)` unknowns, the initial values fix the first coefficient of each vector, and the coupled equations form one block system, conveniently written with Kronecker products as in Course 501.','ويوجد `m(n + 1)` مجهولاً، والقيم الابتدائية تثبّت أول معامل في كل متجه، والمعادلات المقترنة تكوّن نظاماً كتلياً واحداً يُكتب بسهولة بضرب كرونيكر كما في المقرر 501.'],
+],[
+  Q('How many unknowns does a system of 3 equations have with n = 5?','كم مجهولاً لنظام من 3 معادلات عند n = 5؟','18',['m(n + 1) = 3·6'],['15','6','216']),
+  Q('For `y_1′ = y_2`, `y_2′ = −y_1` with `y_1(0) = 0`, `y_2(0) = 1`, which coefficients are fixed?','للنظام `y_1′ = y_2` و `y_2′ = −y_1` مع `y_1(0) = 0` و `y_2(0) = 1`، أي المعاملات تتحدد؟','c_{1,0} = 0,   c_{2,0} = 1',['y_k(0) = c_{k,0}'],['c_{1,n} = 0,   c_{2,n} = 1','c_{1,0} = 1,   c_{2,0} = 0','c_{1,1} = 0,   c_{2,1} = 1']),
+  Q('With n = 1 and the system above, use `D_1` to write `c_1^T D_1 = c_2^T`.','عند n = 1 وللنظام السابق استخدم `D_1` لكتابة `c_1^T D_1 = c_2^T`.','(c_{1,1} − c_{1,0},  c_{1,1} − c_{1,0}) = (c_{2,0},  c_{2,1})',
+    ['(a, b)·#m{−1, −1 ;; 1, 1} = (b − a,  b − a)'], ['(c_{1,0},  c_{1,1}) = (c_{2,0},  c_{2,1})','(c_{1,0} − c_{1,1},  0) = (c_{2,0},  c_{2,1})','(1,  1) = (c_{2,0},  c_{2,1})']),
+  Q('What is the exact solution of the system?','ما الحل المضبوط للنظام؟','y_1 = sin x,   y_2 = cos x',['y_1″ = −y_1,   y_1(0) = 0,   y_1′(0) = 1'],['y_1 = cos x,   y_2 = sin x','y_1 = e^x,   y_2 = e^x','y_1 = x,   y_2 = 1']),
+]);
+
+lesson('502',79,[
+  ['The Lane–Emden equation of astrophysics is singular at x = 0:','معادلة لين–إمدن في الفيزياء الفلكية منفردة عند x = 0:'],
+  'y″ + #f{2}{x} y′ + y^m = 0,   y(0) = 1,   y′(0) = 0',
+  ['Multiplying by x removes the singular coefficient: `x y″ + 2y′ + x y^m = 0`, which collocation or Tau handle directly. In the Bernstein basis the two conditions read `c_0 = 1` and `c_1 = c_0`. Exact solutions exist for m = 0 (`1 − x^2/6`), m = 1 (`sin x/x`) and m = 5.','والضرب في x يزيل المعامل المنفرد: `x y″ + 2y′ + x y^m = 0`، فتعالجها طريقة التجميع أو تاو مباشرة. وفي أساس بيرنشتاين يصبح الشرطان `c_0 = 1` و `c_1 = c_0`. وتوجد حلول مضبوطة عند m = 0 (`1 − x^2/6`) و m = 1 (`sin x/x`) و m = 5.'],
+],[
+  Q('Verify that `y = 1 − x^2/6` solves the case m = 0.','تحقق أن `y = 1 − x^2/6` تحل الحالة m = 0.',['Verified','تحقق'],
+    ['y′ = −#f{x}{3},   y″ = −#f{1}{3}', '−#f{1}{3} + #f{2}{x}(−#f{x}{3}) + 1 = −#f{1}{3} − #f{2}{3} + 1 = 0']),
+  Q('Evaluate the m = 1 solution at x = 1.','احسب حل الحالة m = 1 عند x = 1.','sin 1 ≈ 0.8415',['y(1) = #f{sin 1}{1}'],['1','0.5403','0']),
+  Q('With n = 4, write the conditions `y(0) = 1`, `y′(0) = 0` in Bernstein coefficients.','عند n = 4 اكتب الشرطين `y(0) = 1` و `y′(0) = 0` بمعاملات بيرنشتاين.','c_0 = 1,   c_1 = 1',['y′(0) = 4(c_1 − c_0) = 0'],['c_0 = 1,   c_1 = 0','c_0 = 0,   c_1 = 1','c_0 = 1,   c_4 = 0']),
+  Q('Why multiply the Lane–Emden equation by x before collocating?','لماذا نضرب معادلة لين–إمدن في x قبل التجميع؟',['To remove the coefficient `2/x`, which is infinite at x = 0','لإزالة المعامل `2/x` اللانهائي عند x = 0'],
+    [['Collocation points near 0 would otherwise produce huge, badly scaled equations.','وإلا أنتجت نقاط التجميع القريبة من 0 معادلات ضخمة سيئة التحجيم.']], [['To make it linear','لجعلها خطية'],['It is not needed','لا حاجة إليه']]),
+]);
+
+lesson('502',80,[
+  ['Without an exact solution the error is estimated from the computation itself. Three practical estimates:','دون حل مضبوط يُقدَّر الخطأ من الحساب نفسه. ثلاثة تقديرات عملية:'],
+  ['(1) Compare `y_n` with `y_{2n}` (or `y_{n+2}`): for fast convergence `‖y − y_n‖ ≈ ‖y_{2n} − y_n‖`. (2) The residual `‖𝓛y_n − f‖` at many points. (3) The decay of the Legendre coefficients of `y_n` (convert from Bernstein): the last ones show how much is missing.',
+   '(1) قارن `y_n` بـ `y_{2n}` (أو `y_{n+2}`): مع التقارب السريع `‖y − y_n‖ ≈ ‖y_{2n} − y_n‖`. (2) الباقي `‖𝓛y_n − f‖` عند نقاط كثيرة. (3) تناقص معاملات ليجندر لـ `y_n` (بالتحويل من بيرنشتاين): آخرها يبيّن مقدار ما ينقص.'],
+  ['Stop when the estimate reaches the required tolerance, or when it stops decreasing (rounding level).','وتوقف عندما يبلغ التقدير الدقة المطلوبة، أو عندما يتوقف عن التناقص (مستوى التقريب).'],
+],[
+  Q('For `y′ + y = 0` the Tau values of `y(1)` are 0.33333, 0.36842, 0.367876 for n = 1, 2, 3. Estimate the error of the n = 2 value.','لـ `y′ + y = 0` قيم تاو لـ `y(1)` هي 0.33333 و 0.36842 و 0.367876 عند n = 1 و 2 و 3. قدّر خطأ قيمة n = 2.','≈ 5.4 × 10^{−4}',['|0.36842 − 0.367876| ≈ 5.4 × 10^{−4}', ['The true error is `0.36842 − 0.367879 = 5.4 × 10^{−4}`.','والخطأ الحقيقي `0.36842 − 0.367879 = 5.4 × 10^{−4}`.']],['≈ 0.035','≈ 3 × 10^{−6}','0']),
+  Q('The residual of a computed solution is `10^{−3}` at n = 8 and `10^{−3}` at n = 16. What does that suggest?','باقي حل محسوب `10^{−3}` عند n = 8 و `10^{−3}` عند n = 16. ماذا يقترح ذلك؟',['An error in the set-up (equation, condition or matrix), not a lack of terms','خطأ في الإعداد (المعادلة أو الشرط أو المصفوفة) لا نقص في الحدود'],
+    [['A correct spectral method would reduce the residual by many orders of magnitude.','الطريقة الطيفية الصحيحة تخفض الباقي بعدة مراتب.']], [['Convergence is complete','اكتمل التقارب'],['n is too large','n كبيرة جداً']]),
+  Q('Legendre coefficients of a computed solution are `1, 10^{−2}, 10^{−4}, 10^{−6}`. Estimate the truncation error.','معاملات ليجندر لحل محسوب `1, 10^{−2}, 10^{−4}, 10^{−6}`. قدّر خطأ القطع.','≈ 10^{−8}',[['The next coefficient continues the geometric pattern.','المعامل التالي يتابع النمط الهندسي.']],['≈ 10^{−6}','≈ 10^{−4}','≈ 10^{−16}']),
+  Q('When should the computation stop increasing n?','متى يجب التوقف عن زيادة n؟',['When the estimated error meets the tolerance, or stops decreasing','عندما يبلغ الخطأ المقدَّر الدقة المطلوبة أو يتوقف عن التناقص'],
+    [['Beyond the rounding level more terms only add cost and conditioning problems.','بعد مستوى التقريب لا تضيف الحدود الإضافية إلا التكلفة ومشاكل الشرط.']], [['Never','أبداً'],['After n = 10 always','بعد n = 10 دائماً']]),
+]);
+
 export const MS502 = true;
