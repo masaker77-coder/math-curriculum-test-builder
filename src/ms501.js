@@ -1913,4 +1913,184 @@ lesson('501',90,[
     [['The method stops converging for N > 14','تتوقف الطريقة عن التقارب عند N > 14'],['The exact solution is not smooth','الحل المضبوط ليس أملس']]),
 ]);
 
+/* ---- 501 · Unit 10 (lessons 91–100): analysis, practice and research ---- */
+lesson('501',91,[
+  ['λ affects two things: how well the basis represents the solution, and how accurate the integration matrices are. The independent checks of the code-enhancement project measured the error of `D^{−μ} L_2^{λ}` at t = 0.37 for μ = 19/10:','تؤثر λ في أمرين: مدى تمثيل الأساس للحل، ودقة مصفوفات التكامل. وقاست الفحوص المستقلة في مشروع تحسين الكود خطأ `D^{−μ} L_2^{λ}` عند t = 0.37 مع μ = 19/10:'],
+  ['With `λ = 1/2`: `8.0 × 10^{−6}`, `8.5 × 10^{−10}`, `3.4 × 10^{−11}` at M = 6, 12, 20. With `λ = 1/10`: `3.4 × 10^{−3}`, `1.5 × 10^{−6}`, `1.0 × 10^{−12}`.','مع `λ = 1/2`: `8.0 × 10^{−6}` و `8.5 × 10^{−10}` و `3.4 × 10^{−11}` عند M = 6 و 12 و 20. ومع `λ = 1/10`: `3.4 × 10^{−3}` و `1.5 × 10^{−6}` و `1.0 × 10^{−12}`.'],
+  ['A smaller λ is not always better: it loses at small M and wins at large M. λ must match the singular powers of the solution and be tuned with M.','و λ الأصغر ليست الأفضل دائماً: تخسر عند M صغير وتربح عند M كبير. ويجب أن تطابق λ القوى الشاذة في الحل وأن تُضبط مع M.'],
+],[
+  Q('From the measurements, which λ is better at M = 6?','من القياسات، أي λ أفضل عند M = 6؟','λ = #f{1}{2}',
+    ['8.0 × 10^{−6}  <  3.4 × 10^{−3}'], ['λ = #f{1}{10}',['They are equal','متساويتان'],'λ = 1']),
+  Q('Which λ is better at M = 20?','أي λ أفضل عند M = 20؟','λ = #f{1}{10}',
+    ['1.0 × 10^{−12}  <  3.4 × 10^{−11}'], ['λ = #f{1}{2}',['They are equal','متساويتان'],'λ = 1']),
+  Q('Why does a small λ need a larger M?','لماذا تحتاج λ الصغيرة M أكبر؟',['A power `t^{β}` becomes `s^{β/λ}`, a polynomial of higher degree in s','القوة `t^{β}` تصبح `s^{β/λ}` وهي كثيرة حدود أعلى درجة في s'],
+    ['t^{1.9} = s^{19}  (λ = 0.1),     t^{1.9} = s^{3.8}  (λ = 0.5)', ['With λ = 0.1 the function is exactly a polynomial, but of degree 19.','مع λ = 0.1 تكون الدالة كثيرة حدود تماماً، لكن من الدرجة 19.']],
+    [['Because the points move away from 0','لأن النقاط تبتعد عن 0'],['It does not','لا تحتاج']]),
+  Q('A solution contains `t^{1/2}` and `t^{1/3}`. Which λ represents both exactly?','حلٌّ يحتوي `t^{1/2}` و `t^{1/3}`. أي λ يمثلهما تمثيلاً مضبوطاً؟','λ = #f{1}{6}',
+    ['gcd(#f{1}{2}, #f{1}{3}) = #f{1}{6}:   t^{1/2} = s^3,   t^{1/3} = s^2'], ['λ = #f{1}{2}','λ = #f{1}{3}','λ = #f{5}{6}']),
+]);
+
+lesson('501',92,[
+  ['If the solution is analytic as a function of `s = t^{λ}` inside a Bernstein ellipse with parameter ρ, the spectral error falls geometrically:','إذا كان الحل تحليلياً بوصفه دالة في `s = t^{λ}` داخل قطع ناقص لبرنشتاين بالمعامل ρ فإن الخطأ الطيفي يتناقص هندسياً:'],
+  '‖y − y_M‖ ≤ C ρ^{−M}',
+  ['Each new term gains about `log_{10} ρ` correct digits.','كل حد جديد يكسب نحو `log_{10} ρ` من الأرقام الصحيحة.'],
+  ['On a semi-log plot this is a straight line with slope `−log_{10} ρ`, and the slope estimates ρ. If instead the error falls like `M^{−p}`, the solution has a singularity that the basis does not match, and λ should be revisited.',
+   'وعلى رسم شبه لوغاريتمي هذا خط مستقيم ميله `−log_{10} ρ`، ومن الميل نقدّر ρ. وإذا تناقص الخطأ مثل `M^{−p}` فللحل نقطة شاذة لا يطابقها الأساس، ويجب مراجعة λ.'],
+],[
+  Q('The error falls by a factor of 10 every two terms. Estimate ρ.','الخطأ ينقسم على 10 كل حدّين. قدّر ρ.','ρ ≈ #r{10} ≈ 3.16',
+    ['ρ^2 = 10  ⇒  ρ = #r{10}'], ['ρ ≈ 10','ρ ≈ 2','ρ ≈ 100']),
+  Q('With ρ = 4 and an error of `10^{−2}` at M = 4, estimate M for an error of `10^{−12}`.','مع ρ = 4 وخطأ `10^{−2}` عند M = 4 قدّر M اللازمة لخطأ `10^{−12}`.','M ≈ 21',
+    [['Ten more digits are needed:','نحتاج عشرة أرقام إضافية:'], '#f{10}{log_{10} 4} = #f{10}{0.602} ≈ 16.6', 'M ≈ 4 + 17 = 21'], ['M ≈ 14','M ≈ 40','M ≈ 12']),
+  Q('The errors are `10^{−2}`, `2.5 × 10^{−3}`, `6.3 × 10^{−4}` at M = 4, 8, 16. Is the convergence geometric?','الأخطاء `10^{−2}` و `2.5 × 10^{−3}` و `6.3 × 10^{−4}` عند M = 4 و 8 و 16. هل التقارب هندسي؟',['No: doubling M divides the error by 4, so the error is like `M^{−2}`','لا: مضاعفة M تقسم الخطأ على 4، فالخطأ مثل `M^{−2}`'],
+    [['A geometric rate would square the reduction factor each time M doubles; here the factor stays 4.','المعدل الهندسي يربّع عامل التناقص كلما ضوعفت M، وهنا يبقى العامل 4.'], ['The basis does not match a singularity of the solution.','الأساس لا يطابق نقطة شاذة في الحل.']],
+    [['Yes, with ρ = 4','نعم، مع ρ = 4'],['Yes, with ρ = 2','نعم، مع ρ = 2']]),
+  Q('How many correct digits does each new term add when ρ = 100?','كم رقماً صحيحاً يضيف كل حد جديد عندما ρ = 100؟','2',
+    ['log_{10} 100 = 2'], ['100','10','1']),
+]);
+
+lesson('501',93,[
+  ['Theorem 3.2 has one approximation: the projection of `t^{kλ+μ}` is cut at M. There are two ways to remove its effect:','في النظرية 3.2 تقريب واحد: إسقاط `t^{kλ+μ}` يُقطع عند M. وتوجد طريقتان لإزالة أثره:'],
+  ['(1) Match λ to μ, so that `q = μ/λ` is a whole number; then all rows with `i + q ≤ M` are exact. (2) Oversample: build the matrix with a larger `M′` and keep only the first M + 1 rows and columns; the kept entries become more accurate as `M′` grows.',
+   '(1) مطابقة λ مع μ بحيث يكون `q = μ/λ` عدداً صحيحاً، فتنضبط كل الصفوف التي فيها `i + q ≤ M`. (2) المعاينة الزائدة: بناء المصفوفة بـ `M′` أكبر والاحتفاظ بأول M + 1 صف وعمود فقط، فتزداد دقة العناصر المحفوظة كلما كبرت `M′`.'],
+  ['With several orders `μ_1, μ_2, …` in one problem, λ must divide all of them, which may force a small λ.','ومع عدة رتب `μ_1, μ_2, …` في مسألة واحدة يجب أن تقسم λ جميعها، وقد يفرض ذلك λ صغيرة.'],
+],[
+  Q('For μ = 1.5, list the values λ ≥ 0.3 that make `μ/λ` a whole number.','عند μ = 1.5 اذكر قيم λ ≥ 0.3 التي تجعل `μ/λ` عدداً صحيحاً.','λ = 0.75,  0.5,  0.375,  0.3',
+    ['#f{1.5}{λ} = 2, 3, 4, 5'], ['λ = 1.5,  0.75,  0.5','λ = 0.5,  0.25','λ = 0.3,  0.6,  0.9']),
+  Q('A problem has orders `μ_s − μ_1 = 0.5` and `μ_s = 1.8`. Which λ divides both?','مسألة رتبها `μ_s − μ_1 = 0.5` و `μ_s = 1.8`. أي λ يقسم كليهما؟','λ = 0.1',
+    ['gcd(0.5, 1.8) = gcd(#f{5}{10}, #f{18}{10}) = #f{1}{10}'], ['λ = 0.5','λ = 0.3','λ = 0.2']),
+  Q('What does oversampling with `M′ > M` change in the matrix that is kept?','ماذا تغيّر المعاينة الزائدة بـ `M′ > M` في المصفوفة المحفوظة؟',['The projections of the powers are computed with more terms before truncation, so the kept entries are more accurate','تُحسب إسقاطات القوى بحدود أكثر قبل القطع، فتكون العناصر المحفوظة أدق'],
+    [['The size of the final system stays (M + 1) × (M + 1).','ويبقى حجم النظام النهائي (M + 1) × (M + 1).']],
+    [['Nothing','لا شيء'],['The system becomes larger','يصبح النظام أكبر']]),
+  Q('For μ = 3/2 and λ = 1/2, the measured error of `D^{−μ} L_2^{λ}` was 0 for every M ≥ 6. Explain.','عند μ = 3/2 و λ = 1/2 كان الخطأ المقيس لـ `D^{−μ} L_2^{λ}` صفراً لكل M ≥ 6. فسّر.',['`q = 3` and `2 + 3 ≤ M`: the row is exact','`q = 3` و `2 + 3 ≤ M`: الصف مضبوط'],
+    [['`D^{−3/2} L_2^{1/2}` is a polynomial of degree `2 + 3 = 5` in s.','`D^{−3/2} L_2^{1/2}` كثيرة حدود من الدرجة `2 + 3 = 5` في s.'], ['A polynomial of degree 5 in s is represented exactly once M ≥ 5.','وكثيرة الحدود من الدرجة 5 في s تُمثَّل بدقة متى كان M ≥ 5.']],
+    [['Rounding errors cancel','أخطاء التقريب تتلاشى'],['The integral is zero','التكامل صفر']]),
+]);
+
+lesson('501',94,[
+  ['The paper treats space and time together (space–time spectral). The alternative is the method of lines: discretise space spectrally and integrate the resulting ODE system in time. For `u_t = u_{xx}` with collocation:',
+   'يعالج البحث المكان والزمن معاً (طيفي في المكان والزمن). والبديل طريقة الخطوط: نقطّع المكان طيفياً ونكامل نظام المعادلات العادية الناتج في الزمن. ولـ `u_t = u_{xx}` بالتجميع:'],
+  '#f{du}{dt} = D^{(2)} u',
+  ['The equation is used at the interior rows, and the boundary values are kept fixed.','وتُستخدم المعادلة في الصفوف الداخلية مع تثبيت القيم الحدية.'],
+  ['The eigenvalues of `D^{(2)}` grow like `N^4`, so the system is stiff: explicit steps must be tiny, and implicit schemes (backward Euler, Crank–Nicolson, or fractional schemes in time) are used. Space–time spectral methods avoid time stepping and keep spectral accuracy in t as well.',
+   'وقيم `D^{(2)}` الذاتية تنمو مثل `N^4` فيكون النظام جاسئاً: الخطوات الصريحة يجب أن تكون صغيرة جداً، وتُستخدم المخططات الضمنية (أويلر الخلفي أو كرانك–نيكلسون أو مخططات كسرية في الزمن). والطرق الطيفية في المكان والزمن تتجنب الخطوات الزمنية وتحتفظ بالدقة الطيفية في t أيضاً.'],
+],[
+  Q('With the nodes −1, 0, 1 and `u(±1) = 0`, write and solve the method-of-lines equation for `u_t = u_{xx}`.','مع العقد −1 و 0 و 1 و `u(±1) = 0` اكتب معادلة طريقة الخطوط لـ `u_t = u_{xx}` وحلها.','u_0(t) = u_0(0) e^{−2t}',
+    ['#f{du_0}{dt} = u_{−1} − 2u_0 + u_1 = −2u_0', ['The exact first mode `cos(πx/2)` decays like `e^{−2.4674 t}`: three points give the right behaviour.','النمط الأول المضبوط `cos(πx/2)` يتناقص مثل `e^{−2.4674 t}`: ثلاث نقاط تعطي السلوك الصحيح.']],
+    ['u_0(t) = u_0(0) e^{−t}','u_0(t) = u_0(0) e^{2t}','u_0(t) = u_0(0)(1 − 2t)']),
+  Q('For which time steps is backward Euler stable for `du/dt = D^{(2)}u`?','لأي خطوات زمنية يكون أويلر الخلفي مستقراً لـ `du/dt = D^{(2)}u`؟',['For every Δt > 0','لكل Δt > 0'],
+    ['u^{n+1} = (I − Δt D^{(2)})^{−1} u^n', ['The eigenvalues of `D^{(2)}` are negative, so the amplification factors `1/(1 − Δt λ)` lie in (0, 1).','قيم `D^{(2)}` الذاتية سالبة، فعوامل التضخيم `1/(1 − Δt λ)` تقع في (0, 1).']],
+    [['Only for Δt below `1/N^4`','فقط عند Δt أقل من `1/N^4`'],['Only for Δt = 1','فقط عند Δt = 1']]),
+  Q('By what factor does the largest eigenvalue of `D^{(2)}` grow from N = 8 to N = 16?','بأي عامل تكبر أكبر قيمة ذاتية لـ `D^{(2)}` من N = 8 إلى N = 16؟','16',
+    ['N^4:   2^4 = 16'], ['2','4','256']),
+  Q('Name one advantage of the space–time spectral approach of the paper over the method of lines.','اذكر ميزة لنهج البحث الطيفي في المكان والزمن على طريقة الخطوط.',['Spectral accuracy in time too, with no time steps and no stability limit','دقة طيفية في الزمن أيضاً دون خطوات زمنية ودون قيد استقرار'],
+    [['Time-stepping schemes for fractional derivatives are only of low order and need all past steps (memory).','ومخططات الخطوات الزمنية للمشتقات الكسرية منخفضة الرتبة وتحتاج كل الخطوات السابقة (الذاكرة).']],
+    [['It needs fewer unknowns in every case','تحتاج مجاهيل أقل في كل الحالات'],['It avoids linear algebra','تتجنب الجبر الخطي']]),
+]);
+
+lesson('501',95,[
+  ['A nonlinear term (for example `y^2` or `sin y`) makes the discrete system nonlinear, `F(a) = 0`. Newton’s method linearises it at each step:','الحد غير الخطي (مثل `y^2` أو `sin y`) يجعل النظام المتقطع غير خطي `F(a) = 0`. وطريقة نيوتن تحوّله إلى خطي في كل خطوة:'],
+  'J(a^{(k)}) δ = −F(a^{(k)}),   a^{(k+1)} = a^{(k)} + δ',
+  ['Near the solution the number of correct digits doubles at each step. A good starting guess is the solution of the linear part of the problem. In collocation, nonlinear terms are evaluated at the nodes, and their Jacobian is a diagonal matrix.',
+   'وقرب الحل يتضاعف عدد الأرقام الصحيحة في كل خطوة. والتخمين الأولي الجيد حل الجزء الخطي من المسألة. وفي التجميع تُحسب الحدود غير الخطية عند العقد، وجاكوبيها مصفوفة قطرية.'],
+],[
+  Q('Apply two Newton steps to `x^2 − 2 = 0` from `x_0 = 1`.','طبّق خطوتين من نيوتن على `x^2 − 2 = 0` بدءاً من `x_0 = 1`.','x_1 = 1.5,   x_2 ≈ 1.41667',
+    ['x_1 = 1 − #f{1 − 2}{2} = 1.5', 'x_2 = 1.5 − #f{0.25}{3} ≈ 1.41667', ['Errors: 0.086, then 0.0025: the digits double.','الأخطاء: 0.086 ثم 0.0025: تتضاعف الأرقام.']],
+    ['x_1 = 2,   x_2 = 1.5','x_1 = 1.5,   x_2 = 1.4','x_1 = 1.4,   x_2 ≈ 1.4142']),
+  Q('An error of `10^{−3}` after one Newton step. Estimate the error after two more steps.','الخطأ `10^{−3}` بعد خطوة نيوتن. قدّر الخطأ بعد خطوتين أخريين.','≈ 10^{−12}',
+    ['10^{−3} → 10^{−6} → 10^{−12}'], ['≈ 10^{−5}','≈ 10^{−9}','≈ 10^{−6}']),
+  Q('For collocation of `y″ = y^2`, which matrix changes from one Newton step to the next?','في تجميع `y″ = y^2` أي مصفوفة تتغير من خطوة نيوتن إلى التالية؟',['Only the diagonal part `2 diag(y_i)` of the Jacobian','الجزء القطري `2 diag(y_i)` من جاكوبي فقط'],
+    ['J = D^{(2)} − 2 diag(y_i^{(k)})'], [['`D^{(2)}`','`D^{(2)}`'],['Nothing changes','لا شيء يتغير']]),
+  Q('What is a good starting guess for `^CD^{α} y = −y + ε y^2`, `y(0) = 1`, with small ε?','ما التخمين الأولي الجيد لـ `^CD^{α} y = −y + ε y^2` و `y(0) = 1` مع ε صغيرة؟','y^{(0)} = E_{α}(−t^{α})',
+    [['Drop the small nonlinear term and solve the linear problem of Lesson 80.','أسقط الحد غير الخطي الصغير وحل المسألة الخطية في الدرس 80.']],
+    ['y^{(0)} = 0','y^{(0)} = t^{α}','y^{(0)} = ε']),
+]);
+
+lesson('501',96,[
+  ['On `[0, ∞)` or `(−∞, ∞)` there are two strategies. Map the domain to a finite interval, for example the algebraic map','على `[0, ∞)` أو `(−∞, ∞)` توجد استراتيجيتان. الأولى تحويل المجال إلى مجال منته، مثل التحويل الجبري'],
+  'x = L #f{1 + z}{1 − z},   z ∈ [−1, 1)  →  x ∈ [0, ∞)',
+  ['or use bases made for the infinite domain: Laguerre functions `e^{−x/2} L_n(x)` on `[0, ∞)` (weight `e^{−x}`, `L_1 = 1 − x`, `L_2 = (x^2 − 4x + 2)/2`) and Hermite functions on the real line. The scale L must match how fast the solution decays.',
+   'والثانية استخدام أسس مصممة للمجال اللانهائي: دوال لاجير `e^{−x/2} L_n(x)` على `[0, ∞)` (بالوزن `e^{−x}` و `L_1 = 1 − x` و `L_2 = (x^2 − 4x + 2)/2`) ودوال هيرميت على الخط الحقيقي. ويجب أن يطابق المقياس L سرعة تناقص الحل.'],
+],[
+  Q('Which x corresponds to z = 0 in the algebraic map?','أي x يقابل z = 0 في التحويل الجبري؟','x = L',
+    ['x = L·#f{1 + 0}{1 − 0} = L', ['Half of the nodes in z land in `[0, L]`.','نصف العقد في z تقع في `[0, L]`.']], ['x = 0','x = 2L','x = ∞']),
+  Q('With L = 2, map the node z = 0.5.','مع L = 2 حوّل العقدة z = 0.5.','x = 6',
+    ['x = 2·#f{1.5}{0.5} = 6'], ['x = 3','x = 1','x = 2']),
+  Q('Check that `L_1 = 1 − x` and `L_2 = (x^2 − 4x + 2)/2` are orthogonal with the weight `e^{−x}` on `[0, ∞)`.','تحقق أن `L_1 = 1 − x` و `L_2 = (x^2 − 4x + 2)/2` متعامدتان بالوزن `e^{−x}` على `[0, ∞)`.','0',
+    ['∫_0^{∞} x^n e^{−x} dx = n!', 'L_1 L_2 = #f{−x^3 + 5x^2 − 6x + 2}{2}  ⇒  #f{−6 + 10 − 6 + 2}{2} = 0'], ['1','#f{1}{2}','−1']),
+  Q('A solution decays like `e^{−10x}`. Should the scale L be large or small?','حلٌّ يتناقص مثل `e^{−10x}`. هل يكون المقياس L كبيراً أم صغيراً؟',['Small, about 0.1, so that the nodes sit where the solution varies','صغيراً، نحو 0.1، لتقع العقد حيث يتغير الحل'],
+    [['With a large L most nodes fall where the solution is already zero.','مع L كبيرة تقع معظم العقد حيث يكون الحل صفراً.']],
+    [['Large, about 10','كبيراً، نحو 10'],['It does not matter','لا يهم']]),
+]);
+
+lesson('501',97,[
+  ['A manufactured solution tests a code without knowing any exact solution in advance: choose u, compute the right-hand side `f = 𝓛u` by hand, run the solver with this f, and compare with u. The paper’s examples are built this way.',
+   'الحل المصنّع يختبر البرنامج دون معرفة حل مضبوط مسبقاً: نختار u، ونحسب الطرف الأيمن `f = 𝓛u` يدوياً، ونشغّل الحلّال بهذا f، ونقارن بـ u. وأمثلة البحث مبنية بهذه الطريقة.'],
+  '^CD^{α} t^{β} = #f{Γ(β + 1)}{Γ(β − α + 1)} t^{β−α}   (β > ⌈α⌉ − 1)',
+  ['A good manufactured solution has the features of real solutions (the right powers of t, boundary values that the method imposes) and is not exactly in the approximation space, otherwise the test is too easy.','والحل المصنّع الجيد له سمات الحلول الحقيقية (قوى t الصحيحة، وقيم حدية تفرضها الطريقة) ولا يقع تماماً في فضاء التقريب، وإلا كان الاختبار سهلاً جداً.'],
+],[
+  Q('Manufacture f for `^CD^{1/2} y = f` with `y = t^2`.','اصنع f للمسألة `^CD^{1/2} y = f` مع `y = t^2`.','f = #f{Γ(3)}{Γ(5/2)} t^{3/2} ≈ 1.5045 t^{3/2}',
+    ['#f{Γ(3)}{Γ(2.5)} = #f{2}{1.3293} ≈ 1.5045'], ['f = 2t','f = #f{Γ(3)}{Γ(1/2)} t^{3/2} ≈ 1.1284 t^{3/2}','f = t^{3/2}']),
+  Q('Manufacture f for `−u″ = f` with `u = sin πx`.','اصنع f للمسألة `−u″ = f` مع `u = sin πx`.','f = π^2 sin πx',
+    ['u″ = −π^2 sin πx'], ['f = −π^2 sin πx','f = π sin πx','f = π^2 cos πx']),
+  Q('Compute `^CD^{1/2} t^{3/2}`.','احسب `^CD^{1/2} t^{3/2}`.','#f{Γ(5/2)}{Γ(2)} t ≈ 1.3293 t',
+    ['#f{Γ(2.5)}{Γ(2)} t^{1} = 1.3293 t'], ['#f{Γ(5/2)}{Γ(3/2)} t ≈ 1.5 t','t','#f{Γ(3/2)}{Γ(2)} t ≈ 0.8862 t']),
+  Q('Why is `y = t^3` a weak test for λ = 1/2 and M = 8?','لماذا يكون `y = t^3` اختباراً ضعيفاً عند λ = 1/2 و M = 8؟',['It lies exactly in the approximation space (`t^3 = s^6`, 6 ≤ 8), so any correct code gives rounding-level error','يقع تماماً في فضاء التقريب (`t^3 = s^6` و 6 ≤ 8)، فأي برنامج صحيح يعطي خطأً بمستوى التقريب'],
+    [['It cannot reveal how the method converges; a solution such as `t^{3.9}` does.','لا يكشف كيف تتقارب الطريقة، أما حل مثل `t^{3.9}` فيكشف.']],
+    [['Because `t^3` is not smooth','لأن `t^3` ليست ملساء'],['It is a strong test','إنه اختبار قوي']]),
+]);
+
+lesson('501',98,[
+  ['The same building blocks are needed in every language: the numbers `E_{n,r}`, Gauss nodes, the matrices `D^{(2)}` and `I_{(−μ)}`, Kronecker products and one linear solve. The usual commands are:','الحاجة واحدة في كل لغة: الأعداد `E_{n,r}` وعقد جاوس والمصفوفتان `D^{(2)}` و `I_{(−μ)}` وضرب كرونيكر وحل خطي واحد. والأوامر المعتادة هي:'],
+  '$# Python (NumPy)\nx, w = np.polynomial.legendre.leggauss(n)\nK = np.kron(A, B);   a = np.linalg.solve(K, b)\n\n% MATLAB\nK = kron(A, B);   a = K \\ b\n\n(* Mathematica *)\nK = KroneckerProduct[A, B];   a = LinearSolve[K, b]',
+  ['Watch the order of `vec`: MATLAB and Mathematica’s ``Flatten[Transpose[Y]]`` stack columns, while NumPy’s default ``Y.ravel()`` stacks rows; use ``Y.ravel(order="F")`` to match `vec(A𝒴B) = (B^T ⊗ A) vec(𝒴)`.','وانتبه لترتيب `vec`: في MATLAB و ``Flatten[Transpose[Y]]`` في Mathematica تُرصّ الأعمدة، بينما ``Y.ravel()`` الافتراضية في NumPy ترصّ الصفوف، فاستخدم ``Y.ravel(order="F")`` لتطابق `vec(A𝒴B) = (B^T ⊗ A) vec(𝒴)`.'],
+],[
+  Q('Which NumPy function returns Gauss–Legendre nodes and weights?','أي دالة في NumPy تعيد عقد جاوس–ليجندر وأوزانها؟','$numpy.polynomial.legendre.leggauss(n)',
+    [['It returns two arrays, the nodes and the weights on `[−1, 1]`.','تعيد مصفوفتين: العقد والأوزان على `[−1, 1]`.']], ['$numpy.linalg.eig(n)','$numpy.polyfit(n)','$numpy.roots(n)']),
+  Q('Write the MATLAB command that solves `K a = b`.','اكتب أمر MATLAB الذي يحل `K a = b`.','$a = K \\ b',
+    [['The backslash operator chooses a suitable direct solver.','عامل الشرطة الخلفية يختار حلّالاً مباشراً مناسباً.']], ['$a = b / K','$a = inv(b) * K','$a = K * b']),
+  Q('Write the Mathematica command for the Kronecker product of A and B.','اكتب أمر Mathematica لضرب كرونيكر للمصفوفتين A و B.','$KroneckerProduct[A, B]',
+    [['It is used to build `D^{(2)} ⊗ I` in two dimensions.','ويُستخدم لبناء `D^{(2)} ⊗ I` في بعدين.']], ['$Outer[Times, A, B]','$A . B','$Kron[A, B]']),
+  Q('In NumPy, how do you form `vec(Y)` in the column order used by `(B^T ⊗ A)`?','في NumPy كيف تكوّن `vec(Y)` بترتيب الأعمدة المستخدم في `(B^T ⊗ A)`؟','$Y.ravel(order="F")',
+    [['"F" (Fortran) order stacks the columns one under another.','الترتيب "F" (فورتران) يرصّ الأعمدة بعضها تحت بعض.']], ['$Y.ravel()','$Y.T','$np.kron(Y, 1)']),
+]);
+
+lesson('501',99,[
+  ['Reading a research paper well means rebuilding it: (1) state the problem and its conditions; (2) list the tools (here Lemma 2.1, Theorem 3.1, Theorem 3.2); (3) write the algorithm step by step; (4) check every formula independently; (5) reproduce the tables; (6) record what differs and why.',
+   'القراءة الجيدة لبحث علمي تعني إعادة بنائه: (1) صياغة المسألة وشروطها، (2) سرد الأدوات (هنا اللمة 2.1 والنظرية 3.1 والنظرية 3.2)، (3) كتابة الخوارزمية خطوة خطوة، (4) فحص كل صيغة فحصاً مستقلاً، (5) إعادة إنتاج الجداول، (6) تدوين ما يختلف ولماذا.'],
+  ['The code-enhancement project found 16 corrections, none affecting the validity of the method, for example: in Lemma 2.1 `D^{−μ} ^CD^{ζ}` should be `D^{−ζ} ^CD^{ζ}`; in Theorem 3.2 “=” should be “≃”; and the condition `υ ≤ μ_s` is needed for the integrated form.',
+   'ووجد مشروع تحسين الكود 16 تصويباً لا يمس أيٌّ منها صحة الطريقة، مثلاً: في اللمة 2.1 يجب أن تكون `D^{−μ} ^CD^{ζ}` هي `D^{−ζ} ^CD^{ζ}`، وفي النظرية 3.2 يجب أن تكون «=» هي «≃»، والشرط `υ ≤ μ_s` لازم للصيغة التكاملية.'],
+],[
+  Q('What is the correct form of Lemma 2.1?','ما الصيغة الصحيحة للمة 2.1؟','D^{−ζ} ^CD^{ζ} y = y − Σ_{i=0}^{⌈ζ⌉−1} y^{(i)}(0) #f{t^i}{i!}',
+    [['The integral must have the same order as the derivative it undoes.','يجب أن يكون التكامل من رتبة المشتقة نفسها التي يلغيها.']],
+    ['D^{−μ} ^CD^{ζ} y = y − y(0)','D^{−ζ} ^CD^{ζ} y = y','^CD^{ζ} D^{−ζ} y = y − y(0)']),
+  Q('Why should Theorem 3.2 be written with “≃” rather than “=”?','لماذا يجب أن تُكتب النظرية 3.2 بـ «≃» بدل «=»؟',['The projection of `t^{kλ+μ}` is truncated at M','لأن إسقاط `t^{kλ+μ}` مقطوع عند M'],
+    [['The relation is exact only in the matched case `i + μ/λ ≤ M`.','العلاقة مضبوطة فقط في حالة التوافق `i + μ/λ ≤ M`.']],
+    [['Because of rounding errors','بسبب أخطاء التقريب'],['Because I is not square','لأن I ليست مربعة']]),
+  Q('An independent solve gives errors 14 times larger than the paper at N = 12, while rerunning the notebook matches. Where is the cause?','حل مستقل يعطي أخطاء أكبر 14 مرة من البحث عند N = 12، بينما يطابقه تشغيل الدفتر. أين السبب؟',['In the independent solve: h was evaluated at the points instead of being projected onto the basis','في الحل المستقل: حُسبت h عند النقاط بدل إسقاطها على الأساس'],
+    [['When the original code reproduces the table, the difference belongs to the new implementation; stage 3 of the project confirmed this cause.','حين يعيد الكود الأصلي إنتاج الجدول فالفرق يخص التنفيذ الجديد، وقد أكدت المرحلة 3 من المشروع هذا السبب.']],
+    [['In the paper’s table','في جدول البحث'],['In the computer','في الحاسوب']]),
+  Q('Which step of reading a paper checks the formulas without using its code?','أي خطوة في قراءة البحث تفحص الصيغ دون استخدام كوده؟',['Independent verification: re-derive and test each formula, e.g. against numerical integrals','التحقق المستقل: إعادة اشتقاق كل صيغة واختبارها، مثلاً بمقارنتها بتكاملات عددية'],
+    [['The project checked `c_{k,j}` against a numerical integral to more than 15 digits.','فحص المشروع `c_{k,j}` مقابل تكامل عددي بأكثر من 15 رقماً.']],
+    [['Reproducing the tables','إعادة إنتاج الجداول'],['Reading the abstract','قراءة الملخص']]),
+]);
+
+lesson('501',100,[
+  ['Capstone project: solve a two-term problem from start to finish and report it as a short paper:','المشروع الختامي: حل مسألة ثنائية الحد من البداية إلى النهاية وكتابتها في صورة بحث قصير:'],
+  '^CD^{1.5} y + ^CD^{0.5} y = Δy + g(x, t),   x ∈ [0, 1],   y = t^{2.5} sin(πx)',
+  ['Steps: manufacture g; choose λ from the powers of t; write the integrated form and h; build `D^{(2)}` and the matrices `I_{(−1)}`, `I_{(−1.5)}`; assemble ℜ and solve the linear system; measure the error for N = M = 4, 6, …, 14; plot it on a semi-log scale; explain the result (exponential convergence, or why not).',
+   'الخطوات: اصنع g، واختر λ من قوى t، واكتب الصيغة التكاملية و h، وابنِ `D^{(2)}` والمصفوفتين `I_{(−1)}` و `I_{(−1.5)}`، واجمع ℜ وحل النظام الخطي، وقِس الخطأ عند N = M = 4, 6, …, 14، وارسمه على مقياس شبه لوغاريتمي، وفسّر النتيجة (تقارب أسي، أو سبب غيابه).'],
+],[
+  Q('Choose λ and the smallest M that represents the time part `t^{2.5}` exactly.','اختر λ وأصغر M يمثل الجزء الزمني `t^{2.5}` بدقة.','λ = #f{1}{2},   M = 5',
+    ['t^{2.5} = s^5,   s = t^{1/2}', ['The orders 1.5 − 0.5 = 1 and 1.5 are also multiples of 1/2, so the matrices are matched too.','والرتبتان 1.5 − 0.5 = 1 و 1.5 مضاعفتان لـ 1/2 أيضاً، فتتوافق المصفوفات كذلك.']],
+    ['λ = #f{1}{4},   M = 5','λ = #f{1}{2},   M = 2','λ = 1,   M = 3']),
+  Q('Which integration matrices appear in the integrated form?','أي مصفوفات تكامل تظهر في الصيغة التكاملية؟','I_{(−1)},   I_{(−1.5)}',
+    ['D^{−1.5} ^CD^{0.5} y = D^{−1}(y − ψ_0),   D^{−1.5} Δy', ['`I_{(−1)}` for the term of order 0.5 and `I_{(−1.5)}` for `Δy`.','`I_{(−1)}` لحد الرتبة 0.5 و `I_{(−1.5)}` لـ `Δy`.']],
+    ['I_{(−0.5)},   I_{(−1.5)}','I_{(−1)}','I_{(−2)},   I_{(−0.5)}']),
+  Q('How many unknowns does the system have for N = M = 8?','كم مجهولاً في النظام عند N = M = 8؟','81',
+    ['(N + 1)(M + 1) = 9·9'], ['64','72','100']),
+  Q('The error stops falling at about `10^{−6}` as N = M grows. Name two causes to check.','يتوقف الخطأ عن التناقص عند نحو `10^{−6}` مع زيادة N = M. اذكر سببين يجب فحصهما.',['A mismatch between λ and the orders (truncation in Theorem 3.2), or h evaluated at points instead of projected','عدم توافق λ مع الرتب (القطع في النظرية 3.2)، أو حساب h عند النقاط بدل إسقاطها'],
+    [['With exact powers and matched orders the error should fall to rounding level; a floor means a modelling or implementation error.','مع القوى المضبوطة والرتب المتوافقة يجب أن ينزل الخطأ إلى مستوى التقريب، والحد الأدنى يعني خطأً في النمذجة أو التنفيذ.']],
+    [['The computer is too slow','الحاسوب بطيء جداً'],['Exponential convergence always stops at `10^{−6}`','التقارب الأسي يتوقف دائماً عند `10^{−6}`']]),
+]);
+
 export const MS501 = true;

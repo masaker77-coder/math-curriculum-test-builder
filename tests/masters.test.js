@@ -11,7 +11,7 @@ const AR = /[؀-ۿ]/;
 const ticks = s => (String(s).match(/`/g) || []).length % 2 === 0;
 const pairs = x => Array.isArray(x) && x.length === 2 && typeof x[0] === 'string' && typeof x[1] === 'string';
 // lessons written so far in each course: the count may only grow
-const WRITTEN = { 501: 5, 502: 5, 503: 5, 504: 5, 505: 5, 506: 5, 507: 100, 508: 5, 509: 5 };
+const WRITTEN = { 501: 100, 502: 5, 503: 5, 504: 5, 505: 5, 506: 5, 507: 100, 508: 5, 509: 5 };
 
 test('nine courses, each a road map of 10 units and 100 lessons, listed in the curriculum', () => {
   assert.deepEqual(MS_COURSES.map(c => c.code),
