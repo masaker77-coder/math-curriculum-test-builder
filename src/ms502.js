@@ -204,4 +204,259 @@ lesson('502',5,[
     ['2 ≤ p(x) ≤ 3,   p(0) = 2,   p(1) = 3','0 ≤ p(x) ≤ 10,   p(0) = 2,   p(1) = 5','2 ≤ p(x) ≤ 5,   p(0) = 5,   p(1) = 3']),
 ]);
 
+/* ---- 502 · Unit 1 (lessons 6–10) and Unit 2 (lessons 11–20): the basis and its algebra ---- */
+lesson('502',6,[
+  ['Each `B_{i,n}` is a single hump on [0, 1]. It has a zero of multiplicity i at x = 0 and of multiplicity n − i at x = 1, and in between it rises to one maximum and falls again:','كل `B_{i,n}` حدبة واحدة على [0, 1]. لها جذر تكراره i عند x = 0 وجذر تكراره n − i عند x = 1، وبينهما ترتفع إلى قيمة عظمى واحدة ثم تنخفض:'],
+  'B_{i,n}′(x) = 0  ⇒  x = #f{i}{n}',
+  ['The two end functions `B_{0,n} = (1 − x)^n` and `B_{n,n} = x^n` are monotone and equal 1 at one end. As n grows the humps become narrower and lower: each function «controls» mainly the region near `x = i/n`. This is why the coefficient `c_i` of a Bernstein expansion acts on the shape near `i/n`.',
+   'ودالتا الطرفين `B_{0,n} = (1 − x)^n` و `B_{n,n} = x^n` مطّردتان وتساويان 1 عند أحد الطرفين. وكلما كبرت n صارت الحدبات أضيق وأخفض: كل دالة «تتحكم» أساساً في المنطقة قرب `x = i/n`. ولهذا يؤثر المعامل `c_i` في مفكوك بيرنشتاين على الشكل قرب `i/n`.'],
+],[
+  Q('Find the maximum value of `B_{1,3}(x) = 3x(1 − x)^2` on [0, 1].','أوجد القيمة العظمى لـ `B_{1,3}(x) = 3x(1 − x)^2` على [0, 1].','#f{4}{9}',
+    ['B_{1,3}′ = 3(1 − x)^2 − 6x(1 − x) = 3(1 − x)(1 − 3x) = 0  ⇒  x = #f{1}{3}', 'B_{1,3}(#f{1}{3}) = 3·#f{1}{3}·#f{4}{9} = #f{4}{9}'],
+    ['#f{1}{3}','#f{3}{8}','#f{8}{27}']),
+  Q('Find the maximum value of `B_{2,4}(x) = 6x^2(1 − x)^2`.','أوجد القيمة العظمى لـ `B_{2,4}(x) = 6x^2(1 − x)^2`.','#f{3}{8}',
+    ['x = #f{i}{n} = #f{2}{4} = #f{1}{2}', 'B_{2,4}(#f{1}{2}) = 6·#f{1}{4}·#f{1}{4} = #f{3}{8}'], ['#f{1}{2}','#f{3}{4}','#f{1}{16}']),
+  Q('What is the multiplicity of the root x = 0 of `B_{3,5}`?','ما تكرار الجذر x = 0 للدالة `B_{3,5}`؟','3',
+    ['B_{3,5} = 10x^3(1 − x)^2', ['The factor `x^3` gives a triple root at 0, and `(1 − x)^2` a double root at 1.','العامل `x^3` يعطي جذراً ثلاثياً عند 0، و `(1 − x)^2` جذراً مزدوجاً عند 1.']], ['2','5','1']),
+  Q('Which basis function of degree 5 is largest near x = 0.6?','أي دالة أساسية من الدرجة 5 هي الأكبر قرب x = 0.6؟','B_{3,5}',
+    ['#f{i}{n} = 0.6  ⇒  i = 3'], ['B_{0,5}','B_{5,5}','B_{2,5}']),
+]);
+
+lesson('502',7,[
+  ['Two properties make the Bernstein basis special:','خاصيتان تجعلان أساس بيرنشتاين مميزاً:'],
+  'B_{i,n}(x) ≥ 0  on  [0, 1],     Σ_{i=0}^{n} B_{i,n}(x) = 1',
+  ['The second one is the binomial theorem for `(x + (1 − x))^n`. Together they say that, at each x, the numbers `B_{i,n}(x)` are weights of a weighted average. Hence `p = Σ c_i B_{i,n}` always lies between the smallest and the largest coefficient: `min c_i ≤ p(x) ≤ max c_i`. Outside [0, 1] some basis functions become negative and this is lost.',
+   'والثانية هي نظرية ذات الحدين للمقدار `(x + (1 − x))^n`. ومعاً تقولان إن الأعداد `B_{i,n}(x)` عند كل x أوزان لمتوسط موزون. فتقع `p = Σ c_i B_{i,n}` دائماً بين أصغر معامل وأكبرها: `min c_i ≤ p(x) ≤ max c_i`. وخارج [0, 1] تصبح بعض الدوال سالبة فتضيع هذه الخاصية.'],
+],[
+  Q('Compute the three basis values of degree 2 at x = 0.3 and their sum.','احسب قيم الأساس الثلاث من الدرجة 2 عند x = 0.3 ومجموعها.','0.49,  0.42,  0.09;   sum 1',
+    ['(0.7)^2 = 0.49,   2(0.3)(0.7) = 0.42,   (0.3)^2 = 0.09', '0.49 + 0.42 + 0.09 = 1'], ['0.49,  0.21,  0.09;   sum 0.79','0.7,  0.42,  0.3;   sum 1.42','0.09,  0.42,  0.49;   sum 1']),
+  Q('Compute `B_{1,2}(2)`.','احسب `B_{1,2}(2)`.','−4',
+    ['B_{1,2}(2) = 2·2·(1 − 2) = −4', ['Outside [0, 1] the basis is no longer non-negative.','خارج [0, 1] لا يبقى الأساس غير سالب.']], ['4','0','−2']),
+  Q('`p = 4B_{0,3} − B_{1,3} + 2B_{2,3} + 6B_{3,3}`. Between which bounds does p stay on [0, 1]?','`p = 4B_{0,3} − B_{1,3} + 2B_{2,3} + 6B_{3,3}`. بين أي حدين تبقى p على [0, 1]؟','−1 ≤ p(x) ≤ 6',
+    ['min c_i = −1,   max c_i = 6'], ['4 ≤ p(x) ≤ 6','0 ≤ p(x) ≤ 6','−1 ≤ p(x) ≤ 11']),
+  Q('Compute `Σ_{i=0}^{7} B_{i,7}(0.37)`.','احسب `Σ_{i=0}^{7} B_{i,7}(0.37)`.','1',
+    ['Σ_i B_{i,n}(x) = (x + 1 − x)^n = 1'], ['0.37','7','2^7']),
+]);
+
+lesson('502',8,[
+  ['Replacing x by `1 − x` reverses the basis:','استبدال x بـ `1 − x` يعكس الأساس:'],
+  'B_{i,n}(x) = B_{n−i,n}(1 − x)',
+  ['because `C(n, i) = C(n, n − i)` and the powers of x and `1 − x` swap. So the graph of `B_{n−i,n}` is the mirror image of `B_{i,n}` in the line x = 1/2. For a polynomial, `p(1 − x)` has the coefficients of p in reverse order.',
+   'لأن `C(n, i) = C(n, n − i)` وتتبادل قوى x و `1 − x`. فمنحنى `B_{n−i,n}` صورة مرآة لمنحنى `B_{i,n}` حول المستقيم x = 1/2. وكثيرة الحدود `p(1 − x)` معاملاتها معاملات p بترتيب معكوس.'],
+],[
+  Q('Check the symmetry: compute `B_{1,3}(0.2)` and `B_{2,3}(0.8)`.','تحقق من التماثل: احسب `B_{1,3}(0.2)` و `B_{2,3}(0.8)`.','0.384  =  0.384',
+    ['B_{1,3}(0.2) = 3·0.2·0.64 = 0.384', 'B_{2,3}(0.8) = 3·0.64·0.2 = 0.384'], ['0.384  ≠  0.096','0.096  =  0.096','0.512  =  0.512']),
+  Q('`p = B_{0,2} + 4B_{1,2} + 9B_{2,2}`. Write `q(x) = p(1 − x)` in the same basis.','`p = B_{0,2} + 4B_{1,2} + 9B_{2,2}`. اكتب `q(x) = p(1 − x)` في الأساس نفسه.','q = 9B_{0,2} + 4B_{1,2} + B_{2,2}',
+    ['B_{i,2}(1 − x) = B_{2−i,2}(x)', ['The coefficients are reversed.','المعاملات معكوسة.']], ['q = B_{0,2} + 4B_{1,2} + 9B_{2,2}','q = −B_{0,2} − 4B_{1,2} − 9B_{2,2}','q = 9B_{0,2} − 4B_{1,2} + B_{2,2}']),
+  Q('Which basis function of degree 4 is symmetric about x = 1/2?','أي دالة أساسية من الدرجة 4 متماثلة حول x = 1/2؟','B_{2,4}',
+    ['i = n − i  ⇒  i = 2'], ['B_{0,4}','B_{1,4}','B_{4,4}']),
+  Q('If p has coefficients `(c_0, …, c_n)` and `p(x) = p(1 − x)` for all x, what must hold?','إذا كانت معاملات p هي `(c_0, …, c_n)` وكان `p(x) = p(1 − x)` لكل x فماذا يجب أن يتحقق؟','c_i = c_{n−i}',
+    [['`p(1 − x)` has the reversed coefficients, and the coefficients in a basis are unique.','`p(1 − x)` معاملاتها معكوسة، والمعاملات في الأساس وحيدة.']], ['c_i = −c_{n−i}','c_i = 0','c_0 = c_1']),
+]);
+
+lesson('502',9,[
+  ['At the ends only one basis function is non-zero:','عند الطرفين لا تكون إلا دالة أساسية واحدة غير صفرية:'],
+  'B_{i,n}(0) = δ_{i0},   B_{i,n}(1) = δ_{in},   p(0) = c_0,   p(1) = c_n',
+  ['Inside, `B_{i,n}` reaches its maximum at `x = i/n`, with the value','وفي الداخل تبلغ `B_{i,n}` قيمتها العظمى عند `x = i/n` وقيمتها'],
+  'B_{i,n}(#f{i}{n}) = C(n, i) #f{i^i (n − i)^{n−i}}{n^n}',
+],[
+  Q('`p = 3B_{0,4} + B_{1,4} − 2B_{2,4} + 5B_{3,4} + 7B_{4,4}`. Find p(0) and p(1).','`p = 3B_{0,4} + B_{1,4} − 2B_{2,4} + 5B_{3,4} + 7B_{4,4}`. أوجد p(0) و p(1).','p(0) = 3,   p(1) = 7',
+    ['p(0) = c_0,   p(1) = c_n'], ['p(0) = 7,   p(1) = 3','p(0) = 0,   p(1) = 0','p(0) = 3,   p(1) = 14']),
+  Q('Find the maximum value of `B_{2,3}`.','أوجد القيمة العظمى لـ `B_{2,3}`.','#f{4}{9}',
+    ['x = #f{2}{3}:   3·#f{4}{9}·#f{1}{3} = #f{4}{9}', ['By symmetry it equals the maximum of `B_{1,3}`.','وبالتماثل تساوي القيمة العظمى لـ `B_{1,3}`.']], ['#f{2}{3}','#f{8}{27}','#f{1}{3}']),
+  Q('Use the formula to find the maximum of `B_{1,4}`.','استخدم الصيغة لإيجاد القيمة العظمى لـ `B_{1,4}`.','#f{27}{64}',
+    ['C(4, 1)·#f{1^1·3^3}{4^4} = 4·#f{27}{256} = #f{27}{64}'], ['#f{27}{256}','#f{1}{4}','#f{3}{8}']),
+  Q('Find `B_{0,n}′(0)` and `B_{1,n}′(0)`.','أوجد `B_{0,n}′(0)` و `B_{1,n}′(0)`.','B_{0,n}′(0) = −n,   B_{1,n}′(0) = n',
+    ['B_{0,n} = (1 − x)^n  ⇒  B_{0,n}′(0) = −n', 'B_{1,n} = nx(1 − x)^{n−1}  ⇒  B_{1,n}′(0) = n', ['So `p′(0) = n(c_1 − c_0)`: the slope at an end depends on two coefficients only.','إذن `p′(0) = n(c_1 − c_0)`: الميل عند الطرف يعتمد على معاملين فقط.']],
+    ['B_{0,n}′(0) = 0,   B_{1,n}′(0) = 1','B_{0,n}′(0) = −1,   B_{1,n}′(0) = 1','B_{0,n}′(0) = n,   B_{1,n}′(0) = −n']),
+]);
+
+lesson('502',10,[
+  ['On a general interval `[a, b]` the basis is obtained through `u = (x − a)/(b − a)`:','على مجال عام `[a, b]` نحصل على الأساس عبر `u = (x − a)/(b − a)`:'],
+  'B_{i,n}^{[a,b]}(x) = C(n, i) #f{(x − a)^i (b − x)^{n−i}}{(b − a)^n}',
+  ['All the properties carry over: non-negativity and partition of unity on `[a, b]`, end values `p(a) = c_0`, `p(b) = c_n`, maxima at `x = a + (i/n)(b − a)`. Derivatives pick up the factor `1/(b − a)`.',
+   'وتنتقل كل الخواص: عدم السالبية وتجزئة الواحد على `[a, b]`، والقيم الطرفية `p(a) = c_0` و `p(b) = c_n`، والقيم العظمى عند `x = a + (i/n)(b − a)`. والمشتقات تكتسب العامل `1/(b − a)`.'],
+],[
+  Q('Compute `B_{1,2}^{[0,2]}(1)`.','احسب `B_{1,2}^{[0,2]}(1)`.','#f{1}{2}',
+    ['2·#f{(1 − 0)(2 − 1)}{2^2} = #f{2}{4} = #f{1}{2}'], ['1','2','#f{1}{4}']),
+  Q('Write the degree-1 basis on `[1, 3]`.','اكتب أساس الدرجة 1 على `[1, 3]`.','#f{3 − x}{2},   #f{x − 1}{2}',
+    ['B_{0,1} = #f{b − x}{b − a},   B_{1,1} = #f{x − a}{b − a}'], ['3 − x,   x − 1','#f{x − 1}{2},   #f{3 − x}{2}','1 − x,   x']),
+  Q('Where is the maximum of `B_{1,3}` on `[2, 5]`?','أين القيمة العظمى لـ `B_{1,3}` على `[2, 5]`؟','x = 3',
+    ['x = a + #f{i}{n}(b − a) = 2 + #f{1}{3}·3 = 3'], ['x = #f{1}{3}','x = 2.5','x = 4']),
+  Q('`p = 1·B_{0,2} + 3B_{1,2} + 2B_{2,2}` on `[0, 4]`. Find `p′(0)`.','`p = 1·B_{0,2} + 3B_{1,2} + 2B_{2,2}` على `[0, 4]`. أوجد `p′(0)`.','1',
+    ['p′(a) = #f{n}{b − a}(c_1 − c_0) = #f{2}{4}(3 − 1) = 1'], ['4','2','#f{1}{2}']),
+]);
+
+lesson('502',11,[
+  ['Pascal’s rule for `C(n, i)` gives the recurrence of the basis, which builds degree n from degree n − 1:','قاعدة باسكال للعدد `C(n, i)` تعطي علاقة تكرار الأساس، التي تبني الدرجة n من الدرجة n − 1:'],
+  'B_{i,n}(x) = (1 − x) B_{i,n−1}(x) + x B_{i−1,n−1}(x)',
+  ['(with `B_{−1,n−1} = B_{n,n−1} = 0`). Applied to the coefficients instead of the basis, the same rule gives de Casteljau’s algorithm: repeated linear interpolation `c_i^{(r)} = (1 − x)c_i^{(r−1)} + x c_{i+1}^{(r−1)}`, which evaluates `p(x)` stably using only convex combinations.',
+   '(مع `B_{−1,n−1} = B_{n,n−1} = 0`). وبتطبيق القاعدة نفسها على المعاملات بدل الأساس نحصل على خوارزمية دي كاستلجو: استكمال خطي متكرر `c_i^{(r)} = (1 − x)c_i^{(r−1)} + x c_{i+1}^{(r−1)}`، يحسب `p(x)` بثبات بتراكيب محدبة فقط.'],
+],[
+  Q('Build `B_{1,2}` from `B_{1,1} = x` and `B_{0,1} = 1 − x`.','ابنِ `B_{1,2}` من `B_{1,1} = x` و `B_{0,1} = 1 − x`.','B_{1,2} = 2x(1 − x)',
+    ['B_{1,2} = (1 − x)B_{1,1} + xB_{0,1} = (1 − x)x + x(1 − x)'], ['B_{1,2} = x(1 − x)','B_{1,2} = x^2','B_{1,2} = (1 − x)^2']),
+  Q('Use de Casteljau’s algorithm to evaluate `p = 1·B_{0,2} + 3B_{1,2} + 2B_{2,2}` at x = 0.5.','استخدم خوارزمية دي كاستلجو لحساب `p = 1·B_{0,2} + 3B_{1,2} + 2B_{2,2}` عند x = 0.5.','2.25',
+    ['r = 1:   0.5·1 + 0.5·3 = 2,   0.5·3 + 0.5·2 = 2.5', 'r = 2:   0.5·2 + 0.5·2.5 = 2.25', ['Check: `0.25 + 3·0.5 + 2·0.25 = 2.25`.','تحقق: `0.25 + 3·0.5 + 2·0.25 = 2.25`.']],
+    ['2','2.5','3']),
+  Q('Evaluate `p = 0·B_{0,3} + 3B_{1,3} + 3B_{2,3} + 0·B_{3,3}` at x = 1/3 with de Casteljau.','احسب `p = 0·B_{0,3} + 3B_{1,3} + 3B_{2,3} + 0·B_{3,3}` عند x = 1/3 بدي كاستلجو.','2',
+    ['r = 1:   (1, 3, 2)', 'r = 2:   (#f{5}{3}, #f{8}{3})', 'r = 3:   #f{2}{3}·#f{5}{3} + #f{1}{3}·#f{8}{3} = #f{18}{9} = 2', ['Directly: `3B_{1,3} + 3B_{2,3} = 9x(1 − x) = 9·(1/3)(2/3) = 2`.','مباشرة: `3B_{1,3} + 3B_{2,3} = 9x(1 − x) = 9·(1/3)(2/3) = 2`.']],
+    ['#f{4}{3}','#f{8}{3}','3']),
+  Q('Why is de Casteljau’s algorithm numerically stable on [0, 1]?','لماذا تكون خوارزمية دي كاستلجو مستقرة عددياً على [0, 1]؟',['Every step is a convex combination `(1 − x)a + xb` with weights in [0, 1], so errors are not amplified','كل خطوة تركيب محدب `(1 − x)a + xb` بأوزان في [0, 1]، فلا تتضخم الأخطاء'],
+    [['Values stay between the smallest and largest coefficient at every stage.','القيم تبقى بين أصغر المعاملات وأكبرها في كل مرحلة.']],
+    [['Because it uses powers of x','لأنها تستخدم قوى x'],['It is not stable','ليست مستقرة']]),
+]);
+
+lesson('502',12,[
+  ['Every polynomial of degree n is also of degree n + 1. Degree elevation rewrites it in the larger basis; the new coefficients are convex combinations of the old ones:','كل كثيرة حدود من الدرجة n هي أيضاً من الدرجة n + 1. ورفع الدرجة يعيد كتابتها في الأساس الأكبر، والمعاملات الجديدة تراكيب محدبة من القديمة:'],
+  'c_i^{*} = #f{i}{n + 1} c_{i−1} + (1 − #f{i}{n + 1}) c_i,   i = 0, …, n + 1',
+  ['It comes from `B_{i,n} = ((n + 1 − i)/(n + 1)) B_{i,n+1} + ((i + 1)/(n + 1)) B_{i+1,n+1}`. The end coefficients do not change, and repeated elevation makes the coefficients converge to the graph of p.','وهي تأتي من `B_{i,n} = ((n + 1 − i)/(n + 1)) B_{i,n+1} + ((i + 1)/(n + 1)) B_{i+1,n+1}`. ومعاملا الطرفين لا يتغيران، والرفع المتكرر يجعل المعاملات تقترب من منحنى p.'],
+],[
+  Q('Elevate `p = B_{0,1} + 3B_{1,1}` to degree 2.','ارفع `p = B_{0,1} + 3B_{1,1}` إلى الدرجة 2.','c^* = (1,  2,  3)',
+    ['c_0^* = 1,   c_1^* = #f{1}{2}·1 + #f{1}{2}·3 = 2,   c_2^* = 3', ['Check: `(1 − x)^2 + 4x(1 − x) + 3x^2 = 1 + 2x = p`.','تحقق: `(1 − x)^2 + 4x(1 − x) + 3x^2 = 1 + 2x = p`.']],
+    ['c^* = (1,  3,  3)','c^* = (1,  1.5,  3)','c^* = (1,  2,  2)']),
+  Q('Write `B_{0,1} = 1 − x` in the basis of degree 2.','اكتب `B_{0,1} = 1 − x` في أساس الدرجة 2.','1·B_{0,2} + #f{1}{2}·B_{1,2} + 0·B_{2,2}',
+    ['c = (1, 0):   c^* = (1,  #f{1}{2}·1 + #f{1}{2}·0,  0)'], ['1·B_{0,2} + 1·B_{1,2} + 0·B_{2,2}','1·B_{0,2} + 0·B_{1,2} + 0·B_{2,2}','#f{1}{2}·B_{0,2} + #f{1}{2}·B_{1,2}']),
+  Q('Elevate the coefficients `(0, 3, 0)` of degree 2 to degree 3.','ارفع المعاملات `(0, 3, 0)` من الدرجة 2 إلى الدرجة 3.','(0,  2,  2,  0)',
+    ['c_1^* = #f{1}{3}·0 + #f{2}{3}·3 = 2,   c_2^* = #f{2}{3}·3 + #f{1}{3}·0 = 2'], ['(0,  3,  3,  0)','(0,  1,  1,  0)','(0,  1.5,  1.5,  0)']),
+  Q('After degree elevation, which coefficients are certainly unchanged?','بعد رفع الدرجة، أي المعاملات لا تتغير يقيناً؟','c_0^* = c_0,   c_{n+1}^* = c_n',
+    [['The end values `p(0)` and `p(1)` are the same polynomial values.','قيمتا الطرفين `p(0)` و `p(1)` هما قيمتا كثيرة الحدود نفسها.']], ['c_1^* = c_1','c_i^* = c_i','c_0^* = 0']),
+]);
+
+lesson('502',13,[
+  ['The derivative of a basis polynomial is a difference of two basis polynomials of one degree less:','مشتقة كثيرة الحدود الأساسية فرق بين كثيرتي حدود أساسيتين من درجة أقل بواحد:'],
+  'B_{i,n}′(x) = n[B_{i−1,n−1}(x) − B_{i,n−1}(x)]',
+  ['So the derivative of `p = Σ c_i B_{i,n}` is again in Bernstein form, with coefficients n times the forward differences:','إذن مشتقة `p = Σ c_i B_{i,n}` في صيغة بيرنشتاين أيضاً، بمعاملات هي n مضروبة في الفروق الأمامية:'],
+  'p′(x) = n Σ_{i=0}^{n−1} (c_{i+1} − c_i) B_{i,n−1}(x)',
+],[
+  Q('Differentiate `B_{1,2}` with the rule.','اشتق `B_{1,2}` بالقاعدة.','B_{1,2}′ = 2 − 4x',
+    ['2[B_{0,1} − B_{1,1}] = 2[(1 − x) − x] = 2 − 4x'], ['B_{1,2}′ = 2x','B_{1,2}′ = 4x − 2','B_{1,2}′ = 2(1 − x)']),
+  Q('Find `p′` for `p = 0·B_{0,2} + 1·B_{1,2} + 4B_{2,2}`, and `p′(0)`, `p′(1)`.','أوجد `p′` للدالة `p = 0·B_{0,2} + 1·B_{1,2} + 4B_{2,2}` و `p′(0)` و `p′(1)`.','p′ = 2B_{0,1} + 6B_{1,1};   p′(0) = 2,   p′(1) = 6',
+    ['n(c_1 − c_0) = 2,   n(c_2 − c_1) = 6', ['Check: `p = 2x(1 − x) + 4x^2 = 2x + 2x^2`, `p′ = 2 + 4x`.','تحقق: `p = 2x(1 − x) + 4x^2 = 2x + 2x^2` و `p′ = 2 + 4x`.']],
+    ['p′ = B_{0,1} + 3B_{1,1};   p′(0) = 1,   p′(1) = 3','p′ = 2B_{0,1} + 6B_{1,1};   p′(0) = 6,   p′(1) = 2','p′ = 4B_{0,1};   p′(0) = 4,   p′(1) = 4']),
+  Q('If all coefficients of p increase, `c_0 ≤ c_1 ≤ … ≤ c_n`, what can be said about p on [0, 1]?','إذا كانت كل معاملات p متزايدة `c_0 ≤ c_1 ≤ … ≤ c_n` فماذا يقال عن p على [0, 1]؟',['p is non-decreasing','p غير متناقصة'],
+    ['p′ = n Σ (c_{i+1} − c_i) B_{i,n−1} ≥ 0', ['A sum of non-negative terms with non-negative weights.','مجموع حدود غير سالبة بأوزان غير سالبة.']],
+    [['p is constant','p ثابتة'],['Nothing','لا شيء']]),
+  Q('Find `p′(1/2)` for `p = 1·B_{0,3} + 2B_{1,3} + 4B_{2,3} + 8B_{3,3}`.','أوجد `p′(1/2)` للدالة `p = 1·B_{0,3} + 2B_{1,3} + 4B_{2,3} + 8B_{3,3}`.','#f{27}{4}',
+    ['p′ = 3[1·B_{0,2} + 2B_{1,2} + 4B_{2,2}]', 'x = #f{1}{2}:   3[#f{1}{4} + 2·#f{1}{2} + 4·#f{1}{4}] = 3·#f{9}{4} = #f{27}{4}', ['In fact `p = (1 + x)^3`, and `3(1.5)^2 = 6.75`.','وفي الحقيقة `p = (1 + x)^3` و `3(1.5)^2 = 6.75`.']],
+    ['#f{9}{4}','7','3']),
+]);
+
+lesson('502',14,[
+  ['Repeating the derivative rule k times gives the k-th derivative through the forward differences of the coefficients:','بتكرار قاعدة المشتقة k مرة نحصل على المشتقة ذات الرتبة k عبر الفروق الأمامية للمعاملات:'],
+  'p^{(k)}(x) = #f{n!}{(n − k)!} Σ_{i=0}^{n−k} Δ^k c_i B_{i,n−k}(x),   Δc_i = c_{i+1} − c_i',
+  ['For example `Δ^2 c_i = c_{i+2} − 2c_{i+1} + c_i`. At the ends only the first or last differences matter: `p^{(k)}(0) = n!/(n − k)!·Δ^k c_0`. If all second differences are non-negative, p is convex.',
+   'فمثلاً `Δ^2 c_i = c_{i+2} − 2c_{i+1} + c_i`. وعند الطرفين لا يهم إلا الفرق الأول أو الأخير: `p^{(k)}(0) = n!/(n − k)!·Δ^k c_0`. وإذا كانت كل الفروق الثانية غير سالبة كانت p محدبة.'],
+],[
+  Q('Find `p″` for `p = 0·B_{0,2} + 1·B_{1,2} + 4B_{2,2}`.','أوجد `p″` للدالة `p = 0·B_{0,2} + 1·B_{1,2} + 4B_{2,2}`.','p″ = 4',
+    ['Δ^2 c_0 = 4 − 2 + 0 = 2', 'p″ = 2·1·2 = 4', ['Check: `p = 2x + 2x^2`.','تحقق: `p = 2x + 2x^2`.']], ['p″ = 2','p″ = 8','p″ = 0']),
+  Q('Find the second differences of `c = (1, 0, 0, 1)`. Is `p = Σ c_i B_{i,3}` convex?','أوجد الفروق الثانية للمعاملات `c = (1, 0, 0, 1)`. هل `p = Σ c_i B_{i,3}` محدبة؟',['`Δ^2 c = (1, 1)`; yes, p is convex','`Δ^2 c = (1, 1)`، ونعم p محدبة'],
+    ['Δc = (−1, 0, 1),   Δ^2 c = (1, 1)', 'p″ = 6(B_{0,1} + B_{1,1}) = 6 > 0'],
+    [['`Δ^2 c = (−1, 1)`; no','`Δ^2 c = (−1, 1)`، ولا'],['`Δ^2 c = (1, 1)`; no, it is concave','`Δ^2 c = (1, 1)`، ولا، إنها مقعرة']]),
+  Q('Find `p″(0)` for `p = 2B_{0,4} + B_{1,4} + 3B_{2,4} + 0·B_{3,4} + 5B_{4,4}`.','أوجد `p″(0)` للدالة `p = 2B_{0,4} + B_{1,4} + 3B_{2,4} + 0·B_{3,4} + 5B_{4,4}`.','36',
+    ['p″(0) = #f{4!}{2!} Δ^2 c_0 = 12(3 − 2 + 2) = 36'], ['12','3','24']),
+  Q('Find `p‴` for `p = Σ_{i=0}^{3} i^3 B_{i,3}`, i.e. `c = (0, 1, 8, 27)`.','أوجد `p‴` للدالة `p = Σ_{i=0}^{3} i^3 B_{i,3}` أي `c = (0, 1, 8, 27)`.','p‴ = 36',
+    ['Δc = (1, 7, 19),   Δ^2 c = (6, 12),   Δ^3 c = 6', 'p‴ = 3!·6 = 36'], ['p‴ = 6','p‴ = 27','p‴ = 0']),
+]);
+
+lesson('502',15,[
+  ['Every basis polynomial of degree n has the same integral:','لكل كثيرات الحدود الأساسية من الدرجة n التكامل نفسه:'],
+  '∫_0^1 B_{i,n}(x) dx = #f{1}{n + 1},     ∫_0^1 p(x) dx = #f{c_0 + c_1 + ⋯ + c_n}{n + 1}',
+  ['So the integral of p is the mean of its coefficients. The indefinite integral stays in Bernstein form, one degree higher:','إذن تكامل p هو متوسط معاملاتها. والتكامل غير المحدد يبقى في صيغة بيرنشتاين بدرجة أعلى بواحد:'],
+  '∫_0^x B_{i,n}(s) ds = #f{1}{n + 1} Σ_{j=i+1}^{n+1} B_{j,n+1}(x)',
+],[
+  Q('Compute `∫_0^1 B_{2,5}(x) dx`.','احسب `∫_0^1 B_{2,5}(x) dx`.','#f{1}{6}',['#f{1}{n + 1} = #f{1}{6}'],['#f{1}{5}','#f{10}{6}','#f{2}{5}']),
+  Q('Compute `∫_0^1 p dx` for `p = 1·B_{0,2} + 2B_{1,2} + 3B_{2,2}`.','احسب `∫_0^1 p dx` للدالة `p = 1·B_{0,2} + 2B_{1,2} + 3B_{2,2}`.','2',
+    ['#f{1 + 2 + 3}{3} = 2', ['Indeed `p = 1 + 2x` and `∫_0^1 (1 + 2x) dx = 2`.','وفعلاً `p = 1 + 2x` و `∫_0^1 (1 + 2x) dx = 2`.']], ['6','3','1']),
+  Q('Write `∫_0^x B_{0,1}(s) ds` in the basis of degree 2.','اكتب `∫_0^x B_{0,1}(s) ds` في أساس الدرجة 2.','#f{1}{2}(B_{1,2} + B_{2,2})',
+    ['#f{1}{2} Σ_{j=1}^{2} B_{j,2}', ['Check: `∫_0^x (1 − s) ds = x − x^2/2 = (2x(1 − x) + x^2)/2`.','تحقق: `∫_0^x (1 − s) ds = x − x^2/2 = (2x(1 − x) + x^2)/2`.']],
+    ['#f{1}{2}(B_{0,2} + B_{1,2})','B_{1,2} + B_{2,2}','#f{1}{2}B_{2,2}']),
+  Q('Find the coefficients of `q(x) = ∫_0^x p(s) ds` for `p = 2B_{0,1} + 4B_{1,1}`.','أوجد معاملات `q(x) = ∫_0^x p(s) ds` للدالة `p = 2B_{0,1} + 4B_{1,1}`.','(0,  1,  3)',
+    ['q_j = #f{1}{n + 1}(c_0 + ⋯ + c_{j−1}):   0,   #f{2}{2},   #f{2 + 4}{2}', ['Check: `q = 2x + x^2` and `0·(1 − x)^2 + 1·2x(1 − x) + 3x^2 = 2x + x^2`.','تحقق: `q = 2x + x^2` و `0·(1 − x)^2 + 1·2x(1 − x) + 3x^2 = 2x + x^2`.']],
+    ['(0,  2,  6)','(1,  3,  0)','(0,  1,  2)']),
+]);
+
+lesson('502',16,[
+  ['The product of two Bernstein basis polynomials is a single basis polynomial of the summed degree, times a constant:','حاصل ضرب كثيرتي حدود بيرنشتاين أساسيتين كثيرة حدود أساسية واحدة من مجموع الدرجتين مضروبة في ثابت:'],
+  'B_{i,m}(x) B_{j,n}(x) = #f{C(m, i) C(n, j)}{C(m + n, i + j)} B_{i+j,m+n}(x)',
+  ['This makes products, squares and variable coefficients easy in the Bernstein basis: the coefficients of `pq` are explicit sums of products of the coefficients of p and q. It is the basis of the product operational matrix (Unit 7).','وهذا يجعل الضرب والتربيع والمعاملات المتغيرة سهلة في أساس بيرنشتاين: معاملات `pq` مجاميع صريحة لحواصل ضرب معاملات p و q. وعليه تقوم المصفوفة التشغيلية للضرب (الوحدة 7).'],
+],[
+  Q('Write `B_{0,1}·B_{1,1}` as a multiple of one basis polynomial.','اكتب `B_{0,1}·B_{1,1}` مضاعفاً لكثيرة حدود أساسية واحدة.','#f{1}{2} B_{1,2}',
+    ['#f{C(1, 0) C(1, 1)}{C(2, 1)} = #f{1}{2}', ['Check: `x(1 − x) = (1/2)·2x(1 − x)`.','تحقق: `x(1 − x) = (1/2)·2x(1 − x)`.']], ['B_{1,2}','2B_{1,2}','#f{1}{2}B_{2,2}']),
+  Q('Write `B_{1,2}·B_{1,1}` as a multiple of one basis polynomial.','اكتب `B_{1,2}·B_{1,1}` مضاعفاً لكثيرة حدود أساسية واحدة.','#f{2}{3} B_{2,3}',
+    ['#f{C(2, 1) C(1, 1)}{C(3, 2)} = #f{2}{3}', ['Check: `2x(1 − x)·x = (2/3)·3x^2(1 − x)`.','تحقق: `2x(1 − x)·x = (2/3)·3x^2(1 − x)`.']], ['#f{3}{2} B_{2,3}','B_{2,3}','2B_{2,3}']),
+  Q('Compute `(B_{1,2})^2` in the basis of degree 4.','احسب `(B_{1,2})^2` في أساس الدرجة 4.','#f{2}{3} B_{2,4}',
+    ['#f{C(2, 1)^2}{C(4, 2)} = #f{4}{6} = #f{2}{3}', ['Check: `4x^2(1 − x)^2 = (2/3)·6x^2(1 − x)^2`.','تحقق: `4x^2(1 − x)^2 = (2/3)·6x^2(1 − x)^2`.']], ['#f{4}{6} B_{1,4}','4B_{2,4}','#f{1}{6} B_{2,4}']),
+  Q('Find the coefficients of `x·p(x)` in degree 2 for `p = B_{0,1} + 3B_{1,1}`.','أوجد معاملات `x·p(x)` في الدرجة 2 للدالة `p = B_{0,1} + 3B_{1,1}`.','(0,  #f{1}{2},  3)',
+    ['x = B_{1,1}:   B_{1,1}B_{0,1} = #f{1}{2}B_{1,2},   B_{1,1}B_{1,1} = B_{2,2}', 'x p = #f{1}{2}B_{1,2} + 3B_{2,2}', ['Check: `x(1 + 2x) = x + 2x^2` and `(1/2)·2x(1 − x) + 3x^2 = x + 2x^2`.','تحقق: `x(1 + 2x) = x + 2x^2` و `(1/2)·2x(1 − x) + 3x^2 = x + 2x^2`.']],
+    ['(0,  1,  3)','(1,  #f{1}{2},  3)','(0,  #f{3}{2},  3)']),
+]);
+
+lesson('502',17,[
+  ['Expanding `(1 − x)^{n−i}` by the binomial theorem gives each basis polynomial in powers of x:','بفك `(1 − x)^{n−i}` بنظرية ذات الحدين نحصل على كل كثيرة أساسية بقوى x:'],
+  'B_{i,n}(x) = Σ_{k=i}^{n} (−1)^{k−i} C(n, k) C(k, i) x^k',
+  ['So a Bernstein polynomial has the power coefficients `a_k = Σ_{i≤k} (−1)^{k−i} C(n, k) C(k, i) c_i`. The matrix of this map is lower triangular.','إذن معاملات القوى لكثيرة حدود بيرنشتاين هي `a_k = Σ_{i≤k} (−1)^{k−i} C(n, k) C(k, i) c_i`، ومصفوفة هذا التحويل مثلثية سفلية.'],
+],[
+  Q('Write `B_{1,3}` in powers of x.','اكتب `B_{1,3}` بقوى x.','B_{1,3} = 3x − 6x^2 + 3x^3',
+    ['k = 1:  C(3,1)C(1,1) = 3,   k = 2:  −C(3,2)C(2,1) = −6,   k = 3:  C(3,3)C(3,1) = 3'], ['B_{1,3} = 3x − 3x^2 + x^3','B_{1,3} = 3x + 6x^2 + 3x^3','B_{1,3} = x − 2x^2 + x^3']),
+  Q('Write `p = 1·B_{0,2} + 1·B_{1,2} + 1·B_{2,2}` in powers of x.','اكتب `p = 1·B_{0,2} + 1·B_{1,2} + 1·B_{2,2}` بقوى x.','p = 1',
+    [['Partition of unity: all coefficients equal 1.','تجزئة الواحد: كل المعاملات تساوي 1.']], ['p = 1 + 2x + x^2','p = 3','p = 1 + x + x^2']),
+  Q('Write `p = 0·B_{0,2} + 1·B_{1,2} + 4B_{2,2}` in powers of x.','اكتب `p = 0·B_{0,2} + 1·B_{1,2} + 4B_{2,2}` بقوى x.','p = 2x + 2x^2',
+    ['B_{1,2} = 2x − 2x^2,   B_{2,2} = x^2', 'p = 2x − 2x^2 + 4x^2 = 2x + 2x^2'], ['p = x + 4x^2','p = 2x + 4x^2','p = 2x − 2x^2']),
+  Q('Find the leading power coefficient `a_n` in terms of the Bernstein coefficients for n = 2.','أوجد معامل القوة العليا `a_n` بدلالة معاملات بيرنشتاين عند n = 2.','a_2 = c_0 − 2c_1 + c_2',
+    ['a_2 = C(2,2)[C(2,0)c_0 − C(2,1)c_1 + C(2,2)c_2]', ['It is `Δ^2 c_0`: the leading coefficient is an n-th difference.','وهو `Δ^2 c_0`: المعامل الرئيس فرق من الرتبة n.']],
+    ['a_2 = c_2','a_2 = c_0 + c_1 + c_2','a_2 = c_2 − c_0']),
+]);
+
+lesson('502',18,[
+  ['The converse direction: every power of x has explicit Bernstein coefficients:','والاتجاه العكسي: لكل قوة من x معاملات بيرنشتاين صريحة:'],
+  'x^k = Σ_{i=k}^{n} #f{C(i, k)}{C(n, k)} B_{i,n}(x),   k ≤ n',
+  ['In particular `1 = Σ B_{i,n}` and `x = Σ (i/n) B_{i,n}`: the coefficients of x are the equally spaced points `i/n`. A polynomial `p = Σ a_k x^k` has the Bernstein coefficients `c_i = Σ_{k≤i} (C(i, k)/C(n, k)) a_k`.',
+   'وبالخصوص `1 = Σ B_{i,n}` و `x = Σ (i/n) B_{i,n}`: معاملات x هي النقاط متساوية التباعد `i/n`. وكثيرة الحدود `p = Σ a_k x^k` معاملاتها في بيرنشتاين `c_i = Σ_{k≤i} (C(i, k)/C(n, k)) a_k`.'],
+],[
+  Q('Write `x` in the Bernstein basis of degree 3.','اكتب `x` في أساس بيرنشتاين من الدرجة 3.','c = (0,  #f{1}{3},  #f{2}{3},  1)',
+    ['c_i = #f{C(i, 1)}{C(3, 1)} = #f{i}{3}'], ['c = (0,  1,  2,  3)','c = (0,  #f{1}{3},  #f{1}{3},  1)','c = (1,  #f{2}{3},  #f{1}{3},  0)']),
+  Q('Write `x^2` in the Bernstein basis of degree 3.','اكتب `x^2` في أساس بيرنشتاين من الدرجة 3.','c = (0,  0,  #f{1}{3},  1)',
+    ['c_i = #f{C(i, 2)}{C(3, 2)} = #f{C(i, 2)}{3}', ['Check: `(1/3)·3x^2(1 − x) + x^3 = x^2`.','تحقق: `(1/3)·3x^2(1 − x) + x^3 = x^2`.']], ['c = (0,  0,  1,  1)','c = (0,  #f{1}{9},  #f{4}{9},  1)','c = (0,  0,  #f{2}{3},  1)']),
+  Q('Write `p = 1 + 2x` in the Bernstein basis of degree 2.','اكتب `p = 1 + 2x` في أساس بيرنشتاين من الدرجة 2.','c = (1,  2,  3)',
+    ['c_i = 1 + 2·#f{i}{2} = 1 + i'], ['c = (1,  3,  3)','c = (1,  1,  2)','c = (1,  2,  2)']),
+  Q('Write `x^2` in the Bernstein basis of degree 4 and evaluate the coefficients.','اكتب `x^2` في أساس بيرنشتاين من الدرجة 4 واحسب المعاملات.','c = (0,  0,  #f{1}{6},  #f{1}{2},  1)',
+    ['c_i = #f{C(i, 2)}{C(4, 2)} = #f{C(i, 2)}{6}:   0, 0, #f{1}{6}, #f{3}{6}, #f{6}{6}', ['The coefficients lie above the curve `x^2` at `i/4` (`1/16, 1/4, 9/16`), as for any convex function.','المعاملات تقع فوق منحنى `x^2` عند `i/4` (`1/16, 1/4, 9/16`)، كما لأي دالة محدبة.']],
+    ['c = (0,  #f{1}{16},  #f{1}{4},  #f{9}{16},  1)','c = (0,  0,  #f{1}{2},  #f{1}{2},  1)','c = (0,  #f{1}{6},  #f{1}{3},  #f{1}{2},  1)']),
+]);
+
+lesson('502',19,[
+  ['The maps between the power and the Bernstein coefficients are triangular matrices. For n = 2, with `a = Mc`:','التحويلات بين معاملات القوى ومعاملات بيرنشتاين مصفوفات مثلثية. وعند n = 2 مع `a = Mc`:'],
+  'M = #m{1, 0, 0 ;; −2, 2, 0 ;; 1, −2, 1},     M^{−1} = #m{1, 0, 0 ;; 1, 1/2, 0 ;; 1, 1, 1}',
+  ['Their condition number grows exponentially: `κ_∞ = 12, 48, 480, 1.7 × 10^5, 1.3 × 10^{10}` for n = 2, 3, 5, 10, 20. Converting a high-degree polynomial to the power form loses many digits, so Bernstein computations should stay in the Bernstein form (de Casteljau, differences, products).',
+   'وعدد الشرط ينمو أسياً: `κ_∞ = 12, 48, 480, 1.7 × 10^5, 1.3 × 10^{10}` عند n = 2, 3, 5, 10, 20. فتحويل كثيرة حدود عالية الدرجة إلى صيغة القوى يضيع أرقاماً كثيرة، ولهذا يجب أن تبقى حسابات بيرنشتاين في صيغة بيرنشتاين (دي كاستلجو والفروق والضرب).'],
+],[
+  Q('Use `M^{−1}` to convert `p = 3 − 4x + x^2` to Bernstein coefficients.','استخدم `M^{−1}` لتحويل `p = 3 − 4x + x^2` إلى معاملات بيرنشتاين.','c = (3,  1,  0)',
+    ['c_0 = a_0 = 3,   c_1 = a_0 + #f{a_1}{2} = 1,   c_2 = a_0 + a_1 + a_2 = 0', ['Check the end values: `p(0) = 3`, `p(1) = 0`.','تحقق من قيمتي الطرفين: `p(0) = 3` و `p(1) = 0`.']],
+    ['c = (3,  −4,  1)','c = (3,  −1,  0)','c = (3,  1,  1)']),
+  Q('Compute `‖M‖_∞` and `‖M^{−1}‖_∞` for n = 2.','احسب `‖M‖_∞` و `‖M^{−1}‖_∞` عند n = 2.','‖M‖_∞ = 4,   ‖M^{−1}‖_∞ = 3',
+    [['The absolute row sums of M are 1, 4, 4, and those of `M^{−1}` are 1, 1.5, 3.','مجاميع القيم المطلقة لصفوف M هي 1 و 4 و 4، ولصفوف `M^{−1}` هي 1 و 1.5 و 3.'], 'κ_∞ = 4·3 = 12'],
+    ['‖M‖_∞ = 1,   ‖M^{−1}‖_∞ = 1','‖M‖_∞ = 4,   ‖M^{−1}‖_∞ = 1','‖M‖_∞ = 2,   ‖M^{−1}‖_∞ = 3']),
+  Q('With `κ ≈ 1.3 × 10^{10}` for n = 20, about how many digits survive a conversion in double precision?','مع `κ ≈ 1.3 × 10^{10}` عند n = 20، كم رقماً يبقى تقريباً بعد التحويل في الدقة المضاعفة؟','≈ 6',
+    ['16 − log_{10}(1.3 × 10^{10}) ≈ 16 − 10 = 6'], ['≈ 16','≈ 10','≈ 1']),
+  Q('Write M for n = 1.','اكتب M عند n = 1.','M = #m{1, 0 ;; −1, 1}',
+    ['p = c_0(1 − x) + c_1 x = c_0 + (c_1 − c_0)x'], ['M = #m{1, 0 ;; 1, 1}','M = #m{1, −1 ;; 0, 1}','M = #m{0, 1 ;; 1, 0}']),
+]);
+
+lesson('502',20,[
+  ['The n + 1 polynomials `B_{0,n}, …, B_{n,n}` are linearly independent, so they form a basis of `Π_n`. Proof: the matrix M that expresses them in the power basis is triangular with diagonal entries `C(n, i) ≠ 0`, so it is invertible. Equivalently, `Σ c_i B_{i,n} = 0` forces `c_0 = p(0) = 0`; dividing by x and repeating forces every coefficient to vanish.',
+   'كثيرات الحدود `B_{0,n}, …, B_{n,n}` وعددها n + 1 مستقلة خطياً، فهي أساس للفضاء `Π_n`. البرهان: المصفوفة M التي تعبّر عنها بأساس القوى مثلثية وعناصر قطرها `C(n, i) ≠ 0` فهي قابلة للعكس. أو بصورة مكافئة: `Σ c_i B_{i,n} = 0` يفرض `c_0 = p(0) = 0`، وبالقسمة على x والتكرار تنعدم كل المعاملات.'],
+  'dim Π_n = n + 1,   p ∈ Π_n  ⇒  p = Σ_{i=0}^{n} c_i B_{i,n}',
+  ['Uniqueness of the coefficients is what makes statements like «`p(0) = c_0`» and «reversed coefficients» meaningful.','ووحدانية المعاملات هي ما يجعل عبارات مثل «`p(0) = c_0`» و«المعاملات المعكوسة» ذات معنى.'],
+],[
+  Q('How many Bernstein polynomials are needed for a basis of `Π_5`?','كم كثيرة حدود بيرنشتاين يلزم لأساس الفضاء `Π_5`؟','6',['n + 1 = 6'],['5','7','32']),
+  Q('Is `{B_{0,2}, B_{2,2}}` a basis of `Π_2`?','هل `{B_{0,2}, B_{2,2}}` أساس للفضاء `Π_2`؟',['No: two functions cannot span a space of dimension 3','لا: دالتان لا تولّدان فضاءً بعده 3'],
+    [['For example `B_{1,2}` is not a combination of `(1 − x)^2` and `x^2`.','فمثلاً `B_{1,2}` ليست تركيباً من `(1 − x)^2` و `x^2`.']],
+    [['Yes','نعم'],['Yes, on [0, 1] only','نعم، على [0, 1] فقط']]),
+  Q('What are the diagonal entries of the matrix that writes `B_{i,3}` in powers of x?','ما عناصر قطر المصفوفة التي تكتب `B_{i,3}` بقوى x؟','1,  3,  3,  1',
+    ['B_{i,n} = C(n, i) x^i + …', ['They are `C(3, i)`, all non-zero, so the matrix is invertible.','وهي `C(3, i)` وكلها غير صفرية، فالمصفوفة قابلة للعكس.']],
+    ['1,  1,  1,  1','0,  1,  2,  3','1,  −3,  3,  −1']),
+  Q('Suppose `Σ_{i=0}^{2} c_i B_{i,2}(x) = 0` for all x. Show `c_0 = c_1 = c_2 = 0`.','افرض أن `Σ_{i=0}^{2} c_i B_{i,2}(x) = 0` لكل x. أثبت أن `c_0 = c_1 = c_2 = 0`.',['Shown','ثبت'],
+    ['x = 0:  c_0 = 0,     x = 1:  c_2 = 0', ['Then `c_1·2x(1 − x) = 0` for all x, so `c_1 = 0`.','ثم `c_1·2x(1 − x) = 0` لكل x فيكون `c_1 = 0`.']]),
+]);
+
 export const MS502 = true;
