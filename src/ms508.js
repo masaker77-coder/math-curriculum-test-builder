@@ -1034,4 +1034,116 @@ lesson('508',80,[
   Q('If `^CD_t^{α}u = u_{xx}`, `0 ≤ u_0 ≤ 1` and zero boundary values, what bounds hold for u?','إذا كان `^CD_t^{α}u = u_{xx}` و `0 ≤ u_0 ≤ 1` وقيم حدية صفرية، فأي حدود تصح لـ u؟','0 ≤ u ≤ 1',[['The maximum principle applied to u and to −u.','مبدأ القيمة العظمى مطبقاً على u وعلى −u.']],['u ≤ 2','−1 ≤ u ≤ 0','u ≤ e^{t}']),
 ]);
 
+/* ---- 508 · Unit 9 (lessons 81–90): the mapped Legendre method ---- */
+lesson('508',81,[
+  ['The method starts from the integrated form. Apply `D^{−μ_s}` to the equation of Lesson 75: by Lemma 2.1, `D^{−ζ} ^CD^{ζ}y = y − Σ_{k<⌈ζ⌉} y^{(k)}(0)t^k/k!`, so every derivative becomes an integral of order `μ_s` minus its own order:','تبدأ الطريقة من الصيغة التكاملية. طبّق `D^{−μ_s}` على معادلة الدرس 75: بالتمهيدية 2.1 `D^{−ζ} ^CD^{ζ}y = y − Σ_{k<⌈ζ⌉} y^{(k)}(0)t^k/k!` فتصبح كل مشتقة تكاملاً رتبته `μ_s` ناقص رتبتها:'],
+  'y + Σ a_i D^{−(μ_s−μ_i)}y + Σ b_i D^{−(μ_s−ν_i)}y + c D^{−μ_s}y − d D^{−μ_s}Δy − e D^{−(μ_s−η)}Δy − f D^{−(μ_s−υ)}Δy = h',
+  ['Only y and fractional integrals remain, and every integral becomes a matrix of Theorem 3.2. The initial values collect in h (Lesson 82).','ولا يبقى إلا y والتكاملات الكسرية، وكل تكامل يصبح مصفوفة من النظرية 3.2. والقيم الابتدائية تتجمع في h (الدرس 82).'],
+],[
+  Q('With `μ_s = 1.6` and `μ_1 = 1.2`, what does `a_1 ^CD^{1.2}y` become?','مع `μ_s = 1.6` و `μ_1 = 1.2` إلامَ يتحول `a_1 ^CD^{1.2}y`؟',['`a_1 D^{−0.4}y`, with its initial terms moved into h','`a_1 D^{−0.4}y` مع نقل حدوده الابتدائية إلى h'],['μ_s − μ_1 = 0.4'],['a_1 D^{−1.2}y','a_1 D^{0.4}y','a_1 D^{−2.8}y']),
+  Q('With `μ_s = 1.6` and `υ = 1.5`, what does `fΔ ^CD^{υ}y` become?','مع `μ_s = 1.6` و `υ = 1.5` إلامَ يتحول `fΔ ^CD^{υ}y`؟','f D^{−0.1}Δy',['μ_s − υ = 0.1'],['f D^{−1.5}Δy','f D^{−3.1}Δy','f D^{0.1}Δy']),
+  Q('Apply Lemma 2.1 with ζ = 1.6.','طبّق التمهيدية 2.1 مع ζ = 1.6.','D^{−1.6} ^CD^{1.6}y = y − y(0) − ty′(0)',['⌈1.6⌉ = 2'],['D^{−1.6} ^CD^{1.6}y = y','D^{−1.6} ^CD^{1.6}y = y − y(0)','D^{−1.6} ^CD^{1.6}y = y′']),
+  Q('Why does the integrated form need `υ ≤ μ_s`?','لماذا تحتاج الصيغة التكاملية `υ ≤ μ_s`؟',['Otherwise `D^{−(μ_s−υ)}` would be a derivative, not an integral','وإلا كان `D^{−(μ_s−υ)}` مشتقة لا تكاملاً'],[['Theorem 3.2 handles integrals only.','النظرية 3.2 تعالج التكاملات فقط.']],[['For symmetry','للتماثل'],['It does not','لا تحتاج']]),
+]);
+
+lesson('508',82,[
+  ['The right-hand side h contains the source and all initial values. Each term contributes with the sign it gets when moved to the right:','الطرف الأيمن h يحتوي المصدر وكل القيم الابتدائية. وكل حد يساهم بالإشارة التي يأخذها عند نقله إلى اليمين:'],
+  'h = D^{−μ_s}g + ψ_0 + tψ_1 + Σ a_i D^{−(μ_s−μ_i)}(ψ_0 + tψ_1) + Σ b_i #f{ψ_0t^{μ_s−ν_i}}{Γ(μ_s − ν_i + 1)} − …',
+  ['The dots are the two memory terms in space: `−e Δψ_0 t^{μ_s−η}/Γ(μ_s − η + 1)` and `−f D^{−(μ_s−υ)}Δ(ψ_0 + tψ_1)`. The terms `cy` and `dΔy` carry no time derivative and leave nothing in h. A sign error here is invisible in tests with zero data, so test with non-zero `ψ_0, ψ_1`.','والنقاط هي حدّا الذاكرة المكانيان: `−e Δψ_0 t^{μ_s−η}/Γ(μ_s − η + 1)` و `−f D^{−(μ_s−υ)}Δ(ψ_0 + tψ_1)`. والحدان `cy` و `dΔy` لا مشتقة زمنية فيهما فلا يتركان شيئاً في h. وخطأ الإشارة هنا لا يظهر في الاختبارات ذات المعطيات الصفرية، فاختبر مع `ψ_0, ψ_1` غير صفرية.'],
+],[
+  Q('With `μ_s = 1.6` and `ν_1 = 0.6`, write the contribution of `b_1 ^CD^{0.6}y` to h.','مع `μ_s = 1.6` و `ν_1 = 0.6` اكتب مساهمة `b_1 ^CD^{0.6}y` في h.','b_1ψ_0 t',['#f{t^{1.6−0.6}}{Γ(2)} = t'],['b_1ψ_0','b_1ψ_0 t^{0.6}','−b_1ψ_0 t']),
+  Q('With `μ_s = 1.6`, `η = 0.5` and `ψ_0 = sin πx`, write the contribution of the e term.','مع `μ_s = 1.6` و `η = 0.5` و `ψ_0 = sin πx` اكتب مساهمة الحد e.','#f{eπ^2t^{1.1}}{Γ(2.1)} sin πx ≈ 9.43 e t^{1.1} sin πx',['−eΔψ_0 = eπ^2 sin πx,   Γ(2.1) ≈ 1.0465'],['−9.43 e t^{1.1} sin πx','e t^{1.1} sin πx','9.43 e t^{0.5} sin πx']),
+  Q('What is h for g = 0 and zero initial values?','ما h عند g = 0 وقيم ابتدائية صفرية؟','h = 0',[['Then y = 0 is the solution.','فيكون y = 0 هو الحل.']],['h = t','h = 1','h = D^{−μ_s}y']),
+  Q('Why test with non-zero initial values?','لماذا نختبر بقيم ابتدائية غير صفرية؟',['With zero data every initial term vanishes, so their signs are never checked','مع معطيات صفرية تنعدم كل الحدود الابتدائية فلا تُفحص إشاراتها'],[['Example 1 of the paper has zero data.','المثال 1 في البحث معطياته صفرية.']],[['To speed up the code','لتسريع الكود'],['It is not useful','لا فائدة']]),
+]);
+
+lesson('508',83,[
+  ['The solution is approximated by a double expansion: fractional Legendre functions in time, shifted Legendre polynomials in space:','يُقرَّب الحل بمفكوك مزدوج: دوال ليجندر الكسرية في الزمن وكثيرات ليجندر المزاحة في المكان:'],
+  'y_{N,M}(x, t) = 𝔏_{M,λ}^T(t) 𝒴 𝔏_N^{γ}(x),     L_i^{γ}(x) = P_i(#f{2x}{γ} − 1)',
+  ['𝒴 has `(M + 1)(N + 1)` entries. All basis functions equal 1 at t = 1 and x = γ, and `(−1)^k` at t = 0 or x = 0, so values at the corners are signed sums of the entries of 𝒴.','وللمصفوفة 𝒴 عدد `(M + 1)(N + 1)` من العناصر. وكل دوال الأساس تساوي 1 عند t = 1 و x = γ، و `(−1)^k` عند t = 0 أو x = 0، فالقيم عند الأركان مجاميع بإشارات لعناصر 𝒴.'],
+],[
+  Q('For `𝒴 = #m{2, −1 ;; 0, 3}`, evaluate `y_{1,1}` at t = 1, x = γ.','لـ `𝒴 = #m{2, −1 ;; 0, 3}` احسب `y_{1,1}` عند t = 1 و x = γ.','4',['2 − 1 + 0 + 3'],['6','0','2']),
+  Q('For the same 𝒴, evaluate it at t = 0, x = 0.','للمصفوفة 𝒴 نفسها احسبه عند t = 0 و x = 0.','6',['Σ 𝒴_{k,i}(−1)^{k+i} = 2 + 1 + 0 + 3'],['4','0','−2']),
+  Q('And at t = 1, x = 0?','وعند t = 1 و x = 0؟','0',['Σ 𝒴_{k,i}(−1)^{i} = 2 + 1 + 0 − 3'],['4','6','2']),
+  Q('How many unknowns are there for M = 12, N = 8?','كم مجهولاً عند M = 12 و N = 8؟','117',['13 · 9'],['96','108','21']),
+]);
+
+lesson('508',84,[
+  ['Theorem 3.1 gives the second derivative in space exactly: `∂_x^2 𝔏_N^{γ} = D^{(2)}𝔏_N^{γ}`, where row r has entries only for `r − j = 2s` even and positive:','النظرية 3.1 تعطي المشتقة الثانية في المكان بالضبط: `∂_x^2 𝔏_N^{γ} = D^{(2)}𝔏_N^{γ}` حيث للصف r عناصر فقط عندما `r − j = 2s` زوجي موجب:'],
+  'd_{r,j} = #f{4}{γ^2} s(2j + 1)(2j + 2s + 1) = #f{4}{γ^2}·#f{r − j}{2}(2j + 1)(r + j + 1)',
+  ['Theorem 3.2 gives the time integrals approximately: `D^{−β}𝔏_{M,λ} ≈ I_{(−β)}𝔏_{M,λ}`. Space is exact because derivatives keep polynomials polynomials; time is approximate because fractional integrals produce powers outside the space, except for the exact rows of Lesson 65.','والنظرية 3.2 تعطي التكاملات الزمنية تقريباً: `D^{−β}𝔏_{M,λ} ≈ I_{(−β)}𝔏_{M,λ}`. والمكان مضبوط لأن المشتقات تُبقي كثيرات الحدود كثيرات حدود، والزمن تقريبي لأن التكاملات الكسرية تنتج قوى خارج الفضاء، إلا الصفوف المضبوطة في الدرس 65.'],
+],[
+  Q('Compute `d_{2,0}` for γ = 1.','احسب `d_{2,0}` عند γ = 1.','12',['4·1·1·3'],['6','3','24']),
+  Q('Compute `d_{3,1}` and check it with `P_3^*(x) = 20x^3 − 30x^2 + 12x − 1`.','احسب `d_{3,1}` وتحقق منه مع `P_3^*(x) = 20x^3 − 30x^2 + 12x − 1`.','60:   (P_3^*)″ = 120x − 60 = 60(2x − 1)',['4·1·3·5 = 60'],['30','120','15']),
+  Q('Compute `d_{2,0}` for γ = 2.','احسب `d_{2,0}` عند γ = 2.','3',['#f{4}{4}·1·1·3'],['12','6','#f{3}{2}']),
+  Q('Compute the entries of row 4 for γ = 1.','احسب عناصر الصف 4 عند γ = 1.','d_{4,0} = 40,   d_{4,2} = 140',['4·2·1·5,   4·1·5·7'],['d_{4,0} = 20,   d_{4,2} = 70','d_{4,1} = 40,   d_{4,3} = 140','d_{4,0} = 140,   d_{4,2} = 40']),
+]);
+
+lesson('508',85,[
+  ['Insert `y_{N,M}` into the integrated form. Time integrals act on 𝒴 from the left, space derivatives from the right, and the residual becomes a matrix:','عوّض `y_{N,M}` في الصيغة التكاملية. التكاملات الزمنية تعمل على 𝒴 من اليسار والمشتقات المكانية من اليمين، فيصبح الباقي مصفوفة:'],
+  'ℜ = 𝒴 + Σ a_i I_{(−μ_s+μ_i)}^T 𝒴 + Σ b_i I_{(−μ_s+ν_i)}^T 𝒴 + c I_{(−μ_s)}^T 𝒴 − (d I_{(−μ_s)}^T + e I_{(−μ_s+η)}^T + f I_{(−μ_s+υ)}^T) 𝒴 D^{(2)} − ℋ',
+  ['ℋ holds the coefficients of h. With `vec(A𝒴B) = (B^T ⊗ A)vec(𝒴)` every term becomes one square matrix acting on `vec(𝒴)`, of order `(M + 1)(N + 1)`.','و ℋ تحمل معاملات h. ومع `vec(A𝒴B) = (B^T ⊗ A)vec(𝒴)` يصبح كل حد مصفوفة مربعة واحدة تعمل على `vec(𝒴)` من الرتبة `(M + 1)(N + 1)`.'],
+],[
+  Q('Write the matrix form of `e D^{−(μ_s−η)}Δy`.','اكتب الصيغة المصفوفية لـ `e D^{−(μ_s−η)}Δy`.','e I_{(−μ_s+η)}^T 𝒴 D^{(2)}',[['Time from the left, space from the right.','الزمن من اليسار والمكان من اليمين.']],['e D^{(2)} 𝒴 I_{(−μ_s+η)}','e I_{(−μ_s+η)} 𝒴','e 𝒴 I_{(−μ_s+η)}^T D^{(2)}']),
+  Q('Vectorise `I^T 𝒴 D^{(2)}`.','حوّل `I^T 𝒴 D^{(2)}` إلى متجه.','(D^{(2)T} ⊗ I^T) vec(𝒴)',['vec(A𝒴B) = (B^T ⊗ A)vec(𝒴),   A = I^T,   B = D^{(2)}'],['(I^T ⊗ D^{(2)}) vec(𝒴)','(D^{(2)} ⊗ I) vec(𝒴)','I^T D^{(2)} vec(𝒴)']),
+  Q('What is the order of the full matrix for M = N = 12?','ما رتبة المصفوفة الكاملة عند M = N = 12؟','169',['13·13'],['144','24','2197']),
+  Q('Which terms of ℜ contain `D^{(2)}`?','أي حدود ℜ تحتوي `D^{(2)}`؟',['The d, e and f terms: the ones with Δ','حدود d و e و f: التي فيها Δ'],[['The others act in time only.','الأخرى تعمل في الزمن فقط.']],[['The a and b terms','حدّا a و b'],['All of them','كلها']]),
+]);
+
+lesson('508',86,[
+  ['The residual is made zero at collocation points, and the boundary conditions are imposed separately. Residual equations plus boundary equations give a square system:','يُجعل الباقي صفراً عند نقاط التجميع، وتُفرض الشروط الحدية منفصلة. ومعادلات الباقي مع معادلات الحدود تعطي نظاماً مربعاً:'],
+  '(N − 1)(M + 1) + 2(M + 1) = (N + 1)(M + 1)',
+  ['In time: the M + 1 roots of `L_{M+1}^{λ}`. In space: the N − 1 interior roots of `L_{N−1}^{γ}`. At every time point the two boundary values `φ_0(t)`, `φ_1(t)` are imposed. The initial conditions need no equations: they are already in h.','في الزمن: جذور `L_{M+1}^{λ}` وعددها M + 1. وفي المكان: جذور `L_{N−1}^{γ}` الداخلية وعددها N − 1. وعند كل نقطة زمنية تُفرض القيمتان الحديتان `φ_0(t)` و `φ_1(t)`. والشروط الابتدائية لا تحتاج معادلات: فهي في h مسبقاً.'],
+],[
+  Q('Count the equations for M = N = 10.','عدّ المعادلات عند M = N = 10.','121 = 99 + 22',['9·11 + 2·11'],['100','110','132']),
+  Q('Give the space points for N = 3, γ = 1.','أعط النقاط المكانية عند N = 3 و γ = 1.','x = #f{3 ∓ #r{3}}{6} ≈ 0.2113,   0.7887',['L_2^{1}(x) = 6x^2 − 6x + 1 = 0'],['x = 0,   1','x = #f{1}{3},   #f{2}{3}','x = 0.5']),
+  Q('Give the time points for M = 1, λ = 1/2.','أعط النقاط الزمنية عند M = 1 و λ = 1/2.','t ≈ 0.0447,   0.6220',['u = 0.2113, 0.7887,   t = u^2'],['t ≈ 0.2113,   0.7887','t = 0,   1','t ≈ 0.0127,   0.25']),
+  Q('Why are there no equations for the initial conditions?','لماذا لا توجد معادلات للشروط الابتدائية؟',['They were built into h by the integrated form','بُنيت في h عبر الصيغة التكاملية'],[['Lesson 82.','الدرس 82.']],[['They are ignored','تُهمل'],['There are, 2(N + 1) of them','توجد وعددها 2(N + 1)']]),
+]);
+
+lesson('508',87,[
+  ['Example 1 of the paper has the exact solution `y = t^3x^2(1 − x)^2e^x` on [0, 1] × [0, 1], with ν = 1.9 and λ = 1/2. All initial and boundary data vanish and g is manufactured from y. A rerun of the notebook against Table 1, and the error at a larger size:','المثال 1 في البحث حله المضبوط `y = t^3x^2(1 − x)^2e^x` على [0, 1] × [0, 1] مع ν = 1.9 و λ = 1/2. وكل المعطيات الابتدائية والحدية صفرية و g مصنّعة من y. وإعادة تشغيل الدفتر مقابل الجدول 1، والخطأ عند حجم أكبر:'],
+  'N = M = 10:   2.5865 × 10^{−9} ≈ 2.59 × 10^{−9};     M = N = 15:   ≈ 4 × 10^{−16}',
+  ['With λ = 1/2 the time part `t^3 = u^6` is exact for M ≥ 6, so the error comes from the space part `x^2(1 − x)^2e^x`, which is analytic: the error falls exponentially in N until rounding. Projecting h onto the basis matters: evaluating h at the collocation points instead was about 14 times less accurate at N = 12.','ومع λ = 1/2 يكون الجزء الزمني `t^3 = u^6` مضبوطاً عند M ≥ 6، فيأتي الخطأ من الجزء المكاني `x^2(1 − x)^2e^x` وهو تحليلي: يتناقص الخطأ أسياً في N حتى مستوى التقريب. وإسقاط h على الأساس مهم: حساب h عند نقاط التجميع بدلاً منه كان أقل دقة بنحو 14 مرة عند N = 12.'],
+],[
+  Q('Why is the time part exact for M ≥ 6?','لماذا يكون الجزء الزمني مضبوطاً عند M ≥ 6؟','t^3 = u^6,   u = t^{1/2}',[['A polynomial of degree 6 in u.','كثيرة حدود من الدرجة 6 في u.']],['t^3 = u^3','t^3 = u^{3/2}','t^3 = u^{12}']),
+  Q('Why do all data functions vanish?','لماذا تنعدم كل دوال المعطيات؟',['`t^3` and its derivative vanish at t = 0, and `x^2(1 − x)^2` at x = 0, 1','`t^3` ومشتقتها تنعدمان عند t = 0، و `x^2(1 − x)^2` عند x = 0, 1'],[['So `ψ_0 = ψ_1 = φ_0 = φ_1 = 0`.','فتكون `ψ_0 = ψ_1 = φ_0 = φ_1 = 0`.']],[['By choice of g','باختيار g'],['They do not','لا تنعدم']]),
+  Q('Do the rerun value and Table 1 agree?','هل تتفق قيمة إعادة التشغيل مع الجدول 1؟',['Yes: 2.5865 rounds to 2.59','نعم: 2.5865 تُقرَّب إلى 2.59'],[['The table prints three digits.','الجدول يطبع ثلاثة أرقام.']],[['No: they differ by a factor of 10','لا: تختلفان بعامل 10'],['It cannot be decided','لا يمكن الحكم']]),
+  Q('Why does the error stop near `10^{−16}`?','لماذا يتوقف الخطأ قرب `10^{−16}`؟',['It has reached the rounding level of double precision','بلغ مستوى خطأ التقريب في الدقة المضاعفة'],[['More terms cannot help.','حدود أكثر لا تفيد.']],[['The method fails','الطريقة تفشل'],['λ is wrong','λ خاطئة']]),
+]);
+
+lesson('508',88,[
+  ['Example 2 has the exact solution `y = t^{3.9} sin x`, the real test of the method: with λ = 1/2, `t^{3.9} = u^{7.8}` is not a polynomial in u, so the time part is never exact. The paper reports `5.98 × 10^{−10}` at N = M = 12.','المثال 2 حله المضبوط `y = t^{3.9} sin x` وهو الاختبار الحقيقي للطريقة: مع λ = 1/2 تكون `t^{3.9} = u^{7.8}` غير كثيرة حدود في u فلا يكون الجزء الزمني مضبوطاً أبداً. ويذكر البحث `5.98 × 10^{−10}` عند N = M = 12.'],
+  'λ = 0.3:   t^{3.9} = u^{13},     λ = 0.1:   t^{3.9} = u^{39}',
+  ['A λ that divides 3.9 makes the time part exact, but the degree must fit in M: λ = 0.3 needs M ≥ 13, λ = 0.1 needs M ≥ 39. The power 3.9 comes from `1 + ν_1 + ν_2` with `ν_1 + ν_2 = 2.9`. Because `t^{3.9}` is smooth enough at 0 (its third derivative is continuous), even a mismatched λ converges reasonably fast.','و λ التي تقسم 3.9 تجعل الجزء الزمني مضبوطاً لكن الدرجة يجب أن تتسع لها M: λ = 0.3 تحتاج M ≥ 13 و λ = 0.1 تحتاج M ≥ 39. والقوة 3.9 تأتي من `1 + ν_1 + ν_2` مع `ν_1 + ν_2 = 2.9`. ولأن `t^{3.9}` ملساء بما يكفي عند 0 (مشتقتها الثالثة متصلة) فحتى λ غير المتوافقة تتقارب بسرعة.'],
+],[
+  Q('With λ = 1/2, what power of u is `t^{3.9}`?','مع λ = 1/2 ما قوة u التي تساويها `t^{3.9}`؟','u^{7.8}',['t = u^2'],['u^{3.9}','u^{1.95}','u^{8}']),
+  Q('Which λ makes the time part exact with the smallest M: 0.1 or 0.3?','أي λ تجعل الجزء الزمني مضبوطاً بأصغر M: 0.1 أم 0.3؟','λ = 0.3   (M ≥ 13)',['#f{3.9}{0.3} = 13,   #f{3.9}{0.1} = 39'],['λ = 0.1   (M ≥ 39)',['both need M ≥ 13','كلاهما يحتاج M ≥ 13'],'λ = 1']),
+  Q('Why is `t^{3.9}` a mild singularity compared with `t^{0.5}`?','لماذا تعد `t^{3.9}` شذوذاً خفيفاً مقارنة بـ `t^{0.5}`؟',['Its first three derivatives are continuous at 0; only the fourth is infinite','مشتقاتها الثلاث الأولى متصلة عند 0 والرابعة فقط لانهائية'],[['Polynomial approximation error depends on smoothness.','خطأ التقريب بكثيرات الحدود يعتمد على النعومة.']],[['It is not singular','ليست شاذة'],['It is a stronger singularity','شذوذ أقوى']]),
+  Q('Compute `^CD^{1.5}t^{3.9}`.','احسب `^CD^{1.5}t^{3.9}`.','#f{Γ(4.9)}{Γ(3.4)} t^{2.4} ≈ 6.93 t^{2.4}',['Γ(4.9) ≈ 20.667,   Γ(3.4) ≈ 2.981'],['#f{Γ(4.9)}{Γ(2.4)} t^{2.4}','t^{2.4}','#f{Γ(3.9)}{Γ(2.4)} t^{2.4}']),
+]);
+
+lesson('508',89,[
+  ['In two space dimensions the space basis becomes a tensor product `L_i^{γ_1}(x_1)L_j^{γ_2}(x_2)`, the Laplacian becomes a sum of Kronecker products, and the counting extends:','في بعدين مكانيين يصبح الأساس المكاني ضرباً تنسورياً `L_i^{γ_1}(x_1)L_j^{γ_2}(x_2)`، ويصبح اللابلاسي مجموع ضرب كرونيكر، ويمتد العدّ:'],
+  'Δ → D^{(2)} ⊗ I + I ⊗ D^{(2)},     (N_1 − 1)(N_2 − 1)(M + 1) + 2(N_2 + 1)(M + 1) + 2(N_1 − 1)(M + 1) = (N_1 + 1)(N_2 + 1)(M + 1)',
+  ['Example 3 of the paper is of this kind. With `N_1 = N_2 = M = 10` there are 1331 unknowns, still small for a direct solve; in three dimensions the count grows like `N^3M` and iterative or tensor methods become necessary.','والمثال 3 في البحث من هذا النوع. ومع `N_1 = N_2 = M = 10` يوجد 1331 مجهولاً وهو عدد صغير لحل مباشر، وفي ثلاثة أبعاد ينمو العدد مثل `N^3M` فتلزم طرق تكرارية أو تنسورية.'],
+],[
+  Q('Count the unknowns for `N_1 = N_2 = 4`, M = 3.','عدّ المجاهيل عند `N_1 = N_2 = 4` و M = 3.','100',['5·5·4'],['64','48','125']),
+  Q('Check the counting formula for that case.','تحقق من صيغة العدّ لتلك الحالة.','36 + 40 + 24 = 100',['3·3·4 + 2·5·4 + 2·3·4'],['36 + 40 + 40 = 116','9 + 20 + 12 = 41','36 + 24 = 60']),
+  Q('Why does the last term use `N_1 − 1` and not `N_1 + 1`?','لماذا يستخدم الحد الأخير `N_1 − 1` لا `N_1 + 1`؟',['The corners are already counted on the sides `x_1 = 0, γ_1`','الأركان معدودة مسبقاً على الضلعين `x_1 = 0, γ_1`'],[['Each corner must be counted once.','كل ركن يُعد مرة واحدة.']],[['It is a misprint','خطأ طباعي'],['The corners are not needed','الأركان لا حاجة لها']]),
+  Q('How many unknowns does a 3-D problem with `N_1 = N_2 = N_3 = M = 10` have?','كم مجهولاً لمسألة ثلاثية الأبعاد مع `N_1 = N_2 = N_3 = M = 10`؟','14641',['11^4'],['1331','4000','10^4']),
+]);
+
+lesson('508',90,[
+  ['λ must fit the singular powers of the solution and should be as large as possible. For `^CD^{α}y + y = 0`, the error at t = 1 for M = 4, 8, 16:','يجب أن تناسب λ القوى الشاذة في الحل وأن تكون أكبر ما يمكن. ولـ `^CD^{α}y + y = 0` يكون الخطأ عند t = 1 لـ M = 4 و 8 و 16:'],
+  'α = 0.5:   λ = 1/2:  2.8 × 10^{−4},  5.7 × 10^{−8},  2.4 × 10^{−16};     λ = 1/6:  3.3 × 10^{−3},  6.9 × 10^{−6},  3.4 × 10^{−10}',
+  'α = 0.3:   λ = 0.3:  3.9 × 10^{−4},  2.6 × 10^{−7},  3.2 × 10^{−14};     λ = 1/2:  9.2 × 10^{−3},  2.5 × 10^{−3},  6.1 × 10^{−4}',
+  ['A smaller λ that still fits converges exponentially but more slowly; a λ that does not fit (1/2 for α = 0.3) converges only algebraically, about like `M^{−2}`. The order also matters through the integration matrices: only rows with `i + β/λ ≤ M` are exact.','و λ الأصغر المتوافقة تتقارب أسياً لكن أبطأ، و λ غير المتوافقة (1/2 عند α = 0.3) تتقارب جبرياً فقط نحو `M^{−2}`. وتؤثر الرتبة أيضاً عبر مصفوفات التكامل: الصفوف التي تحقق `i + β/λ ≤ M` وحدها مضبوطة.'],
+],[
+  Q('For α = 0.3, which λ is best: 0.1, 0.3 or 1/2?','عند α = 0.3 أي λ أفضل: 0.1 أم 0.3 أم 1/2؟','λ = 0.3',[['The largest λ that fits.','أكبر λ متوافقة.']],['λ = 0.1','λ = #f{1}{2}',['all are equal','كلها متساوية']]),
+  Q('Estimate the rate of the mismatched case from `2.5 × 10^{−3}` and `6.1 × 10^{−4}` at M = 8, 16.','قدّر معدل الحالة غير المتوافقة من `2.5 × 10^{−3}` و `6.1 × 10^{−4}` عند M = 8 و 16.','~ M^{−2}',['log_2 #f{2.5}{0.61} ≈ 2'],['~ e^{−M}','~ M^{−1}','~ M^{−4}']),
+  Q('Why does λ = 1/2 fail for α = 0.3?','لماذا تفشل λ = 1/2 عند α = 0.3؟',['The solution contains `t^{0.3} = u^{0.6}`, which is not a polynomial in u','الحل يحتوي `t^{0.3} = u^{0.6}` وهي ليست كثيرة حدود في u'],[['The singularity remains in the new variable.','الشذوذ يبقى في المتغير الجديد.']],[['λ is too small','λ صغيرة جداً'],['It does not fail','لا تفشل']]),
+  Q('For α = 0.5, how much does λ = 1/6 lose against λ = 1/2 at M = 16?','عند α = 0.5 كم تخسر λ = 1/6 مقابل λ = 1/2 عند M = 16؟',['About 6 digits: `3.4 × 10^{−10}` against `2.4 × 10^{−16}`','نحو 6 أرقام: `3.4 × 10^{−10}` مقابل `2.4 × 10^{−16}`'],['log_{10} #f{3.4 × 10^{−10}}{2.4 × 10^{−16}} ≈ 6.2'],[['Nothing','لا شيء'],['About 1 digit','نحو رقم واحد']]),
+]);
+
 export const MS508 = true;
