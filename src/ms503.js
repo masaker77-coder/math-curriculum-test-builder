@@ -722,7 +722,7 @@ lesson('503',51,[
   ['The coefficients depend on the weight: the same f has different expansions for different (α, β), each optimal in its own weighted norm.','والمعاملات تعتمد على الوزن: للدالة نفسها مفكوكات مختلفة لكل (α, β)، كل منها أمثل في معياره الموزون.'],
 ],[
   Q('For α = 1, β = 0, compute `c_0` of `f = x`.','عند α = 1 و β = 0 احسب `c_0` للدالة `f = x`.','−#f{1}{3}',['⟨x, 1⟩_w = ∫_{−1}^{1}(1 − x)x dx = −#f{2}{3},   h_0 = 2'],['0','#f{1}{3}','−#f{2}{3}']),
-  Q('For α = 1, β = 0, compute `c_1` of `f = x` (h_1 = 1).','عند α = 1 و β = 0 احسب `c_1` للدالة `f = x` (h_1 = 1).','#f{2}{3}',['⟨x, P_1⟩_w = ∫_{−1}^{1}(1 − x)x#f{3x + 1}{2} dx = #f{2}{3}',['Check: `x = −1/3 + (2/3)P_1^{(1,0)}`.','تحقق: `x = −1/3 + (2/3)P_1^{(1,0)}`.']],['1','#f{1}{3}','#f{3}{2}']),
+  Q('For α = 1, β = 0, compute `c_1` of `f = x` (`h_1 = 1`).','عند α = 1 و β = 0 احسب `c_1` للدالة `f = x` (`h_1 = 1`).','#f{2}{3}',['⟨x, P_1⟩_w = ∫_{−1}^{1}(1 − x)x#f{3x + 1}{2} dx = #f{2}{3}',['Check: `x = −1/3 + (2/3)P_1^{(1,0)}`.','تحقق: `x = −1/3 + (2/3)P_1^{(1,0)}`.']],['1','#f{1}{3}','#f{3}{2}']),
   Q('What is `c_0` of f = 1 in any Jacobi family?','ما `c_0` للدالة f = 1 في أي عائلة جاكوبي؟','1',['#f{⟨1, 1⟩_w}{h_0} = #f{h_0}{h_0}'],['h_0','0','2']),
   Q('For Legendre, `c_0` of `f = x` is 0. Why is it −1/3 for α = 1, β = 0?','لليجندر `c_0` للدالة `f = x` يساوي 0. لماذا هو −1/3 عند α = 1 و β = 0؟',['The weight `1 − x` favours negative x, so the weighted mean of x is negative','الوزن `1 − x` يرجّح قيم x السالبة فيكون المتوسط الموزون لـ x سالباً'],[['`c_0` is the weighted mean of f.','`c_0` هو المتوسط الموزون لـ f.']],[['A computing error','خطأ حسابي'],['Because x is odd','لأن x فردية']]),
 ]);
@@ -758,7 +758,7 @@ lesson('503',54,[
   Q('Find ρ for `f = 1/(x − 3)`.','أوجد ρ للدالة `f = 1/(x − 3)`.','3 + 2#r{2} ≈ 5.83',['3 + #r{9 − 1} = 3 + #r{8}'],['3','#r{8} ≈ 2.83','2']),
   Q('With ρ = 5.83, about how many terms give `10^{−10}`?','مع ρ = 5.83 كم حداً تقريباً يعطي `10^{−10}`؟','≈ 13',['#f{10}{log_{10} 5.83} = #f{10}{0.766} ≈ 13'],['≈ 10','≈ 58','≈ 6']),
   Q('Does changing (α, β) from (0, 0) to (1, 1) change ρ?','هل يغيّر تغيير (α, β) من (0, 0) إلى (1, 1) قيمة ρ؟',['No: ρ depends only on the singularities of f','لا: ρ تعتمد فقط على النقاط الشاذة لـ f'],[['Only factors like a power of n change.','لا تتغير إلا عوامل مثل قوة لـ n.']],[['Yes, it doubles','نعم، تتضاعف']]),
-  Q('How do the coefficients of `e^x` decay?','كيف تتناقص معاملات `e^x`؟',['Faster than any `ρ^{−n}`: e^x is entire','أسرع من أي `ρ^{−n}`: e^x دالة صحيحة'],[['Roughly like `1/(2^n n!)`.','تقريباً مثل `1/(2^n n!)`.']],[['Like `n^{−2}`','مثل `n^{−2}`'],['They do not decay','لا تتناقص']]),
+  Q('How do the coefficients of `e^x` decay?','كيف تتناقص معاملات `e^x`؟',['Faster than any `ρ^{−n}`: `e^x` is entire','أسرع من أي `ρ^{−n}`: `e^x` دالة صحيحة'],[['Roughly like `1/(2^n n!)`.','تقريباً مثل `1/(2^n n!)`.']],[['Like `n^{−2}`','مثل `n^{−2}`'],['They do not decay','لا تتناقص']]),
 ]);
 
 lesson('503',55,[
@@ -768,7 +768,7 @@ lesson('503',55,[
 ],[
   Q('At what rate do the Legendre coefficients of `#r{1 − x}` decay?','بأي معدل تتناقص معاملات ليجندر للدالة `#r{1 − x}`؟','n^{−2}',[['An end singularity of order 1/2 (Course 501, Lesson 27).','انفراد طرفي من الرتبة 1/2 (المقرر 501، الدرس 27).']],['ρ^{−n}','n^{−1/2}','n^{−1}']),
   Q('Expand `#r{1 − x}(1 + x)` in the functions `#r{1 − x}P_n^{(1,0)}`.','انشر `#r{1 − x}(1 + x)` بالدوال `#r{1 − x}P_n^{(1,0)}`.','#f{2}{3}P_0^{(1,0)} + #f{2}{3}P_1^{(1,0)}',['g = 1 + x = c_0 + c_1#f{3x + 1}{2}','c_1 = #f{2}{3},   c_0 = 1 − #f{1}{3} = #f{2}{3}'],['P_0^{(1,0)} + P_1^{(1,0)}','#f{1}{3}P_0^{(1,0)} + #f{2}{3}P_1^{(1,0)}','2P_1^{(1,0)}']),
-  Q('Why are the functions `#r{1 − x}P_n^{(1,0)}` orthogonal with weight 1?','لماذا تتعامد الدوال `#r{1 − x}P_n^{(1,0)}` بالوزن 1؟',['Their product contains `(1 − x)`, the Jacobi weight with α = 1','حاصل ضربها يحتوي `(1 − x)` وهو وزن جاكوبي مع α = 1'],[['The square roots combine into the weight.','الجذور التربيعية تتحد في الوزن.']],[['Because P_n are orthogonal with weight 1','لأن P_n متعامدة بالوزن 1'],['They are not','ليست متعامدة']]),
+  Q('Why are the functions `#r{1 − x}P_n^{(1,0)}` orthogonal with weight 1?','لماذا تتعامد الدوال `#r{1 − x}P_n^{(1,0)}` بالوزن 1؟',['Their product contains `(1 − x)`, the Jacobi weight with α = 1','حاصل ضربها يحتوي `(1 − x)` وهو وزن جاكوبي مع α = 1'],[['The square roots combine into the weight.','الجذور التربيعية تتحد في الوزن.']],[['Because `P_n` are orthogonal with weight 1','لأن `P_n` متعامدة بالوزن 1'],['They are not','ليست متعامدة']]),
   Q('How fast does the expansion of `#r{1 − x} e^x` in `#r{1 − x}P_n^{(1,0)}` converge?','بأي سرعة يتقارب مفكوك `#r{1 − x} e^x` بالدوال `#r{1 − x}P_n^{(1,0)}`؟',['Spectrally, like the expansion of the smooth `e^x`','طيفياً مثل مفكوك الدالة الملساء `e^x`'],[['The singular factor is in the basis, not in the expanded function.','العامل الشاذ في الأساس لا في الدالة المنشورة.']],[['Like `n^{−2}`','مثل `n^{−2}`'],['It does not converge','لا يتقارب']]),
 ]);
 
