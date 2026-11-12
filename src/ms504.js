@@ -209,4 +209,170 @@ lesson('504',5,[
     ['$ ps[n_, t_] := LegendreP[n, 2 t - 1]\nps[1, t]     (* -1 + 2 t *)', 'P_1^*(t) = 2t − 1'],['$ ps[n, t] := LegendreP[n, 2 t - 1]','$ ps[n_, t_] = legendreP(n, 2 t - 1)','$ ps(n_, t_) := LegendreP[n, 2 t - 1]']),
 ]);
 
+/* ---- 504 · Unit 1 (lessons 6–10) and Unit 2 (lessons 11–20) ---- */
+lesson('504',6,[
+  ['``?Name`` shows the short description of a built-in function, and the documentation (F1 on a selected name) gives examples you can copy. Every name is documented, so this is the fastest way to learn a new command.','``?Name`` يعرض الوصف المختصر لدالة جاهزة، والتوثيق (F1 على الاسم المحدد) يعطي أمثلة يمكن نسخها. وكل اسم موثق، فهذه أسرع طريقة لتعلّم أمر جديد.'],
+  '$ ?NIntegrate\nSin[1, 2]\n(* Sin::argx: Sin called with 2 arguments; 1 argument is expected. *)',
+  ['A message has the form ``Symbol::tag`` and explains what went wrong; the input is then usually returned unevaluated. Read the first message first: later ones are often consequences of it.','والرسالة على الصورة ``Symbol::tag`` وتشرح ما حدث، ثم يُعاد المدخل غالباً دون حساب. اقرأ أول رسالة أولاً، فما بعدها غالباً نتيجة لها.'],
+],[
+  Q('What does ``Sin[1, 2]`` return after its message?','ماذا يعيد ``Sin[1, 2]`` بعد رسالته؟','$ Sin[1, 2]',[['Sin takes one argument, so it cannot evaluate and returns the input unchanged.','تأخذ Sin متغيراً واحداً فلا تستطيع الحساب وتعيد المدخل كما هو.']],['$ 0.841471','$ $Failed','$ Sin[1]']),
+  Q('What does ``1/0`` return?','ماذا يعيد ``1/0``؟','$ ComplexInfinity',[['With the message ``Power::infy``: infinite expression encountered.','مع الرسالة ``Power::infy``: ظهر مقدار لانهائي.']],['$ Infinity','$ 0','$ Indeterminate']),
+  Q('Which input shows the description of ``JacobiP``?','أي مدخل يعرض وصف ``JacobiP``؟','$ ?JacobiP',[['``?`` followed by the name, alone in a cell.','``?`` يليها الاسم وحدها في خلية.']],['$ help(JacobiP)','$ JacobiP?','$ Help[JacobiP]']),
+  Q('What is returned, and why?','ماذا يُعاد ولماذا؟',['The input itself, with the message ``Thread::tdlen``: lists of unequal length cannot be added','المدخل نفسه مع الرسالة ``Thread::tdlen``: لا يمكن جمع قائمتين مختلفتي الطول'],[['Lists are added element by element, so they must have the same length.','القوائم تُجمع عنصراً عنصراً فيجب أن يتساوى طولاها.']],['$ {2, 4, 3}','$ {2, 4}'],'{1, 2} + {1, 2, 3}'),
+]);
+
+lesson('504',7,[
+  ['The three basic algebra commands:','أوامر الجبر الأساسية الثلاثة:'],
+  '$ Expand[(x - 1) (x + 2)]     (* -2 + x + x^2 *)\nFactor[x^2 - 3 x + 2]       (* (-2 + x) (-1 + x) *)\nSimplify[Sin[x]^2 + Cos[x]^2] (* 1 *)',
+  ['Related commands: ``Together`` combines fractions, ``Apart`` splits into partial fractions, ``FullSimplify`` tries harder (and slower). ``Simplify`` only uses transformations valid for all complex values; give assumptions as a second argument, for example ``Simplify[Sqrt[x^2], x > 0]`` gives ``x``.','ومن الأوامر القريبة: ``Together`` تجمع الكسور، و ``Apart`` تفصلها كسوراً جزئية، و ``FullSimplify`` تحاول أكثر (وأبطأ). و ``Simplify`` لا تستخدم إلا تحويلات صحيحة لكل القيم المركبة، فأعطِ الافتراضات متغيراً ثانياً، فمثلاً ``Simplify[Sqrt[x^2], x > 0]`` تعطي ``x``.'],
+],[
+  Q('What is the output of ``Expand[(1 + x)^3]``?','ما مخرج ``Expand[(1 + x)^3]``؟','$ 1 + 3 x + 3 x^2 + x^3',['(1 + x)^3 = 1 + 3x + 3x^2 + x^3',['Terms appear by increasing power.','تظهر الحدود تصاعدياً حسب القوة.']],['$ x^3 + 1','$ (1 + x)^3','$ 1 + x + x^2 + x^3']),
+  Q('What is the output of ``Simplify[Sqrt[x^2]]``?','ما مخرج ``Simplify[Sqrt[x^2]]``؟','$ Sqrt[x^2]',[['`#r{x^2} = |x|` only for real x, and equals x only for x ≥ 0; without assumptions nothing is simplified.','`#r{x^2} = |x|` فقط لـ x حقيقية وتساوي x فقط عندما x ≥ 0، ودون افتراضات لا يُبسَّط شيء.']],['$ x','$ Abs[x]','$ -x']),
+  Q('What is the output of ``Together[1/x + 1/(x + 1)]``?','ما مخرج ``Together[1/x + 1/(x + 1)]``؟','$ (1 + 2 x)/(x (1 + x))',['#f{1}{x} + #f{1}{x + 1} = #f{(x + 1) + x}{x(x + 1)}'],['$ 2/(2 x + 1)','$ (2 + x)/(x (1 + x))','$ 1/(x (1 + x))']),
+  Q('What is the output of ``Apart[1/(x^2 - 1)]``?','ما مخرج ``Apart[1/(x^2 - 1)]``؟','$ 1/(2 (-1 + x)) - 1/(2 (1 + x))',['#f{1}{x^2 − 1} = #f{1}{2}(#f{1}{x − 1} − #f{1}{x + 1})'],['$ 1/(-1 + x) - 1/(1 + x)','$ 1/((-1 + x) (1 + x))','$ 1/(2 (-1 + x)) + 1/(2 (1 + x))']),
+]);
+
+lesson('504',8,[
+  ['``Solve`` finds exact solutions, ``NSolve`` numerical solutions of polynomial systems, and ``FindRoot`` one root near a starting value. Equations use ``==``, and the answers are lists of rules:','``Solve`` تجد الحلول المضبوطة، و ``NSolve`` الحلول العددية لأنظمة كثيرات الحدود، و ``FindRoot`` جذراً واحداً قرب قيمة ابتدائية. والمعادلات تستخدم ``==`` والأجوبة قوائم قواعد:'],
+  '$ Solve[x^2 - 5 x + 6 == 0, x]      (* {{x -> 2}, {x -> 3}} *)\nNSolve[x^3 - 2 == 0, x, Reals]     (* {{x -> 1.25992}} *)\nFindRoot[Cos[x] == x, {x, 1}]      (* {x -> 0.739085} *)',
+  ['``FindRoot`` works for any smooth equation, not only polynomials, but it returns one root and depends on the starting value.','``FindRoot`` تعمل لأي معادلة ملساء لا لكثيرات الحدود فقط، لكنها تعيد جذراً واحداً وتعتمد على القيمة الابتدائية.'],
+],[
+  Q('What is the output of ``Solve[{x + y == 3, x - y == 1}, {x, y}]``?','ما مخرج ``Solve[{x + y == 3, x - y == 1}, {x, y}]``؟','$ {{x -> 2, y -> 1}}',['2x = 4  ⇒  x = 2,   y = 1'],['$ {x -> 2, y -> 1}','$ {{x -> 1, y -> 2}}','$ {2, 1}']),
+  Q('What is the output of ``Solve[LegendreP[2, x] == 0, x]``?','ما مخرج ``Solve[LegendreP[2, x] == 0, x]``؟','$ {{x -> -(1/Sqrt[3])}, {x -> 1/Sqrt[3]}}',['#f{3x^2 − 1}{2} = 0  ⇒  x = ±#f{1}{#r{3}}'],['$ {{x -> -0.57735}, {x -> 0.57735}}','$ {x -> 1/Sqrt[3]}','$ {{x -> -1/3}, {x -> 1/3}}']),
+  Q('What goes wrong in ``Solve[x = 1 + x/2, x]``?','ما الخطأ في ``Solve[x = 1 + x/2, x]``؟',['``=`` is an assignment, not an equation: it tries to give x a value defined by x itself','``=`` إسناد لا معادلة: تحاول إعطاء x قيمة معرّفة بـ x نفسها'],[['Equations always use ``==``: ``Solve[x == 1 + x/2, x]`` gives ``{{x -> 2}}``.','المعادلات تستخدم ``==`` دائماً: ``Solve[x == 1 + x/2, x]`` تعطي ``{{x -> 2}}``.']],[['Solve needs ``=``','Solve تحتاج ``=``'],['Both fail','كلاهما يفشل']]),
+  Q('Which command finds the root of `e^{−x} = x` near 0.5?','أي أمر يجد جذر `e^{−x} = x` قرب 0.5؟','$ FindRoot[Exp[-x] == x, {x, 0.5}]',[['It is not a polynomial, so Solve and NSolve are not the right tools; the root is 0.567143.','ليست كثيرة حدود فليست Solve و NSolve الأداة المناسبة، والجذر 0.567143.']],['$ NSolve[Exp[-x] == x, x]','$ FindRoot[Exp[-x] = x, {x, 0.5}]','$ Solve[Exp[-x], x, 0.5]']),
+]);
+
+lesson('504',9,[
+  ['A rule ``a -> b`` says «replace a by b», and ``expr /. rule`` applies it once everywhere in expr. The results of Solve are rules, so ``/.`` is how you use them:','القاعدة ``a -> b`` تعني «استبدل a بـ b»، و ``expr /. rule`` تطبقها مرة واحدة في كل expr. ونتائج Solve قواعد، فـ ``/.`` هي طريقة استخدامها:'],
+  '$ x^2 + 1 /. x -> 3                (* 10 *)\nx /. Solve[x^2 == 4, x]            (* {-2, 2} *)\nf[y] /. f[t_] -> t^2              (* y^2 *)',
+  ['With ``->`` the right side is evaluated once, when the rule is made; with ``:>`` it is evaluated each time the rule is used. Rules do not change any variable: x keeps no value afterwards.','ومع ``->`` يُحسب الطرف الأيمن مرة واحدة عند إنشاء القاعدة، ومع ``:>`` يُحسب عند كل استخدام. والقواعد لا تغيّر أي متغير: لا تبقى لـ x قيمة بعدها.'],
+],[
+  Q('What is the output of ``x + y /. {x -> 1, y -> 2}``?','ما مخرج ``x + y /. {x -> 1, y -> 2}``؟','$ 3',['1 + 2'],['$ x + 2','$ {3}','$ 1 + y']),
+  Q('What is the output of ``x^2 /. x -> y /. y -> 2``?','ما مخرج ``x^2 /. x -> y /. y -> 2``؟','$ 4',[['``/.`` groups from the left: first `x^2 → y^2`, then `y^2 → 4`.','``/.`` تتجمع من اليسار: أولاً `x^2 → y^2` ثم `y^2 → 4`.']],['$ y^2','$ x^2','$ 2']),
+  Q('What is the output of ``{x, x} /. x -> RandomInteger[100]``?','ما مخرج ``{x, x} /. x -> RandomInteger[100]``؟',['Two equal integers: the right side is evaluated once','عددان صحيحان متساويان: الطرف الأيمن يُحسب مرة واحدة'],[['With ``:>`` the two numbers would usually differ.','ومع ``:>`` يختلف العددان عادة.']],[['Two different integers','عددان مختلفان'],['``{x, x}``','``{x, x}``']]),
+  Q('Find `P_2(0.5)` from ``LegendreP[2, x]`` with a rule.','أوجد `P_2(0.5)` من ``LegendreP[2, x]`` بقاعدة.','$ LegendreP[2, x] /. x -> 0.5   (* -0.125 *)',['#f{3(0.25) − 1}{2} = −0.125'],['$ LegendreP[2, x] = 0.5','$ LegendreP[2, x] /. 0.5','$ LegendreP[2, x] -> 0.5']),
+]);
+
+lesson('504',10,[
+  ['A good notebook reads like a short report: a title, sections, text cells that explain, and input cells that run from top to bottom without errors. Put definitions near the top and start with a clean state:','الدفتر الجيد يُقرأ كتقرير قصير: عنوان وأقسام وخلايا نصية تشرح وخلايا مدخلات تعمل من الأعلى إلى الأسفل دون أخطاء. ضع التعريفات قرب البداية وابدأ بحالة نظيفة:'],
+  '$ ClearAll["Global`*"]   (* remove all your own definitions *)\n(* Parameters *)\nn = 8; mu = 1/2;',
+  ['Choose cell styles from the Format menu (Title, Section, Text, Input). Use Evaluation ▸ Evaluate Notebook to check that the whole file runs in order, and ``Quit[]`` to restart the kernel when results look inconsistent.','اختر أنماط الخلايا من قائمة Format (Title و Section و Text و Input). واستخدم Evaluation ▸ Evaluate Notebook للتأكد أن الملف كله يعمل بالترتيب، و ``Quit[]`` لإعادة تشغيل النواة حين تبدو النتائج متناقضة.'],
+],[
+  Q('Which input removes all your own definitions at once?','أي مدخل يمسح كل تعريفاتك دفعة واحدة؟','$ ClearAll["Global`*"]',[['Your names live in the context ``Global``; the pattern matches all of them.','أسماؤك تعيش في السياق ``Global`` والنمط يطابقها كلها.']],['$ Clear[]','$ Clear[All]','$ Delete["Global"]']),
+  Q('How do you write a comment in an input cell?','كيف تكتب تعليقاً في خلية مدخلات؟','$ (* a comment *)',[['Comments can span several lines and are ignored when the cell runs.','يمكن أن يمتد التعليق عدة أسطر ويُتجاهل عند التشغيل.']],['$ # a comment','$ // a comment','$ % a comment']),
+  Q('What does ``Quit[]`` do?','ماذا يفعل ``Quit[]``؟',['It stops the kernel: every variable and definition is lost, the notebook text stays','يوقف النواة: تضيع كل المتغيرات والتعريفات ويبقى نص الدفتر'],[['The next evaluation starts a fresh kernel.','والحساب التالي يبدأ نواة جديدة.']],[['It closes and deletes the notebook','يغلق الدفتر ويحذفه'],['It clears the last output only','يمسح آخر مخرج فقط']]),
+  Q('Why should a notebook be checked with Evaluate Notebook before it is shared?','لماذا يجب فحص الدفتر بالأمر Evaluate Notebook قبل مشاركته؟',['Cells evaluated out of order can hide errors; running from top to bottom shows whether the file really works','الخلايا المحسوبة بغير ترتيبها قد تخفي أخطاء، والتشغيل من الأعلى إلى الأسفل يُظهر هل يعمل الملف فعلاً'],[['A value defined in a deleted cell may still be in memory.','قيمة عُرّفت في خلية محذوفة قد تبقى في الذاكرة.']],[['To make it faster','لتسريعه'],['It is not needed','ليس ضرورياً']]),
+]);
+
+lesson('504',11,[
+  ['A list is written with braces and can hold anything. ``Table`` builds a list from a formula and an iterator ``{i, min, max, step}``:','القائمة تُكتب بين قوسين معقوفين ويمكن أن تحوي أي شيء. و ``Table`` تبني قائمة من قانون ومُكرِّر ``{i, min, max, step}``:'],
+  '$ Table[i^2, {i, 1, 5}]            (* {1, 4, 9, 16, 25} *)\nTable[k, {k, 0, 1, 1/4}]          (* {0, 1/4, 1/2, 3/4, 1} *)\nTable[i + j, {i, 2}, {j, 2}]       (* {{2, 3}, {3, 4}} *)',
+  ['``{i, n}`` means i = 1, …, n. Two iterators give a nested list (a matrix), the first iterator giving the rows.','و ``{i, n}`` تعني i = 1, …, n. ومُكرِّران يعطيان قائمة متداخلة (مصفوفة)، والمكرِّر الأول يعطي الصفوف.'],
+],[
+  Q('What is the output of ``Table[LegendreP[n, 1], {n, 0, 3}]``?','ما مخرج ``Table[LegendreP[n, 1], {n, 0, 3}]``؟','$ {1, 1, 1, 1}',['P_n(1) = 1'],['$ {0, 1, 2, 3}','$ {1, -1, 1, -1}','$ 1']),
+  Q('What is the output of ``Table[2^k, {k, 0, 4}]``?','ما مخرج ``Table[2^k, {k, 0, 4}]``؟','$ {1, 2, 4, 8, 16}',['2^0, …, 2^4'],['$ {2, 4, 8, 16}','$ {0, 2, 4, 6, 8}','$ {1, 2, 4, 8}']),
+  Q('What is the output of ``Table[i j, {i, 2}, {j, 3}]``?','ما مخرج ``Table[i j, {i, 2}, {j, 3}]``؟','$ {{1, 2, 3}, {2, 4, 6}}',[['Two rows (i = 1, 2), three columns (j = 1, 2, 3).','صفان (i = 1, 2) وثلاثة أعمدة (j = 1, 2, 3).']],['$ {{1, 2}, {2, 4}, {3, 6}}','$ {1, 2, 3, 2, 4, 6}','$ {{1, 2, 3}}']),
+  Q('Write the Gauss–Chebyshev nodes `cos((2k − 1)π/(2n))`, k = 1, …, n, for n = 4 with Table.','اكتب عقد جاوس–تشيبيشيف `cos((2k − 1)π/(2n))` حيث k = 1, …, n عند n = 4 باستخدام Table.','$ Table[Cos[(2 k - 1) Pi/8], {k, 1, 4}]',[['2n = 8; add ``N`` to see numbers.','2n = 8، وأضف ``N`` لرؤية الأعداد.']],['$ Table[Cos[(2 k - 1) Pi/8], k, 1, 4]','$ Table(cos((2 k - 1) pi/8), {k, 1, 4})','$ Table[Cos[(2 k - 1) Pi/4], {k, 1, 8}]']),
+]);
+
+lesson('504',12,[
+  ['Double brackets take parts of a list; negative positions count from the end, and ``;;`` gives a span:','الأقواس المزدوجة تأخذ أجزاء القائمة، والمواضع السالبة تُعد من النهاية، و ``;;`` تعطي مدى:'],
+  '$ v = {10, 20, 30, 40, 50};\nv[[2]]          (* 20 *)\nv[[-1]]         (* 50 *)\nv[[2 ;; 4]]     (* {20, 30, 40} *)\nTake[v, 2]      (* {10, 20} *)\nDrop[v, 2]      (* {30, 40, 50} *)',
+  ['For a matrix ``m[[i, j]]`` is one entry, ``m[[i]]`` a row and ``m[[All, j]]`` a column. Parts are numbered from 1, not from 0.','وللمصفوفة ``m[[i, j]]`` عنصر واحد، و ``m[[i]]`` صف، و ``m[[All, j]]`` عمود. والترقيم يبدأ من 1 لا من 0.'],
+],[
+  Q('What is the output of ``v[[1 ;; -1 ;; 2]]`` for the list above?','ما مخرج ``v[[1 ;; -1 ;; 2]]`` للقائمة أعلاه؟','$ {10, 30, 50}',[['From the first to the last, in steps of 2.','من الأول إلى الأخير بخطوة 2.']],['$ {20, 40}','$ {10, 20}','$ {10, 50}']),
+  Q('What is the output of ``Take[v, -2]``?','ما مخرج ``Take[v, -2]``؟','$ {40, 50}',[['A negative count takes from the end.','العدد السالب يأخذ من النهاية.']],['$ {10, 20}','$ {10, 20, 30}','$ 40']),
+  Q('With ``m = {{1, 2}, {3, 4}}``, what is ``m[[All, 2]]``?','مع ``m = {{1, 2}, {3, 4}}`` ما ``m[[All, 2]]``؟','$ {2, 4}',[['The second column.','العمود الثاني.']],['$ {3, 4}','$ 4','$ {1, 3}']),
+  Q('What is the output of ``v[[0]]``?','ما مخرج ``v[[0]]``؟','$ List',[['Part 0 is the head of the expression; for a list it is ``List``. The first element is ``v[[1]]``.','الجزء 0 هو رأس المقدار وللقائمة هو ``List``. والعنصر الأول ``v[[1]]``.']],['$ 10','$ 0','$ {}']),
+]);
+
+lesson('504',13,[
+  ['Common list functions:','دوال القوائم الشائعة:'],
+  '$ Range[5]              (* {1, 2, 3, 4, 5} *)\nRange[0, 10, 5]       (* {0, 5, 10} *)\nLength[{a, b, c}]     (* 3 *)\nTotal[Range[100]]     (* 5050 *)\nMax[{3, 7, 2}]        (* 7 *)\nMean[{1, 2, 3, 6}]    (* 3 *)',
+  ['``Accumulate`` gives running sums and ``Differences`` successive differences; both are useful for checking sequences and convergence tables.','و ``Accumulate`` تعطي المجاميع التراكمية و ``Differences`` الفروق المتتالية، وكلاهما مفيد لفحص المتتاليات وجداول التقارب.'],
+],[
+  Q('What is the output of ``Length[Range[3, 9]]``?','ما مخرج ``Length[Range[3, 9]]``؟','$ 7',['9 − 3 + 1'],['$ 6','$ 9','$ 3']),
+  Q('What is the output of ``Accumulate[{1, 2, 3, 4}]``?','ما مخرج ``Accumulate[{1, 2, 3, 4}]``؟','$ {1, 3, 6, 10}',[['Running sums.','مجاميع تراكمية.']],['$ 10','$ {1, 2, 6, 24}','$ {1, 1, 1}']),
+  Q('What is the output of ``Differences[{1, 4, 9, 16}]``?','ما مخرج ``Differences[{1, 4, 9, 16}]``؟','$ {3, 5, 7}',[['Successive differences of the squares.','الفروق المتتالية للمربعات.']],['$ {1, 4, 9}','$ {2, 2}','$ 15']),
+  Q('Compute the sum of the Gauss–Legendre weights for n = 5 if ``w`` holds them.','احسب مجموع أوزان جاوس–ليجندر عند n = 5 إذا كانت ``w`` تحويها.','$ Total[w]   (* 2. *)',['∫_{−1}^{1} 1 dx = 2'],['$ Length[w]   (* 5 *)','$ Max[w]','$ Sum[w]']),
+]);
+
+lesson('504',14,[
+  ['``Map`` applies a function to each element, ``Apply`` replaces the head of a list by a function:','``Map`` تطبق دالة على كل عنصر، و ``Apply`` تستبدل رأس القائمة بدالة:'],
+  '$ f /@ {a, b, c}        (* {f[a], f[b], f[c]} *)\nPlus @@ {1, 2, 3}      (* 6 *)\nf @@@ {{1, 2}, {3, 4}} (* {f[1, 2], f[3, 4]} *)',
+  ['``/@`` is short for ``Map``, ``@@`` for ``Apply`` and ``@@@`` applies at the first level. Many functions are already Listable, so ``Sin[{0, Pi/2}]`` works without Map.','و ``/@`` اختصار ``Map``، و ``@@`` اختصار ``Apply``، و ``@@@`` تطبّق في المستوى الأول. وكثير من الدوال Listable أصلاً فيعمل ``Sin[{0, Pi/2}]`` دون Map.'],
+],[
+  Q('What is the output of ``Times @@ {2, 3, 4}``?','ما مخرج ``Times @@ {2, 3, 4}``؟','$ 24',['2·3·4'],['$ 9','$ {2, 3, 4}','$ Times[{2, 3, 4}]']),
+  Q('What is the output of ``f /@ {{1, 2}, {3}}``?','ما مخرج ``f /@ {{1, 2}, {3}}``؟','$ {f[{1, 2}], f[{3}]}',[['Map works on the first level: each sublist is one element.','Map تعمل على المستوى الأول: كل قائمة فرعية عنصر واحد.']],['$ {{f[1], f[2]}, {f[3]}}','$ {f[1, 2], f[3]}','$ f[{{1, 2}, {3}}]']),
+  Q('What is the output of ``Sin[{0, Pi/6, Pi/2}]``?','ما مخرج ``Sin[{0, Pi/6, Pi/2}]``؟','$ {0, 1/2, 1}',[['Sin is Listable.','Sin دالة Listable.']],['$ Sin[{0, Pi/6, Pi/2}]','$ {0, 0.5, 1}','$ 3/2']),
+  Q('What is the output of ``Plus @@@ {{1, 2}, {3, 4}}``?','ما مخرج ``Plus @@@ {{1, 2}, {3, 4}}``؟','$ {3, 7}',['1 + 2,   3 + 4'],['$ 10','$ {4, 6}','$ {{3}, {7}}']),
+]);
+
+lesson('504',15,[
+  ['A pure function has no name: ``#`` is its argument (``#1``, ``#2`` for several) and ``&`` ends it. ``Function[x, body]`` is the same with a named variable:','الدالة الصرفة لا اسم لها: ``#`` متغيرها (``#1`` و ``#2`` لعدة متغيرات) و ``&`` تنهيها. و ``Function[x, body]`` هي نفسها بمتغير مسمّى:'],
+  '$ (#^2 &)[5]              (* 25 *)\n(#1 #2 &)[3, 4]          (* 12 *)\nFunction[x, x + 1] /@ {1, 2}   (* {2, 3} *)',
+  ['Pure functions are the natural arguments of Map, Select, Table-free code and of Nest and Fold. Brackets matter: ``(# + 1 &)`` must be grouped before it is applied.','والدوال الصرفة متغيرات طبيعية لـ Map و Select وللكود الخالي من الحلقات ولـ Nest و Fold. والأقواس مهمة: يجب تجميع ``(# + 1 &)`` قبل تطبيقها.'],
+],[
+  Q('What is the output of ``(# + 1 &) /@ {1, 2, 3}``?','ما مخرج ``(# + 1 &) /@ {1, 2, 3}``؟','$ {2, 3, 4}',['x ↦ x + 1'],['$ {1, 2, 3, 1}','$ 7','$ {1, 2, 3}']),
+  Q('What is the output of ``(#2 - #1 &)[10, 3]``?','ما مخرج ``(#2 - #1 &)[10, 3]``؟','$ -7',['3 − 10'],['$ 7','$ 13','$ -13']),
+  Q('What is the output of ``(Total[#]/Length[#] &)[{2, 4, 9}]``?','ما مخرج ``(Total[#]/Length[#] &)[{2, 4, 9}]``؟','$ 5',['#f{15}{3}'],['$ 15','$ 15/3','$ 3']),
+  Q('Write a pure function for the weight `(1 − x)^a (1 + x)^b` with a = 1, b = 0 and apply it to 0.5.','اكتب دالة صرفة للوزن `(1 − x)^a (1 + x)^b` مع a = 1 و b = 0 وطبّقها على 0.5.','$ ((1 - #)^1 (1 + #)^0 &)[0.5]   (* 0.5 *)',['(1 − 0.5)·1'],['$ ((1 - x)^1 (1 + x)^0 &)[0.5]','$ (1 - #)(1 + #) & [0.5]','$ Function[(1 - #)][0.5]']),
+]);
+
+lesson('504',16,[
+  ['``Select`` keeps the elements that pass a test, ``Cases`` the elements that match a pattern, and ``Position`` gives where they are:','``Select`` تبقي العناصر التي تجتاز اختباراً، و ``Cases`` العناصر التي تطابق نمطاً، و ``Position`` تعطي مواضعها:'],
+  '$ Select[Range[10], PrimeQ]          (* {2, 3, 5, 7} *)\nSelect[{1, -2, 3, -4}, # > 0 &]     (* {1, 3} *)\nCases[{1, a, 2.5, b}, _Symbol]      (* {a, b} *)\nPosition[{a, b, a}, a]              (* {{1}, {3}} *)',
+  ['``Count`` counts the matches. Tests end in Q by convention: ``EvenQ``, ``PrimeQ``, ``NumberQ``, ``MatrixQ``.','و ``Count`` تعدّ المطابقات. ودوال الاختبار تنتهي بـ Q اصطلاحاً: ``EvenQ`` و ``PrimeQ`` و ``NumberQ`` و ``MatrixQ``.'],
+],[
+  Q('What is the output of ``Select[Range[10], EvenQ]``?','ما مخرج ``Select[Range[10], EvenQ]``؟','$ {2, 4, 6, 8, 10}',[['The even numbers from 1 to 10.','الأعداد الزوجية من 1 إلى 10.']],['$ {1, 3, 5, 7, 9}','$ 5','$ {True, False}']),
+  Q('What is the output of ``Cases[{1, a, 2.5, b}, _Integer]``?','ما مخرج ``Cases[{1, a, 2.5, b}, _Integer]``؟','$ {1}',[['2.5 is a Real, not an Integer.','2.5 عدد Real وليس Integer.']],['$ {1, 2.5}','$ {a, b}','$ 1']),
+  Q('What is the output of ``Count[{1, 2, 1, 1, 3}, 1]``?','ما مخرج ``Count[{1, 2, 1, 1, 3}, 1]``؟','$ 3',[['Three elements equal 1.','ثلاثة عناصر تساوي 1.']],['$ 1','$ {1, 3, 4}','$ 5']),
+  Q('Keep the Gauss nodes ``x`` that lie in `[0, 1]`.','أبقِ عقد جاوس ``x`` الواقعة في `[0, 1]`.','$ Select[x, 0 <= # <= 1 &]',[['A pure test with a double inequality.','اختبار صرف بمتباينة مزدوجة.']],['$ Cases[x, 0 <= # <= 1]','$ Select[x, 0 <= x <= 1]','$ Position[x, 0 <= # <= 1 &]']),
+]);
+
+lesson('504',17,[
+  ['Reordering and combining lists:','إعادة ترتيب القوائم ودمجها:'],
+  '$ Sort[{3, 1, 2}]              (* {1, 2, 3} *)\nReverse[{1, 2, 3}]           (* {3, 2, 1} *)\nJoin[{1, 2}, {3}]            (* {1, 2, 3} *)\nTranspose[{{1, 2}, {3, 4}}]  (* {{1, 3}, {2, 4}} *)\nFlatten[{{1, 2}, {3, {4}}}]  (* {1, 2, 3, 4} *)',
+  ['``Union`` sorts and removes duplicates, ``SortBy`` sorts by the value of a function, and ``Append`` adds an element at the end (it returns a new list; the old one is unchanged).','و ``Union`` ترتب وتحذف المكرر، و ``SortBy`` ترتب حسب قيمة دالة، و ``Append`` تضيف عنصراً في النهاية (وتعيد قائمة جديدة دون تغيير القديمة).'],
+],[
+  Q('What is the output of ``Union[{3, 1, 3, 2}]``?','ما مخرج ``Union[{3, 1, 3, 2}]``؟','$ {1, 2, 3}',[['Sorted, without duplicates.','مرتبة ودون تكرار.']],['$ {3, 1, 2}','$ {1, 2, 3, 3}','$ 3']),
+  Q('What is the output of ``SortBy[{-3, 1, -2}, Abs]``?','ما مخرج ``SortBy[{-3, 1, -2}, Abs]``؟','$ {1, -2, -3}',[['Sorted by absolute value: 1, 2, 3.','مرتبة حسب القيمة المطلقة: 1 و 2 و 3.']],['$ {-3, -2, 1}','$ {1, 2, 3}','$ {-2, 1, -3}']),
+  Q('What is the output of ``Transpose[{{1, 2, 3}, {4, 5, 6}}]``?','ما مخرج ``Transpose[{{1, 2, 3}, {4, 5, 6}}]``؟','$ {{1, 4}, {2, 5}, {3, 6}}',[['A 2 × 3 matrix becomes 3 × 2.','المصفوفة 2 × 3 تصبح 3 × 2.']],['$ {{4, 5, 6}, {1, 2, 3}}','$ {1, 4, 2, 5, 3, 6}','$ {{3, 2, 1}, {6, 5, 4}}']),
+  Q('What is the output of the last line?','ما مخرج السطر الأخير؟','$ {1, 2}',[['``Append`` returns a new list; use ``AppendTo[v, 3]`` to change v.','``Append`` تعيد قائمة جديدة، فاستخدم ``AppendTo[v, 3]`` لتغيير v.']],['$ {1, 2, 3}','$ 3','$ {3, 1, 2}'],'v = {1, 2}; Append[v, 3];\nv'),
+]);
+
+lesson('504',18,[
+  ['A matrix is a list of rows. The dot ``.`` is the matrix product, while ``*`` multiplies element by element:','المصفوفة قائمة صفوف. والنقطة ``.`` ضرب مصفوفي، بينما ``*`` تضرب عنصراً بعنصر:'],
+  '$ m = {{1, 2}, {3, 4}};\nm . m          (* {{7, 10}, {15, 22}} *)\nm * m          (* {{1, 4}, {9, 16}} *)\nMatrixForm[m]  (* display only *)',
+  ['``Dimensions`` gives the shape, ``IdentityMatrix[n]`` the identity and ``Tr`` the trace. Use ``MatrixForm`` only for display: its result cannot be used in further computations.','و ``Dimensions`` تعطي الشكل، و ``IdentityMatrix[n]`` المحايدة، و ``Tr`` الأثر. واستخدم ``MatrixForm`` للعرض فقط لأن نتيجتها لا تصلح لحسابات لاحقة.'],
+],[
+  Q('What is the output of ``Dimensions[{{1, 2, 3}, {4, 5, 6}}]``?','ما مخرج ``Dimensions[{{1, 2, 3}, {4, 5, 6}}]``؟','$ {2, 3}',[['2 rows, 3 columns.','صفان وثلاثة أعمدة.']],['$ {3, 2}','$ 6','$ 2']),
+  Q('What is the output of ``Tr[{{1, 2}, {3, 4}}]``?','ما مخرج ``Tr[{{1, 2}, {3, 4}}]``؟','$ 5',['1 + 4'],['$ 10','$ -2','$ {1, 4}']),
+  Q('What is the output of ``{{1, 2}, {3, 4}} . {1, 1}``?','ما مخرج ``{{1, 2}, {3, 4}} . {1, 1}``؟','$ {3, 7}',['(1 + 2,   3 + 4)'],['$ {4, 6}','$ {{1, 2}, {3, 4}}','$ 10']),
+  Q('Why does ``(MatrixForm[m]) . m`` not give a matrix product?','لماذا لا يعطي ``(MatrixForm[m]) . m`` ضرباً مصفوفياً؟',['MatrixForm wraps the matrix for display, so Dot does not see a list','MatrixForm تغلّف المصفوفة للعرض فلا ترى Dot قائمة'],[['Write ``m . m // MatrixForm`` instead.','واكتب بدلاً منه ``m . m // MatrixForm``.']],[['The dot needs ``*``','النقطة تحتاج ``*``'],['It does work','بل يعمل']]),
+]);
+
+lesson('504',19,[
+  ['``Sum`` and ``Product`` take an iterator like Table. With symbolic limits or infinity they return closed forms:','``Sum`` و ``Product`` تأخذان مُكرِّراً مثل Table. ومع حدود رمزية أو لانهائية تعيدان صيغاً مغلقة:'],
+  '$ Sum[k, {k, 1, 10}]                 (* 55 *)\nSum[1/2^k, {k, 0, Infinity}]        (* 2 *)\nSum[k^2, {k, 1, n}]                 (* 1/6 n (1 + n) (1 + 2 n) *)\nProduct[k, {k, 1, 5}]               (* 120 *)',
+  ['For a long numerical sum it is faster to build a list and use ``Total``; for a slowly convergent infinite sum use ``NSum``.','ولمجموع عددي طويل الأسرع بناء قائمة واستخدام ``Total``، ولمجموع لانهائي بطيء التقارب استخدم ``NSum``.'],
+],[
+  Q('What is the output of ``Sum[1/k^2, {k, 1, Infinity}]``?','ما مخرج ``Sum[1/k^2, {k, 1, Infinity}]``؟','$ Pi^2/6',['Σ #f{1}{k^2} = #f{π^2}{6}'],['$ 1.64493','$ Infinity','$ Pi/6']),
+  Q('What is the output of ``Sum[x^k/k!, {k, 0, Infinity}]``?','ما مخرج ``Sum[x^k/k!, {k, 0, Infinity}]``؟','$ E^x',[['The exponential series.','متسلسلة الأسية.']],['$ Exp[x] - 1','$ 1/(1 - x)','$ Infinity']),
+  Q('What is the output of ``Product[2 k - 1, {k, 1, 4}]``?','ما مخرج ``Product[2 k - 1, {k, 1, 4}]``؟','$ 105',['1·3·5·7'],['$ 16','$ 24','$ 945']),
+  Q('Compute `Σ_{j=0}^{3} (2j + 1)`.','احسب `Σ_{j=0}^{3} (2j + 1)`.','$ Sum[2 j + 1, {j, 0, 3}]   (* 16 *)',['1 + 3 + 5 + 7 = 16'],['$ Sum[2 j + 1, {j, 1, 3}]   (* 15 *)','$ Sum[2 j + 1, j, 0, 3]','$ Total[2 j + 1, {j, 0, 3}]']),
+]);
+
+lesson('504',20,[
+  ['``Nest`` repeats a function, ``NestList`` keeps every step, ``Fold`` feeds the elements of a list one by one, and ``FixedPoint`` repeats until nothing changes:','``Nest`` تكرر دالة، و ``NestList`` تحفظ كل خطوة، و ``Fold`` تغذّي عناصر قائمة واحداً بعد آخر، و ``FixedPoint`` تكرر حتى لا يتغير شيء:'],
+  '$ Nest[f, x, 3]                     (* f[f[f[x]]] *)\nNestList[2 # &, 1, 4]              (* {1, 2, 4, 8, 16} *)\nFold[f, x, {a, b}]                 (* f[f[x, a], b] *)\nFixedPoint[Cos, 1.]                (* 0.739085 *)',
+  ['Iterations of a numerical method, such as Newton’s method, are written naturally with NestList; recurrences that consume coefficients, such as Horner’s scheme, with Fold.','وتكرارات الطرق العددية مثل طريقة نيوتن تُكتب طبيعياً بـ NestList، وعلاقات التكرار التي تستهلك معاملات مثل طريقة هورنر بـ Fold.'],
+],[
+  Q('What is the output of ``NestList[(# + 2/#)/2 &, 1., 3]``?','ما مخرج ``NestList[(# + 2/#)/2 &, 1., 3]``؟','$ {1., 1.5, 1.41667, 1.41422}',['#f{1 + 2}{2} = 1.5,   #f{1.5 + 1.3333}{2} = 1.41667',['Newton’s method for `#r{2}`.','طريقة نيوتن لـ `#r{2}`.']],['$ {1.5, 1.41667, 1.41422}','$ 1.41422','$ {1., 2., 4., 8.}']),
+  Q('What is the output of ``FoldList[Plus, 0, {1, 2, 3}]``?','ما مخرج ``FoldList[Plus, 0, {1, 2, 3}]``؟','$ {0, 1, 3, 6}',[['Every intermediate result, starting from 0.','كل نتيجة وسيطة بدءاً من 0.']],['$ 6','$ {1, 3, 6}','$ {0, 1, 2, 3}']),
+  Q('What is the output of ``Fold[#1 x + #2 &, 0, {1, 2, 3}]``?','ما مخرج ``Fold[#1 x + #2 &, 0, {1, 2, 3}]``؟','$ 3 + x (2 + x)',['0 → 1 → x + 2 → (x + 2)x + 3',['Horner’s scheme for `x^2 + 2x + 3`.','طريقة هورنر لـ `x^2 + 2x + 3`.']],['$ 1 + 2 x + 3 x^2','$ 6','$ x^2 + 2 x + 3 x']),
+  Q('What is the output of ``Nest[#^2 &, 2, 3]``?','ما مخرج ``Nest[#^2 &, 2, 3]``؟','$ 256',['2 → 4 → 16 → 256'],['$ 8','$ 64','$ 16']),
+]);
+
 export const MS504 = true;
