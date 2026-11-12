@@ -175,7 +175,7 @@ const WORDS={ yes:['yes','y','نعم','ن','اي','أي'], no:['no','n','لا'],
 export function checkAnswer(input, spec){
   let s=normInput(input); if(!s) return false;
   switch(spec.kind){
-    case 'word': { const w=s.toLowerCase().replace(/[.!؟?]/g,'').trim(); return (WORDS[spec.v]||[spec.v]).some(x=>w===x || (spec.v.length<4 && w.split(/[\s(]/)[0]===x)); }
+    case 'word': { const w=s.toLowerCase().replace(/[.!؟?]/g,'').trim(); return (WORDS[spec.v]||[spec.v]).some(x=>w===x || (spec.v.length<4 && w.split(/[\s(:,،;]/)[0]===x)); }
     case 'num': {
       if(spec.form && !/[·×*^]|\d\s*[xX]\s*\d/.test(s)) return false;
       if(spec.dbl){ const us=splitTop(s.replace(/\(?(double|مكرر[ةه]?)\)?/g,''), ',;').map(rhs); return us.length<=2 && us.every(u=>sameNum(u, spec.v)); }

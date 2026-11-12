@@ -1,6 +1,7 @@
 import { R, pick, nz, gcd, sup, frac, sq, reduceFrac, fracStr, term, lead, factorial, sgn, cplx, mat, TRIG, shuffled,
          lcm, totient, powMod, isPrimeN, vec } from './helpers.js';
 import { PROOFS, proofKey } from './proofs.js';
+import { MS_LESSONS, msItem, msCount } from './masters.js';
 import { L, Li, M, align, steps, num, plot, numberLine, intervalLine, aug, Phi, distPlot, zCrit, tCrit, fCrit, fPdf, zTableHTML, tTableHTML, fTableHTML, tbl } from './viz.js';
 
 /* a small discrete distribution: distinct values xs with probabilities cs[i]/D (all cs[i] ≥ 1) */
@@ -3059,3 +3060,10 @@ for(const id in PROOFS){
 }
 
 
+
+/* master's lessons: each has a fixed bank of worked examples and exercises, served in turn from a random start
+   so that a sheet does not repeat a question until the bank is used up */
+for(const key in MS_LESSONS){
+  let i=-1;
+  G[key] = d => { const n=msCount(key); i = i<0 ? Math.floor(Math.random()*n) : (i+1)%n; return msItem(key, i); };
+}

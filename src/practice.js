@@ -67,6 +67,8 @@ export function mountPractice(root, cfg){
   /* one question: the item, its multiple-choice options and, when it can be checked, its typed-answer spec */
   function makeItem(topic, d){
     const gen=G[topic.t], it=gen(d), seen=new Set([keyOf(it.a)]), opts=[{html:inner(it.a), ok:true}];
+    (it.w||[]).forEach(o=>{ const key=keyOf(o); if(!seen.has(key) && opts.length<4){ seen.add(key); opts.push({html:inner(o), ok:false}); } });   // a lesson supplies its own wrong answers
+    if(it.w) return { topic, d, it, opts: opts.length>1 ? shuffled(opts) : null, spec:answerSpec(it.a), typed:'', selfShown:false, resp:null };
     for(let k=0; k<60 && opts.length<4; k++){ const o=gen(d).a, key=keyOf(o); if(!seen.has(key)){ seen.add(key); opts.push({html:inner(o), ok:false}); } }
     return { topic, d, it, opts: opts.length>1 ? shuffled(opts) : null, spec:answerSpec(it.a), typed:'', selfShown:false, resp:null };
   }

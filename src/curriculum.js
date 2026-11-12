@@ -1,6 +1,7 @@
 /* ============================ CURRICULUM ============================ */
 /* human-readable label for every generator topic */
 import { PROOFS, COURSE_PROOFS, proofLabel, proofKey, withProofs } from './proofs.js';
+import { MS_COURSES, msKey } from './masters.js';
 export const TOPIC_LABELS = {
   intAddSub:'Integer add / subtract', intMulDiv:'Integer multiply / divide', orderOps:'Order of operations',
   fracAddSub:'Add / subtract fractions', fracMul:'Multiply fractions', simplifyRatio:'Simplify ratios',
@@ -218,6 +219,30 @@ export const CURRICULUM = [
       'linearSystem2','gaussJordan','matrixAdd','matrixSubtract','matrixMultiply','inverse2','inverseSolve'] },
   ]},
 ];
+/* Master's programme (courses 501–509): every lesson of masters.js is a topic; labels are plain text.
+   In an Arabic label each run of formula text (Latin, Greek, symbols) is wrapped in directional isolates
+   (U+2066 … U+2069) so that it keeps its left-to-right order inside the right-to-left sentence, even in <option>. */
+const plainLabel = s => s.replace(/([\^_])\{([^{}]*)\}/g, (m,c,a) => c + (a.length>1 && !/^\(.*\)$/.test(a) ? `(${a})` : a));
+const AR_RUN = /[^\u0600-\u06FF\s:،؛؟.,·«»–—][^\u0600-\u06FF]*[^\u0600-\u06FF\s:،؛؟.,·«»–—]/g;
+const SYM_TOKEN = "[.*/^@_\\[\\]\\-<>=&#|']{2,}";
+const SYM_RUN = new RegExp('(^|\\s)(' + SYM_TOKEN + '(?:\\s+' + SYM_TOKEN + ')*)(?=\\s|$)', 'g');   // code operators such as .* /@ [[ ]] ->
+const count = (s, re) => (s.match(re) || []).length;
+function isolateMath(s){
+  const wrap = m => '\u2066' + m + '\u2069';
+  const run = m => {
+    if(!/[^\d\s.()]/.test(m)) return m;                                    // plain numbers such as 3.2 stay as they are
+    let head = '', tail = '', x;
+    while((x = m.match(/^(.*\S)(\s*\()$/))){ m = x[1]; tail = x[2] + tail; }                                  // an opening bracket of the Arabic sentence
+    while(m.endsWith(')') && count(m, /[)\]]/g) > count(m, /[(\[]/g)){ m = m.slice(0,-1).trimEnd(); tail = ')' + tail; }
+    while(m.startsWith('(') && count(m, /[(\[]/g) > count(m, /[)\]]/g)){ m = m.slice(1).trimStart(); head += '('; }
+    return (m.length > 1 && /[^\d\s.()]/.test(m)) ? head + wrap(m) + tail : head + m + tail;
+  };
+  const piece = p => p.replace(AR_RUN, run).split(/(\u2066[^\u2069]*\u2069)/).map((q,i) => i%2 ? q : q.replace(SYM_RUN, (m,sp,t) => sp + wrap(t))).join('');
+  return s.split(/([:،؛]\s)/).map((p,i) => i%2 ? p : piece(p)).join('');
+}
+CURRICULUM.push({ level:"Master's Programme", ar:'برنامج الماجستير', courses: MS_COURSES.map(c => ({ code:c.code, title:c.title, ar:c.ar,
+  units: c.units.map(u => [plainLabel(u[0]), isolateMath(plainLabel(u[1]))]),
+  topics: c.lessons.map((t,i) => { const k=msKey(c.num, i+1); TOPIC_LABELS[k]=`${i+1}. ${plainLabel(t[0])}`; TOPIC_LABELS_AR[k]=`${i+1}. ${isolateMath(plainLabel(t[1]))}`; return k; }) })) });
 /* flat search index over every topic in the curriculum */
 // the proofs of each course's formulas, one topic per formula, each placed right after the topic it belongs to
 CURRICULUM.forEach(l=>l.courses.forEach(c=>{ c.topics=withProofs(c.topics, COURSE_PROOFS[c.code]||[]); }));

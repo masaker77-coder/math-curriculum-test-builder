@@ -2,7 +2,7 @@
 import { L } from './viz.js';
 
 const FEATURES = [
-  ['📚', ['Every course of the study plan', 'كل مقررات الخطة'], ['Levels 1–8, the electives and the Business Administration course, each with its own topics.', 'من المستوى الأول إلى الثامن والمقررات الاختيارية ومقرر قسم إدارة الأعمال، وكل مقرر بمواضيعه.']],
+  ['📚', ['Every course of the study plan', 'كل مقررات الخطة'], ['Levels 1–8, the electives, the Business Administration course and the master’s programme (501–509, 100 lessons each), each with its own topics.', 'من المستوى الأول إلى الثامن والمقررات الاختيارية ومقرر قسم إدارة الأعمال وبرنامج الماجستير (501–509، ولكل مقرر 100 درس)، وكل مقرر بمواضيعه.']],
   ['∞', ['Endless fresh questions', 'أسئلة جديدة بلا نهاية'], ['Every run generates new numbers: essay or multiple choice, at three difficulty levels.', 'كل تنفيذ يولّد أسئلة بأرقام جديدة: مقالية أو اختيار من متعدد، بثلاثة مستويات صعوبة.']],
   ['✎', ['Step-by-step solutions', 'حلول بالخطوات'], ['A simple, detailed solution for every question, with graphs and the statistical tables used.', 'حل مبسط ومفصل لكل سؤال، مع الرسوم البيانية والجداول الإحصائية المستخدمة.']],
   ['📝', ['Homework and exams', 'واجبات واختبارات'], ['Ready presets with questions, parts and marks, several versions and an answer key.', 'قوالب جاهزة بالأسئلة والفروع والدرجات، مع نماذج متعددة ومفتاح إجابة.']],
