@@ -51,6 +51,8 @@ test('expressions in x, constants of integration, factored forms', () => {
   assert.ok(ok('(x+1)(x-9)', '(x + 1)(x &minus; 9)')); assert.ok(ok('(x-9)(x+1)', '(x + 1)(x &minus; 9)')); assert.ok(!ok('x^2-8x-9', '(x + 1)(x &minus; 9)'));
   assert.ok(ok('2x^6 + 3 + C', `2x${sup(6)} + C`)); assert.ok(!ok('2x^6', `2x${sup(6)} + C`));
   assert.ok(ok('-sin x', '&minus;sin x')); assert.ok(ok('sec^2(x)', `sec${sup(2)} x`));
+  // an answer undefined at some sample points (x < −1) is compared where it is defined
+  assert.ok(ok('(x-1/2)(1+x)^(1/2)', `(x &minus; 1/2)(1 + x)${sup('1/2')}`)); assert.ok(!ok('(x+1/2)(1+x)^(1/2)', `(x &minus; 1/2)(1 + x)${sup('1/2')}`));
 });
 
 test('complex numbers, matrices, words', () => {
