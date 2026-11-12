@@ -937,4 +937,116 @@ lesson('503',70,[
   Q('Which generalization would let the paper’s method also absorb a known factor `t^{a}` of the solution?','أي تعميم يسمح لطريقة البحث أيضاً بامتصاص عامل معلوم `t^{a}` في الحل؟',['Using β > 0 (or generalized Jacobi functions) in time','استخدام β > 0 (أو دوال جاكوبي المعممة) في الزمن'],[['The weight `t^{λβ}` then matches the vanishing at t = 0.','فيطابق الوزن `t^{λβ}` الانعدام عند t = 0.']],[['A larger M','M أكبر'],['A smaller γ','γ أصغر']]),
 ]);
 
+/* ---- 503 · Unit 8 (lessons 71–80): operational matrices ---- */
+lesson('503',71,[
+  ['Differentiating a shifted Jacobi polynomial raises both parameters by one:','اشتقاق كثيرة جاكوبي المزاحة يرفع الوسيطين كليهما بواحد:'],
+  '#f{d}{dt} P_n^{*(α,β)}(t) = (n + α + β + 1) P_{n−1}^{*(α+1,β+1)}(t)',
+  ['To stay in one family we write `Φ′ = DΦ` for the vector `Φ = (P_0^*, …, P_M^*)^T`. D is strictly lower triangular with entries `D_{nk} = ⟨P_n^{*′}, P_k^*⟩_w / h_k^*`. For shifted Legendre `D_{nk} = 2(2k + 1)` when `n − k` is odd and 0 otherwise; on `[0, γ]` every entry is divided by γ.','ولنبقى في عائلة واحدة نكتب `Φ′ = DΦ` للمتجه `Φ = (P_0^*, …, P_M^*)^T`. و D مثلثية سفلى تماماً عناصرها `D_{nk} = ⟨P_n^{*′}, P_k^*⟩_w / h_k^*`. ولليجندر المزاحة `D_{nk} = 2(2k + 1)` عندما يكون `n − k` فردياً و 0 فيما عدا ذلك، وعلى `[0, γ]` يُقسم كل عنصر على γ.'],
+],[
+  Q('Write D for shifted Legendre with M = 2.','اكتب D لليجندر المزاحة عند M = 2.','D = #m{0, 0, 0 ;; 2, 0, 0 ;; 0, 6, 0}',['P_1^{*′} = 2 = 2P_0^*,   P_2^{*′} = 12t − 6 = 6P_1^*'],['D = #m{0, 2, 0 ;; 0, 0, 6 ;; 0, 0, 0}','D = #m{0, 0, 0 ;; 2, 0, 0 ;; 2, 6, 0}','D = #m{0, 0, 0 ;; 1, 0, 0 ;; 0, 3, 0}']),
+  Q('For α = β = 1, `P_1^* = 4t − 2` and `P_2^* = 15t^2 − 15t + 3`. Express `P_2^{*′}` in the same family.','عند α = β = 1 لدينا `P_1^* = 4t − 2` و `P_2^* = 15t^2 − 15t + 3`. عبّر عن `P_2^{*′}` في العائلة نفسها.','#f{15}{2}P_1^*',['30t − 15 = #f{15}{2}(4t − 2)'],['15P_1^*','30P_1^* − 15P_0^*','#f{15}{4}P_1^*']),
+  Q('For shifted Legendre, find c in `P_2^{*′} = c P_1^{*(1,1)}`.','لليجندر المزاحة أوجد c في `P_2^{*′} = c P_1^{*(1,1)}`.','3',['n + α + β + 1 = 2 + 0 + 0 + 1','3(4t − 2) = 12t − 6'],['2','6','#f{3}{2}']),
+  Q('Why is D strictly lower triangular?','لماذا تكون D مثلثية سفلى تماماً؟',['Differentiation lowers the degree, so `P_n^{*′}` uses only `P_0^*, …, P_{n−1}^*`','الاشتقاق يخفض الدرجة فتستخدم `P_n^{*′}` فقط `P_0^*, …, P_{n−1}^*`'],[['The diagonal is zero because `P_n^{*′}` has degree n − 1.','والقطر صفري لأن درجة `P_n^{*′}` هي n − 1.']],[['Because the weight is positive','لأن الوزن موجب'],['It is upper triangular','بل مثلثية عليا']]),
+]);
+
+lesson('503',72,[
+  ['The second-derivative matrix is `D^{(2)} = D·D` for every (α, β). For Legendre on `[0, γ]` its entries are explicit (Theorem 3.1 of the paper): with `r = j + 2s`,','مصفوفة المشتقة الثانية `D^{(2)} = D·D` لكل (α, β). ولليجندر على `[0, γ]` عناصرها صريحة (النظرية 3.1 في البحث): مع `r = j + 2s`'],
+  'd_{r,j} = #f{4}{γ^2} s(2j + 1)(2j + 2s + 1),     #f{d^2}{dt^2}P_n^{*(α,β)} = (n + α + β + 1)(n + α + β + 2) P_{n−2}^{*(α+2,β+2)}',
+  ['The Jacobi version generalizes Theorem 3.1: the same projection that gives `d_{r,j}` for α = β = 0 gives the entries for any (α, β), and the product `D·D` reproduces them exactly.','والصيغة الجاكوبية تعمم النظرية 3.1: الإسقاط نفسه الذي يعطي `d_{r,j}` عند α = β = 0 يعطي العناصر لأي (α, β)، والضرب `D·D` يعيدها بالضبط.'],
+],[
+  Q('Compute `d_{2,0}` for γ = 1.','احسب `d_{2,0}` عند γ = 1.','12',['s = 1, j = 0:   4·1·1·3',['Directly: `P_2^{*″} = 12`.','مباشرة: `P_2^{*″} = 12`.']],['6','24','3']),
+  Q('Compute `d_{3,1}` for γ = 2.','احسب `d_{3,1}` عند γ = 2.','15',['s = 1, j = 1:   #f{4}{4}·1·3·5'],['60','30','#f{15}{4}']),
+  Q('For α = 0, β = 1 the rows of D are (3, 0, 0) for n = 1 and (4/3, 20/3, 0) for n = 2. Find `(D^2)_{2,0}`.','عند α = 0 و β = 1 صفّا D هما (3, 0, 0) لـ n = 1 و (4/3, 20/3, 0) لـ n = 2. أوجد `(D^2)_{2,0}`.','20',['#f{4}{3}·0 + #f{20}{3}·3 + 0',['Check: `P_2^* = 10t^2 − 12t + 3`, so `P_2^{*″} = 20`.','تحقق: `P_2^* = 10t^2 − 12t + 3` فيكون `P_2^{*″} = 20`.']],['#f{80}{9}','#f{4}{3}','10']),
+  Q('Compute `d_{4,0}` for γ = 1.','احسب `d_{4,0}` عند γ = 1.','40',['s = 2, j = 0:   4·2·1·5'],['20','12','80']),
+]);
+
+lesson('503',73,[
+  ['The integration matrix P satisfies `∫_0^t Φ ≈ PΦ`. For shifted Legendre it is tridiagonal:','مصفوفة التكامل P تحقق `∫_0^t Φ ≈ PΦ`. ولليجندر المزاحة هي ثلاثية القطر:'],
+  '∫_0^t P_0^* = #f{P_0^* + P_1^*}{2},     ∫_0^t P_n^* = #f{P_{n+1}^* − P_{n−1}^*}{2(2n + 1)}   (n ≥ 1)',
+  ['For other (α, β) the condition “the integral vanishes at t = 0” brings in entries in the first columns, so the matrix is no longer tridiagonal. In every case the last row needs `P_{M+1}^*`, which is dropped: this truncation is the only error.','ولوسائط (α, β) أخرى يُدخل شرط «انعدام التكامل عند t = 0» عناصر في الأعمدة الأولى فلا تبقى المصفوفة ثلاثية القطر. وفي كل الحالات يحتاج الصف الأخير إلى `P_{M+1}^*` الذي يُحذف، وهذا القطع هو الخطأ الوحيد.'],
+],[
+  Q('Find `∫_0^t P_1^*` for shifted Legendre.','أوجد `∫_0^t P_1^*` لليجندر المزاحة.','#f{P_2^* − P_0^*}{6}',['n = 1:   2(2·1 + 1) = 6',['Check: `t^2 − t = (6t^2 − 6t + 1 − 1)/6`.','تحقق: `t^2 − t = (6t^2 − 6t + 1 − 1)/6`.']],['#f{P_2^* − P_0^*}{2}','#f{P_2^* + P_0^*}{6}','#f{P_2^*}{6}']),
+  Q('For α = 0, β = 1 (`P_1^* = 3t − 2`), expand `∫_0^t 1 = t`.','عند α = 0 و β = 1 (`P_1^* = 3t − 2`) انشر `∫_0^t 1 = t`.','#f{2}{3}P_0^* + #f{1}{3}P_1^*',['t = #f{(3t − 2) + 2}{3}'],['#f{1}{2}P_0^* + #f{1}{2}P_1^*','#f{1}{3}P_0^* + #f{2}{3}P_1^*','#f{1}{3}P_1^*']),
+  Q('Write the row of P for `P_2^*` (shifted Legendre).','اكتب صف P الخاص بـ `P_2^*` (ليجندر المزاحة).','(0,  −#f{1}{10},  0,  #f{1}{10})',['#f{P_3^* − P_1^*}{10}'],['(0,  #f{1}{10},  0,  #f{1}{10})','(#f{1}{10},  0,  #f{1}{10},  0)','(0,  −#f{1}{6},  0,  #f{1}{6})']),
+  Q('Where does the truncation error of P sit?','أين يقع خطأ القطع في P؟',['In the last row: the term `P_{M+1}^*` is dropped','في الصف الأخير: يُحذف الحد `P_{M+1}^*`'],[['All other rows are exact.','وكل الصفوف الأخرى مضبوطة.']],[['In the first row','في الصف الأول'],['On the diagonal','على القطر']]),
+]);
+
+lesson('503',74,[
+  ['Using the power form (Lesson 63) and `D^{−μ}t^k = Γ(k + 1)/Γ(k + μ + 1)·t^{k+μ}`:','باستخدام الصيغة القوية (الدرس 63) و `D^{−μ}t^k = Γ(k + 1)/Γ(k + μ + 1)·t^{k+μ}`:'],
+  'D^{−μ}P_n^{*(α,β)} = Σ_{k=0}^{n} a_{n,k} #f{Γ(k + 1)}{Γ(k + μ + 1)} t^{k+μ}',
+  ['where `a_{n,k}` are the power coefficients. The result is `t^{μ}` times a polynomial, not a polynomial, so its expansion in `P_k^*` converges slowly; in the fractional basis with λ = μ (Unit 7) it is again a polynomial in `s = t^{λ}`.','و `a_{n,k}` معاملات القوى. والنتيجة `t^{μ}` مضروبة في كثيرة حدود وليست كثيرة حدود، فمفكوكها بـ `P_k^*` يتقارب ببطء، وفي الأساس الكسري مع λ = μ (الوحدة 7) تعود كثيرة حدود في `s = t^{λ}`.'],
+],[
+  Q('Compute `D^{−1/2}(3t − 2)` (`P_1^{*(0,1)}`).','احسب `D^{−1/2}(3t − 2)` (`P_1^{*(0,1)}`).','#f{4}{#r{π}}#r{t}(t − 1)',['3#f{Γ(2)}{Γ(5/2)}t^{3/2} − 2#f{Γ(1)}{Γ(3/2)}t^{1/2}','Γ(#f{5}{2}) = #f{3#r{π}}{4},   Γ(#f{3}{2}) = #f{#r{π}}{2}'],['#f{4}{#r{π}}#r{t}(t + 1)','#f{2}{#r{π}}#r{t}(3t − 2)','2t^{3/2} − 4t^{1/2}']),
+  Q('Compute `D^{−1/2}1`.','احسب `D^{−1/2}1`.','#f{2#r{t}}{#r{π}}',['#f{t^{1/2}}{Γ(3/2)}'],['#r{t}','#f{#r{t}}{2#r{π}}','2#r{t}']),
+  Q('Compute `D^{−1}P_1^{*(1,1)} = D^{−1}(4t − 2)`.','احسب `D^{−1}P_1^{*(1,1)} = D^{−1}(4t − 2)`.','2t^2 − 2t',['4#f{Γ(2)}{Γ(3)}t^2 − 2t'],['4t^2 − 2t','2t^2 − 2','t^2 − t']),
+  Q('With λ = 1/2, what is `D^{−1/2}(3t − 2)` as a function of `s = #r{t}`?','مع λ = 1/2 ما `D^{−1/2}(3t − 2)` بدلالة `s = #r{t}`؟','#f{4}{#r{π}}(s^3 − s)',['#r{t}(t − 1) = s(s^2 − 1)',['A polynomial of degree 3 in s.','كثيرة حدود من الدرجة 3 في s.']],['#f{4}{#r{π}}(s^2 − s)','#f{4}{#r{π}}s','#f{4}{#r{π}}(s − 1)']),
+]);
+
+lesson('503',75,[
+  ['Projecting `D^{−μ}P_k^*` back onto the family gives the fractional integration matrix, `D^{−μ}Φ ≈ I^{(μ)}Φ`:','إسقاط `D^{−μ}P_k^*` على العائلة نفسها يعطي مصفوفة التكامل الكسري `D^{−μ}Φ ≈ I^{(μ)}Φ`:'],
+  'c_{k,j} = #f{1}{h_j^*} Σ_{r=0}^{k} Σ_{l=0}^{j} a_{k,r} a_{j,l} #f{Γ(r + 1)}{Γ(r + μ + 1)} B(r + μ + l + β + 1, α + 1)',
+  ['The Beta function comes from `∫_0^1 (1 − t)^{α} t^{β} t^{r+μ+l} dt`. For α = β = 0 it becomes `1/(r + μ + l + 1)` and the formula is Theorem 3.2 of the paper; for μ = 1 it reproduces the integration matrix of Lesson 73.','ودالة بيتا تأتي من `∫_0^1 (1 − t)^{α} t^{β} t^{r+μ+l} dt`. وعند α = β = 0 تصبح `1/(r + μ + l + 1)` وتكون الصيغة هي النظرية 3.2 في البحث، وعند μ = 1 تعيد مصفوفة التكامل في الدرس 73.'],
+],[
+  Q('Compute `c_{0,0}` for Legendre with μ = 1/2.','احسب `c_{0,0}` لليجندر مع μ = 1/2.','#f{4}{3#r{π}} ≈ 0.7523',['c_{0,0} = #f{1}{Γ(μ + 1)(μ + 1)} = #f{1}{Γ(5/2)}'],['#f{2}{#r{π}} ≈ 1.128','#f{2}{3}','1']),
+  Q('Reduce `B(r + μ + l + β + 1, α + 1)` to α = β = 0.','اختصر `B(r + μ + l + β + 1, α + 1)` إلى α = β = 0.','#f{1}{r + μ + l + 1}',['B(a, 1) = #f{1}{a}'],['r + μ + l + 1','#f{1}{(r + μ + l + 1)(r + μ + l + 2)}','1']),
+  Q('Compute `c_{0,0}` for μ = 1, α = 0, β = 1 (`h_0^* = 1/2`).','احسب `c_{0,0}` عند μ = 1 و α = 0 و β = 1 (`h_0^* = 1/2`).','#f{2}{3}',['2·#f{Γ(1)}{Γ(2)}B(3, 1) = 2·#f{1}{3}',['It agrees with `t = (2/3)P_0^* + (1/3)P_1^*` in Lesson 73.','ويتفق مع `t = (2/3)P_0^* + (1/3)P_1^*` في الدرس 73.']],['#f{1}{3}','#f{1}{2}','1']),
+  Q('Why is `I^{(μ)}` only approximate for non-integer μ?','لماذا تكون `I^{(μ)}` تقريبية فقط عند μ غير صحيح؟',['`D^{−μ}P_k^*` is not a polynomial, so its projection onto `P_0^*, …, P_M^*` is truncated','`D^{−μ}P_k^*` ليست كثيرة حدود فيُقطع إسقاطها على `P_0^*, …, P_M^*`'],[['Every row, not only the last, carries a truncation error.','كل صف، لا الأخير فقط، يحمل خطأ قطع.']],[['Because Γ is approximated','لأن Γ تُقرَّب'],['It is exact','بل مضبوطة']]),
+]);
+
+lesson('503',76,[
+  ['The Caputo derivative of order ν kills the powers below `⌈ν⌉` and acts on the others by `D^{ν}t^k = Γ(k + 1)/Γ(k + 1 − ν)·t^{k−ν}`:','مشتقة كابوتو من الرتبة ν تُعدم القوى الأقل من `⌈ν⌉` وتؤثر في البقية بـ `D^{ν}t^k = Γ(k + 1)/Γ(k + 1 − ν)·t^{k−ν}`:'],
+  'D^{ν}P_n^{*(α,β)} = Σ_{k=⌈ν⌉}^{n} a_{n,k} #f{Γ(k + 1)}{Γ(k + 1 − ν)} t^{k−ν}',
+  ['So `D^{ν}P_n^* = 0` for `n < ⌈ν⌉`, and the other results are `t^{⌈ν⌉−ν}` times polynomials.','فيكون `D^{ν}P_n^* = 0` عندما `n < ⌈ν⌉`، والنتائج الأخرى `t^{⌈ν⌉−ν}` مضروبة في كثيرات حدود.'],
+],[
+  Q('Compute `D^{1/2}(3t − 2)`.','احسب `D^{1/2}(3t − 2)`.','#f{6}{#r{π}}#r{t}',['3#f{Γ(2)}{Γ(3/2)}t^{1/2} = #f{3}{#r{π}/2}#r{t}',['The constant −2 is killed.','الثابت −2 ينعدم.']],['#f{3}{#r{π}}#r{t}','#f{6}{#r{π}}#r{t} − 2','#f{4}{#r{π}}#r{t}']),
+  Q('Compute `D^{3/2}P_1^*`.','احسب `D^{3/2}P_1^*`.','0',['1 < ⌈#f{3}{2}⌉ = 2'],['#f{1}{Γ(1/2)}t^{−1/2}','1','t^{−1/2}']),
+  Q('Compute `D^{1/2}P_2^{*(0,0)} = D^{1/2}(6t^2 − 6t + 1)`.','احسب `D^{1/2}P_2^{*(0,0)} = D^{1/2}(6t^2 − 6t + 1)`.','#f{4}{#r{π}}#r{t}(4t − 3)',['6#f{Γ(3)}{Γ(5/2)}t^{3/2} = #f{16}{#r{π}}t^{3/2},   −6#f{Γ(2)}{Γ(3/2)}t^{1/2} = −#f{12}{#r{π}}t^{1/2}'],['#f{4}{#r{π}}#r{t}(4t − 3) + 1','#f{4}{#r{π}}#r{t}(3t − 4)','#f{12}{#r{π}}#r{t}(t − 1)']),
+  Q('How many polynomials `P_n^*` are killed by `D^{ν}` with ν = 2.5?','كم كثيرة `P_n^*` تُعدمها `D^{ν}` مع ν = 2.5؟','3',['n < ⌈2.5⌉ = 3:   n = 0, 1, 2'],['2','1','0']),
+]);
+
+lesson('503',77,[
+  ['Projecting `D^{ν}P_k^*` onto the family gives the fractional derivative matrix `D^{ν}Φ ≈ D^{(ν)}Φ` with','إسقاط `D^{ν}P_k^*` على العائلة يعطي مصفوفة المشتقة الكسرية `D^{ν}Φ ≈ D^{(ν)}Φ` بالعناصر'],
+  'd_{k,j}^{(ν)} = #f{1}{h_j^*} Σ_{r=⌈ν⌉}^{k} Σ_{l=0}^{j} a_{k,r} a_{j,l} #f{Γ(r + 1)}{Γ(r + 1 − ν)} B(r − ν + l + β + 1, α + 1)',
+  ['The first `⌈ν⌉` rows are zero. For integer ν the matrix equals `D^{ν}`, the power of the derivative matrix. In practice one often prefers the integrated form with `I^{(μ)}` (Unit 9), which avoids the singular behaviour of `D^{ν}P_k^*` at t = 0.','وأول `⌈ν⌉` صفاً أصفار. وعند ν صحيح تساوي المصفوفة `D^{ν}` أي قوة مصفوفة المشتقة. وعملياً تُفضَّل غالباً الصيغة التكاملية مع `I^{(μ)}` (الوحدة 9) لأنها تتجنب السلوك الشاذ لـ `D^{ν}P_k^*` عند t = 0.'],
+],[
+  Q('For Legendre and ν = 1/2, compute `d_{1,0}^{(ν)}` (`D^{1/2}P_1^* = 4#r{t}/#r{π}`).','لليجندر مع ν = 1/2 احسب `d_{1,0}^{(ν)}` (`D^{1/2}P_1^* = 4#r{t}/#r{π}`).','#f{8}{3#r{π}} ≈ 1.505',['∫_0^1 #f{4#r{t}}{#r{π}} dt = #f{4}{#r{π}}·#f{2}{3}'],['#f{4}{#r{π}} ≈ 2.257','2','#f{8}{5#r{π}} ≈ 0.903']),
+  Q('For the same case compute `d_{1,1}^{(ν)}`.','للحالة نفسها احسب `d_{1,1}^{(ν)}`.','#f{8}{5#r{π}} ≈ 0.903',['3∫_0^1 #f{4#r{t}}{#r{π}}(2t − 1) dt = #f{12}{#r{π}}(#f{4}{5} − #f{2}{3})'],['#f{8}{3#r{π}} ≈ 1.505','0','#f{4}{5#r{π}} ≈ 0.451']),
+  Q('How many zero rows does `D^{(ν)}` have for ν = 1.5?','كم صفاً صفرياً في `D^{(ν)}` عند ν = 1.5؟','2',['⌈1.5⌉ = 2'],['1','0','3']),
+  Q('Which matrix is `D^{(1)}`?','ما المصفوفة `D^{(1)}`؟',['The ordinary derivative matrix D of Lesson 71','مصفوفة المشتقة العادية D في الدرس 71'],[['For integer ν the Caputo derivative is the ordinary one.','للرتبة الصحيحة مشتقة كابوتو هي المشتقة العادية.']],[['The identity','المصفوفة المحايدة'],['The integration matrix','مصفوفة التكامل']]),
+]);
+
+lesson('503',78,[
+  ['Multiplication by t is tridiagonal in any Jacobi family, because of the three-term recurrence. For shifted Legendre:','الضرب في t ثلاثي القطر في أي عائلة جاكوبي بسبب علاقة التكرار الثلاثية. ولليجندر المزاحة:'],
+  't P_n^* = #f{n + 1}{2(2n + 1)} P_{n+1}^* + #f{1}{2} P_n^* + #f{n}{2(2n + 1)} P_{n−1}^*',
+  ['For a known coefficient `a(t) = Σ a_m P_m^*` the product matrix has entries `Σ_m a_m ⟨P_n^* P_m^*, P_j^*⟩_w / h_j^*`; if a has degree m, the matrix has bandwidth m on each side. It is used for equations with variable coefficients.','ولمعامل معلوم `a(t) = Σ a_m P_m^*` تكون عناصر مصفوفة الضرب `Σ_m a_m ⟨P_n^* P_m^*, P_j^*⟩_w / h_j^*`، وإذا كانت درجة a هي m فعرض نطاق المصفوفة m على كل جانب. وتُستخدم للمعادلات ذات المعاملات المتغيرة.'],
+],[
+  Q('Expand `t P_1^*` (shifted Legendre).','انشر `t P_1^*` (ليجندر المزاحة).','#f{1}{3}P_2^* + #f{1}{2}P_1^* + #f{1}{6}P_0^*',['n = 1:   #f{2}{6},  #f{1}{2},  #f{1}{6}',['Check: `2t^2 − t`.','تحقق: `2t^2 − t`.']],['#f{1}{2}P_2^* + #f{1}{2}P_0^*','#f{1}{3}P_2^* + #f{1}{6}P_0^*','#f{2}{3}P_2^* + #f{1}{3}P_0^*']),
+  Q('Expand `t P_0^*`.','انشر `t P_0^*`.','#f{1}{2}P_1^* + #f{1}{2}P_0^*',['t = #f{2t − 1}{2} + #f{1}{2}'],['P_1^*','2P_1^* + P_0^*','#f{1}{2}P_1^*']),
+  Q('What is the bandwidth of the product matrix for `a(t) = t^2`?','ما عرض نطاق مصفوفة الضرب لـ `a(t) = t^2`؟','2',[['Pentadiagonal: two diagonals on each side.','خماسية القطر: قطران على كل جانب.']],['1','0','4']),
+  Q('Why is multiplication by t tridiagonal?','لماذا يكون الضرب في t ثلاثي القطر؟',['By the three-term recurrence, `t P_n^*` involves only `P_{n−1}^*`, `P_n^*`, `P_{n+1}^*`','بعلاقة التكرار الثلاثية لا تتضمن `t P_n^*` إلا `P_{n−1}^*` و `P_n^*` و `P_{n+1}^*`'],[['Orthogonality kills every other component.','التعامد يُعدم كل مركبة أخرى.']],[['Because t is positive','لأن t موجبة']]),
+]);
+
+lesson('503',79,[
+  ['A basis that satisfies homogeneous Dirichlet conditions is built from three neighbours:','الأساس الذي يحقق شروط ديريشليه المتجانسة يُبنى من ثلاثة متجاورات:'],
+  'φ_k = P_k + r_k P_{k+1} + q_k P_{k+2},     φ_k(1) = φ_k(−1) = 0',
+  ['The two conditions use `P_n(1) = C(n + α, n)` and `P_n(−1) = (−1)^n C(n + β, n)`. For Legendre `φ_k = P_k − P_{k+2}`; for α = β the coefficient `r_k` vanishes by symmetry. The same coefficients work for the shifted basis on `[0, 1]` or `[0, L]`, since the end values do not change.','والشرطان يستخدمان `P_n(1) = C(n + α, n)` و `P_n(−1) = (−1)^n C(n + β, n)`. ولليجندر `φ_k = P_k − P_{k+2}`، وعند α = β ينعدم `r_k` بالتماثل. والمعاملات نفسها تصلح للأساس المزاح على `[0, 1]` أو `[0, L]` لأن القيم الطرفية لا تتغير.'],
+],[
+  Q('Find `q_k` for α = β = 1.','أوجد `q_k` عند α = β = 1.','−#f{k + 1}{k + 3}',['(k + 1) + q_k(k + 3) = 0'],['−1','−#f{k + 3}{k + 1}','#f{k + 1}{k + 3}']),
+  Q('Write `φ_0` for α = β = 1 (`P_2^{(1,1)} = (15x^2 − 3)/4`).','اكتب `φ_0` عند α = β = 1 (`P_2^{(1,1)} = (15x^2 − 3)/4`).','#f{5}{4}(1 − x^2)',['φ_0 = 1 − #f{1}{3}·#f{15x^2 − 3}{4} = #f{5 − 5x^2}{4}'],['1 − x^2','#f{3}{4}(1 − x^2)','#f{5}{4}(1 + x^2)']),
+  Q('Find `r_0` and `q_0` for α = 1, β = 0.','أوجد `r_0` و `q_0` عند α = 1 و β = 0.','r_0 = #f{2}{5},   q_0 = −#f{3}{5}',['x = 1:   1 + 2r_0 + 3q_0 = 0','x = −1:   1 − r_0 + q_0 = 0',['Then `φ_0 = (3/2)(1 − x^2)`.','وعندها `φ_0 = (3/2)(1 − x^2)`.']],['r_0 = 0,   q_0 = −1','r_0 = −#f{2}{5},   q_0 = −#f{3}{5}','r_0 = #f{3}{5},   q_0 = −#f{2}{5}']),
+  Q('Why is `r_k = 0` when α = β?','لماذا يكون `r_k = 0` عندما α = β؟',['`P_k(−x) = (−1)^k P_k(x)`, so `P_k − c P_{k+2}` already vanishes at both ends','`P_k(−x) = (−1)^k P_k(x)` فتنعدم `P_k − c P_{k+2}` عند الطرفين معاً'],[['The two conditions become the same equation.','يصير الشرطان المعادلة نفسها.']],[['Because the weight is 1','لأن الوزن 1'],['It is not zero','ليس صفراً']]),
+]);
+
+lesson('503',80,[
+  ['All matrices of this unit come from two ingredients: the power coefficients `a_{n,k}` and the norms `h_n^*`. In code the parameters α and β are usually called ``al1`` and ``bt1``:','كل مصفوفات هذه الوحدة تأتي من مكونين: معاملات القوى `a_{n,k}` والمعايير `h_n^*`. وفي الكود يُسمى الوسيطان α و β عادة ``al1`` و ``bt1``:'],
+  '$from math import gamma\n\ndef coef(n, al1, bt1):\n    # power coefficients a_{n,k} of P_n^*\n    return [(-1)**(n - k) * gamma(n + bt1 + 1)\n            * gamma(n + k + al1 + bt1 + 1)\n            / (gamma(k + bt1 + 1)\n               * gamma(n + al1 + bt1 + 1)\n               * gamma(n - k + 1) * gamma(k + 1))\n            for k in range(n + 1)]\n\ndef hstar(n, al1, bt1):\n    return (gamma(n + al1 + 1) * gamma(n + bt1 + 1)\n            / ((2*n + al1 + bt1 + 1)\n               * gamma(n + al1 + bt1 + 1)\n               * gamma(n + 1)))',
+  ['The fractional integration matrix of Lesson 75 is then a double sum with ``scipy.special.beta``:','ومصفوفة التكامل الكسري في الدرس 75 تصبح مجموعاً مزدوجاً باستخدام ``scipy.special.beta``:'],
+  '$s = 0.0\nfor r, a in enumerate(coef(k, al1, bt1)):\n    for l, b in enumerate(coef(j, al1, bt1)):\n        s += (a * b * gamma(r + 1)\n              / gamma(r + mu + 1)\n              * B(r + mu + l + bt1 + 1, al1 + 1))\nC[k, j] = s / hstar(j, al1, bt1)',
+],[
+  Q('What does ``coef(1, 0, 1)`` return?','ماذا تعيد ``coef(1, 0, 1)``؟','$[-2.0, 3.0]',[['`P_1^{*(0,1)} = 3t − 2`.','`P_1^{*(0,1)} = 3t − 2`.']],['$[3.0, -2.0]','$[-1.0, 2.0]','$[2.0, -3.0]']),
+  Q('What does ``hstar(1, 0, 1)`` return?','ماذا تعيد ``hstar(1, 0, 1)``؟','$0.25',[['`h_1^* = 1/4` (Lesson 66).','`h_1^* = 1/4` (الدرس 66).']],['$1.0','$0.5','$0.125']),
+  Q('With M = 2, μ = 1, ``al1 = bt1 = 0``, what is the first row of C?','مع M = 2 و μ = 1 و ``al1 = bt1 = 0`` ما الصف الأول من C؟','(#f{1}{2},  #f{1}{2},  0)',['∫_0^t P_0^* = #f{P_0^* + P_1^*}{2}'],['(1,  0,  0)','(0,  #f{1}{2},  #f{1}{2})','(#f{1}{2},  0,  #f{1}{2})']),
+  Q('Why does ``hstar(0, -0.5, -0.5)`` fail (Chebyshev)?','لماذا تفشل ``hstar(0, -0.5, -0.5)`` (تشيبيشيف)؟',['The denominator is `0·Γ(0)`; use `h_0^* = Γ(α + 1)Γ(β + 1)/Γ(α + β + 2)`, which gives π','المقام `0·Γ(0)`، فاستخدم `h_0^* = Γ(α + 1)Γ(β + 1)/Γ(α + β + 2)` التي تعطي π'],['(α + β + 1)Γ(α + β + 1) = Γ(α + β + 2)'],[['Because gamma cannot take negative numbers','لأن gamma لا تقبل الأعداد السالبة'],['It does not fail','لا تفشل']]),
+]);
+
 export const MS503 = true;
