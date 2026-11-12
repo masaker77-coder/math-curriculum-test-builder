@@ -620,7 +620,7 @@ lesson('508',43,[
   ['So with `V = x^2`: if `x ^CD^{α}x ≤ −λx^2` then `^CD^{α}V ≤ −2λV`, and comparison gives `V ≤ V(0)E_{α}(−2λt^{α})`, Mittag-Leffler stability. No product rule holds for fractional derivatives, which is why inequalities of this kind are needed.','فمع `V = x^2`: إذا كان `x ^CD^{α}x ≤ −λx^2` فإن `^CD^{α}V ≤ −2λV`، والمقارنة تعطي `V ≤ V(0)E_{α}(−2λt^{α})` أي استقرار ميتاج–ليفلر. ولا تصح قاعدة الضرب للمشتقات الكسرية، ولهذا نحتاج متباينات من هذا النوع.'],
 ],[
   Q('For `^CD^{α}x = −x − x^3`, bound `x ^CD^{α}x`.','لـ `^CD^{α}x = −x − x^3` قدّر `x ^CD^{α}x`.','x ^CD^{α}x = −x^2 − x^4 ≤ −x^2',[['So λ = 1.','فيكون λ = 1.']],['x ^CD^{α}x ≥ 0','x ^CD^{α}x = x^2','x ^CD^{α}x = −x^3']),
-  Q('What bound does this give for `x(t)^2`?','أي حد يعطيه هذا لـ `x(t)^2`؟','x(t)^2 ≤ x_0^2 E_{α}(−2t^{α})',['^CD^{α}V ≤ −2V'],['x(t)^2 ≤ x_0^2 e^{−2t}','x(t)^2 ≤ x_0^2','x(t)^2 ≤ E_{α}(−t^{α})']),
+  Q('For `^CD^{α}x = −x − x^3`, what bound does the Lyapunov argument give for `x(t)^2`?','لـ `^CD^{α}x = −x − x^3` أي حد تعطيه حجة ليابونوف لـ `x(t)^2`؟','x(t)^2 ≤ x_0^2 E_{α}(−2t^{α})',['^CD^{α}V ≤ −2V'],['x(t)^2 ≤ x_0^2 e^{−2t}','x(t)^2 ≤ x_0^2','x(t)^2 ≤ E_{α}(−t^{α})']),
   Q('Why can’t one write `^CD^{α}(x^2) = 2x ^CD^{α}x`?','لماذا لا يمكن كتابة `^CD^{α}(x^2) = 2x ^CD^{α}x`؟',['The product (chain) rule does not hold for fractional derivatives','قاعدة الضرب (السلسلة) لا تصح للمشتقات الكسرية'],[['Only the inequality above holds.','تصح المتباينة أعلاه فقط.']],[['It can','يمكن'],['Because x is not smooth','لأن x ليست ملساء']]),
   Q('Check the inequality for `x = t` with α = 1/2 at t = 1.','تحقق من المتباينة لـ `x = t` مع α = 1/2 عند t = 1.','#f{1}{2}·#f{8}{3#r{π}} ≈ 0.752  ≤  1·#f{2}{#r{π}} ≈ 1.128',['^CD^{1/2}t^2 = #f{8}{3#r{π}}t^{3/2},   ^CD^{1/2}t = #f{2}{#r{π}}t^{1/2}'],['0.752 ≥ 1.128','1 ≤ 1','0 ≤ 0']),
 ]);
@@ -631,7 +631,7 @@ lesson('508',44,[
   ['The leading term `z^{−1}/Γ(1 − α)` gives the algebraic decay. It is the tool for evaluating `E_{α}` at large arguments, where the power series fails (Lesson 38).','والحد الأول `z^{−1}/Γ(1 − α)` يعطي التناقص الجبري. وهو الأداة لحساب `E_{α}` عند المتغيرات الكبيرة حيث تفشل متسلسلة القوى (الدرس 38).'],
 ],[
   Q('Approximate `E_{1/2}(−10)` by the leading term.','قرّب `E_{1/2}(−10)` بالحد الأول.','#f{1}{10#r{π}} ≈ 0.05642',['#f{z^{−1}}{Γ(1/2)},   z = 10'],['≈ 0.1','≈ e^{−10}','≈ 0.5']),
-  Q('The exact value is `e^{100}erfc(10) ≈ 0.05614`. What is the relative error of the leading term?','القيمة المضبوطة `e^{100}erfc(10) ≈ 0.05614`. ما الخطأ النسبي للحد الأول؟','≈ 0.5 %',['#f{0.05642 − 0.05614}{0.05614}'],['≈ 5 %','≈ 0.05 %','≈ 50 %']),
+  Q('The leading term gives `E_{1/2}(−10) ≈ 0.05642`; the exact value is `e^{100}erfc(10) ≈ 0.05614`. What is the relative error?','الحد الأول يعطي `E_{1/2}(−10) ≈ 0.05642`، والقيمة المضبوطة `e^{100}erfc(10) ≈ 0.05614`. ما الخطأ النسبي؟','≈ 0.5 %',['#f{0.05642 − 0.05614}{0.05614}'],['≈ 5 %','≈ 0.05 %','≈ 50 %']),
   Q('Why does the leading term vanish for α = 1?','لماذا ينعدم الحد الأول عند α = 1؟','#f{1}{Γ(0)} = 0',[['Every term has `1/Γ(1 − k)` = 0: the decay of `e^{−z}` is faster than any power.','كل حد فيه `1/Γ(1 − k)` = 0: تناقص `e^{−z}` أسرع من أي قوة.']],['Γ(0) = 1','#f{1}{Γ(0)} = 1','Γ(1) = 0']),
   Q('Where should the asymptotic expansion be used instead of the power series?','أين يجب استخدام المفكوك التقاربي بدل متسلسلة القوى؟',['For large arguments z, where the series suffers cancellation','للمتغيرات z الكبيرة حيث تعاني المتسلسلة من الإلغاء'],[['Good codes switch between the two.','الأكواد الجيدة تنتقل بين الاثنين.']],[['For small z','لـ z الصغيرة'],['Never','أبداً']]),
 ]);
@@ -642,7 +642,7 @@ lesson('508',45,[
   ['Unlike ordinary equations, a fractional system cannot have non-constant periodic solutions, and equilibria with Re λ > 0 can be stable for small α.','وبخلاف المعادلات العادية لا يمكن أن يكون للنظام الكسري حلول دورية غير ثابتة، ونقاط الاتزان مع Re λ > 0 قد تكون مستقرة لـ α الصغيرة.'],
 ],[
   Q('Find the equilibria of `^CD^{α}x = x(1 − x)`.','أوجد نقاط اتزان `^CD^{α}x = x(1 − x)`.','x* = 0,   x* = 1',['x(1 − x) = 0'],[['x* = 1 only','x* = 1 فقط'],'x* = −1, 1','x* = #f{1}{2}']),
-  Q('Which of them is stable?','أيها مستقرة؟','x* = 1',['f′(1) = 1 − 2 = −1,   f′(0) = 1'],['x* = 0',['both','كلاهما'],['neither','لا شيء منهما']]),
+  Q('Which equilibrium of `^CD^{α}x = x(1 − x)` is stable?','أي نقطة اتزان لـ `^CD^{α}x = x(1 − x)` مستقرة؟','x* = 1',['f′(1) = 1 − 2 = −1,   f′(0) = 1'],['x* = 0',['both','كلاهما'],['neither','لا شيء منهما']]),
   Q('For a real eigenvalue λ < 0, is the equilibrium stable for every α ∈ (0, 1]?','لقيمة ذاتية حقيقية λ < 0 هل تكون نقطة الاتزان مستقرة لكل α ∈ (0, 1]؟',['Yes: `|arg λ| = π > απ/2`','نعم: `|arg λ| = π > απ/2`'],[['The sector condition always holds on the negative axis.','شرط القطاع يتحقق دائماً على المحور السالب.']],[['Only for α < 1/2','فقط عند α < 1/2'],['No','لا']]),
   Q('Can a fractional system have a non-constant periodic solution?','هل يمكن أن يكون للنظام الكسري حل دوري غير ثابت؟',['No: the memory of the Caputo derivative excludes exact periodicity','لا: ذاكرة مشتقة كابوتو تمنع الدورية الدقيقة'],[['Solutions may still oscillate and decay.','قد تتذبذب الحلول وتتناقص مع ذلك.']],[['Yes, always','نعم دائماً'],['Only for α < 1','فقط عند α < 1']]),
 ]);
@@ -664,7 +664,7 @@ lesson('508',47,[
   ['Below this threshold every equilibrium is stable and chaos cannot occur. Numerical studies of such systems need long times and therefore cheap memory treatment (Lesson 60).','وتحت هذه العتبة تكون كل نقاط الاتزان مستقرة ولا يمكن أن تحدث الفوضى. والدراسات العددية لهذه النظم تحتاج أزمنة طويلة فتحتاج معالجة رخيصة للذاكرة (الدرس 60).'],
 ],[
   Q('Compute the threshold for λ = 1 + 2i.','احسب العتبة لـ λ = 1 + 2i.','α > 0.705',['#f{2}{π}tan^{−1} 2 = #f{2}{π}·1.107'],['α > 0.5','α > 0.352','α > 1']),
-  Q('Below the threshold, what happens to that equilibrium?','تحت العتبة ماذا يحدث لنقطة الاتزان تلك؟',['It becomes stable: `|arg λ| > απ/2`','تصبح مستقرة: `|arg λ| > απ/2`'],[['So no chaos near it.','فلا فوضى قربها.']],[['It becomes unstable','تصبح غير مستقرة'],['Nothing changes','لا يتغير شيء']]),
+  Q('For an equilibrium with λ = 1 + 2i and α below 0.705, what happens?','لنقطة اتزان مع λ = 1 + 2i و α أقل من 0.705 ماذا يحدث؟',['It becomes stable: `|arg λ| > απ/2`','تصبح مستقرة: `|arg λ| > απ/2`'],[['So no chaos near it.','فلا فوضى قربها.']],[['It becomes unstable','تصبح غير مستقرة'],['Nothing changes','لا يتغير شيء']]),
   Q('Is the condition sufficient for chaos?','هل الشرط كافٍ للفوضى؟',['No, only necessary','لا، لازم فقط'],[['Chaos must be confirmed by simulation, for example Lyapunov exponents.','يجب تأكيد الفوضى بالمحاكاة مثل أسس ليابونوف.']],[['Yes','نعم'],['It is neither','ليس هذا ولا ذاك']]),
   Q('Why do long simulations of fractional systems cost so much?','لماذا تكلف المحاكاة الطويلة للنظم الكسرية كثيراً؟',['Every step uses the whole history: `O(N^2)` work for N steps','كل خطوة تستخدم التاريخ كله: عمل `O(N^2)` لـ N خطوة'],[['Fast methods reduce this.','الطرق السريعة تقلل ذلك.']],[['Because α < 1','لأن α < 1'],['They do not','لا تكلف']]),
 ]);
@@ -675,7 +675,7 @@ lesson('508',48,[
   ['Delays can destabilize systems that are stable without delay; the stability region depends on α, τ and the coefficients. Note that the Caputo memory starts at t = 0, so the history enters only through the delayed term.','والتأخيرات قد تُخل باستقرار نظم مستقرة دونه، ومنطقة الاستقرار تعتمد على α و τ والمعاملات. ولاحظ أن ذاكرة كابوتو تبدأ عند t = 0 فيدخل التاريخ عبر الحد المتأخر فقط.'],
 ],[
   Q('Solve `^CD^{α}y = −y(t − 1)`, `φ ≡ 1`, on [0, 1].','حل `^CD^{α}y = −y(t − 1)` مع `φ ≡ 1` على [0, 1].','y = 1 − #f{t^{α}}{Γ(α + 1)}',['^CD^{α}y = −1,   y(0) = 1'],['y = E_{α}(−t^{α})','y = 1','y = 1 − t^{α}']),
-  Q('What is `y(1)` for α = 1/2?','ما `y(1)` عند α = 1/2؟','1 − #f{2}{#r{π}} ≈ −0.128',['Γ(#f{3}{2}) = #f{#r{π}}{2}'],['≈ 0.4276','≈ 0','≈ 0.5']),
+  Q('For `^CD^{1/2}y = −y(t − 1)`, `φ ≡ 1`, compute `y(1)`.','لـ `^CD^{1/2}y = −y(t − 1)` مع `φ ≡ 1` احسب `y(1)`.','1 − #f{2}{#r{π}} ≈ −0.128',['Γ(#f{3}{2}) = #f{#r{π}}{2}'],['≈ 0.4276','≈ 0','≈ 0.5']),
   Q('What data does a delay equation need besides y(0)?','أي معطيات تحتاجها معادلة التأخير غير y(0)؟',['The history `φ(t)` on `[−τ, 0]`','التاريخ `φ(t)` على `[−τ, 0]`'],[['An initial function, not just a value.','دالة ابتدائية لا قيمة فقط.']],[['y′(0)','y′(0)'],['Nothing','لا شيء']]),
   Q('Why does the method of steps work?','لماذا تعمل طريقة الخطوات؟',['On each interval of length τ the delayed term is already known','على كل مجال طوله τ يكون الحد المتأخر معلوماً مسبقاً'],[['So each step is an equation without delay.','فكل خطوة معادلة دون تأخير.']],[['Because τ is small','لأن τ صغير'],['It does not','لا تعمل']]),
 ]);
@@ -686,9 +686,9 @@ lesson('508',49,[
   ['For f = −1 and α = 3/2: `y = (t − t^{3/2})/Γ(5/2)`. Fractional Sturm–Liouville problems, `−^{RL}D_{1−}^{α/2}(p ^CD_{0+}^{α/2}y) + qy = λwy`, combine a left and a right derivative and have real eigenvalues and orthogonal eigenfunctions (Course 503, Lesson 93).','ولـ f = −1 و α = 3/2: `y = (t − t^{3/2})/Γ(5/2)`. ومسائل شتورم–ليوفيل الكسرية `−^{RL}D_{1−}^{α/2}(p ^CD_{0+}^{α/2}y) + qy = λwy` تجمع مشتقة يسرى وأخرى يمنى ولها قيم ذاتية حقيقية ودوال ذاتية متعامدة (المقرر 503، الدرس 93).'],
 ],[
   Q('Check `y = (t − t^{3/2})/Γ(5/2)` at t = 1.','تحقق من `y = (t − t^{3/2})/Γ(5/2)` عند t = 1.','y(1) = 0',['1 − 1 = 0'],['y(1) = 1','y(1) = #f{1}{Γ(5/2)}','y(1) = −1']),
-  Q('Compute `y(1/4)`.','احسب `y(1/4)`.','≈ 0.0940',['#f{0.25 − 0.125}{1.3293}'],['≈ 0.125','≈ 0.25','≈ 0.0470']),
-  Q('Why does the term ct not change the equation?','لماذا لا يغيّر الحد ct المعادلة؟','^CD^{3/2}t = 0',['#f{d^2}{dt^2}t = 0'],['^CD^{3/2}t = 1','^CD^{3/2}t = t^{−1/2}','^CD^{3/2}t = #f{1}{Γ(1/2)}']),
-  Q('Verify `^CD^{3/2}y = −1` for that y.','تحقق من `^CD^{3/2}y = −1` لتلك y.','−#f{1}{Γ(5/2)}^CD^{3/2}t^{3/2} = −#f{Γ(5/2)}{Γ(5/2)Γ(1)} = −1',['^CD^{3/2}t^{3/2} = #f{Γ(5/2)}{Γ(1)}'],['+1','0','−#f{1}{Γ(5/2)}']),
+  Q('Compute `y(1/4)` for `y = (t − t^{3/2})/Γ(5/2)`.','احسب `y(1/4)` لـ `y = (t − t^{3/2})/Γ(5/2)`.','≈ 0.0940',['#f{0.25 − 0.125}{1.3293}'],['≈ 0.125','≈ 0.25','≈ 0.0470']),
+  Q('Why does adding ct to y not change `^CD^{3/2}y = −1`?','لماذا لا يغيّر إضافة ct إلى y المعادلة `^CD^{3/2}y = −1`؟','^CD^{3/2}t = 0',['#f{d^2}{dt^2}t = 0'],['^CD^{3/2}t = 1','^CD^{3/2}t = t^{−1/2}','^CD^{3/2}t = #f{1}{Γ(1/2)}']),
+  Q('Verify `^CD^{3/2}y = −1` for `y = (t − t^{3/2})/Γ(5/2)`.','تحقق من `^CD^{3/2}y = −1` لـ `y = (t − t^{3/2})/Γ(5/2)`.','−#f{1}{Γ(5/2)}^CD^{3/2}t^{3/2} = −#f{Γ(5/2)}{Γ(5/2)Γ(1)} = −1',['^CD^{3/2}t^{3/2} = #f{Γ(5/2)}{Γ(1)}'],['+1','0','−#f{1}{Γ(5/2)}']),
 ]);
 
 lesson('508',50,[
@@ -741,7 +741,7 @@ lesson('508',54,[
   ['Its order is `min(2, 1 + α)` for smooth solutions, lower for the usual non-smooth ones. It is the standard general-purpose method, implemented for example in Garrappa’s ``fde12`` for MATLAB.','ورتبتها `min(2, 1 + α)` للحلول الملساء وأقل للحلول غير الملساء المعتادة. وهي الطريقة القياسية العامة، ومطبقة مثلاً في ``fde12`` لـ Garrappa في MATLAB.'],
 ],[
   Q('What is the order of ABM for smooth solutions with α = 0.5?','ما رتبة ABM للحلول الملساء مع α = 0.5؟','1.5',['min(2, 1 + 0.5)'],['2','0.5','1']),
-  Q('And with α = 1.5?','ومع α = 1.5؟','2',['min(2, 2.5)'],['2.5','1.5','1']),
+  Q('What is the order of ABM for smooth solutions with α = 1.5?','ما رتبة ABM للحلول الملساء مع α = 1.5؟','2',['min(2, 2.5)'],['2.5','1.5','1']),
   Q('What role does the predictor play?','ما دور المتنبئ؟',['It supplies `y_{n+1}` to evaluate f in the implicit corrector without solving an equation','يوفر `y_{n+1}` لحساب f في المصحح الضمني دون حل معادلة'],[['One predictor and one corrector per step.','متنبئ ومصحح واحد لكل خطوة.']],[['It gives the final answer','يعطي الجواب النهائي'],['It halves the step','ينصّف الخطوة']]),
   Q('Reduce the corrector to α = 1 with one step.','اختصر المصحح إلى α = 1 بخطوة واحدة.','y_1 = ψ_0 + #f{h}{2}(f_0 + f(t_1, y_1^{P}))',[['Heun’s method.','طريقة هيون.']],['y_1 = ψ_0 + hf_0','y_1 = ψ_0 + h f(t_1, y_1^{P})','y_1 = ψ_0 + #f{h}{6}(f_0 + 4f_1 + f_2)']),
 ]);
@@ -807,7 +807,7 @@ lesson('508',60,[
   ['Each exponential term is updated recursively in O(1), so long simulations become feasible. Other options: FFT-based evaluation of the convolution (`O(N log^2 N)`) and the short-memory principle (cut the history, at the price of accuracy).','وكل حد أسي يُحدَّث تكرارياً بتكلفة O(1) فتصبح المحاكاة الطويلة ممكنة. ومن الخيارات الأخرى حساب الالتفاف بـ FFT (`O(N log^2 N)`) ومبدأ الذاكرة القصيرة (قص التاريخ على حساب الدقة).'],
 ],[
   Q('How many operations does a direct scheme need for `N = 10^5` steps?','كم عملية يحتاجها مخطط مباشر لـ `N = 10^5` خطوة؟','≈ 5 × 10^9',['#f{N^2}{2}'],['≈ 10^5','≈ 10^{11}','≈ 10^6']),
-  Q('With a sum of L = 40 exponentials, about how many?','مع مجموع من L = 40 أسية كم تقريباً؟','≈ 4 × 10^6',['N L'],['≈ 5 × 10^9','≈ 40','≈ 10^5']),
+  Q('About how many operations does a fast method with L = 40 exponentials need for `N = 10^5` steps?','كم عملية تقريباً تحتاجها طريقة سريعة بـ L = 40 أسية لـ `N = 10^5` خطوة؟','≈ 4 × 10^6',['N L'],['≈ 5 × 10^9','≈ 40','≈ 10^5']),
   Q('Why can each exponential term be updated in O(1)?','لماذا يمكن تحديث كل حد أسي بتكلفة O(1)؟',['`e^{−s(t + h)} = e^{−sh}e^{−st}`: the history integral of an exponential satisfies a one-step recursion','`e^{−s(t + h)} = e^{−sh}e^{−st}`: تكامل التاريخ لأسية يحقق علاقة تكرار بخطوة واحدة'],[['Memory becomes a few numbers per term.','تصبح الذاكرة بضعة أعداد لكل حد.']],[['Because L is small','لأن L صغير'],['It cannot','لا يمكن']]),
   Q('What is the drawback of the short-memory principle?','ما عيب مبدأ الذاكرة القصيرة؟',['It neglects the old history, which the algebraic tail makes important','يهمل التاريخ القديم الذي يجعله الذيل الجبري مهماً'],[['The error does not vanish as h → 0.','الخطأ لا ينعدم عندما h → 0.']],[['It is slow','بطيء'],['None','لا عيب']]),
 ]);
@@ -863,9 +863,9 @@ lesson('508',65,[
   ['Rows with `i + μ/λ ≤ M` are exact, here rows 0 and 1; the last row is truncated. In double precision the explicit double sum for the entries cancels badly: `|E_{i,k}|` reaches `6.5 × 10^7` at M = 12, so the entries should be computed in higher precision or by stable quadrature.','والصفوف التي تحقق `i + μ/λ ≤ M` مضبوطة، وهي هنا الصفان 0 و 1، والصف الأخير مقطوع. وفي الدقة المضاعفة يعاني المجموع المزدوج الصريح للعناصر من إلغاء شديد: `|E_{i,k}|` تبلغ `6.5 × 10^7` عند M = 12، فيجب حساب العناصر بدقة أعلى أو بتربيع مستقر.'],
 ],[
   Q('Check row 0: expand `D^{−1/2}1`.','تحقق من الصف 0: انشر `D^{−1/2}1`.','#f{u}{Γ(3/2)} = 0.56419(L_0 + L_1)',['D^{−1/2}1 = #f{t^{1/2}}{Γ(3/2)},   u = #f{1}{2}(L_0 + L_1)'],['L_0 + L_1','0.56419 L_0','#f{u}{Γ(1/2)}']),
-  Q('Why is the entry in row 0, column 2 zero?','لماذا العنصر في الصف 0 والعمود 2 صفر؟',['`D^{−1/2}1` is of degree 1 in u, so it has no `L_2` part','`D^{−1/2}1` من الدرجة 1 في u فلا جزء له في `L_2`'],[['Exact rows contain only the needed degrees.','الصفوف المضبوطة تحتوي الدرجات اللازمة فقط.']],[['By rounding','بالتقريب'],['Because `L_2(1) = 0`','لأن `L_2(1) = 0`']]),
+  Q('For λ = μ = 1/2 and M = 2, why is the entry of `I_{(−1/2)}` in row 0, column 2 zero?','عند λ = μ = 1/2 و M = 2 لماذا عنصر `I_{(−1/2)}` في الصف 0 والعمود 2 صفر؟',['`D^{−1/2}1` is of degree 1 in u, so it has no `L_2` part','`D^{−1/2}1` من الدرجة 1 في u فلا جزء له في `L_2`'],[['Exact rows contain only the needed degrees.','الصفوف المضبوطة تحتوي الدرجات اللازمة فقط.']],[['By rounding','بالتقريب'],['Because `L_2(1) = 0`','لأن `L_2(1) = 0`']]),
   Q('Which rows of `I_{(−1/2)}` are exact for M = 5 and λ = 1/2?','أي صفوف `I_{(−1/2)}` مضبوطة عند M = 5 و λ = 1/2؟','i = 0, 1, 2, 3, 4',['i + 1 ≤ 5'],['i = 0, …, 5',['i = 0 only','i = 0 فقط'],'i = 0, 1, 2']),
-  Q('Use row 0 to compute `(D^{−1/2}1)(1)`.','استخدم الصف 0 لحساب `(D^{−1/2}1)(1)`.','0.56419 + 0.56419 = 1.12838 = #f{1}{Γ(3/2)}',[['Every `L_j` equals 1 at t = 1.','كل `L_j` تساوي 1 عند t = 1.']],['0.56419','0.88623','1']),
+  Q('Row 0 of `I_{(−1/2)}` (λ = 1/2, M = 2) is `[0.56419, 0.56419, 0]`. Use it to compute `(D^{−1/2}1)(1)`.','الصف 0 من `I_{(−1/2)}` (λ = 1/2 و M = 2) هو `[0.56419, 0.56419, 0]`. استخدمه لحساب `(D^{−1/2}1)(1)`.','0.56419 + 0.56419 = 1.12838 = #f{1}{Γ(3/2)}',[['Every `L_j` equals 1 at t = 1.','كل `L_j` تساوي 1 عند t = 1.']],['0.56419','0.88623','1']),
 ]);
 
 lesson('508',66,[
@@ -874,8 +874,8 @@ lesson('508',66,[
   ['For α = λ = 1/2 the error at t = 1 is `5.8 × 10^{−2}`, `1.2 × 10^{−2}`, `2.8 × 10^{−4}`, `5.7 × 10^{−8}`, `2.4 × 10^{−16}` for M = 1, 2, 4, 8, 16. The initial value is not imposed exactly: y(0) = 0.919, 0.985, 0.9997 for M = 1, 2, 4, and it converges with the rest of the solution.','وعند α = λ = 1/2 يكون الخطأ عند t = 1 هو `5.8 × 10^{−2}` و `1.2 × 10^{−2}` و `2.8 × 10^{−4}` و `5.7 × 10^{−8}` و `2.4 × 10^{−16}` لـ M = 1 و 2 و 4 و 8 و 16. والقيمة الابتدائية لا تُفرض بالضبط: y(0) = 0.919 و 0.985 و 0.9997 لـ M = 1 و 2 و 4، وهي تتقارب مع بقية الحل.'],
 ],[
   Q('With M = 1, `I + I_{(−1/2)}^T = #m{1.56419, 0.02663 ;; 0.56419, 1.32204}`. Solve for c.','مع M = 1 تكون `I + I_{(−1/2)}^T = #m{1.56419, 0.02663 ;; 0.56419, 1.32204}`. أوجد c.','c ≈ (0.6440, −0.2748)',['c_1 = −0.42676c_0,   1.55283c_0 = 1'],['c ≈ (1, 0)','c ≈ (0.6440, 0.2748)','c ≈ (0.5642, 0.5642)']),
-  Q('Evaluate this approximation at t = 1 and give its error.','احسب هذا التقريب عند t = 1 وأعط خطأه.','0.3692,   |0.3692 − 0.4276| ≈ 0.058',['y(1) = c_0 + c_1,   E_{1/2}(−1) = 0.4276'],['0.9188,   0.49','0.4276,   0','0.6440,   0.22']),
-  Q('Evaluate it at t = 0.','احسبه عند t = 0.','0.9188',['y(0) = c_0 − c_1'],['1','0.3692','0.6440']),
+  Q('The M = 1 tau solution of `^CD^{1/2}y + y = 0` is `c ≈ (0.6440, −0.2748)`. Evaluate it at t = 1 and give its error.','حل تاو عند M = 1 لـ `^CD^{1/2}y + y = 0` هو `c ≈ (0.6440, −0.2748)`. احسبه عند t = 1 وأعط خطأه.','0.3692,   |0.3692 − 0.4276| ≈ 0.058',['y(1) = c_0 + c_1,   E_{1/2}(−1) = 0.4276'],['0.9188,   0.49','0.4276,   0','0.6440,   0.22']),
+  Q('Evaluate the M = 1 tau solution `c ≈ (0.6440, −0.2748)` at t = 0.','احسب حل تاو عند M = 1، `c ≈ (0.6440, −0.2748)`، عند t = 0.','0.9188',['y(0) = c_0 − c_1'],['1','0.3692','0.6440']),
   Q('How many correct digits does each term add between M = 8 and M = 16?','كم رقماً صحيحاً يضيف كل حد بين M = 8 و M = 16؟','≈ 1',['#f{log_{10}(5.7 × 10^{−8}) − log_{10}(2.4 × 10^{−16})}{8} ≈ #f{8.4}{8}'],['≈ 0.3','≈ 2','≈ 8']),
 ]);
 
@@ -952,7 +952,7 @@ lesson('508',73,[
   ['For `u_0 = x(1 − x)`, `b_n = 8/(nπ)^3` for odd n and 0 for even n. The modes decay only algebraically: at t = 1, α = 1/2, mode 3 is still `E_{1/2}(−9π^2)/E_{1/2}(−π^2) = 0.0064/0.0569 ≈ 1/9` of mode 1, while for α = 1 the ratio is `e^{−8π^2} ≈ 10^{−34}`. There is no strong smoothing in time.','ولـ `u_0 = x(1 − x)` تكون `b_n = 8/(nπ)^3` لـ n الفردية و 0 للزوجية. والأنماط تتناقص جبرياً فقط: عند t = 1 و α = 1/2 يبقى النمط 3 نحو `E_{1/2}(−9π^2)/E_{1/2}(−π^2) = 0.0064/0.0569 ≈ 1/9` من النمط 1، بينما النسبة عند α = 1 هي `e^{−8π^2} ≈ 10^{−34}`. فلا تنعيم قوي في الزمن.'],
 ],[
   Q('Compute `b_1` for `u_0 = x(1 − x)`.','احسب `b_1` لـ `u_0 = x(1 − x)`.','#f{8}{π^3} ≈ 0.258',['b_n = #f{8}{(nπ)^3},   n = 1'],['#f{4}{π^3}','#f{8}{π^2}','#f{1}{4}']),
-  Q('Why is `b_2 = 0`?','لماذا `b_2 = 0`؟',['`x(1 − x)` is symmetric about 1/2 and `sin 2πx` is antisymmetric','`x(1 − x)` متماثلة حول 1/2 و `sin 2πx` ضد متماثلة'],[['Their product integrates to zero.','تكامل حاصل ضربهما صفر.']],[['Because n is even','لأن n زوجي'],['It is not zero','ليست صفراً']]),
+  Q('Why is `b_2 = 0` for `u_0 = x(1 − x)`?','لماذا `b_2 = 0` لـ `u_0 = x(1 − x)`؟',['`x(1 − x)` is symmetric about 1/2 and `sin 2πx` is antisymmetric','`x(1 − x)` متماثلة حول 1/2 و `sin 2πx` ضد متماثلة'],[['Their product integrates to zero.','تكامل حاصل ضربهما صفر.']],[['Because n is even','لأن n زوجي'],['It is not zero','ليست صفراً']]),
   Q('For large t, how does mode n compare with mode 1 when α < 1?','لـ t الكبيرة كيف يقارن النمط n بالنمط 1 عند α < 1؟','#f{E_{α}(−n^2π^2t^{α})}{E_{α}(−π^2t^{α})} → #f{1}{n^2}',['E_{α}(−z) ≈ #f{1}{zΓ(1 − α)}'],[['→ 0 exponentially','→ 0 أسياً'],'→ 1','→ n^2']),
   Q('Is recovering `u_0` from `u(·, T)` easier or harder than for the heat equation?','هل استرجاع `u_0` من `u(·, T)` أسهل أم أصعب منه لمعادلة الحرارة؟',['Easier: high modes are damped only by `1/n^2`, not exponentially','أسهل: الأنماط العليا تتخامد بـ `1/n^2` فقط لا أسياً'],[['Backward problems are only mildly ill-posed.','المسائل العكسية سيئة الطرح بدرجة خفيفة فقط.']],[['Harder','أصعب'],['Impossible in both cases','مستحيل في الحالتين']]),
 ]);
@@ -1019,7 +1019,7 @@ lesson('508',79,[
   ['Consequence: if `^CD_t^{α}u − u_{xx} ≤ 0`, then u is at most the largest of its initial and boundary values. This gives uniqueness and the stability bound `‖u(t)‖ ≤ ‖u_0‖ + #f{t^{α}}{Γ(1 + α)}‖F‖` for a source F. Unlike the integer case, the derivative at a maximum is not zero.','والنتيجة: إذا كان `^CD_t^{α}u − u_{xx} ≤ 0` فإن u لا تتجاوز أكبر قيمها الابتدائية والحدية. وهذا يعطي الوحدانية وحد الاستقرار `‖u(t)‖ ≤ ‖u_0‖ + #f{t^{α}}{Γ(1 + α)}‖F‖` لمصدر F. وبخلاف الحالة الصحيحة لا تساوي المشتقة صفراً عند القيمة العظمى.'],
 ],[
   Q('Compute `^CD^{1/2}f` at the maximum t = 1/2 of `f = t(1 − t)`.','احسب `^CD^{1/2}f` عند القيمة العظمى t = 1/2 لـ `f = t(1 − t)`.','#f{2}{#r{π}}(t^{1/2} − #f{4}{3}t^{3/2}) ≈ 0.266',['^CD^{1/2}t = #f{2}{#r{π}}t^{1/2},   ^CD^{1/2}t^2 = #f{8}{3#r{π}}t^{3/2}'],['0','−0.266','0.5']),
-  Q('What is `f′(1/2)` for the same f?','ما `f′(1/2)` للدالة f نفسها؟','0',['1 − 2t'],['0.266','1','−1']),
+  Q('What is `f′(1/2)` for `f = t(1 − t)`?','ما `f′(1/2)` لـ `f = t(1 − t)`؟','0',['1 − 2t'],['0.266','1','−1']),
   Q('Why is `^CD^{α}f(t_0)` positive although f is at its maximum?','لماذا تكون `^CD^{α}f(t_0)` موجبة مع أن f عند قيمتها العظمى؟',['It averages the whole history, during which f was rising','إنها تأخذ متوسط التاريخ كله الذي كانت f فيه صاعدة'],[['`^CD^{α}f(t_0)` weights `f′(s)` on `[0, t_0]` by `(t_0 − s)^{−α}`.','`^CD^{α}f(t_0)` تزن `f′(s)` على `[0, t_0]` بـ `(t_0 − s)^{−α}`.']],[['Rounding','التقريب'],['f is not smooth','f ليست ملساء']]),
   Q('Bound `‖u(1)‖` for `‖u_0‖ = 1`, `‖F‖ = 2`, α = 1/2.','قدّر `‖u(1)‖` لـ `‖u_0‖ = 1` و `‖F‖ = 2` و α = 1/2.','1 + #f{2}{Γ(3/2)} ≈ 3.26',['‖u_0‖ + #f{t^{α}}{Γ(1 + α)}‖F‖'],['3','1','5']),
 ]);
@@ -1029,7 +1029,7 @@ lesson('508',80,[
   'u = Σ b_n E_{α}(−κ(nπ)^2t^{α}) sin nπx,     E_{α}(−z) ≈ #f{1}{zΓ(1 − α)}',
 ],[
   Q('Solve `^CD_t^{1/2}u = u_{xx}`, `u(x, 0) = 3 sin 2πx`, zero boundary values.','حل `^CD_t^{1/2}u = u_{xx}` مع `u(x, 0) = 3 sin 2πx` وقيم حدية صفرية.','u = 3E_{1/2}(−4π^2t^{1/2}) sin 2πx',['n = 2:   (2π)^2 = 4π^2'],['u = 3e^{−4π^2t} sin 2πx','u = 3E_{1/2}(−2πt^{1/2}) sin 2πx','u = 3 sin 2πx']),
-  Q('Estimate the amplitude of that solution at t = 100.','قدّر سعة ذلك الحل عند t = 100.','#f{3}{4π^2·10·#r{π}} ≈ 0.0043',['E_{1/2}(−z) ≈ #f{1}{z#r{π}},   z = 4π^2·10'],['≈ 0','≈ 3','≈ 0.43']),
+  Q('Estimate `3E_{1/2}(−4π^2t^{1/2})` at t = 100.','قدّر `3E_{1/2}(−4π^2t^{1/2})` عند t = 100.','#f{3}{4π^2·10·#r{π}} ≈ 0.0043',['E_{1/2}(−z) ≈ #f{1}{z#r{π}},   z = 4π^2·10'],['≈ 0','≈ 3','≈ 0.43']),
   Q('Which data does `^CD_t^{1.3}u = u_{xx}` need?','أي معطيات تحتاجها `^CD_t^{1.3}u = u_{xx}`؟',['`u(x, 0)`, `u_t(x, 0)` and two boundary values','`u(x, 0)` و `u_t(x, 0)` وقيمتان حديتان'],[['The order exceeds 1.','الرتبة تتجاوز 1.']],[['`u(x, 0)` only','`u(x, 0)` فقط'],['Two boundary values only','قيمتان حديتان فقط']]),
   Q('If `^CD_t^{α}u = u_{xx}`, `0 ≤ u_0 ≤ 1` and zero boundary values, what bounds hold for u?','إذا كان `^CD_t^{α}u = u_{xx}` و `0 ≤ u_0 ≤ 1` وقيم حدية صفرية، فأي حدود تصح لـ u؟','0 ≤ u ≤ 1',[['The maximum principle applied to u and to −u.','مبدأ القيمة العظمى مطبقاً على u وعلى −u.']],['u ≤ 2','−1 ≤ u ≤ 0','u ≤ e^{t}']),
 ]);
@@ -1063,8 +1063,8 @@ lesson('508',83,[
   ['𝒴 has `(M + 1)(N + 1)` entries. All basis functions equal 1 at t = 1 and x = γ, and `(−1)^k` at t = 0 or x = 0, so values at the corners are signed sums of the entries of 𝒴.','وللمصفوفة 𝒴 عدد `(M + 1)(N + 1)` من العناصر. وكل دوال الأساس تساوي 1 عند t = 1 و x = γ، و `(−1)^k` عند t = 0 أو x = 0، فالقيم عند الأركان مجاميع بإشارات لعناصر 𝒴.'],
 ],[
   Q('For `𝒴 = #m{2, −1 ;; 0, 3}`, evaluate `y_{1,1}` at t = 1, x = γ.','لـ `𝒴 = #m{2, −1 ;; 0, 3}` احسب `y_{1,1}` عند t = 1 و x = γ.','4',['2 − 1 + 0 + 3'],['6','0','2']),
-  Q('For the same 𝒴, evaluate it at t = 0, x = 0.','للمصفوفة 𝒴 نفسها احسبه عند t = 0 و x = 0.','6',['Σ 𝒴_{k,i}(−1)^{k+i} = 2 + 1 + 0 + 3'],['4','0','−2']),
-  Q('And at t = 1, x = 0?','وعند t = 1 و x = 0؟','0',['Σ 𝒴_{k,i}(−1)^{i} = 2 + 1 + 0 − 3'],['4','6','2']),
+  Q('For `𝒴 = #m{2, −1 ;; 0, 3}`, evaluate `y_{1,1}` at t = 0, x = 0.','لـ `𝒴 = #m{2, −1 ;; 0, 3}` احسب `y_{1,1}` عند t = 0 و x = 0.','6',['Σ 𝒴_{k,i}(−1)^{k+i} = 2 + 1 + 0 + 3'],['4','0','−2']),
+  Q('For `𝒴 = #m{2, −1 ;; 0, 3}`, evaluate `y_{1,1}` at t = 1, x = 0.','لـ `𝒴 = #m{2, −1 ;; 0, 3}` احسب `y_{1,1}` عند t = 1 و x = 0.','0',['Σ 𝒴_{k,i}(−1)^{i} = 2 + 1 + 0 − 3'],['4','6','2']),
   Q('How many unknowns are there for M = 12, N = 8?','كم مجهولاً عند M = 12 و N = 8؟','117',['13 · 9'],['96','108','21']),
 ]);
 
@@ -1106,10 +1106,10 @@ lesson('508',87,[
   'N = M = 10:   2.5865 × 10^{−9} ≈ 2.59 × 10^{−9};     M = N = 15:   ≈ 4 × 10^{−16}',
   ['With λ = 1/2 the time part `t^3 = u^6` is exact for M ≥ 6, so the error comes from the space part `x^2(1 − x)^2e^x`, which is analytic: the error falls exponentially in N until rounding. Projecting h onto the basis matters: evaluating h at the collocation points instead was about 14 times less accurate at N = 12.','ومع λ = 1/2 يكون الجزء الزمني `t^3 = u^6` مضبوطاً عند M ≥ 6، فيأتي الخطأ من الجزء المكاني `x^2(1 − x)^2e^x` وهو تحليلي: يتناقص الخطأ أسياً في N حتى مستوى التقريب. وإسقاط h على الأساس مهم: حساب h عند نقاط التجميع بدلاً منه كان أقل دقة بنحو 14 مرة عند N = 12.'],
 ],[
-  Q('Why is the time part exact for M ≥ 6?','لماذا يكون الجزء الزمني مضبوطاً عند M ≥ 6؟','t^3 = u^6,   u = t^{1/2}',[['A polynomial of degree 6 in u.','كثيرة حدود من الدرجة 6 في u.']],['t^3 = u^3','t^3 = u^{3/2}','t^3 = u^{12}']),
-  Q('Why do all data functions vanish?','لماذا تنعدم كل دوال المعطيات؟',['`t^3` and its derivative vanish at t = 0, and `x^2(1 − x)^2` at x = 0, 1','`t^3` ومشتقتها تنعدمان عند t = 0، و `x^2(1 − x)^2` عند x = 0, 1'],[['So `ψ_0 = ψ_1 = φ_0 = φ_1 = 0`.','فتكون `ψ_0 = ψ_1 = φ_0 = φ_1 = 0`.']],[['By choice of g','باختيار g'],['They do not','لا تنعدم']]),
-  Q('Do the rerun value and Table 1 agree?','هل تتفق قيمة إعادة التشغيل مع الجدول 1؟',['Yes: 2.5865 rounds to 2.59','نعم: 2.5865 تُقرَّب إلى 2.59'],[['The table prints three digits.','الجدول يطبع ثلاثة أرقام.']],[['No: they differ by a factor of 10','لا: تختلفان بعامل 10'],['It cannot be decided','لا يمكن الحكم']]),
-  Q('Why does the error stop near `10^{−16}`?','لماذا يتوقف الخطأ قرب `10^{−16}`؟',['It has reached the rounding level of double precision','بلغ مستوى خطأ التقريب في الدقة المضاعفة'],[['More terms cannot help.','حدود أكثر لا تفيد.']],[['The method fails','الطريقة تفشل'],['λ is wrong','λ خاطئة']]),
+  Q('In Example 1 (λ = 1/2), why is the time part exact for M ≥ 6?','في المثال 1 (λ = 1/2) لماذا يكون الجزء الزمني مضبوطاً عند M ≥ 6؟','t^3 = u^6,   u = t^{1/2}',[['A polynomial of degree 6 in u.','كثيرة حدود من الدرجة 6 في u.']],['t^3 = u^3','t^3 = u^{3/2}','t^3 = u^{12}']),
+  Q('Why do all data functions of Example 1 vanish?','لماذا تنعدم كل دوال المعطيات في المثال 1؟',['`t^3` and its derivative vanish at t = 0, and `x^2(1 − x)^2` at x = 0, 1','`t^3` ومشتقتها تنعدمان عند t = 0، و `x^2(1 − x)^2` عند x = 0, 1'],[['So `ψ_0 = ψ_1 = φ_0 = φ_1 = 0`.','فتكون `ψ_0 = ψ_1 = φ_0 = φ_1 = 0`.']],[['By choice of g','باختيار g'],['They do not','لا تنعدم']]),
+  Q('For Example 1 at N = M = 10 the rerun gives `2.5865 × 10^{−9}` and Table 1 `2.59 × 10^{−9}`. Do they agree?','للمثال 1 عند N = M = 10 تعطي إعادة التشغيل `2.5865 × 10^{−9}` والجدول 1 `2.59 × 10^{−9}`. هل تتفقان؟',['Yes: 2.5865 rounds to 2.59','نعم: 2.5865 تُقرَّب إلى 2.59'],[['The table prints three digits.','الجدول يطبع ثلاثة أرقام.']],[['No: they differ by a factor of 10','لا: تختلفان بعامل 10'],['It cannot be decided','لا يمكن الحكم']]),
+  Q('In Example 1, why does the error stop near `10^{−16}`?','في المثال 1 لماذا يتوقف الخطأ قرب `10^{−16}`؟',['It has reached the rounding level of double precision','بلغ مستوى خطأ التقريب في الدقة المضاعفة'],[['More terms cannot help.','حدود أكثر لا تفيد.']],[['The method fails','الطريقة تفشل'],['λ is wrong','λ خاطئة']]),
 ]);
 
 lesson('508',88,[
@@ -1129,7 +1129,7 @@ lesson('508',89,[
   ['Example 3 of the paper is of this kind. With `N_1 = N_2 = M = 10` there are 1331 unknowns, still small for a direct solve; in three dimensions the count grows like `N^3M` and iterative or tensor methods become necessary.','والمثال 3 في البحث من هذا النوع. ومع `N_1 = N_2 = M = 10` يوجد 1331 مجهولاً وهو عدد صغير لحل مباشر، وفي ثلاثة أبعاد ينمو العدد مثل `N^3M` فتلزم طرق تكرارية أو تنسورية.'],
 ],[
   Q('Count the unknowns for `N_1 = N_2 = 4`, M = 3.','عدّ المجاهيل عند `N_1 = N_2 = 4` و M = 3.','100',['5·5·4'],['64','48','125']),
-  Q('Check the counting formula for that case.','تحقق من صيغة العدّ لتلك الحالة.','36 + 40 + 24 = 100',['3·3·4 + 2·5·4 + 2·3·4'],['36 + 40 + 40 = 116','9 + 20 + 12 = 41','36 + 24 = 60']),
+  Q('Check the counting formula for `N_1 = N_2 = 4`, M = 3.','تحقق من صيغة العدّ عند `N_1 = N_2 = 4` و M = 3.','36 + 40 + 24 = 100',['3·3·4 + 2·5·4 + 2·3·4'],['36 + 40 + 40 = 116','9 + 20 + 12 = 41','36 + 24 = 60']),
   Q('Why does the last term use `N_1 − 1` and not `N_1 + 1`?','لماذا يستخدم الحد الأخير `N_1 − 1` لا `N_1 + 1`؟',['The corners are already counted on the sides `x_1 = 0, γ_1`','الأركان معدودة مسبقاً على الضلعين `x_1 = 0, γ_1`'],[['Each corner must be counted once.','كل ركن يُعد مرة واحدة.']],[['It is a misprint','خطأ طباعي'],['The corners are not needed','الأركان لا حاجة لها']]),
   Q('How many unknowns does a 3-D problem with `N_1 = N_2 = N_3 = M = 10` have?','كم مجهولاً لمسألة ثلاثية الأبعاد مع `N_1 = N_2 = N_3 = M = 10`؟','14641',['11^4'],['1331','4000','10^4']),
 ]);
@@ -1144,6 +1144,117 @@ lesson('508',90,[
   Q('Estimate the rate of the mismatched case from `2.5 × 10^{−3}` and `6.1 × 10^{−4}` at M = 8, 16.','قدّر معدل الحالة غير المتوافقة من `2.5 × 10^{−3}` و `6.1 × 10^{−4}` عند M = 8 و 16.','~ M^{−2}',['log_2 #f{2.5}{0.61} ≈ 2'],['~ e^{−M}','~ M^{−1}','~ M^{−4}']),
   Q('Why does λ = 1/2 fail for α = 0.3?','لماذا تفشل λ = 1/2 عند α = 0.3؟',['The solution contains `t^{0.3} = u^{0.6}`, which is not a polynomial in u','الحل يحتوي `t^{0.3} = u^{0.6}` وهي ليست كثيرة حدود في u'],[['The singularity remains in the new variable.','الشذوذ يبقى في المتغير الجديد.']],[['λ is too small','λ صغيرة جداً'],['It does not fail','لا تفشل']]),
   Q('For α = 0.5, how much does λ = 1/6 lose against λ = 1/2 at M = 16?','عند α = 0.5 كم تخسر λ = 1/6 مقابل λ = 1/2 عند M = 16؟',['About 6 digits: `3.4 × 10^{−10}` against `2.4 × 10^{−16}`','نحو 6 أرقام: `3.4 × 10^{−10}` مقابل `2.4 × 10^{−16}`'],['log_{10} #f{3.4 × 10^{−10}}{2.4 × 10^{−16}} ≈ 6.2'],[['Nothing','لا شيء'],['About 1 digit','نحو رقم واحد']]),
+]);
+
+/* ---- 508 · Unit 10 (lessons 91–100): advanced topics and research ---- */
+lesson('508',91,[
+  ['The simplest scheme for `^CD_t^{α}u = u_{xx}` combines L1 in time (Lesson 53) with central differences in space, `x_j = jh`, `t_n = nτ`:','أبسط مخطط لـ `^CD_t^{α}u = u_{xx}` يجمع L1 في الزمن (الدرس 53) مع الفروق المركزية في المكان، `x_j = jh` و `t_n = nτ`:'],
+  '#f{τ^{−α}}{Γ(2 − α)} Σ_{k=0}^{n−1} b_k (U_j^{n−k} − U_j^{n−k−1}) = #f{U_{j+1}^n − 2U_j^n + U_{j−1}^n}{h^2}',
+  ['Each step solves one tridiagonal system. The scheme is unconditionally stable, with error `O(τ^{2−α} + h^2)` for smooth solutions (order about 1 in τ for the usual singular ones). The space error shows in the eigenvalues: for `sin πx` and h = 0.1 the discrete value is `(4/h^2)sin^2(πh/2) = 9.789` against `π^2 = 9.870`.','وكل خطوة تحل نظاماً ثلاثي الأقطار. والمخطط مستقر دون شرط، وخطؤه `O(τ^{2−α} + h^2)` للحلول الملساء (رتبة نحو 1 في τ للحلول الشاذة المعتادة). وخطأ المكان يظهر في القيم الذاتية: لـ `sin πx` و h = 0.1 تكون القيمة المتقطعة `(4/h^2)sin^2(πh/2) = 9.789` مقابل `π^2 = 9.870`.'],
+],[
+  Q('What is the error order for smooth solutions with α = 0.4?','ما رتبة الخطأ للحلول الملساء مع α = 0.4؟','O(τ^{1.6} + h^2)',['O(τ^{2−α} + h^2)'],['O(τ + h)','O(τ^{0.4} + h^2)','O(τ^2 + h^4)']),
+  Q('Compute the discrete eigenvalue of `sin πx` for h = 0.2.','احسب القيمة الذاتية المتقطعة لـ `sin πx` عند h = 0.2.','100 sin^2(0.1π) ≈ 9.549',['#f{4}{h^2}sin^2#f{πh}{2},   sin 0.1π ≈ 0.3090'],['≈ 9.870','≈ 9.789','≈ 10']),
+  Q('What system must be solved at each time step?','أي نظام يجب حله في كل خطوة زمنية؟',['One tridiagonal system, with the history in the right-hand side','نظام ثلاثي الأقطار واحد والتاريخ في الطرف الأيمن'],[['The matrix is the same at every step.','المصفوفة نفسها في كل خطوة.']],[['A full nonlinear system','نظام غير خطي كامل'],['None: it is explicit','لا شيء: صريح']]),
+  Q('Why is the scheme stable for every τ and h?','لماذا يكون المخطط مستقراً لكل τ و h؟',['It is implicit in `U^n`, and the L1 weights `b_k` are positive and decreasing','ضمني في `U^n` وأوزان L1 `b_k` موجبة ومتناقصة'],[['An energy or maximum-principle argument applies.','تنطبق حجة طاقة أو مبدأ القيمة العظمى.']],[['Because α < 1','لأن α < 1'],['It is not','ليس مستقراً']]),
+]);
+
+lesson('508',92,[
+  ['Finite elements use the weak form. Multiply by a test function v vanishing at the ends and integrate by parts in space:','العناصر المحدودة تستخدم الصيغة الضعيفة. اضرب في دالة اختبار v تنعدم عند الطرفين وكامل بالتجزئة في المكان:'],
+  '(^CD_t^{α}u, v) + (u_x, v_x) = (f, v)     ⇒     𝐌 ^CD_t^{α}U + 𝐊 U = F',
+  ['For linear elements on a uniform mesh: `𝐊 = #f{1}{h}tridiag(−1, 2, −1)`, `𝐌 = #f{h}{6}tridiag(1, 4, 1)`. The semi-discrete error is `O(h^2)` in the mean-square norm; for non-smooth initial data the estimate carries a factor `t^{−α}` near t = 0. FEM handles complex geometries and variable coefficients easily.','وللعناصر الخطية على شبكة منتظمة: `𝐊 = #f{1}{h}tridiag(−1, 2, −1)` و `𝐌 = #f{h}{6}tridiag(1, 4, 1)`. والخطأ شبه المتقطع `O(h^2)` في معيار متوسط المربع، وللمعطيات الابتدائية غير الملساء يحمل التقدير عاملاً `t^{−α}` قرب t = 0. والعناصر المحدودة تعالج الهندسات المعقدة والمعاملات المتغيرة بسهولة.'],
+],[
+  Q('Compute `∫_0^h φ_0′φ_1′ dx` for the hat functions `φ_0 = 1 − x/h`, `φ_1 = x/h`.','احسب `∫_0^h φ_0′φ_1′ dx` لدوال القبعة `φ_0 = 1 − x/h` و `φ_1 = x/h`.','−#f{1}{h}',['(−#f{1}{h})(#f{1}{h})·h'],['#f{1}{h}','−h','#f{h}{6}']),
+  Q('Compute `∫_0^h φ_0φ_1 dx`.','احسب `∫_0^h φ_0φ_1 dx`.','#f{h}{6}',['∫_0^h (1 − #f{x}{h})#f{x}{h} dx = h(#f{1}{2} − #f{1}{3})'],['#f{h}{3}','#f{h}{2}','h']),
+  Q('Why is v required to vanish at the ends?','لماذا يُشترط أن تنعدم v عند الطرفين؟',['So that the boundary term of the integration by parts disappears (Dirichlet data)','حتى يختفي الحد الحدي في التكامل بالتجزئة (معطيات ديريشليه)'],[['`[u_x v]_0^1 = 0`.','`[u_x v]_0^1 = 0`.']],[['For symmetry of 𝐌','لتماثل 𝐌'],['It is not','ليس شرطاً']]),
+  Q('What time scheme can be applied to `𝐌 ^CD_t^{α}U + 𝐊U = F`?','أي مخطط زمني يمكن تطبيقه على `𝐌 ^CD_t^{α}U + 𝐊U = F`؟',['Any of Unit 6, for example L1 on a graded mesh','أي مخطط من الوحدة 6، مثل L1 على شبكة متدرجة'],[['FEM discretises space only.','العناصر المحدودة تقطّع المكان فقط.']],[['Only explicit Euler','أويلر الصريحة فقط'],['None','لا شيء']]),
+]);
+
+lesson('508',93,[
+  ['Nonlinear fractional PDEs such as the time-fractional Allen–Cahn and Fisher equations combine memory with reaction:','المعادلات الجزئية الكسرية غير الخطية مثل معادلتي آلن–كان وفيشر الكسريتين زمنياً تجمع الذاكرة مع التفاعل:'],
+  '^CD_t^{α}u = ε^2u_{xx} + u − u^3,          ^CD_t^{α}u = u_{xx} + u(1 − u)',
+  ['A common scheme treats the nonlinearity explicitly (linearized) and the diffusion implicitly, so each step is a linear solve. Good schemes preserve the bound `|u| ≤ 1` of Allen–Cahn and a discrete energy law; spectral and mapped-basis methods need Newton’s method (Lesson 69).','ومخطط شائع يعالج الحد غير الخطي صراحة (خطياً) والانتشار ضمنياً، فتكون كل خطوة حلاً خطياً. والمخططات الجيدة تحافظ على الحد `|u| ≤ 1` لمعادلة آلن–كان وعلى قانون طاقة متقطع، والطرق الطيفية وطرق الأساس المحوّل تحتاج طريقة نيوتن (الدرس 69).'],
+],[
+  Q('Find the constant equilibria of the Allen–Cahn reaction `u − u^3`.','أوجد نقاط الاتزان الثابتة لتفاعل آلن–كان `u − u^3`.','u = −1,   0,   1',['u(1 − u^2) = 0'],['u = 0',['u = ±1 only','u = ±1 فقط'],'u = 0,   1']),
+  Q('Which constant equilibria of `u′ = u − u^3` are stable?','أي نقاط الاتزان الثابتة لـ `u′ = u − u^3` مستقرة؟','u = ±1',['f′(u) = 1 − 3u^2:   f′(±1) = −2,   f′(0) = 1'],['u = 0',['all','كلها'],['none','لا شيء منها']]),
+  Q('Linearize `u(1 − u)` around `u^{n−1}` for an implicit step.','اجعل `u(1 − u)` خطياً حول `u^{n−1}` لخطوة ضمنية.','u^n(1 − u^{n−1})',[['One factor old, one new: the step stays linear.','عامل قديم وآخر جديد: تبقى الخطوة خطية.']],['u^n(1 − u^n)','u^{n−1}(1 − u^{n−1})^2','1 − u^n']),
+  Q('Why is preserving `|u| ≤ 1` important for Allen–Cahn?','لماذا يهم الحفاظ على `|u| ≤ 1` لمعادلة آلن–كان؟',['The exact solution satisfies it, and losing it signals instability','الحل المضبوط يحققه وفقدانه علامة عدم استقرار'],[['u is a phase variable between −1 and 1.','u متغير طور بين −1 و 1.']],[['For speed','للسرعة'],['It is not','لا يهم']]),
+]);
+
+lesson('508',94,[
+  ['Two generalizations of the order: variable order `^CD^{α(t)}`, where the memory exponent changes in time, and distributed order, a weighted superposition of orders:','تعميمان للرتبة: الرتبة المتغيرة `^CD^{α(t)}` حيث يتغير أس الذاكرة مع الزمن، والرتبة الموزعة وهي تراكب موزون للرتب:'],
+  '∫_0^1 w(α) ^CD^{α}y dα = f',
+  ['Several non-equivalent definitions of variable order exist, depending on where `α(t)` sits in the integral. Distributed order with `w ≡ 1` gives ultraslow diffusion, whose mean square displacement grows like `log t`. Numerically the α-integral is replaced by a quadrature rule, giving a multi-term equation.','وتوجد تعريفات متعددة غير متكافئة للرتبة المتغيرة حسب موضع `α(t)` في التكامل. والرتبة الموزعة مع `w ≡ 1` تعطي انتشاراً فائق البطء ينمو متوسط مربع إزاحته مثل `log t`. وعددياً يُستبدل تكامل α بقاعدة تربيع فنحصل على معادلة متعددة الحدود.'],
+],[
+  Q('Compute `∫_0^1 ^CD^{α}t dα` at t = 1.','احسب `∫_0^1 ^CD^{α}t dα` عند t = 1.','∫_0^1 #f{dα}{Γ(2 − α)} ≈ 1.085',['^CD^{α}t = #f{t^{1−α}}{Γ(2 − α)}'],['1','#f{1}{2}','≈ 0.886']),
+  Q('Reduce distributed order to a single order `α_0`.','اختصر الرتبة الموزعة إلى رتبة واحدة `α_0`.','w(α) = δ(α − α_0)',[['A point mass picks one order.','كتلة نقطية تختار رتبة واحدة.']],['w ≡ 1','w(α) = α_0','w = 0']),
+  Q('Replace the α-integral by the midpoint rule with two nodes.','استبدل تكامل α بقاعدة النقطة الوسطى بعقدتين.','#f{1}{2}w(#f{1}{4}) ^CD^{1/4}y + #f{1}{2}w(#f{3}{4}) ^CD^{3/4}y = f',[['A two-term equation.','معادلة بحدين.']],['w(#f{1}{2}) ^CD^{1/2}y = f','^CD^{1/4}y + ^CD^{3/4}y = 2f','w(0)y + w(1)y′ = f']),
+  Q('How does ultraslow diffusion compare with sub-diffusion `t^{α}` for large t?','كيف يقارن الانتشار فائق البطء بالانتشار البطيء `t^{α}` لـ t الكبيرة؟',['It is slower: `log t` grows slower than any power','أبطأ: `log t` تنمو أبطأ من أي قوة'],[['Hence the name.','ومن هنا الاسم.']],[['Faster','أسرع'],['The same','مثله']]),
+]);
+
+lesson('508',95,[
+  ['Fractional integro-differential equations add a memory integral to the equation, `^CD^{α}y = f(t, y) + ∫_0^t K(t − s)y(s) ds`. When the kernel is a power, the integral is a fractional integral and becomes another matrix of Theorem 3.2. A clean example:','المعادلات التكاملية التفاضلية الكسرية تضيف تكامل ذاكرة إلى المعادلة `^CD^{α}y = f(t, y) + ∫_0^t K(t − s)y(s) ds`. وعندما تكون النواة قوة يكون التكامل تكاملاً كسرياً ويصبح مصفوفة أخرى من النظرية 3.2. ومثال نظيف:'],
+  '^CD^{1/2}y + D^{−1/2}y = 0,   y(0) = 1     ⇒     y − 1 + D^{−1}y = 0     ⇒     y = e^{−t}',
+  ['Applying `D^{−1/2}` turns the equation into an ordinary one. In the mapped basis the integrated form is `(I + I_{(−1)}^T)c = e_0` with any λ that divides 1.','وتطبيق `D^{−1/2}` يحوّل المعادلة إلى معادلة عادية. وفي الأساس المحوّل تكون الصيغة التكاملية `(I + I_{(−1)}^T)c = e_0` مع أي λ تقسم 1.'],
+],[
+  Q('Why does `D^{−1/2}D^{−1/2}y = D^{−1}y`?','لماذا `D^{−1/2}D^{−1/2}y = D^{−1}y`؟',['Fractional integrals form a semigroup: `D^{−a}D^{−b} = D^{−a−b}`','التكاملات الكسرية تشكل شبه زمرة: `D^{−a}D^{−b} = D^{−a−b}`'],[['No initial terms appear for integrals.','لا تظهر حدود ابتدائية للتكاملات.']],[['By chance','مصادفة'],['It is false','خطأ']]),
+  Q('Differentiate `y − 1 + D^{−1}y = 0`.','اشتق `y − 1 + D^{−1}y = 0`.','y′ + y = 0',['#f{d}{dt}D^{−1}y = y'],['y′ = y','y″ + y = 0','y′ = 1']),
+  Q('Which kernel K gives `D^{−1/2}y`?','أي نواة K تعطي `D^{−1/2}y`؟','K(t) = #f{t^{−1/2}}{Γ(1/2)}',['D^{−β}y = ∫_0^t #f{(t − s)^{β−1}}{Γ(β)}y(s) ds'],['K(t) = t^{1/2}','K(t) = e^{−t}','K(t) = 1']),
+  Q('Verify `y = e^{−t}` at t = 1 in `y − 1 + D^{−1}y = 0`.','تحقق من `y = e^{−t}` عند t = 1 في `y − 1 + D^{−1}y = 0`.','e^{−1} − 1 + (1 − e^{−1}) = 0',['D^{−1}e^{−t} = 1 − e^{−t}'],['e^{−1} = 0','1 − e^{−1} = 1','e^{−1} + 1 = 2']),
+]);
+
+lesson('508',96,[
+  ['Fractional optimal control: minimize `J = #f{1}{2}∫_0^T (y^2 + u^2) dt` subject to `^CD^{α}y = −y + u`, `y(0) = y_0`. The necessary conditions involve a right-sided derivative for the adjoint p:','التحكم الأمثل الكسري: صغّر `J = #f{1}{2}∫_0^T (y^2 + u^2) dt` بشرط `^CD^{α}y = −y + u` و `y(0) = y_0`. والشروط اللازمة تتضمن مشتقة يمنى للمتغير المرافق p:'],
+  '^CD^{α}y = −y + u,     ^{RL}D_{T−}^{α}p = y − p,     u = −p',
+  ['The state runs forward from t = 0 and the adjoint backward from t = T, so the two equations are coupled at both ends. The right derivative comes from fractional integration by parts. For α = 1 the conditions reduce to the classical Pontryagin system.','والحالة تجري للأمام من t = 0 والمرافق للخلف من t = T، فالمعادلتان مقترنتان عند الطرفين. والمشتقة اليمنى تأتي من التكامل الكسري بالتجزئة. وعند α = 1 تختصر الشروط إلى نظام بونترياجين الكلاسيكي.'],
+],[
+  Q('Reduce the adjoint equation to α = 1.','اختصر المعادلة المرافقة إلى α = 1.','−p′ = y − p',['^{RL}D_{T−}^{1} = −#f{d}{dt}'],['p′ = y − p','p′ = −y','p = y']),
+  Q('Find u from `∂H/∂u = 0` with `H = #f{1}{2}(y^2 + u^2) + p(−y + u)`.','أوجد u من `∂H/∂u = 0` مع `H = #f{1}{2}(y^2 + u^2) + p(−y + u)`.','u = −p',['u + p = 0'],['u = p','u = −y','u = 0']),
+  Q('Why does the adjoint use a right-sided derivative?','لماذا يستخدم المرافق مشتقة يمنى؟',['Fractional integration by parts moves a left derivative onto the other factor as a right derivative','التكامل الكسري بالتجزئة ينقل المشتقة اليسرى إلى العامل الآخر مشتقة يمنى'],['∫_0^T p ^CD^{α}y dt = ∫_0^T y ^{RL}D_{T−}^{α}p dt + …'],[['By convention','اصطلاحاً'],['It does not','لا تستخدمها']]),
+  Q('Where is the condition on p imposed?','أين يُفرض الشرط على p؟','t = T',[['The adjoint is solved backward in time.','المرافق يُحل للخلف في الزمن.']],['t = 0',['both ends','الطرفين'],['nowhere','لا مكان']]),
+]);
+
+lesson('508',97,[
+  ['Randomness enters fractional models in two ways. Fractional Brownian motion `B_H` has correlated increments and `E[B_H(t)^2] = t^{2H}`. Continuous-time random walks with heavy-tailed waiting times give, in the limit, the time-fractional diffusion equation:','العشوائية تدخل النماذج الكسرية بطريقتين. حركة براون الكسرية `B_H` لها زيادات مترابطة و `E[B_H(t)^2] = t^{2H}`. والمشي العشوائي بزمن مستمر مع أزمنة انتظار ذات ذيل ثقيل يعطي في النهاية معادلة الانتشار الكسرية الزمنية:'],
+  'ψ(τ) ~ τ^{−1−α}     ⇒     ^CD_t^{α}p = κ p_{xx},     ⟨x^2(t)⟩ = #f{2κt^{α}}{Γ(1 + α)}',
+  ['Stochastic fractional PDEs add a noise term; their solutions are rough, and the numerical error is measured in expectation (strong error) or for averages (weak error), usually with Monte Carlo sampling.','والمعادلات الجزئية الكسرية العشوائية تضيف حد ضجيج، وحلولها خشنة، والخطأ العددي يقاس بالتوقع (خطأ قوي) أو للمتوسطات (خطأ ضعيف) عادة بمعاينة مونت كارلو.'],
+],[
+  Q('For which H is fractional Brownian motion ordinary Brownian motion?','لأي H تكون حركة براون الكسرية حركة براون عادية؟','H = #f{1}{2}',['t^{2H} = t'],['H = 1','H = 0','H = #f{1}{4}']),
+  Q('Which H gives sub-diffusive spreading `t^{0.6}`?','أي H تعطي انتشاراً بطيئاً `t^{0.6}`؟','H = 0.3',['2H = 0.6'],['H = 0.6','H = 1.2','H = 0.7']),
+  Q('Why do heavy-tailed waiting times give a fractional time derivative?','لماذا تعطي أزمنة الانتظار ذات الذيل الثقيل مشتقة زمنية كسرية؟',['Their Laplace transform behaves like `1 − cs^{α}`, which produces `s^{α}` in the equation','تحويل لابلاس لها يسلك مثل `1 − cs^{α}` وهذا ينتج `s^{α}` في المعادلة'],[['A finite mean waiting time would give `1 − cs` and ordinary diffusion.','متوسط انتظار منته يعطي `1 − cs` والانتشار العادي.']],[['By assumption','بالافتراض'],['They do not','لا تعطي']]),
+  Q('Compute `⟨x^2(1)⟩` for κ = 1, α = 0.6.','احسب `⟨x^2(1)⟩` لـ κ = 1 و α = 0.6.','#f{2}{Γ(1.6)} ≈ 2.238',['Γ(1.6) ≈ 0.8935'],['2','1.2','≈ 3.35']),
+]);
+
+lesson('508',98,[
+  ['Inverse problems recover the order α from data. For the relaxation `y = E_{α}(−t^{α})` the tail gives α directly, since `y ≈ t^{−α}/Γ(1 − α)`:','المسائل العكسية تسترجع الرتبة α من البيانات. ولاسترخاء `y = E_{α}(−t^{α})` يعطي الذيل α مباشرة لأن `y ≈ t^{−α}/Γ(1 − α)`:'],
+  'α ≈ −#f{log y(t_2) − log y(t_1)}{log t_2 − log t_1}',
+  ['For α = 0.6: `y(100) = 0.029079`, `y(1000) = 0.0071875`, which gives α ≈ 0.607. Near t = 0, `1 − y ≈ t^{α}/Γ(1 + α)` gives a second estimate. With noisy data, fit α by least squares on the whole curve; and uniqueness results show that α is determined by the values `u(x_0, t)` at one point `x_0` over a time interval.','وعند α = 0.6: `y(100) = 0.029079` و `y(1000) = 0.0071875` فنحصل على α ≈ 0.607. وقرب t = 0 يعطي `1 − y ≈ t^{α}/Γ(1 + α)` تقديراً ثانياً. ومع بيانات بها ضجيج تُطابق α بالمربعات الصغرى على المنحنى كله، ونتائج الوحدانية تبين أن α تتحدد بالقيم `u(x_0, t)` عند نقطة واحدة `x_0` على مجال زمني.'],
+],[
+  Q('Compute α from `y(100) = 0.029079`, `y(1000) = 0.0071875`.','احسب α من `y(100) = 0.029079` و `y(1000) = 0.0071875`.','α ≈ 0.607',['−log_{10}#f{0.0071875}{0.029079} = 0.607'],['α ≈ 0.4','α ≈ 1','α ≈ 0.25']),
+  Q('For α = 0.6 the tail estimate from t = 100 and t = 1000 is 0.607. Why not exactly 0.6?','عند α = 0.6 يعطي تقدير الذيل من t = 100 و t = 1000 القيمة 0.607. لماذا ليست 0.6 بالضبط؟',['The next asymptotic term `t^{−2α}/Γ(1 − 2α)` is not yet negligible','الحد التقاربي التالي `t^{−2α}/Γ(1 − 2α)` ليس مهملاً بعد'],[['Larger times improve it.','الأزمنة الأكبر تحسّنه.']],[['Rounding','التقريب'],['The model is wrong','النموذج خاطئ']]),
+  Q('Give the short-time estimate of α if `1 − y(0.01) = 0.06715` and `1 − y(0.0001) = 0.004441`.','أعط التقدير قصير المدى لـ α إذا كان `1 − y(0.01) = 0.06715` و `1 − y(0.0001) = 0.004441`.','α ≈ 0.59',['#f{log_{10}(0.06715/0.004441)}{2} = #f{1.18}{2}'],['α ≈ 1.18','α ≈ 0.3','α ≈ 0.067']),
+  Q('Why is the tail more sensitive to α than the early part?','لماذا يكون الذيل أكثر حساسية لـ α من الجزء المبكر؟',['α is the exponent of the decay, so over a long range it dominates','α هي أس التناقص فتهيمن على مدى طويل'],[['Plot on log–log axes.','ارسم على محاور لوغاريتمية مزدوجة.']],[['It is not','ليس كذلك'],['Because y is larger there','لأن y أكبر هناك']]),
+]);
+
+lesson('508',99,[
+  ['Reading a research paper critically means reproducing it, in this order: definitions, lemmas, hand examples, code, tables, timing. For the mapped Legendre paper the first check already changed a lemma; the corrected Lemma 2.1 reads','قراءة البحث نقدياً تعني إعادة إنتاجه بهذا الترتيب: التعريفات ثم التمهيديات ثم الأمثلة اليدوية ثم الكود ثم الجداول ثم التوقيت. وفي بحث ليجندر المحوَّل غيّر الفحص الأول تمهيدية؛ ونص التمهيدية 2.1 المصحح'],
+  'D^{−ζ} ^CD^{ζ}y = y − Σ_{k=0}^{⌈ζ⌉−1} y^{(k)}(0)#f{t^k}{k!}',
+  ['Check every lemma on a simple function (the code-enhancement project found 16 corrections, for example `D^{−ζ} ^CD^{ζ}` in Lemma 2.1, “≃” in Theorem 3.2 and the missing condition `υ ≤ μ_s`). Recompute the hand examples, then the tables: the rerun gave `2.5865 × 10^{−9}` against `2.59 × 10^{−9}` in Table 1. Time with wall-clock measures: ``TimeUsed[]`` is cumulative and once reported 72 s for a 0.3 s run.','افحص كل تمهيدية على دالة بسيطة (وجد مشروع تحسين الكود 16 تصويباً، مثل `D^{−ζ} ^CD^{ζ}` في التمهيدية 2.1 و «≃» في النظرية 3.2 والشرط الغائب `υ ≤ μ_s`). أعد حساب الأمثلة اليدوية ثم الجداول: أعطت إعادة التشغيل `2.5865 × 10^{−9}` مقابل `2.59 × 10^{−9}` في الجدول 1. وقِس الزمن بساعة الحائط: ``TimeUsed[]`` تراكمي وأعطى مرة 72 ثانية لتشغيل مدته 0.3 ثانية.'],
+],[
+  Q('A lemma states `D^{−μ} ^CD^{ζ}y = y − …` with μ ≠ ζ. How do you check it?','تمهيدية تقول `D^{−μ} ^CD^{ζ}y = y − …` مع μ ≠ ζ. كيف تفحصها؟',['Apply both sides to a simple function such as `y = t^2` and compare','طبّق الطرفين على دالة بسيطة مثل `y = t^2` وقارن'],[['For `y = t^2` the left side is a power `t^{2+μ−ζ}`, not y.','لـ `y = t^2` يكون الطرف الأيسر قوة `t^{2+μ−ζ}` لا y.']],[['Trust the paper','ثق بالبحث'],['Run the code','شغّل الكود']]),
+  Q('Your rerun gives `2.5865 × 10^{−9}`, the table `2.59 × 10^{−9}`. Verdict?','إعادة تشغيلك تعطي `2.5865 × 10^{−9}` والجدول `2.59 × 10^{−9}`. ما الحكم؟',['Reproduced: the difference is rounding of the printed value','أُعيد إنتاجه: الفرق تقريب للقيمة المطبوعة'],[['A factor of 10 would need an explanation.','عامل 10 يحتاج تفسيراً.']],[['Not reproduced','لم يُعَد إنتاجه'],['The table is wrong','الجدول خاطئ']]),
+  Q('Which timing measure should be reported for a computation?','أي مقياس للزمن يجب تقديمه لحساب؟',['Wall-clock time of that computation alone, for example ``AbsoluteTiming``','زمن ساعة الحائط لذلك الحساب وحده، مثل ``AbsoluteTiming``'],[['Cumulative counters mix in earlier work.','العدادات التراكمية تخلط عملاً سابقاً.']],[['``TimeUsed[]``','``TimeUsed[]``'],['The total session time','زمن الجلسة كلها']]),
+  Q('Why recompute the hand examples before the tables?','لماذا تُعاد الأمثلة اليدوية قبل الجداول؟',['They test each formula separately and locate an error quickly','تختبر كل صيغة منفردة وتحدد موضع الخطأ بسرعة'],[['A wrong table does not say which step failed.','الجدول الخاطئ لا يقول أي خطوة فشلت.']],[['They are easier to publish','أسهل نشراً'],['It does not matter','لا يهم']]),
+]);
+
+lesson('508',100,[
+  ['Capstone project: solve one fractional problem by two independent methods and write a short report. A suitable problem is `^CD^{α}y = −y^2 + f`, or a time-fractional diffusion equation with a manufactured solution containing `t^{α}`:','المشروع الختامي: حل مسألة كسرية واحدة بطريقتين مستقلتين واكتب تقريراً قصيراً. ومسألة مناسبة `^CD^{α}y = −y^2 + f` أو معادلة انتشار كسرية زمنية بحل مصنّع يحتوي `t^{α}`:'],
+  'L1:   r = #f{2 − α}{α}     ↔     L_j^{λ}(t):   λ = gcd(β_1, β_2, …)',
+  ['The report states the problem and its exact or reference solution, gives convergence tables (error against N and M, with observed rates), compares cost and accuracy, and explains every discrepancy. Reproducibility: fix the parameters, record versions and timings, and publish the code.','ويذكر التقرير المسألة وحلها المضبوط أو المرجعي، ويعطي جداول التقارب (الخطأ مقابل N و M مع المعدلات الملاحظة)، ويقارن الكلفة والدقة، ويفسّر كل اختلاف. وقابلية الإعادة: ثبّت الوسائط وسجّل الإصدارات والأزمنة وانشر الكود.'],
+],[
+  Q('Which graph shows exponential convergence of the spectral method?','أي رسم يُظهر التقارب الأسي للطريقة الطيفية؟',['Error against M on a semi-log scale: a straight line','الخطأ مقابل M بمقياس نصف لوغاريتمي: خط مستقيم'],[['Algebraic convergence is a straight line on log–log axes.','التقارب الجبري خط مستقيم على محاور لوغاريتمية مزدوجة.']],[['Error against M on linear axes','الخطأ مقابل M بمحاور خطية'],['A bar chart','مخطط أعمدة']]),
+  Q('Why should the manufactured solution contain `t^{α}`?','لماذا يجب أن يحتوي الحل المصنّع `t^{α}`؟',['It reproduces the real singularity, which a smooth test like `t^2` hides','يعيد إنتاج الشذوذ الحقيقي الذي يخفيه اختبار أملس مثل `t^2`'],[['Lesson 57.','الدرس 57.']],[['To make f simple','لتبسيط f'],['It need not','لا حاجة']]),
+  Q('The two methods agree to `10^{−6}` but both differ from the exact solution by `10^{−2}`. What is the likely cause?','الطريقتان تتفقان حتى `10^{−6}` لكنهما تختلفان عن الحل المضبوط بـ `10^{−2}`. ما السبب المحتمل؟',['An error in the problem data, for example in the manufactured f or the initial value','خطأ في معطيات المسألة، مثلاً في f المصنّعة أو القيمة الابتدائية'],[['Both methods solve the same wrong problem.','الطريقتان تحلان المسألة الخاطئة نفسها.']],[['Rounding','التقريب'],['Both methods are wrong in the same way','الطريقتان خاطئتان بالطريقة نفسها']]),
+  Q('Which observed rate do you expect for L1 with r = 3, α = 1/2?','أي معدل ملاحظ تتوقعه لـ L1 مع r = 3 و α = 1/2؟','2 − α = 1.5',['r = #f{2 − α}{α} = 3'],['1','2','0.5']),
 ]);
 
 export const MS508 = true;

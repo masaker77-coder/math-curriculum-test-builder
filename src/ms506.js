@@ -950,7 +950,7 @@ lesson('506',73,[
 ],[
   Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['ode45 needs more than ten times as many steps.','ode45 تحتاج خطوات أكثر بعشر مرات.']],['$ 0','$ 1233','$ 19'],'f = @(t, y) -1000*(y - cos(t));\n[t1, y1] = ode45(f, [0 1], 1);\n[t2, y2] = ode15s(f, [0 1], 1);\ndisp(numel(t1) > 10*numel(t2))'),
   Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.5411',[['The solution follows `cos t` closely, plus a small lag `≈ sin(t)/1000`.','الحل يتبع `cos t` عن قرب مع تأخر صغير `≈ sin(t)/1000`.']],['$ 0.5403','$ 1.0000','$ 0.0000'],'f = @(t, y) -1000*(y - cos(t));\n[t, y] = ode15s(f, [0 1], 1);\nfprintf("%.4f\\n", y(end))'),
-  Q('Why is the semi-discrete heat equation stiff?','لماذا تكون معادلة الحرارة المقطعة جزئياً جاسئة؟',['Its eigenvalues range from about −π^2 to about −4/h^2','قيمها الذاتية تمتد من نحو −π^2 إلى نحو −4/h^2'],[['Fast modes decay quickly but force small explicit steps.','الأنماط السريعة تتلاشى بسرعة لكنها تفرض خطوات صريحة صغيرة.']],[['Because it is nonlinear','لأنها غير خطية'],['It is not stiff','ليست جاسئة']]),
+  Q('Why is the semi-discrete heat equation stiff?','لماذا تكون معادلة الحرارة المقطعة جزئياً جاسئة؟',['Its eigenvalues range from about `−π^2` to about `−4/h^2`','قيمها الذاتية تمتد من نحو `−π^2` إلى نحو `−4/h^2`'],[['Fast modes decay quickly but force small explicit steps.','الأنماط السريعة تتلاشى بسرعة لكنها تفرض خطوات صريحة صغيرة.']],[['Because it is nonlinear','لأنها غير خطية'],['It is not stiff','ليست جاسئة']]),
   Q('Which solver is the first choice for a suspected stiff problem?','أي حلّال هو الخيار الأول لمسألة يُشتبه في جساءتها؟','$ ode15s',[['ode23s is an alternative for crude tolerances.','و ode23s بديل للسماحيات المتساهلة.']],['$ ode45','$ ode23','$ ode113']),
 ]);
 
@@ -1073,7 +1073,7 @@ lesson('506',84,[
   Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.333333',[['For `f = 1`: `⟨1, φ_0⟩ = 2` and `c_0 = 2/6`.','لـ `f = 1`: `⟨1, φ_0⟩ = 2` و `c_0 = 2/6`.']],['$ 0.5','$ 0.666667','$ 0.166667'],'x = [-1; 1]/sqrt(3);  w = [1; 1];\nphi0 = 1 - (3*x.^2 - 1)/2;\nfprintf("%.6f\\n", (w.\'*phi0)/6)'),
   Q('What is the stiffness entry for k = 3?','ما عنصر الجساءة عند k = 3؟','18',['4·3 + 6'],['10','14','22']),
   Q('Which function is `c_0φ_0` for `f = 1`?','ما الدالة `c_0φ_0` عند `f = 1`؟','#f{1 − x^2}{2}',['#f{1}{3}(1 − P_2) = #f{1}{3}·#f{3}{2}(1 − x^2)'],['1 − x^2','#f{1 − x^2}{3}','#f{x^2}{2}']),
-  Q('Why use N + 10 quadrature points?','لماذا تُستخدم N + 10 نقطة تربيع؟',['So that the integrals `⟨f, φ_k⟩` are accurate and do not limit the error','حتى تكون التكاملات `⟨f, φ_k⟩` دقيقة ولا تحد الخطأ'],[['`fφ_k` has higher degree than φ_k.','درجة `fφ_k` أعلى من φ_k.']],[['To make the system square','لجعل النظام مربعاً'],['It is not needed','لا حاجة']]),
+  Q('Why use N + 10 quadrature points?','لماذا تُستخدم N + 10 نقطة تربيع؟',['So that the integrals `⟨f, φ_k⟩` are accurate and do not limit the error','حتى تكون التكاملات `⟨f, φ_k⟩` دقيقة ولا تحد الخطأ'],[['`fφ_k` has higher degree than `φ_k`.','درجة `fφ_k` أعلى من `φ_k`.']],[['To make the system square','لجعل النظام مربعاً'],['It is not needed','لا حاجة']]),
 ]);
 
 lesson('506',85,[
@@ -1181,7 +1181,7 @@ lesson('506',94,[
   ['Live Scripts can be exported to PDF, HTML or LaTeX, which makes them good reports. For version control, plain ``.m`` files are easier to compare; recent releases can also save Live Scripts as ``.m``.','ويمكن تصدير الملفات الحية إلى PDF أو HTML أو LaTeX فتصلح تقارير. ولإدارة النسخ تكون ملفات ``.m`` العادية أسهل في المقارنة، والإصدارات الحديثة تحفظ الملفات الحية بصيغة ``.m`` أيضاً.'],
 ],[
   Q('What is the file extension of a Live Script?','ما امتداد ملف الملف الحي؟','$ .mlx',[['Plain scripts and functions use .m.','الملفات النصية والدوال العادية تستخدم .m.']],['$ .m','$ .mat','$ .fig']),
-  Q('What does ``arrayfun(@(n) run_error(n), N)`` do?','ماذا تفعل ``arrayfun(@(n) run_error(n), N)``؟',['Calls run_error for each element of N and collects the results in an array','تستدعي run_error لكل عنصر في N وتجمع النتائج في مصفوفة'],[['A compact loop.','حلقة مختصرة.']],[['Runs in parallel','تعمل بالتوازي'],['Plots the errors','ترسم الأخطاء']]),
+  Q('What does ``arrayfun(@(n) run_error(n), N)`` do?','ماذا تفعل ``arrayfun(@(n) run_error(n), N)``؟',['Calls ``run_error`` for each element of N and collects the results in an array','تستدعي ``run_error`` لكل عنصر في N وتجمع النتائج في مصفوفة'],[['A compact loop.','حلقة مختصرة.']],[['Runs in parallel','تعمل بالتوازي'],['Plots the errors','ترسم الأخطاء']]),
   Q('Which format is easier to compare in Git: .mlx or .m?','أي صيغة أسهل للمقارنة في Git: ‏.mlx أم .m؟','$ .m',[['.m is plain text; .mlx is a zipped document.','.m نص عادي و .mlx مستند مضغوط.']],['$ .mlx','$ both equally','$ neither']),
   Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1 4 9]',[['arrayfun applies the function to each element.','arrayfun تطبق الدالة على كل عنصر.']],['$ [1 2 3]','$ 14','$ [2 4 6]'],'disp(mat2str(arrayfun(@(n) n^2, 1:3)))'),
 ]);
