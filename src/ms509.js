@@ -372,4 +372,114 @@ lesson('509',20,[
   Q('For that step function, how many wavelets per level have non-zero coefficients?','لتلك الدالة الدرجية كم مويجة في كل مستوى معاملها غير صفري؟','1',[['Only the one whose support contains 1/3; f is constant on all the others.','فقط التي يحتوي حاملها 1/3، و f ثابتة على كل البقية.']],['2^j','0','2']),
 ]);
 
+/* ---- 509 · Unit 3 (lessons 21–30): the continuous wavelet transform ---- */
+lesson('509',21,[
+  ['A mother wavelet is a function ψ with finite energy and mean zero: a small wave. For real ψ the admissibility constant must be finite:','المويجة الأم دالة ψ طاقتها منتهية ومتوسطها صفر: موجة صغيرة. وللدالة الحقيقية ψ يجب أن يكون ثابت القبول منتهياً:'],
+  'C_{ψ} = ∫_0^∞ #f{|ψ̂(ω)|^2}{ω} dω < ∞     ⇒     ψ̂(0) = ∫ψ(t) dt = 0',
+  ['The Haar wavelet, the Mexican hat `(1 − t^2)e^{−t^2/2}` and the derivative of a Gaussian are admissible; a Gaussian itself is not, because its mean is not zero. For the Mexican hat `ψ̂(ω) = #r{2π}ω^2e^{−ω^2/2}` and `C_{ψ} = π`.','ومويجة هار والقبعة المكسيكية `(1 − t^2)e^{−t^2/2}` ومشتقة الدالة الجاوسية مقبولة، أما الجاوسية نفسها فلا لأن متوسطها ليس صفراً. وللقبعة المكسيكية `ψ̂(ω) = #r{2π}ω^2e^{−ω^2/2}` و `C_{ψ} = π`.'],
+],[
+  Q('Check that the Mexican hat has mean zero.','تحقق أن متوسط القبعة المكسيكية صفر.','∫(1 − t^2)e^{−t^2/2}dt = #r{2π} − #r{2π} = 0',['∫t^2e^{−t^2/2}dt = #r{2π}'],['∫(1 − t^2)e^{−t^2/2}dt = #r{2π}','∫(1 − t^2)e^{−t^2/2}dt = 1','∫(1 − t^2)e^{−t^2/2}dt = −#r{2π}']),
+  Q('Is `e^{−t^2}` an admissible wavelet?','هل `e^{−t^2}` مويجة مقبولة؟',['No: its mean `#r{π}` is not zero, so `C_{ψ}` diverges at ω = 0','لا: متوسطها `#r{π}` ليس صفراً فيتباعد `C_{ψ}` عند ω = 0'],[['`|ψ̂(ω)|^2/ω` behaves like `π/ω` near 0.','`|ψ̂(ω)|^2/ω` يسلك مثل `π/ω` قرب 0.']],[['Yes','نعم'],['Only for t > 0','فقط عند t > 0']]),
+  Q('Compute `C_{ψ}` for the Mexican hat.','احسب `C_{ψ}` للقبعة المكسيكية.','π',['∫_0^∞ #f{2πω^4e^{−ω^2}}{ω}dω = 2π∫_0^∞ ω^3e^{−ω^2}dω = 2π·#f{1}{2}'],['2π','#r{π}','1']),
+  Q('Show that `ψ = −te^{−t^2/2}` has `ψ̂(0) = 0`.','بيّن أن `ψ = −te^{−t^2/2}` تحقق `ψ̂(0) = 0`.','∫−te^{−t^2/2}dt = 0',[['The integrand is odd.','المكامل فردي.']],['∫−te^{−t^2/2}dt = −1','∫−te^{−t^2/2}dt = #r{2π}','ψ̂(0) = 1']),
+]);
+
+lesson('509',22,[
+  ['The continuous wavelet transform compares f with the wavelet stretched by a > 0 and moved to b. For a real wavelet ψ:','التحويل المويجي المتصل يقارن f بالمويجة الممددة بـ a > 0 والمزاحة إلى b. ولمويجة حقيقية ψ:'],
+  'Wf(a, b) = ⟨f, ψ_{a,b}⟩ = #f{1}{#r{a}}∫ f(t) ψ(#f{t − b}{a}) dt',
+  ['The factor `1/#r{a}` keeps `‖ψ_{a,b}‖ = ‖ψ‖`. Constants give zero, and the discrete Haar coefficients are samples of the transform: `⟨f, ψ_{j,k}⟩ = Wf(2^{−j}, k2^{−j})`.','والعامل `1/#r{a}` يُبقي `‖ψ_{a,b}‖ = ‖ψ‖`. والثوابت تعطي صفراً، ومعاملات هار المتقطعة عينات من التحويل: `⟨f, ψ_{j,k}⟩ = Wf(2^{−j}, k2^{−j})`.'],
+],[
+  Q('Compute Wf for the constant f = 3.','احسب Wf للدالة الثابتة f = 3.','0',['3#r{a}∫ψ(u) du = 0'],['3','3#r{a}','#f{3}{#r{a}}']),
+  Q('Compute `Wf(a, 0)` for `f = |t|` with the Mexican hat.','احسب `Wf(a, 0)` لـ `f = |t|` مع القبعة المكسيكية.','−2a^{3/2}',['t = au:   a^{3/2}∫|u|(1 − u^2)e^{−u^2/2}du = a^{3/2}(2 − 4)'],['2a^{3/2}','−2a^{1/2}','−2a']),
+  Q('Which a and b give `⟨f, ψ_{3,5}⟩` for the Haar wavelet?','أي a و b يعطيان `⟨f, ψ_{3,5}⟩` لمويجة هار؟','a = #f{1}{8},   b = #f{5}{8}',['a = 2^{−j},   b = k2^{−j}'],['a = 8,   b = 5','a = 3,   b = 5','a = #f{1}{8},   b = 5']),
+  Q('Compute `Wf(a, b)` for `f = δ(t − t_0)`.','احسب `Wf(a, b)` لـ `f = δ(t − t_0)`.','#f{1}{#r{a}}ψ(#f{t_0 − b}{a})',[['The transform of a spike is the wavelet itself, centred at the spike.','تحويل النبضة هو المويجة نفسها متمركزة عند النبضة.']],['ψ(t_0)','#r{a}ψ(b)','0']),
+]);
+
+lesson('509',23,[
+  ['Scale is inverse frequency. If `|ψ̂|` peaks at `ω_c`, then `ψ_{a,b}` responds most to the frequency `ω_c/a`. For the Mexican hat `ω_c = #r{2}`; for the Morlet wavelet `ω_c ≈ ω_0`:','المقياس عكس التردد. إذا بلغ `|ψ̂|` قمته عند `ω_c` فإن `ψ_{a,b}` تستجيب أكثر للتردد `ω_c/a`. وللقبعة المكسيكية `ω_c = #r{2}`، ولمويجة مورليه `ω_c ≈ ω_0`:'],
+  'ω ≈ #f{ω_c}{a},     f_{Hz} = #f{ω_c}{2πa}',
+  ['Small scales are high frequencies, large scales low frequencies. Each octave (a doubled) has the same number of scales in a log-spaced grid, which matches how we hear and how many natural signals behave.','والمقاييس الصغيرة ترددات عالية والكبيرة ترددات منخفضة. ولكل أوكتاف (مضاعفة a) العدد نفسه من المقاييس في شبكة لوغاريتمية، وهذا يوافق طريقة سمعنا وسلوك كثير من الإشارات الطبيعية.'],
+],[
+  Q('Find the peak of `|ψ̂(ω)| = #r{2π}ω^2e^{−ω^2/2}`.','أوجد قمة `|ψ̂(ω)| = #r{2π}ω^2e^{−ω^2/2}`.','ω_c = #r{2}',['#f{d}{dω}(ω^2e^{−ω^2/2}) = (2ω − ω^3)e^{−ω^2/2} = 0'],['ω_c = 1','ω_c = 2','ω_c = 0']),
+  Q('At which scale does the Mexican hat match ω = 10 best?','عند أي مقياس تطابق القبعة المكسيكية ω = 10 أفضل؟','a = #f{#r{2}}{10} ≈ 0.141',['a = #f{ω_c}{ω}'],['a = 10','a = 0.1','a = 1.41']),
+  Q('A Morlet wavelet with `ω_0 = 6` is used at a = 0.01 s. About which frequency in Hz does it see?','مويجة مورليه مع `ω_0 = 6` تُستخدم عند a = 0.01 ثانية. أي تردد بالهرتز تراه تقريباً؟','≈ 95 Hz',['#f{6}{2π·0.01}'],['≈ 600 Hz','≈ 6 Hz','≈ 16 Hz']),
+  Q('How many scales per octave does `a = 2^{m/8}`, m = 0, 1, …, give?','كم مقياساً لكل أوكتاف تعطيه `a = 2^{m/8}` مع m = 0, 1, …؟','8',['2^{(m+8)/8} = 2·2^{m/8}'],['1','16','2']),
+]);
+
+lesson('509',24,[
+  ['Two wavelets are used most in practice. The Mexican hat is real and symmetric; the Morlet wavelet is complex, a Gaussian-windowed complex exponential:','مويجتان تُستخدمان أكثر في التطبيق. القبعة المكسيكية حقيقية ومتماثلة، ومويجة مورليه مركبة، أسية مركبة بنافذة جاوسية:'],
+  'ψ_{MH}(t) = −#f{d^2}{dt^2}e^{−t^2/2} = (1 − t^2)e^{−t^2/2},     ψ_{M}(t) = e^{iω_0t}e^{−t^2/2},     ψ̂_{M}(ω) = #r{2π}e^{−(ω−ω_0)^2/2}',
+  ['The Morlet wavelet has mean `#r{2π}e^{−ω_0^2/2}`, about `9.3 × 10^{−6}` for `ω_0 = 5`: not exactly zero, but small enough in practice (or corrected by subtracting a Gaussian). Its modulus `|Wf|` gives the local amplitude and its argument the local phase.','ومتوسط مويجة مورليه `#r{2π}e^{−ω_0^2/2}` أي نحو `9.3 × 10^{−6}` عند `ω_0 = 5`: ليس صفراً بالضبط لكنه صغير بما يكفي في التطبيق (أو يُصحح بطرح دالة جاوسية). ومقياسها `|Wf|` يعطي السعة المحلية وزاويتها الطور المحلي.'],
+],[
+  Q('Check `−#f{d^2}{dt^2}e^{−t^2/2} = (1 − t^2)e^{−t^2/2}`.','تحقق من `−#f{d^2}{dt^2}e^{−t^2/2} = (1 − t^2)e^{−t^2/2}`.','#f{d^2}{dt^2}e^{−t^2/2} = (t^2 − 1)e^{−t^2/2}',['#f{d}{dt}e^{−t^2/2} = −te^{−t^2/2}'],['#f{d^2}{dt^2}e^{−t^2/2} = t^2e^{−t^2/2}','#f{d^2}{dt^2}e^{−t^2/2} = −e^{−t^2/2}','#f{d^2}{dt^2}e^{−t^2/2} = (1 + t^2)e^{−t^2/2}']),
+  Q('Compute the Morlet mean `ψ̂_M(0)` for `ω_0 = 5`.','احسب متوسط مورليه `ψ̂_M(0)` عند `ω_0 = 5`.','#r{2π}e^{−12.5} ≈ 9.3 × 10^{−6}',['ψ̂_M(0) = #r{2π}e^{−ω_0^2/2}'],['0','#r{2π}','e^{−5}']),
+  Q('Why is the Mexican hat called a second-derivative wavelet?','لماذا تسمى القبعة المكسيكية مويجة المشتقة الثانية؟',['`Wf` with it equals a scaled second derivative of f smoothed by a Gaussian','`Wf` بها يساوي مشتقة ثانية مُحجّمة لـ f منعّمة بدالة جاوسية'],[['So it responds to curvature and has two vanishing moments.','فتستجيب للانحناء ولها عزمان منعدمان.']],[['It has two peaks','لها قمتان'],['It is the second Hermite polynomial','هي كثيرة حدود هيرميت الثانية']]),
+  Q('Which wavelet gives the phase of an oscillation: Morlet or Mexican hat?','أي مويجة تعطي طور تذبذب: مورليه أم القبعة المكسيكية؟',['Morlet: it is complex, so `arg Wf` is the local phase','مورليه: مركبة فيكون `arg Wf` هو الطور المحلي'],[['A real wavelet gives an oscillating transform instead.','المويجة الحقيقية تعطي تحويلاً متذبذباً بدلاً من ذلك.']],[['Mexican hat','القبعة المكسيكية'],['Both equally','كلاهما بالتساوي']]),
+]);
+
+lesson('509',25,[
+  ['When `C_{ψ}` is finite, f is recovered from its transform by superposing all the wavelets with weights `Wf(a, b)`:','عندما يكون `C_{ψ}` منتهياً تُسترجع f من تحويلها بتراكب كل المويجات بالأوزان `Wf(a, b)`:'],
+  'f(t) = #f{1}{C_{ψ}}∫_0^∞∫_{−∞}^{∞} Wf(a, b) ψ_{a,b}(t) db #f{da}{a^2}',
+  ['The measure `db da/a^2` treats all scales alike. The transform is redundant: a function of one variable becomes a function of two, so many different functions of (a, b) are not transforms of anything, and a sampled version (Lesson 29) is enough for reconstruction.','والمقياس `db da/a^2` يعامل كل المقاييس بالتساوي. والتحويل فائض: دالة متغير واحد تصبح دالة متغيرين، فدوال كثيرة في (a, b) ليست تحويلاً لأي دالة، ونسخة معاينة (الدرس 29) تكفي لإعادة البناء.'],
+],[
+  Q('Which constant appears in the inversion formula for the Mexican hat?','أي ثابت يظهر في صيغة العكس للقبعة المكسيكية؟','#f{1}{C_{ψ}} = #f{1}{π}',[['From Lesson 21.','من الدرس 21.']],['#f{1}{2π}','1','#f{1}{#r{π}}']),
+  Q('Why is admissibility needed for the inversion?','لماذا يلزم القبول للعكس؟',['Otherwise `C_{ψ}` is infinite and the normalisation fails','وإلا كان `C_{ψ}` لانهائياً فتفشل المعايرة'],[['The low frequencies would be counted infinitely often.','تُعد الترددات المنخفضة مرات لانهائية.']],[['For speed','للسرعة'],['It is not','ليس لازماً']]),
+  Q('Why is `db da/a^2` the natural measure?','لماذا يكون `db da/a^2` المقياس الطبيعي؟',['It is invariant under the change `(a, b) → (sa, sb)`','لا يتغير تحت التحويل `(a, b) → (sa, sb)`'],['#f{d(sb) d(sa)}{(sa)^2} = #f{db da}{a^2}'],[['It is the Lebesgue measure','إنه مقياس لوبيغ'],['By convention only','اصطلاحاً فقط']]),
+  Q('Is every function `F(a, b)` the wavelet transform of some f?','هل كل دالة `F(a, b)` هي التحويل المويجي لدالة ما f؟',['No: the transform is redundant, and transforms satisfy a reproducing relation','لا: التحويل فائض والتحويلات تحقق علاقة استنساخ'],[['Nearby values are strongly correlated.','القيم المتجاورة مترابطة بقوة.']],[['Yes','نعم'],['Only if F is positive','فقط إذا كانت F موجبة']]),
+]);
+
+lesson('509',26,[
+  ['The transform keeps energy, up to the admissibility constant:','التحويل يحفظ الطاقة حتى ثابت القبول:'],
+  '∫_0^∞∫_{−∞}^{∞} |Wf(a, b)|^2 db #f{da}{a^2} = C_{ψ}‖f‖^2',
+  ['So `|Wf(a, b)|^2/(C_{ψ}a^2)` is an energy density on the time–scale plane. For `f = e^{−t^2/2}` and the Mexican hat the left side is `π·#r{π} = π^{3/2} ≈ 5.568`, which was checked by numerical integration.','فيكون `|Wf(a, b)|^2/(C_{ψ}a^2)` كثافة طاقة على مستوى الزمن–المقياس. ولـ `f = e^{−t^2/2}` والقبعة المكسيكية يكون الطرف الأيسر `π·#r{π} = π^{3/2} ≈ 5.568`، وقد تُحقق منه بالتكامل العددي.'],
+],[
+  Q('Compute `‖e^{−t^2/2}‖^2`.','احسب `‖e^{−t^2/2}‖^2`.','#r{π}',['∫e^{−t^2}dt'],['#r{2π}','1','π']),
+  Q('What is the total scalogram energy for `e^{−t^2/2}` with the Mexican hat?','ما الطاقة الكلية لمخطط المقياس لـ `e^{−t^2/2}` مع القبعة المكسيكية؟','π^{3/2} ≈ 5.568',['C_{ψ}‖f‖^2 = π#r{π}'],['#r{π} ≈ 1.772','π ≈ 3.142','2π^{3/2}']),
+  Q('If f is doubled, how does the left side change?','إذا ضوعفت f كيف يتغير الطرف الأيسر؟','×4',['W(2f) = 2Wf'],['×2','×1','×8']),
+  Q('Where does the identity come from?','من أين تأتي المتطابقة؟',['Plancherel in b at each scale, then the integral of `|ψ̂(aω)|^2/a` over a gives `C_{ψ}`','بلانشيريل في b عند كل مقياس، ثم تكامل `|ψ̂(aω)|^2/a` على a يعطي `C_{ψ}`'],['∫|Wf|^2db = #f{a}{2π}∫|f̂(ω)|^2|ψ̂(aω)|^2dω'],[['From the inversion formula only','من صيغة العكس فقط'],['It is an assumption','افتراض']]),
+]);
+
+lesson('509',27,[
+  ['The scalogram `|Wf(a, b)|^2` is the picture of the transform, with b across and log a (or frequency) up. For a pure tone `f = sin ωt` and the Mexican hat:','مخطط المقياس `|Wf(a, b)|^2` صورة التحويل، b أفقياً و log a (أو التردد) رأسياً. ولنغمة نقية `f = sin ωt` والقبعة المكسيكية:'],
+  'Wf(a, b) = #r{a} ψ̂(aω) sin ωb,     max_a #r{a}ψ̂(aω)   at   a = #f{#r{5/2}}{ω}',
+  ['The ridge of the scalogram traces the frequency over time. Because of the `#r{a}` factor the ridge sits at `#r{5/2}/ω`, not at `#r{2}/ω`: a reminder to calibrate scale against frequency for the normalisation used. For a chirp `sin(t^2)` the ridge follows the instantaneous frequency 2t.','وحافة مخطط المقياس ترسم التردد عبر الزمن. وبسبب العامل `#r{a}` تقع الحافة عند `#r{5/2}/ω` لا عند `#r{2}/ω`: تذكير بمعايرة المقياس مقابل التردد للمعايرة المستخدمة. ولنغمة متصاعدة `sin(t^2)` تتبع الحافة التردد اللحظي 2t.'],
+],[
+  Q('Find the ridge scale for `sin 10t`.','أوجد مقياس الحافة لـ `sin 10t`.','a = #f{#r{2.5}}{10} ≈ 0.158',['#f{d}{da}(a^{5/2}e^{−a^2ω^2/2}) = 0   ⇒   a^2ω^2 = #f{5}{2}'],['a ≈ 0.141','a = 0.1','a = 10']),
+  Q('What is the instantaneous frequency of `sin(t^2)` at t = 3?','ما التردد اللحظي لـ `sin(t^2)` عند t = 3؟','6',['#f{d}{dt}t^2 = 2t'],['9','3','18']),
+  Q('Why does `|Wf|` for `sin ωt` oscillate in b?','لماذا يتذبذب `|Wf|` لـ `sin ωt` في b؟',['The Mexican hat is real, so the transform follows the oscillation `sin ωb`','القبعة المكسيكية حقيقية فيتبع التحويل التذبذب `sin ωb`'],[['A complex Morlet wavelet gives a smooth modulus instead.','مويجة مورليه المركبة تعطي مقياساً أملس بدلاً من ذلك.']],[['Because of noise','بسبب الضجيج'],['It does not','لا يتذبذب']]),
+  Q('How does the scalogram show a click at time `t_0`?','كيف يُظهر مخطط المقياس نقرة عند الزمن `t_0`؟',['As a cone of large values narrowing toward `b = t_0` at small scales','مخروطاً من القيم الكبيرة يضيق نحو `b = t_0` عند المقاييس الصغيرة'],[['The cone of influence has width proportional to a.','مخروط التأثير عرضه يتناسب مع a.']],[['As a horizontal line','خطاً أفقياً'],['It does not show it','لا يُظهرها']]),
+]);
+
+lesson('509',28,[
+  ['The decay of the transform at small scales measures smoothness. If f has Hölder exponent α at `t_0` and ψ has more than α vanishing moments, then near `t_0`:','تناقص التحويل عند المقاييس الصغيرة يقيس الملاسة. إذا كان لـ f أس هولدر α عند `t_0` وكان لـ ψ أكثر من α عزوم منعدمة فقرب `t_0`:'],
+  '|Wf(a, b)| ≤ C a^{α+1/2},     log|Wf| ≈ (α + #f{1}{2}) log a + const',
+  ['The slope on a log–log plot gives α. Examples: `|t|` (α = 1) gives `−2a^{3/2}` with the Mexican hat; a jump (α = 0) gives `a^{1/2}`; a spike δ (α = −1) gives `a^{−1/2}`. The maxima of `|Wf|` lines pointing to `t_0` locate the singularity.','والميل على رسم لوغاريتمي مزدوج يعطي α. أمثلة: `|t|` (α = 1) تعطي `−2a^{3/2}` مع القبعة المكسيكية، والقفزة (α = 0) تعطي `a^{1/2}`، والنبضة δ (α = −1) تعطي `a^{−1/2}`. وخطوط القيم العظمى لـ `|Wf|` المتجهة إلى `t_0` تحدد موضع الانفراد.'],
+],[
+  Q('With the Haar wavelet and the step `H(t)`, compute `Wf(a, −a/2)`.','مع مويجة هار والدالة الدرجية `H(t)` احسب `Wf(a, −a/2)`.','−#f{#r{a}}{2}',['#f{1}{#r{a}}∫_0^{a/2}(−1)dt'],['#f{#r{a}}{2}','−#f{a}{2}','0']),
+  Q('`|Wf|` is `0.002` at a = 0.01 and `0.016` at a = 0.04. Find α.','`|Wf|` يساوي `0.002` عند a = 0.01 و `0.016` عند a = 0.04. أوجد α.','α = 1',['4^{α+1/2} = 8   ⇒   α + #f{1}{2} = #f{3}{2}'],['α = 1.5','α = 0.5','α = 2']),
+  Q('What slope does `f = |t|^{0.3}` give at `t_0 = 0`?','أي ميل تعطيه `f = |t|^{0.3}` عند `t_0 = 0`؟','0.8',['α + #f{1}{2}'],['0.3','1.3','−0.2']),
+  Q('Why must ψ have enough vanishing moments?','لماذا يجب أن يكون لـ ψ عزوم منعدمة كافية؟',['So that the smooth (polynomial) part of f near `t_0` gives no contribution that hides the singularity','حتى لا يعطي الجزء الأملس (كثير الحدود) من f قرب `t_0` مساهمة تخفي الانفراد'],[['Haar sees only α < 1.','هار ترى α < 1 فقط.']],[['For admissibility only','للقبول فقط'],['They need not','لا حاجة']]),
+]);
+
+lesson('509',29,[
+  ['To compute with the transform we sample it on a grid `a = a_0^{−j}`, `b = kb_0a_0^{−j}`. The sampled wavelets form a frame when there are bounds `0 < A ≤ B` with','للحساب بالتحويل نعاينه على شبكة `a = a_0^{−j}` و `b = kb_0a_0^{−j}`. والمويجات المعاينة تكوّن إطاراً عندما توجد حدود `0 < A ≤ B` مع'],
+  'A‖f‖^2 ≤ Σ_{j,k}|⟨f, ψ_{j,k}⟩|^2 ≤ B‖f‖^2',
+  ['A frame allows stable reconstruction. If A = B the frame is tight and reconstruction is as simple as for an orthonormal basis, `f = A^{−1}Σ⟨f, ψ_{j,k}⟩ψ_{j,k}`. An orthonormal basis is the tight frame with A = B = 1 and no redundancy; dyadic sampling `a_0 = 2`, `b_0 = 1` of the Haar wavelet gives one.','والإطار يسمح بإعادة بناء مستقرة. وإذا كان A = B فالإطار مشدود وإعادة البناء بسيطة كما لأساس متعامد معياري `f = A^{−1}Σ⟨f, ψ_{j,k}⟩ψ_{j,k}`. والأساس المتعامد المعياري إطار مشدود مع A = B = 1 ودون فائض، والمعاينة الثنائية `a_0 = 2` و `b_0 = 1` لمويجة هار تعطي واحداً.'],
+],[
+  Q('Three unit vectors in `ℝ^2` at 120° apart: compute `Σ_k|⟨x, e_k⟩|^2` for `x = (1, 0)`, `e_k` at angles 90°, 210°, 330°.','ثلاثة متجهات وحدة في `ℝ^2` بينها 120°: احسب `Σ_k|⟨x, e_k⟩|^2` لـ `x = (1, 0)` و `e_k` عند الزوايا 90° و 210° و 330°.','#f{3}{2}',['0^2 + (#f{−#r{3}}{2})^2 + (#f{#r{3}}{2})^2'],['1','3','#f{1}{2}']),
+  Q('Is that frame tight? Give A.','هل ذلك الإطار مشدود؟ أعط A.',['Yes, `A = B = 3/2`','نعم `A = B = 3/2`'],[['The sum is `(3/2)‖x‖^2` for every x.','المجموع `(3/2)‖x‖^2` لكل x.']],[['No','لا'],['Yes, A = 1','نعم A = 1']]),
+  Q('Reconstruct x from its frame coefficients `c_k = ⟨x, e_k⟩` in that tight frame.','أعد بناء x من معاملات الإطار `c_k = ⟨x, e_k⟩` في ذلك الإطار المشدود.','x = #f{2}{3}Σ_k c_ke_k',['x = A^{−1}Σ⟨x, e_k⟩e_k'],['x = Σ_k c_ke_k','x = #f{3}{2}Σ_k c_ke_k','x = #f{1}{3}Σ_k c_ke_k']),
+  Q('What is the redundancy of that frame?','ما فائض ذلك الإطار؟','#f{3}{2}',[['Three vectors in a space of dimension 2.','ثلاثة متجهات في فضاء بعده 2.']],['1','2','3']),
+]);
+
+lesson('509',30,[
+  ['Worked problems for Unit 3: admissibility, scales and singularities.','مسائل محلولة للوحدة 3: القبول والمقاييس ونقاط الانفراد.'],
+  'Wf(a, b) = #f{1}{#r{a}}∫ f(t)ψ(#f{t − b}{a})dt,     ω ≈ #f{ω_c}{a},     |Wf| ~ a^{α+1/2}',
+],[
+  Q('Compute `Wf(a, 0)` for `f = t^2` with the Mexican hat.','احسب `Wf(a, 0)` لـ `f = t^2` مع القبعة المكسيكية.','−2#r{2π}a^{5/2}',['a^{5/2}∫u^2(1 − u^2)e^{−u^2/2}du = a^{5/2}(#r{2π} − 3#r{2π})'],['0','#r{2π}a^{5/2}','−2a^{3/2}']),
+  Q('Compute `Wf(a, b)` for `f = t` with the Mexican hat.','احسب `Wf(a, b)` لـ `f = t` مع القبعة المكسيكية.','0',[['Lines are killed: the Mexican hat has two vanishing moments.','الخطوط تُلغى: للقبعة المكسيكية عزمان منعدمان.']],['b#r{a}','a^{3/2}','#r{2π}']),
+  Q('A signal at 50 Hz is analysed with the Mexican hat. Which scale (in seconds) matches it?','إشارة بتردد 50 هرتز تُحلل بالقبعة المكسيكية. أي مقياس (بالثواني) يطابقها؟','a = #f{#r{2}}{2π·50} ≈ 0.0045',['a = #f{ω_c}{2πf}'],['a = 0.02','a = 50','a ≈ 0.28']),
+  Q('`|Wf|` grows like `a^{−1/2}` as a → 0 near `t_0`. What is f like there?','`|Wf|` ينمو مثل `a^{−1/2}` عندما a → 0 قرب `t_0`. كيف تكون f هناك؟',['It has a spike (like δ), α = −1','فيها نبضة (مثل δ) و α = −1'],['α + #f{1}{2} = −#f{1}{2}'],[['A jump','قفزة'],['It is smooth','ملساء']]),
+]);
+
 export const MS509 = true;
