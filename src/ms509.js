@@ -206,4 +206,170 @@ lesson('509',5,[
     [['The periodic extension of t jumps at `±π`, while that of `t^2` is continuous there (only its derivative jumps). Each extra degree of smoothness gains one power of `1/n`.','الامتداد الدوري لـ t يقفز عند `±π`، أما امتداد `t^2` فمتصل هناك (مشتقته فقط تقفز). وكل درجة ملاسة إضافية تكسب قوة من `1/n`.']],[['Those of `t`: like `1/n^2` against `1/n`','معاملات `t`: مثل `1/n^2` مقابل `1/n`'],['They decay at the same rate','تتناقصان بالمعدل نفسه']]),
 ]);
 
+/* ---- 509 · Unit 1 (lessons 6–10) and Unit 2 (lessons 11–20): Fourier tools and the Haar wavelet ---- */
+lesson('509',6,[
+  ['On the whole line the Fourier series becomes an integral. The Fourier transform measures how much of each angular frequency ω the function contains:','على المستقيم كله تصبح متسلسلة فورييه تكاملاً. وتحويل فورييه يقيس مقدار كل تردد زاوي ω في الدالة:'],
+  'f̂(ω) = ∫_{−∞}^{∞} f(t) e^{−iωt} dt,     f(t) = #f{1}{2π}∫_{−∞}^{∞} f̂(ω) e^{iωt} dω',
+  ['Two rules are used all the time: a shift multiplies by a phase, `f(t − a) → e^{−iaω}f̂(ω)`, and a stretch squeezes the transform, `f(t/s) → s f̂(sω)` for s > 0. Plancherel’s identity keeps the energy: `∫|f̂|^2 dω = 2π∫|f|^2 dt`.','وقاعدتان تُستخدمان دائماً: الإزاحة تضرب في طور `f(t − a) → e^{−iaω}f̂(ω)`، والتمديد يضغط التحويل `f(t/s) → s f̂(sω)` لـ s > 0. ومتطابقة بلانشيريل تحفظ الطاقة: `∫|f̂|^2 dω = 2π∫|f|^2 dt`.'],
+],[
+  Q('Compute the transform of the box `f = 1` on `[−1/2, 1/2]`.','احسب تحويل الصندوق `f = 1` على `[−1/2, 1/2]`.','f̂(ω) = #f{2 sin(ω/2)}{ω}',['∫_{−1/2}^{1/2} e^{−iωt} dt = #f{e^{−iω/2} − e^{iω/2}}{−iω}'],['f̂(ω) = #f{sin ω}{ω}','f̂(ω) = e^{−iω/2}','f̂(ω) = #f{2}{1 + ω^2}']),
+  Q('Compute the transform of `f = e^{−|t|}`.','احسب تحويل `f = e^{−|t|}`.','f̂(ω) = #f{2}{1 + ω^2}',['∫_0^∞ e^{−(1+iω)t}dt + ∫_0^∞ e^{−(1−iω)t}dt = #f{1}{1 + iω} + #f{1}{1 − iω}'],['f̂(ω) = #f{1}{1 + ω^2}','f̂(ω) = e^{−|ω|}','f̂(ω) = #f{2}{1 − ω^2}']),
+  Q('Check Plancherel’s identity for `e^{−|t|}`.','تحقق من متطابقة بلانشيريل لـ `e^{−|t|}`.','∫#f{4}{(1 + ω^2)^2}dω = 2π = 2π·1',['∫_{−∞}^{∞}#f{dω}{(1 + ω^2)^2} = #f{π}{2},   ∫e^{−2|t|}dt = 1'],['4π = 2π','π = π','2 = 2π']),
+  Q('Use the stretch rule to find the transform of `e^{−2|t|}`.','استخدم قاعدة التمديد لإيجاد تحويل `e^{−2|t|}`.','#f{4}{4 + ω^2}',['s = #f{1}{2}:   #f{1}{2}·#f{2}{1 + ω^2/4}'],['#f{2}{1 + 4ω^2}','#f{4}{1 + ω^2}','#f{1}{4 + ω^2}']),
+]);
+
+lesson('509',7,[
+  ['Convolution slides one function across another and averages. Its key property is that the Fourier transform turns it into a product; for sequences it is a sum:','الالتفاف يزلق دالة فوق أخرى ويأخذ المتوسط. وخاصيته الأساسية أن تحويل فورييه يحوله إلى ضرب، وللمتتاليات هو مجموع:'],
+  '(f * g)(t) = ∫ f(s) g(t − s) ds,     (f * g)^∧ = f̂ ĝ,     (x * h)_n = Σ_k x_k h_{n−k}',
+  ['Every filter is a convolution. The Haar averaging step is a convolution with `(1/2, 1/2)` followed by keeping every second value: `(4, 6, 10, 12) * (1/2, 1/2) = (2, 5, 8, 11, 6)`, and the kept values 5, 11 are the averages of Lesson 1.','كل مرشح التفاف. وخطوة المتوسط في هار التفاف مع `(1/2, 1/2)` يتبعه الاحتفاظ بقيمة من كل قيمتين: `(4, 6, 10, 12) * (1/2, 1/2) = (2, 5, 8, 11, 6)`، والقيمتان المحتفظ بهما 5 و 11 هما متوسطا الدرس 1.'],
+],[
+  Q('Compute `(1, 2, 3) * (1, 1)`.','احسب `(1, 2, 3) * (1, 1)`.','(1, 3, 5, 3)',['(1,   1 + 2,   2 + 3,   3)'],['(1, 2, 3)','(2, 4, 6)','(1, 3, 5)']),
+  Q('Compute `(1, 1) * (1, −1)`.','احسب `(1, 1) * (1, −1)`.','(1, 0, −1)',['(1·1,   1·(−1) + 1·1,   1·(−1))'],['(1, −1)','(0, 0)','(1, 2, 1)']),
+  Q('Convolve the box `1_{[−1/2, 1/2]}` with itself.','التف الصندوق `1_{[−1/2, 1/2]}` مع نفسه.','max(1 − |t|, 0)',[['The value at t is the length of the overlap of `[−1/2, 1/2]` and `[t − 1/2, t + 1/2]`.','القيمة عند t هي طول تقاطع `[−1/2, 1/2]` و `[t − 1/2, t + 1/2]`.']],['1_{[−1, 1]}','e^{−|t|}','max(1 − t^2, 0)']),
+  Q('Which values of `(2, 5, 8, 11, 6)` give the Haar averages of `(4, 6, 10, 12)`?','أي قيم `(2, 5, 8, 11, 6)` تعطي متوسطات هار لـ `(4, 6, 10, 12)`؟',['The second and fourth: 5 and 11','الثانية والرابعة: 5 و 11'],[['Keeping every second value is downsampling.','الاحتفاظ بقيمة من كل قيمتين هو إنقاص العينات.']],[['The first and third: 2 and 8','الأولى والثالثة: 2 و 8'],['All five','الخمس كلها']]),
+]);
+
+lesson('509',8,[
+  ['The magnitude `|f̂(ω)|` says which frequencies are present, but not when. A spike at time a has a transform of magnitude 1 at every frequency; its position is hidden in the phase:','المقدار `|f̂(ω)|` يقول أي الترددات موجودة لكن لا يقول متى. ونبضة عند الزمن a تحويلها مقداره 1 عند كل تردد، وموضعها مخفي في الطور:'],
+  'δ(t − a)  →  e^{−iaω},     |e^{−iaω}| = 1;     DFT:   (0, 0, 1, 0)  →  (1, −1, 1, −1)',
+  ['So a short event spreads over all Fourier coefficients, and a signal and its time-reversed version have the same magnitude spectrum. For music, speech or a fault in a machine we need to know when each frequency occurs: a time–frequency description.','فالحدث القصير ينتشر على كل معاملات فورييه، والإشارة ونسختها المعكوسة زمنياً لهما طيف المقدار نفسه. وللموسيقى أو الكلام أو عطل في آلة نحتاج معرفة متى يقع كل تردد: وصف زمني–ترددي.'],
+],[
+  Q('Compute the DFT `X_k = Σ_n x_n e^{−2πikn/4}` of `(0, 0, 1, 0)`.','احسب DFT `X_k = Σ_n x_n e^{−2πikn/4}` لـ `(0, 0, 1, 0)`.','(1, −1, 1, −1)',['X_k = e^{−πik} = (−1)^k'],['(0, 0, 1, 0)','(1, 1, 1, 1)','(1, i, −1, −i)']),
+  Q('How does `|f̂|` change when f is delayed by 5?','كيف يتغير `|f̂|` عند تأخير f بمقدار 5؟',['It does not change: only the phase `e^{−5iω}` is added','لا يتغير: يُضاف الطور `e^{−5iω}` فقط'],['|e^{−5iω}f̂(ω)| = |f̂(ω)|'],[['It shifts by 5','ينزاح بمقدار 5'],['It is multiplied by 5','يُضرب في 5']]),
+  Q('For real f, compare `|f̂|` for `f(t)` and `f(−t)`.','لـ f حقيقية قارن `|f̂|` لـ `f(t)` و `f(−t)`.',['They are equal','متساويان'],['f(−t) → f̂(−ω),   |f̂(−ω)| = |f̂(ω)|'],[['One is the reverse of the other','أحدهما عكس الآخر'],['They are unrelated','لا علاقة بينهما']]),
+  Q('Why is the magnitude spectrum not enough to describe a melody?','لماذا لا يكفي طيف المقدار لوصف لحن؟',['It shows which notes occur but not in which order','يُظهر أي النغمات موجودة لا ترتيبها'],[['The order lives in the phases, mixed over all frequencies.','الترتيب يعيش في الأطوار ممزوجاً على كل الترددات.']],[['It is not accurate','ليس دقيقاً'],['It is enough','يكفي']]),
+]);
+
+lesson('509',9,[
+  ['The windowed (short-time) Fourier transform looks at the signal through a window w centred at τ, then takes the transform:','تحويل فورييه ذو النافذة (قصير المدى) ينظر إلى الإشارة عبر نافذة w مركزها τ ثم يأخذ التحويل:'],
+  'Sf(τ, ω) = ∫ f(t) w(t − τ) e^{−iωt} dt',
+  ['With a Gaussian window this is the Gabor transform, and `|Sf|^2` is the spectrogram. The window has one fixed width T for all frequencies: frequencies closer than about `2π/T` cannot be separated, and events closer than about T in time cannot be separated.','ومع نافذة جاوسية هذا تحويل جابور، و `|Sf|^2` المخطط الطيفي. وللنافذة عرض ثابت T لكل الترددات: الترددات الأقرب من نحو `2π/T` لا يمكن فصلها، والأحداث الأقرب من نحو T زمنياً لا يمكن فصلها.'],
+],[
+  Q('Compute `Sf(τ, ω)` for `f = 1` and the box window `1_{[−T/2, T/2]}`.','احسب `Sf(τ, ω)` لـ `f = 1` والنافذة الصندوقية `1_{[−T/2, T/2]}`.','e^{−iωτ}#f{2 sin(ωT/2)}{ω}',['∫_{τ−T/2}^{τ+T/2} e^{−iωt} dt'],['#f{2 sin(ωT/2)}{ω}','T e^{−iωτ}','2πδ(ω)']),
+  Q('What is `|Sf(τ, 0)|` in that case?','ما `|Sf(τ, 0)|` في تلك الحالة؟','T',['#f{2 sin(ωT/2)}{ω} → T,   ω → 0'],['1','2π','#f{T}{2}']),
+  Q('Two tones are 2 Hz apart. About how long must the window be to separate them?','نغمتان بينهما 2 هرتز. كم يجب أن يكون طول النافذة تقريباً لفصلهما؟',['At least about 0.5 s','نحو 0.5 ثانية على الأقل'],['Δf ≈ #f{1}{T}'],[['About 0.05 s','نحو 0.05 ثانية'],['Any length','أي طول']]),
+  Q('A signal has clicks 0.01 s apart and tones 2 Hz apart. Can one window resolve both?','إشارة فيها نقرات بينها 0.01 ثانية ونغمات بينها 2 هرتز. هل تفصل نافذة واحدة الاثنين؟',['No: the clicks need T ≲ 0.01 s, the tones T ≳ 0.5 s','لا: النقرات تحتاج T ≲ 0.01 ثانية والنغمات T ≳ 0.5 ثانية'],[['Wavelets adapt the window to the frequency.','المويجات تكيّف النافذة مع التردد.']],[['Yes, with T = 0.1 s','نعم مع T = 0.1 ثانية'],['Yes, always','نعم دائماً']]),
+]);
+
+lesson('509',10,[
+  ['Define the spreads of f in time and in frequency by','عرّف انتشار f في الزمن وفي التردد بـ'],
+  'Δt^2 = #f{∫t^2|f|^2 dt}{∫|f|^2 dt},     Δω^2 = #f{∫ω^2|f̂|^2 dω}{∫|f̂|^2 dω},     Δt·Δω ≥ #f{1}{2}',
+  ['Equality holds exactly for Gaussians (centred at 0). Each window or wavelet occupies a time–frequency box of sides Δt and Δω. The windowed transform uses boxes of one shape; a wavelet at scale a has sides aΔt and Δω/a: narrow in time at high frequency, wide at low frequency, always with the same area.','والمساواة تتحقق بالضبط للدوال الجاوسية (المتمركزة عند 0). وكل نافذة أو مويجة تشغل صندوقاً زمنياً–ترددياً ضلعاه Δt و Δω. والتحويل ذو النافذة يستخدم صناديق بشكل واحد، والمويجة عند المقياس a لها الضلعان aΔt و Δω/a: ضيقة زمنياً عند التردد العالي وعريضة عند المنخفض، بالمساحة نفسها دائماً.'],
+],[
+  Q('Compute Δt for `f = e^{−t^2/2}`.','احسب Δt لـ `f = e^{−t^2/2}`.','#f{1}{#r{2}}',['#f{∫t^2e^{−t^2}dt}{∫e^{−t^2}dt} = #f{#r{π}/2}{#r{π}} = #f{1}{2}'],['1','#f{1}{2}','#r{2}']),
+  Q('What is Δt·Δω for `e^{−t^2/2}`?','ما Δt·Δω لـ `e^{−t^2/2}`؟','#f{1}{2}',['f̂ = #r{2π}e^{−ω^2/2}:   Δω = #f{1}{#r{2}}'],['1','#f{1}{4}','2']),
+  Q('How do Δt and Δω change for `f(t/a)`?','كيف يتغير Δt و Δω لـ `f(t/a)`؟','Δt → aΔt,     Δω → #f{Δω}{a}',[['The product stays the same.','الضرب يبقى نفسه.']],['Δt → aΔt,   Δω → aΔω','Δt → #f{Δt}{a},   Δω → aΔω','Δt → Δt,   Δω → Δω']),
+  Q('The Haar wavelet has `|ψ̂(ω)| = 4 sin^2(ω/4)/|ω|`. Is its Δω finite?','مويجة هار لها `|ψ̂(ω)| = 4 sin^2(ω/4)/|ω|`. هل Δω لها منتهٍ؟',['No: `ω^2|ψ̂|^2 = 16 sin^4(ω/4)` does not decay, so the integral diverges','لا: `ω^2|ψ̂|^2 = 16 sin^4(ω/4)` لا يتناقص فيتباعد التكامل'],[['The jumps of the Haar wavelet spread it in frequency.','قفزات مويجة هار تنشرها في التردد.']],[['Yes','نعم'],['It is zero','صفر']]),
+]);
+
+lesson('509',11,[
+  ['The Haar scaling function is the indicator of the unit interval. Its scaled and shifted copies are indicators of dyadic intervals, normalized to have norm 1:','دالة التقييس لهار هي دالة مؤشر لمجال الوحدة. ونسخها المقيسة والمزاحة دوال مؤشر لمجالات ثنائية، مُعايرة ليكون معيارها 1:'],
+  'φ(t) = 1_{[0, 1)}(t),     φ_{j,k}(t) = 2^{j/2}φ(2^jt − k) = 2^{j/2}   ⇔   t ∈ [k2^{−j}, (k + 1)2^{−j})',
+  ['φ satisfies the two-scale equation `φ(t) = φ(2t) + φ(2t − 1)`: the unit interval is the union of its two halves. The inner product `⟨f, φ_{j,k}⟩` equals `2^{−j/2}` times the average of f on the interval.','و φ تحقق معادلة المقياسين `φ(t) = φ(2t) + φ(2t − 1)`: مجال الوحدة اتحاد نصفيه. والضرب الداخلي `⟨f, φ_{j,k}⟩` يساوي `2^{−j/2}` مضروباً في متوسط f على المجال.'],
+],[
+  Q('Give the support and the value of `φ_{2,1}`.','أعط حامل `φ_{2,1}` وقيمتها.','[#f{1}{4}, #f{1}{2}):   φ_{2,1} = 2',['2^{2/2} = 2,   k2^{−j} = #f{1}{4}'],['[#f{1}{2}, 1):   φ_{2,1} = 2','[#f{1}{4}, #f{1}{2}):   φ_{2,1} = 1','[0, #f{1}{4}):   φ_{2,1} = 4']),
+  Q('Check that `‖φ_{2,1}‖ = 1`.','تحقق أن `‖φ_{2,1}‖ = 1`.','2^2·#f{1}{4} = 1',['‖φ_{2,1}‖^2 = ∫_{1/4}^{1/2} 4 dt'],['2·#f{1}{4} = #f{1}{2}','4','#f{1}{4}']),
+  Q('Compute `⟨t^2, φ_{1,1}⟩`.','احسب `⟨t^2, φ_{1,1}⟩`.','#r{2}·#f{7}{24} ≈ 0.4125',['#r{2}∫_{1/2}^{1} t^2 dt = #r{2}·#f{1 − 1/8}{3}'],['#f{7}{24}','#f{1}{3}','#r{2}·#f{1}{3}']),
+  Q('Write `φ_{0,0}` in terms of `φ_{1,0}` and `φ_{1,1}`.','اكتب `φ_{0,0}` بدلالة `φ_{1,0}` و `φ_{1,1}`.','φ_{0,0} = #f{1}{#r{2}}(φ_{1,0} + φ_{1,1})',['φ(2t) = #f{φ_{1,0}}{#r{2}}'],['φ_{0,0} = φ_{1,0} + φ_{1,1}','φ_{0,0} = #r{2}(φ_{1,0} + φ_{1,1})','φ_{0,0} = #f{1}{2}(φ_{1,0} + φ_{1,1})']),
+]);
+
+lesson('509',12,[
+  ['The Haar wavelet is the difference of the two halves of φ: +1 on the left half, −1 on the right half:','مويجة هار هي فرق نصفي φ: ‎+1 على النصف الأيسر و ‎−1 على الأيمن:'],
+  'ψ(t) = φ(2t) − φ(2t − 1) = { 1,  0 ≤ t < #f{1}{2};   −1,  #f{1}{2} ≤ t < 1 }',
+  ['It has mean zero, `∫ψ = 0`, and norm 1. One vanishing moment means it ignores constants; the coefficient `⟨f, ψ⟩` measures how much f changes across t = 1/2. For `f = t`, `⟨t, ψ⟩ = −1/4`.','ومتوسطها صفر `∫ψ = 0` ومعيارها 1. وعزم منعدم واحد يعني أنها تتجاهل الثوابت، والمعامل `⟨f, ψ⟩` يقيس تغير f عبر t = 1/2. ولـ `f = t` يكون `⟨t, ψ⟩ = −1/4`.'],
+],[
+  Q('Compute `⟨t, ψ⟩`.','احسب `⟨t, ψ⟩`.','−#f{1}{4}',['∫_0^{1/2} t dt − ∫_{1/2}^1 t dt = #f{1}{8} − #f{3}{8}'],['#f{1}{4}','0','#f{1}{2}']),
+  Q('Compute `⟨5, ψ⟩` and explain.','احسب `⟨5, ψ⟩` وفسّر.',['0: ψ has mean zero, so it ignores constants','0: متوسط ψ صفر فتتجاهل الثوابت'],['5∫ψ = 5(#f{1}{2} − #f{1}{2})'],['5','#f{5}{2}']),
+  Q('Compute `⟨t^2, ψ⟩`.','احسب `⟨t^2, ψ⟩`.','−#f{1}{4}',['#f{1}{24} − #f{7}{24} = −#f{6}{24}'],['#f{1}{4}','−#f{1}{3}','0']),
+  Q('Does ψ have a second vanishing moment, `∫tψ = 0`?','هل لـ ψ عزم منعدم ثانٍ `∫tψ = 0`؟',['No: `∫tψ = −1/4`','لا: `∫tψ = −1/4`'],[['Wavelets with more vanishing moments (Unit 6) ignore lines and higher polynomials too.','المويجات ذات العزوم المنعدمة الأكثر (الوحدة 6) تتجاهل الخطوط وكثيرات الحدود الأعلى أيضاً.']],[['Yes','نعم'],['Only on [0, 1/2]','فقط على [0, 1/2]']]),
+]);
+
+lesson('509',13,[
+  ['All Haar wavelets come from ψ by dilation (scale `2^{−j}`) and translation (position `k2^{−j}`). The factor `2^{j/2}` keeps the norm equal to 1:','كل مويجات هار تأتي من ψ بالتمديد (المقياس `2^{−j}`) والإزاحة (الموضع `k2^{−j}`). والعامل `2^{j/2}` يُبقي المعيار 1:'],
+  'ψ_{j,k}(t) = 2^{j/2}ψ(2^jt − k) = ±2^{j/2}   ⇔   t ∈ [#f{k}{2^j}, #f{k + 1}{2^j})',
+  ['Large j means fine scale and high frequency; k says where. On [0, 1) level j has `2^j` wavelets, `k = 0, …, 2^j − 1`. To find which wavelet of level j contains t, take `k = ⌊2^jt⌋`.','و j الكبير يعني مقياساً دقيقاً وتردداً عالياً، و k يقول أين. وعلى [0, 1) في المستوى j عدد `2^j` من المويجات `k = 0, …, 2^j − 1`. ولمعرفة أي مويجة من المستوى j تحتوي t خذ `k = ⌊2^jt⌋`.'],
+],[
+  Q('Give the support of `ψ_{3,5}` and its value on the left half.','أعط حامل `ψ_{3,5}` وقيمتها على النصف الأيسر.','[#f{5}{8}, #f{3}{4}),     2^{3/2} ≈ 2.828',['#f{5}{8} ≤ t < #f{6}{8}'],['[#f{5}{3}, 2),   2^{3/2}','[#f{5}{8}, #f{3}{4}),   8','[#f{3}{8}, #f{5}{8}),   2^{3/2}']),
+  Q('Evaluate `ψ_{2,k}(0.3)` for the k that contains 0.3.','احسب `ψ_{2,k}(0.3)` لقيمة k التي تحتوي 0.3.','k = 1,   ψ_{2,1}(0.3) = 2',['⌊4·0.3⌋ = 1,   4·0.3 − 1 = 0.2 < #f{1}{2}'],['k = 1,   ψ_{2,1}(0.3) = −2','k = 0,   ψ_{2,0}(0.3) = 2','k = 1,   ψ_{2,1}(0.3) = 1']),
+  Q('How many Haar wavelets of levels 0 to 3 live on [0, 1)?','كم مويجة هار من المستويات 0 إلى 3 تعيش على [0, 1)؟','15',['1 + 2 + 4 + 8'],['8','16','4']),
+  Q('Check `‖ψ_{j,k}‖ = 1`.','تحقق أن `‖ψ_{j,k}‖ = 1`.','2^j·2^{−j} = 1',['‖ψ_{j,k}‖^2 = (2^{j/2})^2·2^{−j}'],['2^{j/2}','2^{−j}','2^j']),
+]);
+
+lesson('509',14,[
+  ['The Haar wavelets form an orthonormal system:','مويجات هار تكوّن نظاماً متعامداً معيارياً:'],
+  '⟨ψ_{j,k}, ψ_{j′,k′}⟩ = δ_{jj′}δ_{kk′},     ⟨φ, ψ_{j,k}⟩ = 0   (j ≥ 0)',
+  ['Two reasons: at the same level the supports do not overlap; at different levels the coarser function is constant on the support of the finer one, and the finer one has mean zero. Together with φ they form an orthonormal basis of `L^2[0, 1]`.','وسببان: في المستوى نفسه لا تتداخل الحوامل، وفي مستويين مختلفين تكون الدالة الأخشن ثابتة على حامل الأدق والأدق متوسطها صفر. ومع φ تكوّن أساساً متعامداً معيارياً لـ `L^2[0, 1]`.'],
+],[
+  Q('Compute `⟨ψ_{0,0}, ψ_{1,0}⟩`.','احسب `⟨ψ_{0,0}, ψ_{1,0}⟩`.','0',['ψ_{0,0} = 1 on [0, #f{1}{2}),   ∫ψ_{1,0} = 0'],['1','#f{1}{2}','−1']),
+  Q('Compute `⟨ψ_{2,1}, ψ_{2,2}⟩`.','احسب `⟨ψ_{2,1}, ψ_{2,2}⟩`.',['0: the supports `[1/4, 1/2)` and `[1/2, 3/4)` are disjoint','0: الحاملان `[1/4, 1/2)` و `[1/2, 3/4)` منفصلان'],[['Same level, different positions.','المستوى نفسه ومواضع مختلفة.']],[['1','1'],['−1','−1']]),
+  Q('Why is `⟨ψ_{1,1}, ψ_{3,6}⟩ = 0`?','لماذا `⟨ψ_{1,1}, ψ_{3,6}⟩ = 0`؟',['On `[3/4, 7/8)` the coarse wavelet `ψ_{1,1}` is constant and `ψ_{3,6}` has mean zero','على `[3/4, 7/8)` تكون المويجة الخشنة `ψ_{1,1}` ثابتة و `ψ_{3,6}` متوسطها صفر'],[['`ψ_{1,1} = −#r{2}` there.','`ψ_{1,1} = −#r{2}` هناك.']],[['The supports are disjoint','الحاملان منفصلان'],['It is not zero','ليس صفراً']]),
+  Q('How many functions does `{φ} ∪ {ψ_{j,k} : j < J}` contain on [0, 1)?','كم دالة تحتوي `{φ} ∪ {ψ_{j,k} : j < J}` على [0, 1)؟','2^J',['1 + (1 + 2 + ⋯ + 2^{J−1}) = 1 + (2^J − 1)'],['2^J − 1','J + 1','2^{J+1}']),
+]);
+
+lesson('509',15,[
+  ['`V_j` is the space of functions that are constant on every dyadic interval of length `2^{−j}`. The spaces are nested, `V_0 ⊂ V_1 ⊂ V_2 ⊂ ⋯`, and on [0, 1) `dim V_j = 2^j`. The orthogonal projection onto `V_j` replaces f by its average on each interval:','`V_j` فضاء الدوال الثابتة على كل مجال ثنائي طوله `2^{−j}`. والفضاءات متداخلة `V_0 ⊂ V_1 ⊂ V_2 ⊂ ⋯`، وعلى [0, 1) يكون `dim V_j = 2^j`. والإسقاط العمودي على `V_j` يستبدل بـ f متوسطها على كل مجال:'],
+  'P_jf = Σ_k ⟨f, φ_{j,k}⟩φ_{j,k},     ‖t − P_jt‖^2 = #f{4^{−j}}{12}',
+  ['For `f = t`: on an interval of length h the best constant is the midpoint value and the squared error is `h^3/12`; there are `1/h` intervals, so the total is `h^2/12` with `h = 2^{−j}`. The error halves with each level.','ولـ `f = t`: على مجال طوله h يكون أفضل ثابت هو قيمة المنتصف ومربع الخطأ `h^3/12`، وعدد المجالات `1/h` فيكون المجموع `h^2/12` مع `h = 2^{−j}`. والخطأ ينتصف مع كل مستوى.'],
+],[
+  Q('Write `P_1t` on [0, 1).','اكتب `P_1t` على [0, 1).','P_1t = #f{1}{4}·1_{[0,1/2)} + #f{3}{4}·1_{[1/2,1)}',['2∫_0^{1/2} t dt = #f{1}{4},   2∫_{1/2}^1 t dt = #f{3}{4}'],['P_1t = #f{1}{2}','P_1t = #f{1}{2}·1_{[0,1/2)} + 1_{[1/2,1)}','P_1t = t']),
+  Q('Compute `‖t − P_2t‖`.','احسب `‖t − P_2t‖`.','#f{1}{4#r{12}} ≈ 0.0722',['#r{#f{4^{−2}}{12}}'],['#f{1}{48}','#f{1}{#r{12}}','#f{1}{16}']),
+  Q('What is `dim V_3` on [0, 1)?','ما `dim V_3` على [0, 1)؟','8',['2^3'],['3','6','9']),
+  Q('Is `f = 1_{[0, 1/3)}` in some `V_j`?','هل `f = 1_{[0, 1/3)}` في أحد الفضاءات `V_j`؟',['No: 1/3 is not a dyadic number `k/2^j`','لا: 1/3 ليست عدداً ثنائياً `k/2^j`'],[['But `P_jf → f` in `L^2` as j grows.','لكن `P_jf → f` في `L^2` مع نمو j.']],[['Yes, in `V_2`','نعم في `V_2`'],['Yes, in every `V_j`','نعم في كل `V_j`']]),
+]);
+
+lesson('509',16,[
+  ['`W_j` is the orthogonal complement of `V_j` inside `V_{j+1}`: what level j + 1 sees and level j misses. It is spanned by the wavelets `ψ_{j,k}`, and the detail of f at level j is','`W_j` المتمم العمودي لـ `V_j` داخل `V_{j+1}`: ما يراه المستوى j + 1 ويفوّته المستوى j. وتولده المويجات `ψ_{j,k}`، وتفصيل f في المستوى j هو'],
+  'Q_jf = P_{j+1}f − P_jf = Σ_k ⟨f, ψ_{j,k}⟩ψ_{j,k}',
+  ['For `f = t`: `Q_0t = P_1t − P_0t` is `−1/4` on the left half and `+1/4` on the right half, which is `−(1/4)ψ`, in agreement with `⟨t, ψ⟩ = −1/4`.','ولـ `f = t`: `Q_0t = P_1t − P_0t` يساوي `−1/4` على النصف الأيسر و `+1/4` على الأيمن، أي `−(1/4)ψ`، متفقاً مع `⟨t, ψ⟩ = −1/4`.'],
+],[
+  Q('Compute `Q_0t`.','احسب `Q_0t`.','−#f{1}{4}ψ',['P_1t − #f{1}{2}:   #f{1}{4} − #f{1}{2},   #f{3}{4} − #f{1}{2}'],['#f{1}{4}ψ','−#f{1}{2}ψ','0']),
+  Q('Compute `⟨t, ψ_{1,0}⟩`.','احسب `⟨t, ψ_{1,0}⟩`.','−#f{2^{−3/2}}{4} ≈ −0.0884',['⟨t, ψ_{j,k}⟩ = −#f{2^{−3j/2}}{4}'],['−#f{1}{4}','−#f{1}{8}','#f{2^{−3/2}}{4}']),
+  Q('What is `dim W_j` on [0, 1)?','ما `dim W_j` على [0, 1)؟','2^j',['dim V_{j+1} − dim V_j = 2^{j+1} − 2^j'],['2^{j+1}','j','2^j − 1']),
+  Q('Is a function in `W_2` also in `V_3`?','هل الدالة في `W_2` موجودة أيضاً في `V_3`؟',['Yes: `W_2 ⊂ V_3`, its functions are constant on intervals of length 1/8','نعم: `W_2 ⊂ V_3` ودوالها ثابتة على مجالات طولها 1/8'],[['But it is orthogonal to `V_2`.','لكنها عمودية على `V_2`.']],[['No','لا'],['Only if it is zero','فقط إن كانت صفراً']]),
+]);
+
+lesson('509',17,[
+  ['Repeating `V_{j+1} = V_j ⊕ W_j` splits a fine space into a coarse part and all the details between:','تكرار `V_{j+1} = V_j ⊕ W_j` يقسم فضاءً دقيقاً إلى جزء خشن وكل التفاصيل بينهما:'],
+  'V_J = V_0 ⊕ W_0 ⊕ W_1 ⊕ ⋯ ⊕ W_{J−1},     P_Jf = P_0f + Σ_{j<J} Q_jf',
+  ['So every f is its overall average plus details at every scale. The dimensions add up: `2^J = 1 + 1 + 2 + ⋯ + 2^{J−1}`. Because the pieces are orthogonal, energies add too: `‖P_Jf‖^2 = ‖P_0f‖^2 + Σ ‖Q_jf‖^2`.','فكل f متوسطها الكلي زائد تفاصيل عند كل مقياس. والأبعاد تتجمع: `2^J = 1 + 1 + 2 + ⋯ + 2^{J−1}`. ولأن الأجزاء متعامدة تتجمع الطاقات أيضاً: `‖P_Jf‖^2 = ‖P_0f‖^2 + Σ ‖Q_jf‖^2`.'],
+],[
+  Q('Write `V_3` as a direct sum.','اكتب `V_3` مجموعاً مباشراً.','V_3 = V_0 ⊕ W_0 ⊕ W_1 ⊕ W_2',['V_3 = V_2 ⊕ W_2 = V_1 ⊕ W_1 ⊕ W_2 = …'],['V_3 = W_0 ⊕ W_1 ⊕ W_2','V_3 = V_0 ⊕ V_1 ⊕ V_2','V_3 = V_2 ⊕ W_3']),
+  Q('Check the dimensions for J = 3.','تحقق من الأبعاد عند J = 3.','8 = 1 + 1 + 2 + 4',[['`dim V_0 = 1`, `dim W_j = 2^j`.','`dim V_0 = 1` و `dim W_j = 2^j`.']],['8 = 1 + 2 + 4','8 = 2 + 2 + 4','9 = 1 + 2 + 2 + 4']),
+  Q('For `f = t`, compute `‖Q_jt‖^2`.','لـ `f = t` احسب `‖Q_jt‖^2`.','#f{4^{−j}}{16}',['2^j·(#f{2^{−3j/2}}{4})^2 = #f{2^{−2j}}{16}'],['#f{4^{−j}}{12}','#f{2^{−j}}{16}','#f{1}{16}']),
+  Q('Check `‖t‖^2` with `‖P_0t‖^2 = 1/4` and the details.','تحقق من `‖t‖^2` باستخدام `‖P_0t‖^2 = 1/4` والتفاصيل.','#f{1}{4} + #f{1}{16}·#f{1}{1 − 1/4} = #f{1}{4} + #f{1}{12} = #f{1}{3}',['Σ_{j≥0}#f{4^{−j}}{16} = #f{1}{12}'],['#f{1}{4}','#f{1}{2}','#f{5}{16}']),
+]);
+
+lesson('509',18,[
+  ['The orthonormal Haar transform of a signal of length `2^J` repeats the normalized step on the averages:','تحويل هار المتعامد المعياري لإشارة طولها `2^J` يكرر الخطوة المُعايرة على المتوسطات:'],
+  's = #f{a + b}{#r{2}},     d = #f{a − b}{#r{2}};     (4, 6, 10, 12)  →  (16, −6, −#r{2}, −#r{2})',
+  ['The factor `1/#r{2}` makes the step orthogonal, so energy is kept: `16^2 + 6^2 + 2 + 2 = 296 = 4^2 + 6^2 + 10^2 + 12^2`. The unnormalized version of Lesson 1 gives `(8, −3, −1, −1)`: the same information with different scaling of each level.','والعامل `1/#r{2}` يجعل الخطوة متعامدة فتُحفظ الطاقة: `16^2 + 6^2 + 2 + 2 = 296 = 4^2 + 6^2 + 10^2 + 12^2`. والنسخة غير المعايرة في الدرس 1 تعطي `(8, −3, −1, −1)`: المعلومات نفسها بتحجيم مختلف لكل مستوى.'],
+],[
+  Q('Apply one normalized step to `(3, 1)`.','طبّق خطوة معايرة واحدة على `(3, 1)`.','s = 2#r{2},   d = #r{2}',['#f{3 + 1}{#r{2}},   #f{3 − 1}{#r{2}}'],['s = 2,   d = 1','s = 4,   d = 2','s = #r{2},   d = 2#r{2}']),
+  Q('Compute the full normalized transform of `(2, 2, 2, 2)`.','احسب التحويل المعاير الكامل لـ `(2, 2, 2, 2)`.','(4, 0, 0, 0)',['s_1 = (2#r{2}, 2#r{2}),   s_2 = #f{4#r{2}}{#r{2}} = 4'],['(2, 0, 0, 0)','(8, 0, 0, 0)','(2, 2, 2, 2)']),
+  Q('Check the energy for `(2, 2, 2, 2)`.','تحقق من الطاقة لـ `(2, 2, 2, 2)`.','4^2 = 16 = 4·2^2',[['Parseval for an orthogonal transform.','بارسيفال لتحويل متعامد.']],['2^2 = 4','8^2 = 64','16 = 8']),
+  Q('How are the normalized coarse coefficient 16 and the Lesson 1 average 8 related for `(4, 6, 10, 12)`?','كيف يرتبط المعامل الخشن المعاير 16 والمتوسط 8 في الدرس 1 لـ `(4, 6, 10, 12)`؟','16 = 8·(#r{2})^2',[['Each of the two levels uses `1/#r{2}` instead of `1/2`, a factor `#r{2}` per level.','كل من المستويين يستخدم `1/#r{2}` بدل `1/2`، أي عامل `#r{2}` لكل مستوى.']],['16 = 2·8','16 = 8 + 8','16 = 8·#r{2}']),
+]);
+
+lesson('509',19,[
+  ['Reconstruction runs the steps backward, from the coarsest level to the finest:','إعادة البناء تشغّل الخطوات عكسياً من المستوى الأخشن إلى الأدق:'],
+  'a = #f{s + d}{#r{2}},     b = #f{s − d}{#r{2}};     (10, 2, 0, 0)  →  (6, 6, 4, 4)',
+  ['Zero details mean equal neighbours. Compression sets small details to zero before reconstructing; because the transform is orthogonal, the squared error equals the energy of the dropped coefficients.','والتفاصيل الصفرية تعني جيراناً متساوين. والضغط يجعل التفاصيل الصغيرة صفراً قبل إعادة البناء، ولأن التحويل متعامد يساوي مربع الخطأ طاقة المعاملات المحذوفة.'],
+],[
+  Q('Reconstruct the pair from `s = 2#r{2}`, `d = #r{2}`.','أعد بناء الزوج من `s = 2#r{2}` و `d = #r{2}`.','(3, 1)',['#f{2#r{2} + #r{2}}{#r{2}} = 3,   #f{2#r{2} − #r{2}}{#r{2}} = 1'],['(1, 3)','(3#r{2}, #r{2})','(2, 1)']),
+  Q('Reconstruct `(10, 2, 0, 0)` and check the energy.','أعد بناء `(10, 2, 0, 0)` وتحقق من الطاقة.','(6, 6, 4, 4):   36 + 36 + 16 + 16 = 104 = 100 + 4',['s_1 = (6#r{2}, 4#r{2}),   d_1 = (0, 0)'],['(12, 8, 0, 0)','(6, 4, 6, 4)','(5, 5, 5, 5)']),
+  Q('The transform of a signal is `(16, −6, −#r{2}, −#r{2})`. Drop the two fine details. What is the squared error?','تحويل إشارة `(16, −6, −#r{2}, −#r{2})`. احذف التفصيلين الدقيقين. ما مربع الخطأ؟','4',['(#r{2})^2 + (#r{2})^2'],['2','8','36']),
+  Q('Reconstruct `(16, −6, 0, 0)`.','أعد بناء `(16, −6, 0, 0)`.','(5, 5, 11, 11)',['#f{16 ± (−6)}{#r{2}} = (5#r{2}, 11#r{2})'],['(4, 6, 10, 12)','(8, 8, 8, 8)','(11, 11, 5, 5)']),
+]);
+
+lesson('509',20,[
+  ['A function on [0, 1] has the Haar series `f = c_0φ + Σ_{j,k} d_{j,k}ψ_{j,k}`. Its coefficients show its smoothness:','الدالة على [0, 1] لها متسلسلة هار `f = c_0φ + Σ_{j,k} d_{j,k}ψ_{j,k}`. ومعاملاتها تُظهر ملاستها:'],
+  'f = t:   d_{j,k} = −#f{2^{−3j/2}}{4},     ‖t − P_Jt‖ = #f{2^{−J}}{#r{12}}',
+  ['For a smooth function the details at level j shrink like `2^{−3j/2}`. At a jump the coefficient of the one wavelet that straddles the jump shrinks only like `2^{−j/2}`, and all others are small. So large coefficients point to singularities, the idea behind compression and edge detection.','وللدالة الملساء تتقلص التفاصيل في المستوى j مثل `2^{−3j/2}`. وعند القفزة يتقلص معامل المويجة الوحيدة التي تعبر القفزة مثل `2^{−j/2}` فقط وكل البقية صغيرة. فالمعاملات الكبيرة تشير إلى نقاط الانفراد، وهي الفكرة وراء الضغط وكشف الحواف.'],
+],[
+  Q('Compute `d_{2,3}` for `f = t`.','احسب `d_{2,3}` لـ `f = t`.','−#f{1}{32}',['−#f{2^{−3}}{4}'],['−#f{1}{16}','−#f{1}{8}','#f{1}{32}']),
+  Q('How many levels J make `‖t − P_Jt‖ < 0.01`?','كم مستوى J يجعل `‖t − P_Jt‖ < 0.01`؟','J = 5',['#f{2^{−J}}{#r{12}} < 0.01   ⇔   2^J > 28.9'],['J = 4','J = 7','J = 10']),
+  Q('For `f = 1_{[1/3, 1)}`, how big is `|d_{j,k}|` for the wavelet that contains 1/3?','لـ `f = 1_{[1/3, 1)}` كم حجم `|d_{j,k}|` للمويجة التي تحتوي 1/3؟','~ 2^{−j/2}',[['Only a fraction of the support sees each value, so `|d| ≤ 2^{j/2}·2^{−j}`.','جزء من الحامل فقط يرى كل قيمة فيكون `|d| ≤ 2^{j/2}·2^{−j}`.']],['~ 2^{−3j/2}','= 0','~ 2^{j/2}']),
+  Q('For that step function, how many wavelets per level have non-zero coefficients?','لتلك الدالة الدرجية كم مويجة في كل مستوى معاملها غير صفري؟','1',[['Only the one whose support contains 1/3; f is constant on all the others.','فقط التي يحتوي حاملها 1/3، و f ثابتة على كل البقية.']],['2^j','0','2']),
+]);
+
 export const MS509 = true;
