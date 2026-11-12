@@ -372,4 +372,223 @@ lesson('508',20,[
   Q('Give the solution of that problem.','أعط حل تلك المسألة.','y = E_{1.5}(−t^{1.5})',[['Damped oscillation between relaxation and waves.','اهتزاز متخامد بين الاسترخاء والموجات.']],['y = cos(t^{1.5})','y = e^{−t^{1.5}}','y = E_{1.5}(−t)']),
 ]);
 
+/* ---- 508 · Unit 3 (lessons 21–30): linear equations in closed form;  Unit 4 (lessons 31–40): series and semi-analytic methods ---- */
+lesson('508',21,[
+  ['The Laplace transform turns a linear fractional equation into an algebraic one. For `n − 1 < α ≤ n`:','تحويل لابلاس يحوّل المعادلة الكسرية الخطية إلى معادلة جبرية. عند `n − 1 < α ≤ n`:'],
+  'ℒ{^CD^{α}y} = s^{α}Y − Σ_{k=0}^{n−1} s^{α−k−1}y^{(k)}(0),     ℒ{t^{β}} = #f{Γ(β + 1)}{s^{β+1}},     ℒ{t^{β−1}E_{α,β}(λt^{α})} = #f{s^{α−β}}{s^{α} − λ}',
+  ['Solve for Y, split into terms of the last form, and invert. The Mittag-Leffler functions play the role that exponentials play for ordinary equations.','حلّ لـ Y وجزّئه إلى حدود من الصورة الأخيرة ثم اعكس. ودوال ميتاج–ليفلر تؤدي الدور الذي تؤديه الأسيات للمعادلات العادية.'],
+],[
+  Q('Transform `^CD^{1/2}y = −y`, `y(0) = 1`, and solve for Y.','حوّل `^CD^{1/2}y = −y` مع `y(0) = 1` وحل لـ Y.','Y = #f{s^{−1/2}}{s^{1/2} + 1}',['s^{1/2}Y − s^{−1/2} = −Y'],['Y = #f{1}{s^{1/2} + 1}','Y = #f{s^{1/2}}{s + 1}','Y = #f{1}{s + 1}']),
+  Q('Invert `Y = s^{α−1}/(s^{α} + 1)`.','اعكس `Y = s^{α−1}/(s^{α} + 1)`.','y = E_{α}(−t^{α})',['β = 1,   λ = −1'],['y = e^{−t}','y = E_{α}(−t)','y = t^{α−1}']),
+  Q('Compute `ℒ{t^{1/2}}`.','احسب `ℒ{t^{1/2}}`.','#f{#r{π}}{2s^{3/2}}',['#f{Γ(3/2)}{s^{3/2}}'],['#f{1}{s^{3/2}}','#f{#r{π}}{s^{1/2}}','#f{2}{s^{3/2}}']),
+  Q('How many initial values appear in `ℒ{^CD^{1.5}y}`?','كم قيمة ابتدائية تظهر في `ℒ{^CD^{1.5}y}`؟','2',['n = 2:   s^{0.5}y(0) + s^{−0.5}y′(0)'],['1','3','0']),
+]);
+
+lesson('508',22,[
+  ['A single-term equation with a source, `^CD^{α}y = g`, needs no Mittag-Leffler function: `y = ψ_0 + D^{−α}g`. For powers the integral is explicit:','المعادلة وحيدة الحد مع مصدر `^CD^{α}y = g` لا تحتاج دالة ميتاج–ليفلر: `y = ψ_0 + D^{−α}g`. وللقوى يكون التكامل صريحاً:'],
+  '^CD^{α}y = t^{β}   ⇒   y = ψ_0 + #f{Γ(β + 1)}{Γ(β + α + 1)} t^{β+α}',
+  ['With a term λy the solution becomes a convolution with `t^{α−1}E_{α,α}(λt^{α})` (Lesson 27). Manufactured test problems are often built this way: choose y, compute g.','ومع حد λy يصبح الحل التفافاً مع `t^{α−1}E_{α,α}(λt^{α})` (الدرس 27). ومسائل الاختبار المصنّعة تُبنى غالباً بهذه الطريقة: اختر y واحسب g.'],
+],[
+  Q('Solve `^CD^{1/2}y = t`, `y(0) = 0`.','حل `^CD^{1/2}y = t` مع `y(0) = 0`.','y = #f{t^{3/2}}{Γ(5/2)} = #f{4t^{3/2}}{3#r{π}}',['#f{Γ(2)}{Γ(5/2)}t^{3/2}'],['y = #f{t^{3/2}}{Γ(3/2)}','y = #f{t^2}{2}','y = t^{1/2}']),
+  Q('Solve `^CD^{0.8}y = 1`, `y(0) = 3`.','حل `^CD^{0.8}y = 1` مع `y(0) = 3`.','y = 3 + #f{t^{0.8}}{Γ(1.8)}',['D^{−0.8}1 = #f{t^{0.8}}{Γ(1.8)}'],['y = 3 + t^{0.8}','y = 3t^{0.8}','y = 3 + #f{t}{Γ(1.8)}']),
+  Q('Which g gives the exact solution `y = t^2` for `^CD^{1/2}y = g`, `y(0) = 0`?','أي g تعطي الحل المضبوط `y = t^2` لـ `^CD^{1/2}y = g` مع `y(0) = 0`؟','g = #f{8}{3#r{π}} t^{3/2}',['#f{Γ(3)}{Γ(5/2)}t^{3/2}'],['g = 2t','g = #f{4}{3#r{π}} t^{3/2}','g = t^{3/2}']),
+  Q('Evaluate `4/(3#r{π})`.','احسب `4/(3#r{π})`.','≈ 0.7523',['#f{1}{Γ(5/2)}'],['≈ 1.3293','≈ 0.5642','≈ 2.2568']),
+]);
+
+lesson('508',23,[
+  ['The fractional relaxation equation `^CD^{α}y = −λy`, `y(0) = 1` has the solution `E_{α}(−λt^{α})`. Compared with `e^{−λt}` it decays faster at first and much more slowly later:','معادلة الاسترخاء الكسرية `^CD^{α}y = −λy` مع `y(0) = 1` حلها `E_{α}(−λt^{α})`. ومقارنة بـ `e^{−λt}` تتناقص أسرع أولاً وأبطأ بكثير لاحقاً:'],
+  'E_{α}(−λt^{α}) ≈ 1 − #f{λt^{α}}{Γ(α + 1)}  (t → 0),     E_{α}(−λt^{α}) ≈ #f{t^{−α}}{λΓ(1 − α)}  (t → ∞)',
+  ['This algebraic tail describes materials and processes with memory, such as viscoelastic relaxation and anomalous diffusion. For α = 1/2, `E_{1/2}(−t^{1/2}) = e^{t}erfc(#r{t})`.','وهذا الذيل الجبري يصف المواد والعمليات ذات الذاكرة مثل الاسترخاء اللزج المرن والانتشار الشاذ. وعند α = 1/2 يكون `E_{1/2}(−t^{1/2}) = e^{t}erfc(#r{t})`.'],
+],[
+  Q('Find the half-life (y = 1/2) for α = 1/2, λ = 1.','أوجد عمر النصف (y = 1/2) عند α = 1/2 و λ = 1.','t ≈ 0.591',['e^{t}erfc(#r{t}) = #f{1}{2}'],['t = ln 2 ≈ 0.693','t ≈ 0.25','t ≈ 1.39']),
+  Q('Compare with α = 1.','قارن مع α = 1.','t = ln 2 ≈ 0.693',['e^{−t} = #f{1}{2}'],['t ≈ 0.591','t = 1','t ≈ 0.5']),
+  Q('Give the large-t behaviour for α = 1/2, λ = 1.','أعط السلوك عند t الكبيرة لـ α = 1/2 و λ = 1.','#f{1}{#r{πt}}',['#f{t^{−1/2}}{Γ(1/2)}'],['e^{−t}','#f{1}{t}','e^{−#r{t}}']),
+  Q('Why is the half-life shorter for α = 1/2, although the tail is much longer?','لماذا يكون عمر النصف أقصر عند α = 1/2 مع أن الذيل أطول بكثير؟',['The initial decay `t^{1/2}` is much faster than `t` for small t','التناقص الابتدائي `t^{1/2}` أسرع بكثير من `t` لـ t صغيرة'],[['Then the memory slows the decay down.','ثم تبطئ الذاكرة التناقص.']],[['It is not shorter','ليس أقصر'],['Because Γ(1/2) is large','لأن Γ(1/2) كبيرة']]),
+]);
+
+lesson('508',24,[
+  ['For `1 < α < 2` the equation `^CD^{α}y = −y`, `y(0) = 1`, `y′(0) = 0` describes damped oscillation between relaxation (α = 1) and the harmonic oscillator (α = 2):','عند `1 < α < 2` تصف المعادلة `^CD^{α}y = −y` مع `y(0) = 1` و `y′(0) = 0` اهتزازاً متخامداً بين الاسترخاء (α = 1) والمذبذب التوافقي (α = 2):'],
+  'y = E_{α}(−t^{α}),     E_2(−t^2) = cos t',
+  ['The solution has finitely many zeros and then decays algebraically. With `y′(0) = ψ_1` the term `ψ_1 t E_{α,2}(−t^{α})` is added.','والحل له عدد منته من الأصفار ثم يتناقص جبرياً. ومع `y′(0) = ψ_1` يُضاف الحد `ψ_1 t E_{α,2}(−t^{α})`.'],
+],[
+  Q('What is `E_2(−t^2)`?','ما `E_2(−t^2)`؟','cos t',['Σ #f{(−1)^k t^{2k}}{(2k)!}'],['e^{−t^2}','cosh t','sin t']),
+  Q('Where is the first zero of `E_{1.8}(−t^{1.8})`?','أين أول صفر لـ `E_{1.8}(−t^{1.8})`؟','t ≈ 1.560',[['Slightly earlier than the zero `π/2 ≈ 1.571` of the cosine.','قبل صفر جيب التمام `π/2 ≈ 1.571` بقليل.']],['t = #f{π}{2} ≈ 1.571','t ≈ 1','t ≈ 3.14']),
+  Q('Compare `E_{1.8}(−1)` with `cos 1`.','قارن `E_{1.8}(−1)` بـ `cos 1`.','0.4742  <  0.5403',[['Damping lowers the amplitude.','التخامد يخفض السعة.']],['0.4742  >  0.5403',['They are equal','متساويتان'],'0.3679  <  0.5403']),
+  Q('How many initial conditions does the oscillation equation need?','كم شرطاً ابتدائياً تحتاج معادلة الاهتزاز؟','2',['⌈α⌉ = 2,   1 < α < 2'],['1','3','0']),
+]);
+
+lesson('508',25,[
+  ['Multi-term equations `Σ a_i ^CD^{α_i}y = g` are transformed term by term. A useful check: functions annihilated by every term solve the homogeneous equation. For `y′ + ^CD^{1/2}y = 0`, `y(0) = 1`:','المعادلات متعددة الحدود `Σ a_i ^CD^{α_i}y = g` تُحوّل حداً حداً. وفحص مفيد: الدوال التي تعدمها كل الحدود تحل المعادلة المتجانسة. فلـ `y′ + ^CD^{1/2}y = 0` مع `y(0) = 1`:'],
+  'sY − 1 + s^{1/2}Y − s^{−1/2} = 0   ⇒   Y = #f{1 + s^{−1/2}}{s + s^{1/2}} = #f{1}{s}   ⇒   y = 1',
+  ['Indeed the Caputo derivatives of a constant vanish. In general the transform is a rational function of `s^{λ}` with λ the gcd of the orders, and partial fractions give sums of Mittag-Leffler functions.','وبالفعل تنعدم مشتقات كابوتو للثابت. وعموماً يكون التحويل دالة كسرية في `s^{λ}` حيث λ القاسم المشترك الأكبر للرتب، والكسور الجزئية تعطي مجاميع من دوال ميتاج–ليفلر.'],
+],[
+  Q('Why is `y = 1` the solution of `y′ + ^CD^{1/2}y = 0`, `y(0) = 1`?','لماذا يكون `y = 1` حل `y′ + ^CD^{1/2}y = 0` مع `y(0) = 1`؟',['Both terms vanish for a constant, and the initial value matches','الحدان ينعدمان للثابت والقيمة الابتدائية مطابقة'],['^CD^{1/2}1 = 0,   (1)′ = 0'],[['By coincidence','مصادفة'],['It is not','ليس حلاً']]),
+  Q('Solve `y′ + ^CD^{1/2}y = 1`, `y(0) = 0`, for Y.','حل `y′ + ^CD^{1/2}y = 1` مع `y(0) = 0` لـ Y.','Y = #f{1}{s(s + s^{1/2})}',['(s + s^{1/2})Y = #f{1}{s}'],['Y = #f{1}{s + s^{1/2}}','Y = #f{1}{s^2}','Y = #f{s^{1/2}}{s + 1}']),
+  Q('Which variable makes the transform of `^CD^{0.6}y + ^CD^{0.3}y + y` a polynomial?','أي متغير يجعل تحويل `^CD^{0.6}y + ^CD^{0.3}y + y` كثيرة حدود؟','σ = s^{0.3}',['s^{0.6} + s^{0.3} + 1 = σ^2 + σ + 1'],['σ = s','σ = s^{0.6}','σ = s^{0.1}']),
+  Q('What does a partial-fraction term `1/(σ − r)`, `σ = s^{λ}`, give after inversion?','ماذا يعطي حد الكسور الجزئية `1/(σ − r)` حيث `σ = s^{λ}` بعد العكس؟','t^{λ−1}E_{λ,λ}(rt^{λ})',['ℒ{t^{β−1}E_{α,β}(λt^{α})} = #f{s^{α−β}}{s^{α} − λ},   α = β = λ'],['e^{rt}','E_{λ}(rt)','t^{λ}']),
+]);
+
+lesson('508',26,[
+  ['The Bagley–Torvik equation models a plate moving in a viscous fluid:','معادلة باجلي–تورفيك تنمذج صفيحة تتحرك في مائع لزج:'],
+  'A y″ + B ^CD^{3/2}y + C y = f(t),     y(0) = ψ_0,   y′(0) = ψ_1',
+  ['It is the classic test of numerical methods for multi-term equations. With A = B = C = 1, f = 1 + t, ψ_0 = ψ_1 = 1 the exact solution is `y = 1 + t`, since `y″ = 0` and `^CD^{3/2}(1 + t) = 0`.','وهي الاختبار الكلاسيكي للطرق العددية للمعادلات متعددة الحدود. ومع A = B = C = 1 و f = 1 + t و ψ_0 = ψ_1 = 1 يكون الحل المضبوط `y = 1 + t` لأن `y″ = 0` و `^CD^{3/2}(1 + t) = 0`.'],
+],[
+  Q('Check `y = 1 + t` for `y″ + ^CD^{3/2}y + y = 1 + t`.','تحقق من `y = 1 + t` لـ `y″ + ^CD^{3/2}y + y = 1 + t`.','0 + 0 + (1 + t) = 1 + t',[['`^CD^{3/2}` of a linear function is 0.','`^CD^{3/2}` لدالة خطية صفر.']],['0 + 1 + (1 + t)','1 + 0 + (1 + t)','0 + #f{t^{−1/2}}{Γ(1/2)} + (1 + t)']),
+  Q('Why is `^CD^{3/2}(1 + t) = 0`?','لماذا يكون `^CD^{3/2}(1 + t) = 0`؟',['The Caputo derivative of order 3/2 differentiates twice first, and `(1 + t)″ = 0`','مشتقة كابوتو من الرتبة 3/2 تشتق مرتين أولاً و `(1 + t)″ = 0`'],['^CD^{3/2}y = D^{−1/2}y″'],[['Because 3/2 > 1','لأن 3/2 > 1'],['It is not zero','ليست صفراً']]),
+  Q('Which λ would a spectral method use for the Bagley–Torvik equation with a general f?','أي λ تستخدمها طريقة طيفية لمعادلة باجلي–تورفيك مع f عامة؟','λ = #f{1}{2}',['gcd(2, #f{3}{2}) = #f{1}{2}'],['λ = 1','λ = #f{3}{2}','λ = #f{1}{4}']),
+  Q('Write the integrated form with `D^{−2}`.','اكتب الصيغة التكاملية مع `D^{−2}`.','y − ψ_0 − tψ_1 + D^{−1/2}(y − ψ_0 − tψ_1) + D^{−2}y = D^{−2}f',['A = B = C = 1'],['y + D^{−1/2}y + D^{−2}y = D^{−2}f','y + D^{3/2}y + y = f','y − ψ_0 + D^{−1/2}y = D^{−2}f']),
+]);
+
+lesson('508',27,[
+  ['The Green’s function of `^CD^{α}y − λy = g` (0 < α ≤ 1) is `G(t) = t^{α−1}E_{α,α}(λt^{α})`, so','دالة جرين لـ `^CD^{α}y − λy = g` (0 < α ≤ 1) هي `G(t) = t^{α−1}E_{α,α}(λt^{α})` فيكون'],
+  'y(t) = ψ_0E_{α}(λt^{α}) + ∫_0^t G(t − s) g(s) ds',
+  ['G is the response to an impulse; its Laplace transform is `1/(s^{α} − λ)`. For λ = 0 it is the Riemann–Liouville kernel `t^{α−1}/Γ(α)`.','و G هي الاستجابة لدفعة، وتحويل لابلاس لها `1/(s^{α} − λ)`. وعند λ = 0 هي نواة ريمان–ليوفيل `t^{α−1}/Γ(α)`.'],
+],[
+  Q('What is the Laplace transform of G?','ما تحويل لابلاس لـ G؟','#f{1}{s^{α} − λ}',['α = β:   #f{s^{0}}{s^{α} − λ}'],['#f{s^{α−1}}{s^{α} − λ}','#f{1}{s − λ}','#f{s^{α}}{s^{α} − λ}']),
+  Q('Reduce G to λ = 0.','اختصر G إلى λ = 0.','#f{t^{α−1}}{Γ(α)}',['E_{α,α}(0) = #f{1}{Γ(α)}'],['t^{α−1}','#f{t^{α}}{Γ(α + 1)}','1']),
+  Q('Evaluate `G(1)` for α = 1/2, λ = −1.','احسب `G(1)` عند α = 1/2 و λ = −1.','E_{1/2,1/2}(−1) ≈ 0.1366',['1^{−1/2}E_{1/2,1/2}(−1)'],['≈ 0.4276','≈ 0.5642','≈ 1']),
+  Q('Reduce G to α = 1.','اختصر G إلى α = 1.','e^{λt}',['E_{1,1}(λt) = e^{λt}'],['t e^{λt}','1','E_1(λ)']),
+]);
+
+lesson('508',28,[
+  ['A sequential fractional derivative applies several derivatives in turn, such as `^CD^{1/2}(^CD^{1/2}y)`. It equals `y′` only if the inner result has no singular part at 0:','المشتقة الكسرية المتتابعة تطبق عدة مشتقات متتالية مثل `^CD^{1/2}(^CD^{1/2}y)`، وتساوي `y′` فقط إذا لم يكن للنتيجة الداخلية جزء شاذ عند 0:'],
+  'y = t:   ^CD^{1/2}t = #f{2#r{t}}{#r{π}},   ^CD^{1/2}#f{2#r{t}}{#r{π}} = 1 = y′',
+  ['But for `y = t^{1/2}`: `^CD^{1/2}t^{1/2} = Γ(3/2)` is constant, the second derivative gives 0, while `y′ = t^{−1/2}/2`. Equations written with sequential derivatives therefore need their own initial conditions.','لكن لـ `y = t^{1/2}`: تكون `^CD^{1/2}t^{1/2} = Γ(3/2)` ثابتاً، والمشتقة الثانية تعطي 0، بينما `y′ = t^{−1/2}/2`. ولهذا تحتاج المعادلات المكتوبة بمشتقات متتابعة شروطها الابتدائية الخاصة.'],
+],[
+  Q('Compute `^CD^{1/2}t^{1/2}`.','احسب `^CD^{1/2}t^{1/2}`.','Γ(#f{3}{2}) = #f{#r{π}}{2}',['#f{Γ(3/2)}{Γ(1)}t^{0}'],['0','#f{1}{2}t^{−1/2}','1']),
+  Q('Is `^CD^{1/2}^CD^{1/2}t^{1/2}` equal to `(t^{1/2})′`?','هل `^CD^{1/2}^CD^{1/2}t^{1/2}` تساوي `(t^{1/2})′`؟',['No: it is 0, while the derivative is `t^{−1/2}/2`','لا: هي 0 بينما المشتقة `t^{−1/2}/2`'],[['The Caputo derivative of a constant vanishes.','مشتقة كابوتو للثابت تنعدم.']],[['Yes','نعم'],['Only at t = 1','فقط عند t = 1']]),
+  Q('Check `^CD^{1/2}(2#r{t}/#r{π}) = 1`.','تحقق من `^CD^{1/2}(2#r{t}/#r{π}) = 1`.','#f{2}{#r{π}}·#f{Γ(3/2)}{Γ(1)} = 1',['Γ(3/2) = #f{#r{π}}{2}'],['#f{2}{#r{π}}·Γ(3/2) = #f{1}{2}','#f{2}{#r{π}}','0']),
+  Q('When does `^CD^{α}^CD^{β}y = ^CD^{α+β}y` hold (α + β ≤ 1)?','متى تصح `^CD^{α}^CD^{β}y = ^CD^{α+β}y` (α + β ≤ 1)؟',['When y is smooth enough that no singular term appears, for example y ∈ C^1','حين تكون y ملساء بما يكفي فلا يظهر حد شاذ، مثل y ∈ C^1'],[['It fails for `t^{1/2}`.','تفشل لـ `t^{1/2}`.']],[['Always','دائماً'],['Never','أبداً']]),
+]);
+
+lesson('508',29,[
+  ['A linear system `^CD^{α}Y = AY`, `Y(0) = Y_0`, has the solution `Y = E_{α}(At^{α})Y_0`, with the matrix Mittag-Leffler function `E_{α}(At^{α}) = Σ A^k t^{kα}/Γ(kα + 1)`. For diagonalizable `A = VΛV^{−1}`:','النظام الخطي `^CD^{α}Y = AY` مع `Y(0) = Y_0` حله `Y = E_{α}(At^{α})Y_0` بدالة ميتاج–ليفلر المصفوفية `E_{α}(At^{α}) = Σ A^k t^{kα}/Γ(kα + 1)`. وللمصفوفة القابلة للتقطير `A = VΛV^{−1}`:'],
+  'E_{α}(At^{α}) = V diag(E_{α}(λ_it^{α})) V^{−1}',
+  ['Each eigenvalue gives its own Mittag-Leffler mode. Stability is decided by the eigenvalues in a sector of the complex plane (Matignon’s theorem, Unit 5).','وكل قيمة ذاتية تعطي نمطها من ميتاج–ليفلر. والاستقرار تحدده القيم الذاتية في قطاع من المستوى المركب (نظرية ماتينيون، الوحدة 5).'],
+],[
+  Q('Solve `^CD^{α}Y = diag(−1, −2)Y`, `Y(0) = (1, 1)`.','حل `^CD^{α}Y = diag(−1, −2)Y` مع `Y(0) = (1, 1)`.','Y = (E_{α}(−t^{α}),  E_{α}(−2t^{α}))',[['Two decoupled equations.','معادلتان منفصلتان.']],['Y = (e^{−t},  e^{−2t})','Y = (E_{α}(−t),  E_{α}(−2t))','Y = E_{α}(−3t^{α})(1, 1)']),
+  Q('What is `E_1(At)`?','ما `E_1(At)`؟','e^{At}',['Σ #f{A^k t^k}{k!}'],['A e^{t}','I + At','E_1(A)t']),
+  Q('For α = 1, `A = #m{0, 1 ;; −1, 0}`, what is `E_1(At)`?','عند α = 1 و `A = #m{0, 1 ;; −1, 0}` ما `E_1(At)`؟','#m{cos t, sin t ;; −sin t, cos t}',['e^{At}:   A^2 = −I'],['#m{cos t, −sin t ;; sin t, cos t}','#m{e^{t}, 0 ;; 0, e^{−t}}','I + At']),
+  Q('Which part of A decides how each mode behaves?','أي جزء من A يحدد سلوك كل نمط؟',['Its eigenvalues `λ_i`, through `E_{α}(λ_it^{α})`','قيمها الذاتية `λ_i` عبر `E_{α}(λ_it^{α})`'],[['The eigenvectors only mix the modes.','المتجهات الذاتية تخلط الأنماط فقط.']],[['Its trace only','أثرها فقط'],['Its determinant only','محددها فقط']]),
+]);
+
+lesson('508',30,[
+  ['Worked problems for Unit 3: Laplace transforms, relaxation and oscillation, multi-term equations and Green’s functions.','مسائل محلولة للوحدة 3: تحويلات لابلاس والاسترخاء والاهتزاز والمعادلات متعددة الحدود ودوال جرين.'],
+  'ℒ{t^{β−1}E_{α,β}(λt^{α})} = #f{s^{α−β}}{s^{α} − λ}',
+],[
+  Q('Solve `^CD^{α}y = −y + t^{α}`, `y(0) = 0`, by the Laplace transform.','حل `^CD^{α}y = −y + t^{α}` مع `y(0) = 0` بتحويل لابلاس.','y = Γ(α + 1)t^{2α}E_{α,2α+1}(−t^{α})',['Y = #f{Γ(α + 1)}{s^{α+1}(s^{α} + 1)} = Γ(α + 1)#f{s^{α−(2α+1)}}{s^{α} + 1}'],['y = t^{α}E_{α}(−t^{α})','y = Γ(α + 1)E_{α}(−t^{α})','y = #f{t^{2α}}{Γ(2α + 1)}']),
+  Q('Check the first term of that solution for small t.','تحقق من الحد الأول لذلك الحل لـ t صغيرة.','#f{Γ(α + 1)}{Γ(2α + 1)}t^{2α}',['y ≈ D^{−α}t^{α}'],['t^{2α}','Γ(α + 1)t^{2α}','#f{t^{α}}{Γ(α + 1)}']),
+  Q('Solve `y″ + ^CD^{3/2}y + y = 1`, `y(0) = 1`, `y′(0) = 0`.','حل `y″ + ^CD^{3/2}y + y = 1` مع `y(0) = 1` و `y′(0) = 0`.','y = 1',['0 + 0 + 1 = 1'],['y = 1 + t','y = cos t','y = E_{3/2}(−t^{3/2})']),
+  Q('What transform does `^CD^{1/2}y + y = 0`, `y(0) = 2` have?','ما تحويل `^CD^{1/2}y + y = 0` مع `y(0) = 2`؟','Y = #f{2s^{−1/2}}{s^{1/2} + 1}',['s^{1/2}Y − 2s^{−1/2} + Y = 0'],['Y = #f{2}{s^{1/2} + 1}','Y = #f{s^{−1/2}}{s^{1/2} + 2}','Y = #f{2}{s + 1}']),
+]);
+
+lesson('508',31,[
+  ['For linear equations with polynomial or power data, the solution can be sought as a power series in `t^{α}`. For `^CD^{α}y = λy`:','للمعادلات الخطية ذات المعطيات من كثيرات الحدود أو القوى يمكن البحث عن الحل متسلسلة قوى في `t^{α}`. فلـ `^CD^{α}y = λy`:'],
+  'y = Σ c_k t^{kα},     c_{k+1} = λ c_k #f{Γ(kα + 1)}{Γ((k + 1)α + 1)}',
+  ['Substituting and matching powers gives a recurrence for the coefficients, here giving `c_k = ψ_0λ^k/Γ(kα + 1)`, the Mittag-Leffler series. For mixed powers use `t^{j+kα}` or the variable `s = t^{λ}`.','والتعويض ومطابقة القوى يعطيان علاقة تكرار للمعاملات، وهنا `c_k = ψ_0λ^k/Γ(kα + 1)` أي متسلسلة ميتاج–ليفلر. وللقوى المختلطة استخدم `t^{j+kα}` أو المتغير `s = t^{λ}`.'],
+],[
+  Q('Compute `c_1` and `c_2` for α = 1/2, λ = −1, `c_0 = 1`.','احسب `c_1` و `c_2` عند α = 1/2 و λ = −1 و `c_0 = 1`.','c_1 = −#f{2}{#r{π}},   c_2 = 1',['c_1 = −#f{Γ(1)}{Γ(3/2)},   c_2 = −c_1#f{Γ(3/2)}{Γ(2)}'],['c_1 = −1,   c_2 = 1','c_1 = −#f{2}{#r{π}},   c_2 = #f{1}{2}','c_1 = #f{2}{#r{π}},   c_2 = 1']),
+  Q('Why match the powers `t^{kα}` and not `t^k`?','لماذا نطابق القوى `t^{kα}` لا `t^k`؟',['`^CD^{α}` lowers each power by α, so the solution lives in powers of `t^{α}`','`^CD^{α}` تخفض كل قوة بـ α فيعيش الحل في قوى `t^{α}`'],['^CD^{α}t^{kα} ∝ t^{(k−1)α}'],[['For convenience only','للتسهيل فقط'],['Because t < 1','لأن t < 1']]),
+  Q('Which basis suits `^CD^{1/2}y = −y + t`?','أي أساس يناسب `^CD^{1/2}y = −y + t`؟','t^{k/2},   k = 0, 1, 2, …',[['`t = (t^{1/2})^2` fits the same powers.','`t = (t^{1/2})^2` تناسب القوى نفسها.']],['t^k','t^{k/3}','e^{−kt}']),
+  Q('Reduce the recurrence to α = 1.','اختصر علاقة التكرار إلى α = 1.','c_{k+1} = #f{λc_k}{k + 1}',['#f{Γ(k + 1)}{Γ(k + 2)} = #f{1}{k + 1}'],['c_{k+1} = λc_k','c_{k+1} = #f{c_k}{λ(k + 1)}','c_{k+1} = (k + 1)λc_k']),
+]);
+
+lesson('508',32,[
+  ['The Adomian decomposition method writes `y = Σ y_n` and splits a nonlinear term into Adomian polynomials `N(y) = Σ A_n`. For `y = ψ_0 + D^{−α}(Ly + N(y))`:','طريقة تحليل أدوميان تكتب `y = Σ y_n` وتجزئ الحد غير الخطي إلى كثيرات أدوميان `N(y) = Σ A_n`. فلـ `y = ψ_0 + D^{−α}(Ly + N(y))`:'],
+  'y_0 = ψ_0,     y_{n+1} = D^{−α}(Ly_n + A_n),     A_0 = N(y_0),   A_1 = N′(y_0)y_1,   A_2 = N′(y_0)y_2 + #f{1}{2}N″(y_0)y_1^2',
+  ['For linear problems ADM reproduces the Picard series. For nonlinear ones it gives a series that converges near t = 0, often slowly further out.','وللمسائل الخطية تعيد ADM متسلسلة بيكار، ولغير الخطية تعطي متسلسلة تتقارب قرب t = 0 وغالباً ببطء بعيداً عنه.'],
+],[
+  Q('For `N(y) = y^2`, compute `A_0` and `A_1`.','لـ `N(y) = y^2` احسب `A_0` و `A_1`.','A_0 = y_0^2,   A_1 = 2y_0y_1',['N′(y) = 2y'],['A_0 = y_0,   A_1 = y_1^2','A_0 = 2y_0,   A_1 = 2y_1','A_0 = y_0^2,   A_1 = y_1^2']),
+  Q('For `^CD^{α}y = −y^2`, `y(0) = 1`, compute `y_1`.','لـ `^CD^{α}y = −y^2` مع `y(0) = 1` احسب `y_1`.','y_1 = −#f{t^{α}}{Γ(α + 1)}',['y_1 = D^{−α}(−A_0) = −D^{−α}1'],['y_1 = −t^{α}','y_1 = #f{t^{α}}{Γ(α + 1)}','y_1 = −#f{t^{2α}}{Γ(2α + 1)}']),
+  Q('Compute `y_2` for the same problem.','احسب `y_2` للمسألة نفسها.','y_2 = #f{2t^{2α}}{Γ(2α + 1)}',['A_1 = 2y_0y_1 = −#f{2t^{α}}{Γ(α + 1)},   y_2 = −D^{−α}A_1'],['y_2 = #f{t^{2α}}{Γ(2α + 1)}','y_2 = −#f{2t^{2α}}{Γ(2α + 1)}','y_2 = #f{2t^{α}}{Γ(α + 1)}']),
+  Q('Check against α = 1, where `y = 1/(1 + t) = 1 − t + t^2 − …`.','تحقق مقابل α = 1 حيث `y = 1/(1 + t) = 1 − t + t^2 − …`.','y_0 + y_1 + y_2 = 1 − t + t^2',['#f{2t^2}{Γ(3)} = t^2'],['1 − t + 2t^2','1 − t + #f{t^2}{2}','1 + t + t^2']),
+]);
+
+lesson('508',33,[
+  ['The variational iteration method builds a correction functional with a Lagrange multiplier. For fractional equations a common form is','طريقة التكرار التغايري تبني دالة تصحيح بمضاعف لاغرانج. وللمعادلات الكسرية صيغة شائعة هي'],
+  'y_{n+1}(t) = y_n(t) − D^{−α}[^CD^{α}y_n − f(·, y_n)](t)',
+  ['With this choice of multiplier the iteration is exactly Picard iteration on the integrated form, written as a correction: each step removes the residual of the previous approximation. Its convergence follows from Unit 2.','ومع هذا الاختيار للمضاعف يكون التكرار هو تكرار بيكار على الصيغة التكاملية مكتوباً تصحيحاً: كل خطوة تزيل باقي التقريب السابق. وتقاربه ينتج من الوحدة 2.'],
+],[
+  Q('Show that the correction step equals `y_{n+1} = ψ_0 + D^{−α}f(·, y_n)`.','بيّن أن خطوة التصحيح تساوي `y_{n+1} = ψ_0 + D^{−α}f(·, y_n)`.','y_n − (y_n − ψ_0) + D^{−α}f = ψ_0 + D^{−α}f',['D^{−α}^CD^{α}y_n = y_n − ψ_0'],['y_{n+1} = y_n + D^{−α}f','y_{n+1} = D^{−α}f','y_{n+1} = ψ_0 − D^{−α}f']),
+  Q('For `^CD^{α}y = −y`, `y_0 = 1`, what is `y_1`?','لـ `^CD^{α}y = −y` مع `y_0 = 1` ما `y_1`؟','1 − #f{t^{α}}{Γ(α + 1)}',['y_1 = 1 + D^{−α}(−1)'],['1 − t^{α}','1 + #f{t^{α}}{Γ(α + 1)}','e^{−t}']),
+  Q('What does each VIM step remove?','ماذا تزيل كل خطوة VIM؟',['The residual `^CD^{α}y_n − f(·, y_n)` of the previous approximation, integrated','باقي التقريب السابق `^CD^{α}y_n − f(·, y_n)` بعد تكامله'],[['A residual-driven correction.','تصحيح يقوده الباقي.']],[['Nothing','لا شيء'],['The initial value','القيمة الابتدائية']]),
+  Q('Why is convergence of this VIM form guaranteed for Lipschitz f?','لماذا يُضمن تقارب صيغة VIM هذه لـ f التي تحقق شرط ليبشتز؟',['It is Picard iteration, whose error is bounded by `(LT^{α})^k/Γ(kα + 1)`','هي تكرار بيكار وخطؤه محدود بـ `(LT^{α})^k/Γ(kα + 1)`'],[['Lesson 13.','الدرس 13.']],[['Because the multiplier is optimal','لأن المضاعف أمثل'],['It is not','ليس مضموناً']]),
+]);
+
+lesson('508',34,[
+  ['The homotopy perturbation method embeds the problem in a family with a parameter p ∈ [0, 1] and expands in powers of p:','طريقة اضطراب الهوموتوبي تضمّن المسألة في عائلة بوسيط p ∈ [0, 1] وتنشر بقوى p:'],
+  '^CD^{α}v = p f(t, v),   v = v_0 + pv_1 + p^2v_2 + …,   y = v|_{p=1}',
+  ['Collecting equal powers of p gives `^CD^{α}v_0 = 0`, `^CD^{α}v_1 = f`-terms of order 0, and so on: the same terms as ADM. The method is a reorganization of the series, not a new source of accuracy.','وجمع القوى المتساوية لـ p يعطي `^CD^{α}v_0 = 0` و `^CD^{α}v_1` = حدود f من الرتبة 0 وهكذا: الحدود نفسها كما في ADM. فالطريقة إعادة ترتيب للمتسلسلة لا مصدر جديد للدقة.'],
+],[
+  Q('For `^CD^{α}v = −pv`, `v(0) = 1`, what equation does `v_1` satisfy?','لـ `^CD^{α}v = −pv` مع `v(0) = 1` أي معادلة تحققها `v_1`؟','^CD^{α}v_1 = −v_0,   v_1(0) = 0',['p^1:   ^CD^{α}v_1 = −v_0'],['^CD^{α}v_1 = −v_1','^CD^{α}v_1 = 0','v_1 = −v_0']),
+  Q('Solve for `v_1` with `v_0 = 1`.','حل لـ `v_1` مع `v_0 = 1`.','v_1 = −#f{t^{α}}{Γ(α + 1)}',['v_1 = −D^{−α}1'],['v_1 = −t^{α}','v_1 = 1','v_1 = #f{t^{α}}{Γ(α + 1)}']),
+  Q('Which other method gives the same terms here?','أي طريقة أخرى تعطي الحدود نفسها هنا؟',['ADM, and Picard iteration','ADM وتكرار بيكار'],[['For linear problems all these series coincide.','للمسائل الخطية تتطابق كل هذه المتسلسلات.']],[['Finite differences','الفروق المحدودة'],['The L1 scheme','مخطط L1'],['Galerkin','جاليركن']]),
+  Q('What value of p recovers the original equation?','أي قيمة لـ p تعيد المعادلة الأصلية؟','p = 1',['^CD^{α}v = f(t, v)'],['p = 0','p = #f{1}{2}','p = α']),
+]);
+
+lesson('508',35,[
+  ['The homotopy analysis method adds a convergence-control parameter ħ to the deformation equations. The m-th order equation for linear operator `ℒ = ^CD^{α}` reads','طريقة تحليل الهوموتوبي تضيف وسيط تحكم في التقارب ħ إلى معادلات التشوه. ومعادلة الرتبة m لمؤثر خطي `ℒ = ^CD^{α}` هي'],
+  'ℒ[y_m − χ_m y_{m−1}] = ħ R_m(y_0, …, y_{m−1}),     χ_1 = 0,   χ_m = 1 (m ≥ 2)',
+  ['With ħ = −1 HAM reduces to HPM. Other values of ħ change the series and can enlarge the region of convergence; ħ is chosen by minimizing the residual or from an «ħ-curve».','ومع ħ = −1 تؤول HAM إلى HPM. والقيم الأخرى لـ ħ تغيّر المتسلسلة وقد توسّع منطقة التقارب، وتُختار ħ بتصغير الباقي أو من «منحنى ħ».'],
+],[
+  Q('Which ħ reduces HAM to HPM?','أي ħ تؤول بـ HAM إلى HPM؟','ħ = −1',[['The standard choice in many papers.','الاختيار المعتاد في بحوث كثيرة.']],['ħ = 0','ħ = 1','ħ = α']),
+  Q('What does ħ = 0 give?','ماذا تعطي ħ = 0؟',['No correction: every `y_m` (m ≥ 1) is zero and y stays `y_0`','لا تصحيح: كل `y_m` (m ≥ 1) صفر وتبقى y هي `y_0`'],['ℒ[y_1] = 0,   y_1(0) = 0'],[['The exact solution','الحل المضبوط'],['HPM','HPM']]),
+  Q('How is ħ usually chosen?','كيف تُختار ħ عادة؟',['From the flat part of an ħ-curve or by minimizing a residual norm','من الجزء المستوي في منحنى ħ أو بتصغير معيار الباقي'],[['It is a numerical tuning parameter.','وسيط ضبط عددي.']],[['ħ = Planck’s constant','ħ ثابت بلانك'],['Always ħ = 1','دائماً ħ = 1']]),
+  Q('What is the main advantage of HAM over HPM?','ما الميزة الرئيسة لـ HAM على HPM؟',['The extra parameter can extend the interval where the series converges','الوسيط الإضافي قد يمد المجال الذي تتقارب فيه المتسلسلة'],[['At the cost of choosing ħ.','على حساب اختيار ħ.']],[['It gives exact solutions','يعطي حلولاً مضبوطة'],['It needs no series','لا يحتاج متسلسلة']]),
+]);
+
+lesson('508',36,[
+  ['The fractional differential transform method represents y by coefficients of powers `t^{k/q}` (with α = p/q). For `^CD^{α}y = λy` written in powers of `t^{α}`:','طريقة التحويل التفاضلي الكسري تمثل y بمعاملات القوى `t^{k/q}` (مع α = p/q). ولـ `^CD^{α}y = λy` مكتوبة بقوى `t^{α}`:'],
+  'Y(k + 1) = #f{Γ(kα + 1)}{Γ((k + 1)α + 1)} λY(k),     y = Σ Y(k)t^{kα}',
+  ['Products of functions become convolutions of their coefficient sequences, so nonlinear terms such as `y^2` are handled by `Σ_m Y(m)Y(k − m)`. The method is the power-series method of Lesson 31 with a systematic notation.','وضروب الدوال تصبح التفافات لمتتاليات معاملاتها، فتُعالج الحدود غير الخطية مثل `y^2` بـ `Σ_m Y(m)Y(k − m)`. والطريقة هي طريقة متسلسلة القوى في الدرس 31 بتدوين منهجي.'],
+],[
+  Q('What is the transform of `y^2` at index k?','ما تحويل `y^2` عند الدليل k؟','Σ_{m=0}^{k} Y(m)Y(k − m)',[['The Cauchy product of the coefficients.','ضرب كوشي للمعاملات.']],['Y(k)^2','2Y(k)','Y(2k)']),
+  Q('With Y(0) = 1, λ = −1, α = 1/2, compute Y(1).','مع Y(0) = 1 و λ = −1 و α = 1/2 احسب Y(1).','−#f{2}{#r{π}}',['−#f{Γ(1)}{Γ(3/2)}'],['−1','#f{2}{#r{π}}','−#f{#r{π}}{2}']),
+  Q('For `^CD^{α}y = −y^2`, `Y(0) = 1`, compute Y(1).','لـ `^CD^{α}y = −y^2` مع `Y(0) = 1` احسب Y(1).','−#f{1}{Γ(α + 1)}',['Y(1) = −#f{Γ(1)}{Γ(α + 1)}Y(0)^2'],['−1','−Γ(α + 1)','1']),
+  Q('Which earlier method is DTM equivalent to?','لأي طريقة سابقة تكافئ DTM؟',['The power-series method in `t^{α}`, with products as convolutions','طريقة متسلسلة القوى في `t^{α}` مع الضروب التفافاتٍ'],[['Lesson 31.','الدرس 31.']],[['Finite differences','الفروق المحدودة'],['The L1 scheme','مخطط L1']]),
+]);
+
+lesson('508',37,[
+  ['The residual power series method writes `y = Σ c_k t^{kα}/Γ(kα + 1)`, forms the residual of the k-th truncation, and fixes `c_k` by requiring `^CD^{(k−1)α}` of the residual to vanish at t = 0:','طريقة متسلسلة القوى للباقي تكتب `y = Σ c_k t^{kα}/Γ(kα + 1)` وتكوّن باقي القطع k وتحدد `c_k` باشتراط انعدام `^CD^{(k−1)α}` للباقي عند t = 0:'],
+  'Res_k(t) = ^CD^{α}y_k − f(t, y_k),     ^CD^{(k−1)α}Res_k(0) = 0',
+  ['For linear problems it gives the same coefficients as the power-series method. Its appeal is that the conditions are local algebraic equations, which also work for nonlinear f.','وللمسائل الخطية تعطي المعاملات نفسها كطريقة متسلسلة القوى. وميزتها أن الشروط معادلات جبرية محلية تصلح لـ f غير الخطية أيضاً.'],
+],[
+  Q('For `^CD^{α}y = −y`, `c_0 = 1`, the condition `Res_1(0) = 0` gives which `c_1`?','لـ `^CD^{α}y = −y` مع `c_0 = 1` أي `c_1` يعطيها الشرط `Res_1(0) = 0`؟','c_1 = −1',['Res_1(0) = c_1 + c_0'],['c_1 = 1','c_1 = −Γ(α + 1)','c_1 = 0']),
+  Q('With that normalization, what is `y_1`?','بهذا التطبيع ما `y_1`؟','1 − #f{t^{α}}{Γ(α + 1)}',['c_1 = −1'],['1 − t^{α}','1 + #f{t^{α}}{Γ(α + 1)}','e^{−t^{α}}']),
+  Q('What are all `c_k` for this problem?','ما كل `c_k` لهذه المسألة؟','c_k = (−1)^k',[['Then y is the Mittag-Leffler series.','فتكون y متسلسلة ميتاج–ليفلر.']],['c_k = #f{(−1)^k}{k!}','c_k = 1','c_k = (−1)^kΓ(kα + 1)']),
+  Q('Why normalize by `Γ(kα + 1)` in the ansatz?','لماذا التطبيع بـ `Γ(kα + 1)` في الفرضية؟',['Then `^CD^{α}` simply shifts the coefficients: `^CD^{α}#f{t^{kα}}{Γ(kα + 1)} = #f{t^{(k−1)α}}{Γ((k − 1)α + 1)}`','فتنقل `^CD^{α}` المعاملات ببساطة'],[['Like `t^k/k!` for ordinary derivatives.','مثل `t^k/k!` للمشتقات العادية.']],[['For convergence','للتقارب'],['It is required','إلزامي']]),
+]);
+
+lesson('508',38,[
+  ['These series methods converge, but their usefulness is limited: for large `|λ|t^{α}` the partial sums have huge terms of alternating sign, and in floating point the cancellation destroys the result:','هذه الطرق التسلسلية تتقارب لكن فائدتها محدودة: لـ `|λ|t^{α}` كبيرة تحتوي المجاميع الجزئية حدوداً ضخمة متناوبة الإشارة، وفي الأعداد العشرية يدمر الإلغاء النتيجة:'],
+  'Σ_{k=0}^{119} #f{(−20)^k}{k!} ≈ 1.48 × 10^{−9},     e^{−20} ≈ 2.06 × 10^{−9}',
+  ['The sum on the left is computed in double precision. The largest term is about `20^{20}/20! ≈ 4 × 10^{7}`, so about 16 − 7 = 9 digits are lost before the result is formed. For nonlinear problems the series may also converge only on a finite interval. Hence they are tools for small t and for checking, not for long-time computation.','والمجموع في اليسار محسوب بالدقة المزدوجة. فأكبر حد نحو `20^{20}/20! ≈ 4 × 10^{7}` فيضيع نحو 16 − 7 = 9 أرقام قبل تكوين النتيجة. ولغير الخطية قد تتقارب المتسلسلة على مجال منته فقط. ولهذا هي أدوات لـ t الصغيرة وللفحص لا للحساب طويل المدى.'],
+],[
+  Q('About how many correct digits does the double-precision series keep for `e^{−20}` in relative terms?','كم رقماً صحيحاً تقريباً تحتفظ به المتسلسلة بالدقة المزدوجة لـ `e^{−20}` نسبياً؟','≈ 0',[['The result is wrong already in the first digit: 1.48 instead of 2.06.','النتيجة خاطئة من الرقم الأول: 1.48 بدل 2.06.']],['≈ 16','≈ 9','≈ 7']),
+  Q('Estimate the largest term `20^{20}/20!`.','قدّر أكبر حد `20^{20}/20!`.','≈ 4.3 × 10^{7}',['#f{1.05 × 10^{26}}{2.43 × 10^{18}}'],['≈ 1','≈ 10^{20}','≈ 2 × 10^{−9}']),
+  Q('How can the series still be used for large t?','كيف يمكن استخدام المتسلسلة لـ t الكبيرة مع ذلك؟',['With high-precision arithmetic, or by switching to asymptotic formulas or numerical methods','بحساب عالي الدقة، أو بالانتقال إلى صيغ تقاربية أو طرق عددية'],[['mpmath at 40 digits handles this example.','mpmath بـ 40 رقماً تعالج هذا المثال.']],[['By adding more terms','بإضافة حدود أكثر'],['It cannot be','لا يمكن']]),
+  Q('Why are series methods good for checking codes?','لماذا تصلح الطرق التسلسلية لفحص الأكواد؟',['Near t = 0 they give accurate values with known structure','قرب t = 0 تعطي قيماً دقيقة ذات بنية معروفة'],[['Compare a solver with a few series terms at small t.','قارن حلّالاً ببضعة حدود من المتسلسلة عند t صغيرة.']],[['They are always exact','مضبوطة دائماً'],['They are fast for large t','سريعة لـ t الكبيرة']]),
+]);
+
+lesson('508',39,[
+  ['Compared with a spectral solution in the fractional Legendre basis (Unit 7), a truncated series in `t^{α}` is a Taylor expansion at t = 0: very accurate near 0 and poor far away. The spectral approximation is a best approximation on the whole interval [0, T].','مقارنة بحل طيفي في أساس ليجندر الكسري (الوحدة 7) تكون المتسلسلة المقطوعة في `t^{α}` مفكوك تايلور عند t = 0: دقيقة جداً قرب 0 وسيئة بعيداً عنه. أما التقريب الطيفي فأفضل تقريب على المجال [0, T] كله.'],
+  'y ≈ Σ_{k≤M} c_k s^k,   s = t^{α}',
+  ['Both use the same powers `s = t^{α}`; the difference is the choice of coefficients (Taylor versus orthogonal projection or collocation). With 9 terms for `E_{1/2}(−t^{1/2})` on [0, 1] the spectral error is about `10^{−8}`, while the Taylor error at t = 1 is about `10^{−2}`.','وكلاهما يستخدم القوى نفسها `s = t^{α}`، والفرق في اختيار المعاملات (تايلور مقابل الإسقاط المتعامد أو التجميع). ومع 9 حدود لـ `E_{1/2}(−t^{1/2})` على [0, 1] يكون الخطأ الطيفي نحو `10^{−8}` بينما خطأ تايلور عند t = 1 نحو `10^{−2}`.'],
+],[
+  Q('Estimate the Taylor error at t = 1 after the term `k = 8` of `E_{1/2}(−t^{1/2})`.','قدّر خطأ تايلور عند t = 1 بعد الحد `k = 8` لـ `E_{1/2}(−t^{1/2})`.','≲ #f{1}{Γ(11/2)} ≈ 0.019',['k = 9:   #f{1}{Γ(9/2 + 1)}'],['≈ 10^{−8}','≈ 0','≈ 1']),
+  Q('Where is a truncated series most accurate?','أين تكون المتسلسلة المقطوعة أدق؟','t → 0',[['It is an expansion at t = 0.','مفكوك عند t = 0.']],['t = T',['In the middle','في الوسط'],['Everywhere equally','في كل مكان بالتساوي']]),
+  Q('What do the two methods share?','ماذا تشترك فيه الطريقتان؟',['The same powers `s = t^{α}`; only the coefficients differ','القوى نفسها `s = t^{α}`، والمعاملات وحدها تختلف'],[['Taylor coefficients versus projection or collocation.','معاملات تايلور مقابل الإسقاط أو التجميع.']],[['Nothing','لا شيء'],['The same coefficients','المعاملات نفسها']]),
+  Q('Which approach suits a long interval [0, 10]?','أي نهج يناسب مجالاً طويلاً [0, 10]؟',['The spectral (or time-stepping) method, not a single Taylor series','الطريقة الطيفية (أو الخطو الزمني) لا متسلسلة تايلور واحدة'],[['The series suffers cancellation and slow convergence there.','المتسلسلة تعاني الإلغاء والتقارب البطيء هناك.']],[['A Taylor series with 10 terms','متسلسلة تايلور بـ 10 حدود'],['ADM only','ADM فقط']]),
+]);
+
+lesson('508',40,[
+  ['Worked problems for Unit 4: power series, Adomian polynomials, HPM and HAM, DTM and their limits.','مسائل محلولة للوحدة 4: متسلسلات القوى وكثيرات أدوميان و HPM و HAM و DTM وحدودها.'],
+  'y = Σ_k c_k t^{kα},     A_n = #f{1}{n!}#f{d^n}{dp^n}N(Σ_i p^iy_i)|_{p=0}',
+],[
+  Q('For `N(y) = y^3` compute `A_1`.','لـ `N(y) = y^3` احسب `A_1`.','A_1 = 3y_0^2y_1',['N′(y_0)y_1'],['A_1 = y_1^3','A_1 = 3y_0y_1^2','A_1 = y_0^3']),
+  Q('Solve `^CD^{1/2}y = 1 + t^{1/2}`, `y(0) = 0`, exactly.','حل `^CD^{1/2}y = 1 + t^{1/2}` مع `y(0) = 0` بالضبط.','y = #f{2t^{1/2}}{#r{π}} + #f{#r{π}}{4}t',['D^{−1/2}1 = #f{t^{1/2}}{Γ(3/2)},   D^{−1/2}t^{1/2} = #f{Γ(3/2)}{Γ(2)}t'],['y = t^{1/2} + t','y = #f{2t^{1/2}}{#r{π}} + t','y = #f{t^{1/2}}{#r{π}} + #f{t}{2}']),
+  Q('For `^CD^{α}y = −y`, which method gives a different series from the others: ADM, HPM, VIM, RPSM?','لـ `^CD^{α}y = −y` أي طريقة تعطي متسلسلة مختلفة عن الأخرى: ADM أو HPM أو VIM أو RPSM؟',['None: for this linear problem they all give the Mittag-Leffler series','لا شيء: لهذه المسألة الخطية كلها تعطي متسلسلة ميتاج–ليفلر'],[['Only HAM with ħ ≠ −1 differs.','فقط HAM مع ħ ≠ −1 تختلف.']],[['ADM gives a different series','ADM تعطي متسلسلة مختلفة'],['RPSM gives a different series','RPSM تعطي متسلسلة مختلفة']]),
+  Q('Why do series methods appear in so many papers despite their limits?','لماذا تظهر الطرق التسلسلية في بحوث كثيرة رغم حدودها؟',['They give closed-form approximations with little computation','تعطي تقريبات بصيغة مغلقة بقليل من الحساب'],[['But they should be compared with a reliable numerical solution.','لكن يجب مقارنتها بحل عددي موثوق.']],[['They are always more accurate','دائماً أدق'],['They need no theory','لا تحتاج نظرية']]),
+]);
+
 export const MS508 = true;
