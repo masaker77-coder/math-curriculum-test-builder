@@ -246,7 +246,7 @@ lesson('509',9,[
   ['With a Gaussian window this is the Gabor transform, and `|Sf|^2` is the spectrogram. The window has one fixed width T for all frequencies: frequencies closer than about `2π/T` cannot be separated, and events closer than about T in time cannot be separated.','ومع نافذة جاوسية هذا تحويل جابور، و `|Sf|^2` المخطط الطيفي. وللنافذة عرض ثابت T لكل الترددات: الترددات الأقرب من نحو `2π/T` لا يمكن فصلها، والأحداث الأقرب من نحو T زمنياً لا يمكن فصلها.'],
 ],[
   Q('Compute `Sf(τ, ω)` for `f = 1` and the box window `1_{[−T/2, T/2]}`.','احسب `Sf(τ, ω)` لـ `f = 1` والنافذة الصندوقية `1_{[−T/2, T/2]}`.','e^{−iωτ}#f{2 sin(ωT/2)}{ω}',['∫_{τ−T/2}^{τ+T/2} e^{−iωt} dt'],['#f{2 sin(ωT/2)}{ω}','T e^{−iωτ}','2πδ(ω)']),
-  Q('What is `|Sf(τ, 0)|` in that case?','ما `|Sf(τ, 0)|` في تلك الحالة؟','T',['#f{2 sin(ωT/2)}{ω} → T,   ω → 0'],['1','2π','#f{T}{2}']),
+  Q('What is `|Sf(τ, 0)|` for `f = 1` and the box window of width T?','ما `|Sf(τ, 0)|` لـ `f = 1` والنافذة الصندوقية ذات العرض T؟','T',['#f{2 sin(ωT/2)}{ω} → T,   ω → 0'],['1','2π','#f{T}{2}']),
   Q('Two tones are 2 Hz apart. About how long must the window be to separate them?','نغمتان بينهما 2 هرتز. كم يجب أن يكون طول النافذة تقريباً لفصلهما؟',['At least about 0.5 s','نحو 0.5 ثانية على الأقل'],['Δf ≈ #f{1}{T}'],[['About 0.05 s','نحو 0.05 ثانية'],['Any length','أي طول']]),
   Q('A signal has clicks 0.01 s apart and tones 2 Hz apart. Can one window resolve both?','إشارة فيها نقرات بينها 0.01 ثانية ونغمات بينها 2 هرتز. هل تفصل نافذة واحدة الاثنين؟',['No: the clicks need T ≲ 0.01 s, the tones T ≳ 0.5 s','لا: النقرات تحتاج T ≲ 0.01 ثانية والنغمات T ≳ 0.5 ثانية'],[['Wavelets adapt the window to the frequency.','المويجات تكيّف النافذة مع التردد.']],[['Yes, with T = 0.1 s','نعم مع T = 0.1 ثانية'],['Yes, always','نعم دائماً']]),
 ]);
@@ -467,9 +467,9 @@ lesson('509',29,[
   ['A frame allows stable reconstruction. If A = B the frame is tight and reconstruction is as simple as for an orthonormal basis, `f = A^{−1}Σ⟨f, ψ_{j,k}⟩ψ_{j,k}`. An orthonormal basis is the tight frame with A = B = 1 and no redundancy; dyadic sampling `a_0 = 2`, `b_0 = 1` of the Haar wavelet gives one.','والإطار يسمح بإعادة بناء مستقرة. وإذا كان A = B فالإطار مشدود وإعادة البناء بسيطة كما لأساس متعامد معياري `f = A^{−1}Σ⟨f, ψ_{j,k}⟩ψ_{j,k}`. والأساس المتعامد المعياري إطار مشدود مع A = B = 1 ودون فائض، والمعاينة الثنائية `a_0 = 2` و `b_0 = 1` لمويجة هار تعطي واحداً.'],
 ],[
   Q('Three unit vectors in `ℝ^2` at 120° apart: compute `Σ_k|⟨x, e_k⟩|^2` for `x = (1, 0)`, `e_k` at angles 90°, 210°, 330°.','ثلاثة متجهات وحدة في `ℝ^2` بينها 120°: احسب `Σ_k|⟨x, e_k⟩|^2` لـ `x = (1, 0)` و `e_k` عند الزوايا 90° و 210° و 330°.','#f{3}{2}',['0^2 + (#f{−#r{3}}{2})^2 + (#f{#r{3}}{2})^2'],['1','3','#f{1}{2}']),
-  Q('Is that frame tight? Give A.','هل ذلك الإطار مشدود؟ أعط A.',['Yes, `A = B = 3/2`','نعم `A = B = 3/2`'],[['The sum is `(3/2)‖x‖^2` for every x.','المجموع `(3/2)‖x‖^2` لكل x.']],[['No','لا'],['Yes, A = 1','نعم A = 1']]),
-  Q('Reconstruct x from its frame coefficients `c_k = ⟨x, e_k⟩` in that tight frame.','أعد بناء x من معاملات الإطار `c_k = ⟨x, e_k⟩` في ذلك الإطار المشدود.','x = #f{2}{3}Σ_k c_ke_k',['x = A^{−1}Σ⟨x, e_k⟩e_k'],['x = Σ_k c_ke_k','x = #f{3}{2}Σ_k c_ke_k','x = #f{1}{3}Σ_k c_ke_k']),
-  Q('What is the redundancy of that frame?','ما فائض ذلك الإطار؟','#f{3}{2}',[['Three vectors in a space of dimension 2.','ثلاثة متجهات في فضاء بعده 2.']],['1','2','3']),
+  Q('Three unit vectors in `ℝ^2` at 120° apart: is this frame tight? Give A.','ثلاثة متجهات وحدة في `ℝ^2` بينها 120°: هل هذا الإطار مشدود؟ أعط A.',['Yes, `A = B = 3/2`','نعم `A = B = 3/2`'],[['The sum is `(3/2)‖x‖^2` for every x.','المجموع `(3/2)‖x‖^2` لكل x.']],[['No','لا'],['Yes, A = 1','نعم A = 1']]),
+  Q('Reconstruct x from `c_k = ⟨x, e_k⟩` in the tight frame of three unit vectors at 120° (A = 3/2).','أعد بناء x من `c_k = ⟨x, e_k⟩` في الإطار المشدود من ثلاثة متجهات وحدة بينها 120° (A = 3/2).','x = #f{2}{3}Σ_k c_ke_k',['x = A^{−1}Σ⟨x, e_k⟩e_k'],['x = Σ_k c_ke_k','x = #f{3}{2}Σ_k c_ke_k','x = #f{1}{3}Σ_k c_ke_k']),
+  Q('What is the redundancy of a frame of three vectors in `ℝ^2`?','ما فائض إطار من ثلاثة متجهات في `ℝ^2`؟','#f{3}{2}',[['Three vectors in a space of dimension 2.','ثلاثة متجهات في فضاء بعده 2.']],['1','2','3']),
 ]);
 
 lesson('509',30,[
@@ -612,7 +612,7 @@ lesson('509',42,[
 ],[
   Q('Reconstruct from the Haar coefficients `a = (3#r{2}, 7#r{2})`, `d = (−#r{2}, −#r{2})`.','أعد البناء من معاملات هار `a = (3#r{2}, 7#r{2})` و `d = (−#r{2}, −#r{2})`.','(2, 4, 6, 8)',['x_{2k} = #f{a_k + d_k}{#r{2}},   x_{2k+1} = #f{a_k − d_k}{#r{2}}'],['(4, 2, 8, 6)','(3, 3, 7, 7)','(1, 3, 5, 7)']),
   Q('Reconstruct from `a = (3#r{2}, 7#r{2})` with the details set to zero.','أعد البناء من `a = (3#r{2}, 7#r{2})` مع جعل التفاصيل صفراً.','(3, 3, 7, 7)',['#f{3#r{2}}{#r{2}} = 3,   #f{7#r{2}}{#r{2}} = 7'],['(2, 4, 6, 8)','(3#r{2}, 3#r{2}, 7#r{2}, 7#r{2})','(6, 6, 14, 14)']),
-  Q('What is the squared error of the reconstruction without details?','ما مربع خطأ إعادة البناء دون التفاصيل؟','4',['‖d‖^2 = 2 + 2'],['2','0','8']),
+  Q('For Haar coefficients `a = (3#r{2}, 7#r{2})`, `d = (−#r{2}, −#r{2})`, what is the squared error of reconstructing without the details?','لمعاملات هار `a = (3#r{2}, 7#r{2})` و `d = (−#r{2}, −#r{2})` ما مربع خطأ إعادة البناء دون التفاصيل؟','4',['‖d‖^2 = 2 + 2'],['2','0','8']),
   Q('Why can the same filters be used for synthesis?','لماذا يمكن استخدام المرشحات نفسها للتركيب؟',['The analysis matrix W is orthogonal, so its inverse is `W^T`','مصفوفة التحليل W متعامدة فمعكوسها `W^T`'],[['Biorthogonal wavelets (Unit 6) use different synthesis filters.','المويجات ثنائية التعامد (الوحدة 6) تستخدم مرشحات تركيب مختلفة.']],[['By symmetry of h','بتماثل h'],['They cannot','لا يمكن']]),
 ]);
 
@@ -644,8 +644,8 @@ lesson('509',45,[
   ['For Haar take `F_0 = (1 + z^{−1})/#r{2}` and `F_1 = −(1 − z^{−1})/#r{2}`: the first sum is `2z^{−1}` and the second is 0. Orthogonal wavelets satisfy both with `F_k(z) = z^{−(N−1)}H_k(z^{−1})`; biorthogonal ones relax the condition that F and H be related this way.','ولهار خذ `F_0 = (1 + z^{−1})/#r{2}` و `F_1 = −(1 − z^{−1})/#r{2}`: المجموع الأول `2z^{−1}` والثاني 0. والمويجات المتعامدة تحققهما مع `F_k(z) = z^{−(N−1)}H_k(z^{−1})`، والمويجات ثنائية التعامد ترخي شرط ارتباط F و H بهذه الطريقة.'],
 ],[
   Q('Compute `F_0H_0 + F_1H_1` for the Haar bank above.','احسب `F_0H_0 + F_1H_1` لبنك هار أعلاه.','2z^{−1}',['#f{(1 + z^{−1})^2 − (1 − z^{−1})^2}{2} = #f{4z^{−1}}{2}'],['2','0','1 + z^{−2}']),
-  Q('Compute `F_0(z)H_0(−z) + F_1(z)H_1(−z)` for that bank.','احسب `F_0(z)H_0(−z) + F_1(z)H_1(−z)` لذلك البنك.','0',['#f{(1 + z^{−1})(1 − z^{−1}) − (1 − z^{−1})(1 + z^{−1})}{2}'],['2z^{−1}','1','z^{−2}']),
-  Q('What delay does the Haar bank introduce?','أي تأخير يُدخله بنك هار؟','l = 1',['2z^{−l} = 2z^{−1}'],['l = 0','l = 2','l = 4']),
+  Q('Compute `F_0(z)H_0(−z) + F_1(z)H_1(−z)` for the Haar bank of this lesson.','احسب `F_0(z)H_0(−z) + F_1(z)H_1(−z)` لبنك هار في هذا الدرس.','0',['#f{(1 + z^{−1})(1 − z^{−1}) − (1 − z^{−1})(1 + z^{−1})}{2}'],['2z^{−1}','1','z^{−2}']),
+  Q('What delay does the Haar bank of this lesson introduce?','أي تأخير يُدخله بنك هار في هذا الدرس؟','l = 1',['2z^{−l} = 2z^{−1}'],['l = 0','l = 2','l = 4']),
   Q('What would a non-zero alias term cause?','ماذا يسبب حد تداخل غير صفري؟',['A mirrored copy of the spectrum (frequency `π − ω`) in the output','نسخة معكوسة من الطيف (التردد `π − ω`) في الخرج'],[['It comes from `X(−z)`.','يأتي من `X(−z)`.']],[['A delay','تأخيراً'],['Nothing','لا شيء']]),
 ]);
 
@@ -698,7 +698,7 @@ lesson('509',50,[
   'a_j[k] = Σ_nh_{n−2k}a_{j+1}[n],     d_j[k] = Σ_ng_{n−2k}a_{j+1}[n],     ‖a_{j+1}‖^2 = ‖a_j‖^2 + ‖d_j‖^2',
 ],[
   Q('Compute the full Haar transform of `(1, 2, 3, 4, 5, 6, 7, 8)`: give `a_0` and `d_0`.','احسب تحويل هار الكامل لـ `(1, 2, 3, 4, 5, 6, 7, 8)`: أعط `a_0` و `d_0`.','a_0 = 9#r{2} ≈ 12.728,   d_0 = −4#r{2} ≈ −5.657',['a_0 = #f{36}{2#r{2}},   d_0 = #f{10 − 26}{2#r{2}}'],['a_0 = 4.5,   d_0 = −2','a_0 = 36,   d_0 = −16','a_0 = 9#r{2},   d_0 = 4#r{2}']),
-  Q('For the same signal, what are the finest details `d_2`?','للإشارة نفسها ما التفاصيل الأدق `d_2`؟','(−#f{1}{#r{2}}, −#f{1}{#r{2}}, −#f{1}{#r{2}}, −#f{1}{#r{2}})',['#f{1 − 2}{#r{2}}, …'],['(−1, −1, −1, −1)','(0, 0, 0, 0)','(−2, −2)']),
+  Q('For the Haar transform of `(1, 2, 3, 4, 5, 6, 7, 8)`, what are the finest details `d_2`?','لتحويل هار لـ `(1, 2, 3, 4, 5, 6, 7, 8)` ما التفاصيل الأدق `d_2`؟','(−#f{1}{#r{2}}, −#f{1}{#r{2}}, −#f{1}{#r{2}}, −#f{1}{#r{2}})',['#f{1 − 2}{#r{2}}, …'],['(−1, −1, −1, −1)','(0, 0, 0, 0)','(−2, −2)']),
   Q('Check the energy split for `(2, 4, 6, 8)`: `‖x‖^2 = ‖a‖^2 + ‖d‖^2`.','تحقق من تقسيم الطاقة لـ `(2, 4, 6, 8)`: `‖x‖^2 = ‖a‖^2 + ‖d‖^2`.','120 = (18 + 98) + (2 + 2)',['a = (3#r{2}, 7#r{2}),   d = (−#r{2}, −#r{2})'],['120 = 116','120 = 60 + 60','100 = 96 + 4']),
   Q('Why is D4 better than Haar for compressing a smooth signal?','لماذا يكون D4 أفضل من هار لضغط إشارة ملساء؟',['D4 has two vanishing moments, so details of locally linear parts vanish; Haar only kills constants','لـ D4 عزمان منعدمان فتنعدم تفاصيل الأجزاء الخطية محلياً، وهار يلغي الثوابت فقط'],[['More small coefficients can be dropped.','يمكن حذف معاملات صغيرة أكثر.']],[['D4 is shorter','D4 أقصر'],['D4 is symmetric','D4 متماثل']]),
 ]);
@@ -1030,7 +1030,7 @@ lesson('509',80,[
   'LL = #f{a + b + c + d}{2},     η_S(x) = sign(x)(|x| − T)_+,     T = σ̂#r{2 ln N}',
 ],[
   Q('Transform `#m{5, 1 ;; 5, 1}` with 2-D Haar.','حوّل `#m{5, 1 ;; 5, 1}` بهار ثنائي البعد.','LL = 6,   H = 0,   V = 4,   D = 0',['V = #f{5 − 1 + 5 − 1}{2}'],['LL = 6,   H = 4,   V = 0,   D = 0','LL = 12,   V = 8','LL = 6,   H = V = D = 2']),
-  Q('Which edge does that block contain?','أي حافة تحتوي تلك الكتلة؟',['A vertical edge: the values change from left to right','حافة رأسية: القيم تتغير من اليسار إلى اليمين'],[['Only V is non-zero.','V فقط غير صفري.']],[['A horizontal edge','حافة أفقية'],['No edge','لا حافة']]),
+  Q('Which edge does the block `#m{5, 1 ;; 5, 1}` contain?','أي حافة تحتوي الكتلة `#m{5, 1 ;; 5, 1}`؟',['A vertical edge: the values change from left to right','حافة رأسية: القيم تتغير من اليسار إلى اليمين'],[['Only V is non-zero.','V فقط غير صفري.']],[['A horizontal edge','حافة أفقية'],['No edge','لا حافة']]),
   Q('Compute the universal threshold for a 256 × 256 image with σ = 2.','احسب العتبة الشاملة لصورة 256 × 256 مع σ = 2.','2#r{2 ln 65536} ≈ 9.42',['N = 65536,   ln N ≈ 11.09'],['≈ 4.71','≈ 2','≈ 22.2']),
   Q('Soft-threshold the details `(0.5, −4, 12)` with T = 3.','طبّق العتبة اللينة على التفاصيل `(0.5, −4, 12)` مع T = 3.','(0, −1, 9)',['sign(x)(|x| − 3)_+'],['(0, −4, 12)','(0, 1, 9)','(−2.5, −1, 9)']),
 ]);
@@ -1064,7 +1064,7 @@ lesson('509',83,[
   ['One linear solve gives c. The maximum error at the points is 2.1, 0.64, 0.18, 0.046, 0.012, `0.0030 × 10^{−2}` for m = 2, 4, …, 64: second order, the error falling by 4 when m doubles. The same steps solve linear systems of ODEs and, with Newton’s method, nonlinear ones.','وحل خطي واحد يعطي c. وأكبر خطأ عند النقاط 2.1 و 0.64 و 0.18 و 0.046 و 0.012 و `0.0030 × 10^{−2}` لـ m = 2 و 4 حتى 64: رتبة ثانية، والخطأ يتناقص بعامل 4 عند مضاعفة m. والخطوات نفسها تحل النظم الخطية للمعادلات العادية، ومع طريقة نيوتن غير الخطية منها.'],
 ],[
   Q('Solve the m = 1 version: `y′ ≈ c`, `y = 1 + c/2` at t = 1/2.','حل نسخة m = 1: `y′ ≈ c` و `y = 1 + c/2` عند t = 1/2.','c = −#f{2}{3},   y(#f{1}{2}) ≈ #f{2}{3}',['c = −(1 + #f{c}{2})'],['c = −1,   y = #f{1}{2}','c = −2,   y = 0','c = #f{2}{3},   y = #f{4}{3}']),
-  Q('Compare that value with the exact `e^{−1/2}`.','قارن تلك القيمة بالقيمة المضبوطة `e^{−1/2}`.','|0.6667 − 0.6065| ≈ 0.060',[['The method is the implicit midpoint rule in disguise.','الطريقة قاعدة المنتصف الضمنية متنكرة.']],['≈ 0','≈ 0.6','≈ 0.0060']),
+  Q('The m = 1 Haar solution of `y′ = −y`, `y(0) = 1` gives `y(1/2) ≈ 2/3`. Compare with the exact `e^{−1/2}`.','حل هار عند m = 1 لـ `y′ = −y` مع `y(0) = 1` يعطي `y(1/2) ≈ 2/3`. قارنه بالقيمة المضبوطة `e^{−1/2}`.','|0.6667 − 0.6065| ≈ 0.060',[['The method is the implicit midpoint rule in disguise.','الطريقة قاعدة المنتصف الضمنية متنكرة.']],['≈ 0','≈ 0.6','≈ 0.0060']),
   Q('What is the observed order from the errors above?','ما الرتبة الملاحظة من الأخطاء أعلاه؟','2',['#f{0.046}{0.012} ≈ 4 = 2^2'],['1','4','0.5']),
   Q('Write the system for `y″ = −y`, `y(0) = 0`, `y′(0) = 1`, with `y″ = c^TH`.','اكتب النظام لـ `y″ = −y` مع `y(0) = 0` و `y′(0) = 1` و `y″ = c^TH`.','c^T(H + P^2H) = −t^T',['y = t + c^TP^2H'],['c^T(H + PH) = −t^T','c^TH = t^T','c^T(H − P^2H) = t^T']),
 ]);
@@ -1130,7 +1130,7 @@ lesson('509',89,[
   ['Galerkin (left) gives symmetric positive definite matrices for symmetric elliptic L, optimal error in the energy norm and a natural framework for adaptivity and preconditioning (Lesson 78), but needs integrals. Collocation (right) is cheaper and simple for nonlinear and variable-coefficient problems, but the matrices are not symmetric and stability must be checked.','وجاليركن (يساراً) يعطي مصفوفات متماثلة موجبة التعريف لـ L الإهليلجي المتماثل، وخطأً أمثل في معيار الطاقة وإطاراً طبيعياً للتكيف وتحسين الشرط (الدرس 78)، لكنه يحتاج تكاملات. والتجميع (يميناً) أرخص وبسيط للمسائل غير الخطية وذات المعاملات المتغيرة، لكن مصفوفاته غير متماثلة ويجب فحص الاستقرار.'],
 ],[
   Q('For `−u″ = f` with zero boundary values, write the Galerkin matrix entry.','لـ `−u″ = f` مع قيم حدية صفرية اكتب عنصر مصفوفة جاليركن.','A_{λμ} = ∫ψ_λ′ψ_μ′ dt',['⟨−u″, ψ⟩ = ⟨u′, ψ′⟩'],['A_{λμ} = ∫ψ_λψ_μ dt','A_{λμ} = ψ_λ″(t_μ)','A_{λμ} = ∫ψ_λ″ dt']),
-  Q('Is that matrix symmetric?','هل تلك المصفوفة متماثلة؟',['Yes','نعم'],['A_{λμ} = A_{μλ}'],[['No','لا'],['Only for Haar','فقط لهار']]),
+  Q('Is the Galerkin matrix `A_{λμ} = ∫ψ_λ′ψ_μ′ dt` symmetric?','هل مصفوفة جاليركن `A_{λμ} = ∫ψ_λ′ψ_μ′ dt` متماثلة؟',['Yes','نعم'],['A_{λμ} = A_{μλ}'],[['No','لا'],['Only for Haar','فقط لهار']]),
   Q('Which method did Lessons 83–88 use?','أي طريقة استخدمتها الدروس 83–88؟',['Collocation at `t_l = (l − 1/2)/m`','التجميع عند `t_l = (l − 1/2)/m`'],[['No integrals of the data were needed.','لم تلزم تكاملات للمعطيات.']],[['Galerkin','جاليركن'],['Least squares','المربعات الصغرى']]),
   Q('Why is Galerkin preferred for adaptive wavelet methods?','لماذا يُفضّل جاليركن لطرق المويجات التكيفية؟',['Its error is controlled by the coefficients of the residual in the wavelet basis, which tell where to refine','خطؤه يُضبط بمعاملات الباقي في أساس المويجات وهي تقول أين نُنقّح'],[['Lesson 91.','الدرس 91.']],[['It is cheaper','أرخص'],['It needs no basis','لا يحتاج أساساً']]),
 ]);
@@ -1144,6 +1144,117 @@ lesson('509',90,[
   Q('Which method suits a solution with a moving steep front at an unknown place?','أي طريقة تناسب حلاً بجبهة حادة متحركة في مكان مجهول؟',['An adaptive wavelet method','طريقة مويجات تكيفية'],[['It refines only where the coefficients are large.','تنقّح فقط حيث المعاملات كبيرة.']],[['A global spectral method','طريقة طيفية شاملة'],['Neither','لا شيء منهما']]),
   Q('How could the Haar method be improved for `t^{1/2}` behaviour?','كيف يمكن تحسين طريقة هار لسلوك `t^{1/2}`؟',['Refine near t = 0 (non-uniform or adaptive levels), or change variable to `u = t^{1/2}`','التنقيح قرب t = 0 (مستويات غير منتظمة أو تكيفية) أو تغيير المتغير إلى `u = t^{1/2}`'],[['The same ideas as graded meshes in course 508.','الأفكار نفسها للشبكات المتدرجة في المقرر 508.']],[['Use more digits','استخدام أرقام أكثر'],['Nothing helps','لا شيء يفيد']]),
   Q('Why does the mapped basis need so few unknowns?','لماذا يحتاج الأساس المحوّل مجاهيل قليلة جداً؟',['`E_{1/2}(−u)` is entire in u, so its Legendre coefficients decay faster than exponentially','`E_{1/2}(−u)` دالة صحيحة في u فتتناقص معاملات ليجندر لها أسرع من الأسي'],[['Course 508, Lesson 70.','المقرر 508، الدرس 70.']],[['Because it is a wavelet','لأنه مويجة'],['By chance','مصادفة']]),
+]);
+
+/* ---- 509 · Unit 10 (lessons 91–100): advanced topics and research ---- */
+lesson('509',91,[
+  ['Adaptive wavelet methods keep only the significant coefficients of the solution and update the set as the solution evolves: threshold, add a safety zone of neighbours in position and scale, solve, repeat.','طرق المويجات التكيفية تحتفظ فقط بالمعاملات المهمة للحل وتحدّث المجموعة مع تطور الحل: طبّق العتبة، وأضف منطقة أمان من الجيران في الموضع والمقياس، وحل، وكرر.'],
+  'Λ_ε = {λ : |d_λ| > ε}',
+  ['For a solution with one steep front, each level needs only a few coefficients near the front, so about J coefficients per level ‘column’ instead of `2^J` on a uniform fine grid. Cohen, Dahmen and DeVore proved that such methods reach the best N-term rate with work proportional to N.','ولحل ذي جبهة حادة واحدة يحتاج كل مستوى معاملات قليلة فقط قرب الجبهة، فيكون العدد نحو J بدل `2^J` على شبكة دقيقة منتظمة. وأثبت كوهين وداهمن وديفور أن مثل هذه الطرق تبلغ معدل أفضل N حداً بعمل يتناسب مع N.'],
+],[
+  Q('A front needs 6 coefficients per level for levels 0 to 9. How many coefficients in total, against a uniform grid at level 10?','جبهة تحتاج 6 معاملات لكل مستوى للمستويات 0 إلى 9. كم معاملاً إجمالاً مقابل شبكة منتظمة عند المستوى 10؟','60   ↔   1024',['6·10,   2^{10}'],['60   ↔   60','600   ↔   1024','6   ↔   1024']),
+  Q('Why add a safety zone around the significant coefficients?','لماذا تُضاف منطقة أمان حول المعاملات المهمة؟',['So that a front that moves or steepens during the step is still represented','حتى تبقى الجبهة ممثلة إذا تحركت أو ازدادت حدة أثناء الخطوة'],[['Neighbours in position and the next finer level.','جيران في الموضع والمستوى الأدق التالي.']],[['To reduce the cost','لتقليل الكلفة'],['It is not needed','لا حاجة']]),
+  Q('Which coefficients does the threshold ε drop?','أي معاملات تحذفها العتبة ε؟',['Those with `|d_λ| ≤ ε`: smooth regions at fine levels','التي تحقق `|d_λ| ≤ ε`: المناطق الملساء عند المستويات الدقيقة'],[['The error is controlled by ε.','الخطأ يُضبط بـ ε.']],[['All coarse coefficients','كل المعاملات الخشنة'],['Random ones','عشوائية']]),
+  Q('What is the work of an optimal adaptive method that uses N coefficients?','ما عمل طريقة تكيفية مثلى تستخدم N معاملاً؟','O(N)',[['Cohen–Dahmen–DeVore.','كوهين–داهمن–ديفور.']],['O(N^2)','O(N log N)^2','O(2^N)']),
+]);
+
+lesson('509',92,[
+  ['Second-generation wavelets (Sweldens) drop translation and dilation and are built by lifting on any grid: irregular samples, intervals, surfaces. The predict step interpolates the odd points from the even ones with weights that depend on the positions:','مويجات الجيل الثاني (سويلدنز) تتخلى عن الإزاحة والتمديد وتُبنى بالرفع على أي شبكة: عينات غير منتظمة ومجالات وأسطح. وخطوة التنبؤ تستكمل النقاط الفردية من الزوجية بأوزان تعتمد على المواضع:'],
+  'd = x(t_1) − [#f{t_2 − t_1}{t_2 − t_0}x(t_0) + #f{t_1 − t_0}{t_2 − t_0}x(t_2)]',
+  ['The update step then keeps the averages (moments) correct. Everything of Lesson 70 carries over: in-place computation, exact inversion, O(N) cost. These wavelets underlie multiresolution meshes in computer graphics and wavelets on the sphere.','ثم تحافظ خطوة التحديث على المتوسطات (العزوم) صحيحة. وكل ما في الدرس 70 ينتقل: الحساب في المكان والعكس المضبوط وكلفة O(N). وهذه المويجات أساس الشبكات متعددة التمييز في الرسوميات الحاسوبية والمويجات على الكرة.'],
+],[
+  Q('Compute the prediction weights for `t_0 = 0`, `t_1 = 0.3`, `t_2 = 1`.','احسب أوزان التنبؤ لـ `t_0 = 0` و `t_1 = 0.3` و `t_2 = 1`.','0.7,   0.3',['#f{1 − 0.3}{1},   #f{0.3 − 0}{1}'],['0.5,   0.5','0.3,   0.7','1,   0']),
+  Q('Compute d for `x = 2t + 1` at `t_0 = 0`, `t_1 = 0.3`, `t_2 = 1`.','احسب d لـ `x = 2t + 1` عند `t_0 = 0` و `t_1 = 0.3` و `t_2 = 1`.','0',['x(0.3) = 1.6,   0.7·1 + 0.3·3 = 1.6'],['1.6','0.3','−0.4']),
+  Q('Reduce the weights to a uniform grid.','اختصر الأوزان إلى شبكة منتظمة.','#f{1}{2},   #f{1}{2}',['t_1 = #f{t_0 + t_2}{2}'],['1,   0','#f{1}{4},   #f{3}{4}','#f{1}{3},   #f{2}{3}']),
+  Q('What do second-generation wavelets give up?','بماذا تضحي مويجات الجيل الثاني؟',['Being translates and dilates of one function, and so the Fourier tools','كونها إزاحات وتمديدات لدالة واحدة، ومن ثم أدوات فورييه'],[['They gain flexibility of domain.','وتكسب مرونة المجال.']],[['Orthogonality of the data','تعامد البيانات'],['Nothing','لا شيء']]),
+]);
+
+lesson('509',93,[
+  ['Square wavelets are isotropic and handle point singularities well but waste coefficients along curved edges. Curvelets and shearlets are needle-shaped, with width ≈ length² and more directions at finer scales. For cartoon images (smooth regions with smooth edges), the best N-term errors are','المويجات المربعة متساوية الاتجاهات وتعالج الانفرادات النقطية جيداً لكنها تهدر معاملات على امتداد الحواف المنحنية. والـ Curvelets والـ Shearlets إبرية الشكل عرضها ≈ مربع طولها، مع اتجاهات أكثر عند المقاييس الأدق. ولصور الكرتون (مناطق ملساء بحواف ملساء) تكون أخطاء أفضل N حداً'],
+  'N^{−1/2},     N^{−1},     N^{−2}(log N)^3',
+  ['for Fourier, wavelets and curvelets in that order. An edge of length 1 meets about `2^j` square wavelets at level j, but only about `2^{j/2}` curvelets, because each needle covers a longer piece of the edge.','لفورييه والمويجات والـ Curvelets بهذا الترتيب. والحافة ذات الطول 1 تقابل نحو `2^j` مويجة مربعة في المستوى j، لكن نحو `2^{j/2}` من الـ Curvelets فقط لأن كل إبرة تغطي قطعة أطول من الحافة.'],
+],[
+  Q('At scale `2^{−j}`, how long is a curvelet of width `2^{−j}`?','عند المقياس `2^{−j}` كم طول Curvelet عرضه `2^{−j}`؟','2^{−j/2}',['w = l^2'],['2^{−j}','2^{−2j}','1']),
+  Q('How many curvelets of level j are needed along an edge of length 1?','كم Curvelet من المستوى j يلزم على امتداد حافة طولها 1؟','≈ 2^{j/2}',['#f{1}{2^{−j/2}}'],['≈ 2^j','≈ 4^j','≈ j']),
+  Q('With `N = 10^4` terms, compare the squared errors of wavelets and curvelets (ignore the log).','مع `N = 10^4` حداً قارن مربعي خطأ المويجات والـ Curvelets (تجاهل اللوغاريتم).','10^{−4}   ↔   10^{−8}',['N^{−1},   N^{−2}'],['10^{−2}   ↔   10^{−4}','10^{−4}   ↔   10^{−4}','10^{−8}   ↔   10^{−4}']),
+  Q('Why do the number of directions grow at finer scales?','لماذا يزداد عدد الاتجاهات عند المقاييس الأدق؟',['Thinner needles must be aligned more precisely with the edge to fit it','الإبر الأرق يجب أن تُحاذى الحافة بدقة أكبر لتناسبها'],[['Directions double every other scale.','الاتجاهات تتضاعف كل مقياسين.']],[['For symmetry','للتماثل'],['They do not','لا تزداد']]),
+]);
+
+lesson('509',94,[
+  ['Fractal signals have the same roughness at every scale, and wavelets measure it. For fractional Brownian motion with Hurst index H, the variance of the coefficients at level j follows a power law:','الإشارات الكسيرية لها الخشونة نفسها عند كل مقياس، والمويجات تقيسها. ولحركة براون الكسرية بمؤشر هيرست H يتبع تباين المعاملات في المستوى j قانون قوة:'],
+  'Var d_{j,k} ∝ 2^{−j(2H+1)},     W(t) = Σ_n a^n cos(b^nπt):   α = −#f{log a}{log b}',
+  ['A log₂-variance plot against j is a straight line of slope `−(2H + 1)`; for simulated Brownian motion (H = 1/2) and db2 the slopes at the middle levels are −2.04, −2.00, −1.98. The Weierstrass function W is continuous but nowhere differentiable, with Hölder exponent α everywhere, and its wavelet coefficients decay like `2^{−j(α+1/2)}` at every point.','ورسم log₂ التباين مقابل j خط مستقيم ميله `−(2H + 1)`، ولحركة براون محاكاة (H = 1/2) مع db2 تكون الميول في المستويات الوسطى −2.04 و −2.00 و −1.98. ودالة فايرشتراس W متصلة لكنها غير قابلة للاشتقاق في أي نقطة، وأس هولدر لها α في كل مكان، ومعاملاتها المويجية تتناقص مثل `2^{−j(α+1/2)}` عند كل نقطة.'],
+],[
+  Q('A log₂-variance plot has slope −2.6. Estimate H.','رسم log₂ التباين ميله −2.6. قدّر H.','H = 0.8',['2H + 1 = 2.6'],['H = 1.3','H = 0.3','H = 2.6']),
+  Q('Compute the Hölder exponent of W for a = 1/2, b = 4.','احسب أس هولدر لـ W عند a = 1/2 و b = 4.','#f{1}{2}',['−#f{log(1/2)}{log 4} = #f{log 2}{2 log 2}'],['2','#f{1}{4}','1']),
+  Q('What slope does Brownian motion give?','أي ميل تعطيه حركة براون؟','−2',['H = #f{1}{2}'],['−1','−3','−0.5']),
+  Q('Why are the finest levels of a sampled signal often excluded from the fit?','لماذا تُستبعد المستويات الأدق لإشارة معاينة غالباً من المطابقة؟',['Sampling and the discrete start of the transform distort them (slopes −1.55 to −1.79 in the simulation)','المعاينة وبداية التحويل المتقطعة تشوّهها (ميول من −1.55 إلى −1.79 في المحاكاة)'],[['Very coarse levels have few coefficients and noisy variances.','المستويات الخشنة جداً لها معاملات قليلة وتباينات ضجيجية.']],[['They are always zero','دائماً صفر'],['They are not excluded','لا تُستبعد']]),
+]);
+
+lesson('509',95,[
+  ['In statistics wavelets give adaptive nonparametric estimators. For regression `y_i = f(t_i) + σz_i`, thresholding the empirical coefficients (Lesson 75) is nearly minimax over Besov balls: it adapts to unknown smoothness, including jumps, without being told where they are.','في الإحصاء تعطي المويجات مقدرات لامعلمية تكيفية. وللانحدار `y_i = f(t_i) + σz_i` تكون عتبة المعاملات التجريبية (الدرس 75) شبه أمثل بمعيار minimax على كرات بيسوف: تتكيف مع الملاسة المجهولة بما فيها القفزات دون أن تُخبَر بمواضعها.'],
+  'E‖f̂ − f‖^2 ≈ C(#f{σ^2 log N}{N})^{2s/(2s+1)}',
+  ['The rate is the optimal one for functions of smoothness s up to the log factor. Other uses: wavelet density estimation, the wavelet variance (variance per scale) of time series, and tests for change points based on large fine-scale coefficients.','والمعدل هو الأمثل للدوال ذات الملاسة s حتى العامل اللوغاريتمي. ومن الاستخدامات الأخرى تقدير الكثافة بالمويجات، وتباين المويجات (التباين لكل مقياس) للسلاسل الزمنية، واختبارات نقاط التغير المبنية على المعاملات الدقيقة الكبيرة.'],
+],[
+  Q('Give the exponent of the rate for s = 1.','أعط أس المعدل عند s = 1.','#f{2}{3}',['#f{2s}{2s + 1}'],['1','#f{1}{2}','2']),
+  Q('How does the risk change when N is multiplied by 8 for s = 1 (ignore the log)?','كيف يتغير الخطر عند ضرب N في 8 عند s = 1 (تجاهل اللوغاريتم)؟','÷4',['8^{2/3} = 4'],['÷8','÷2','÷64']),
+  Q('What is the wavelet variance of a series?','ما تباين المويجات لسلسلة؟',['The variance of its wavelet coefficients at each scale','تباين معاملاتها المويجية عند كل مقياس'],[['It splits the total variance by scale.','يقسم التباين الكلي حسب المقياس.']],[['The variance of the wavelet','تباين المويجة'],['The variance of the raw data','تباين البيانات الخام']]),
+  Q('How can wavelets detect a change point in a noisy series?','كيف تكشف المويجات نقطة تغير في سلسلة ضجيجية؟',['By fine-scale coefficients well above the noise threshold `σ#r{2 ln N}`','بمعاملات دقيقة المقياس تتجاوز كثيراً عتبة الضجيج `σ#r{2 ln N}`'],[['Their position locates the change.','موضعها يحدد التغير.']],[['By the coarse average','بالمتوسط الخشن'],['They cannot','لا تستطيع']]),
+]);
+
+lesson('509',96,[
+  ['Fractional ideas enter wavelets in two ways. Fractional B-splines (Unser and Blu) have non-integer degree α, with Fourier transform','تدخل الأفكار الكسرية المويجات بطريقتين. الشرائح B الكسرية (أونسر وبلو) درجتها α غير صحيحة، وتحويل فورييه لها'],
+  'β̂^{α}(ξ) = (#f{1 − e^{−iξ}}{iξ})^{α+1}',
+  ['and their wavelets act like fractional derivatives of order α + 1 at fine scales, with approximation order α + 1. Fractional wavelet transforms instead replace the Fourier transform by the fractional Fourier transform, a rotation of the time–frequency plane by an angle, to analyse chirps. Fractional calculus and wavelets also meet in the operational matrices of Unit 9.','ومويجاتها تعمل مثل مشتقات كسرية من الرتبة α + 1 عند المقاييس الدقيقة مع رتبة تقريب α + 1. والتحويلات المويجية الكسرية تستبدل بتحويل فورييه تحويل فورييه الكسري، وهو دوران لمستوى الزمن–التردد بزاوية، لتحليل النغمات المتصاعدة. ويلتقي التفاضل الكسري والمويجات أيضاً في المصفوفات التشغيلية في الوحدة 9.'],
+],[
+  Q('Which fractional degree gives the ordinary hat function?','أي درجة كسرية تعطي دالة القبعة العادية؟','α = 1',['(#f{1 − e^{−iξ}}{iξ})^2'],['α = 2','α = #f{1}{2}','α = 0']),
+  Q('What is the approximation order of the fractional spline of degree α = 1.5?','ما رتبة التقريب للشريحة الكسرية ذات الدرجة α = 1.5؟','2.5',['α + 1'],['1.5','3','0.5']),
+  Q('What does the fractional Fourier transform with angle π/2 reduce to?','إلامَ يؤول تحويل فورييه الكسري بالزاوية π/2؟',['The ordinary Fourier transform','تحويل فورييه العادي'],[['Angle 0 is the identity.','الزاوية 0 هي المطابقة.']],[['The identity','المطابقة'],['The inverse transform','التحويل العكسي']]),
+  Q('Why is a rotated time–frequency plane useful for a linear chirp?','لماذا يفيد مستوى زمن–تردد مدوّر لنغمة متصاعدة خطية؟',['The chirp is a line in that plane; at the right angle it becomes a single concentrated peak','النغمة خط في ذلك المستوى، وعند الزاوية الصحيحة تصبح قمة واحدة مركّزة'],[['Like a tone in the ordinary transform.','مثل نغمة في التحويل العادي.']],[['It removes noise','يزيل الضجيج'],['It is not','لا يفيد']]),
+]);
+
+lesson('509',97,[
+  ['Error analysis of wavelet methods combines approximation and stability. For Galerkin methods Céa’s lemma bounds the error by the best approximation; for collocation one proves consistency and stability separately:','تحليل الخطأ لطرق المويجات يجمع التقريب والاستقرار. ولطرق جاليركن تحد تمهيدية سيا الخطأ بأفضل تقريب، وللتجميع يُثبت الاتساق والاستقرار منفصلين:'],
+  '‖u − u_h‖_E ≤ C min_{v∈V_h}‖u − v‖_E,     ‖u − P_Ju‖ ≈ ‖Q_Ju‖(1 + ρ + ρ^2 + ⋯)',
+  ['The details also give a posteriori estimates: if `‖Q_Ju‖` is known and the details shrink by a factor ρ per level, the error is about `‖Q_Ju‖/(1 − ρ)`. The observed rates of this course (order 2 for Haar ODEs, 1/2 for the singular fractional problem) are exactly what this analysis predicts from the smoothness of the solutions.','والتفاصيل تعطي أيضاً تقديرات لاحقة: إذا عُلم `‖Q_Ju‖` وتقلصت التفاصيل بعامل ρ لكل مستوى فالخطأ نحو `‖Q_Ju‖/(1 − ρ)`. والمعدلات الملاحظة في هذا المقرر (الرتبة 2 لمعادلات هار العادية و 1/2 للمسألة الكسرية الشاذة) هي بالضبط ما يتنبأ به هذا التحليل من ملاسة الحلول.'],
+],[
+  Q('The details at level J have norm `10^{−3}` and shrink by 1/4 per level. Estimate the error.','التفاصيل في المستوى J معيارها `10^{−3}` وتتقلص بعامل 1/4 لكل مستوى. قدّر الخطأ.','≈ 1.33 × 10^{−3}',['#f{10^{−3}}{1 − 1/4}'],['10^{−3}','4 × 10^{−3}','2.5 × 10^{−4}']),
+  Q('What does Céa’s lemma say?','ماذا تقول تمهيدية سيا؟',['The Galerkin error is at most a constant times the best approximation error in the energy norm','خطأ جاليركن لا يتجاوز ثابتاً مضروباً في خطأ أفضل تقريب في معيار الطاقة'],[['So approximation theory gives the rate.','فنظرية التقريب تعطي المعدل.']],[['The error is zero','الخطأ صفر'],['Collocation is exact','التجميع مضبوط']]),
+  Q('Which smoothness explains the order 1/2 of Lesson 87?','أي ملاسة تفسر الرتبة 1/2 في الدرس 87؟',['The `t^{1/2}` term of the solution at t = 0','الحد `t^{1/2}` في الحل عند t = 0'],[['Course 508, Lesson 57.','المقرر 508، الدرس 57.']],[['Rounding','التقريب'],['The size of P','حجم P']]),
+  Q('Why is stability needed besides approximation for collocation?','لماذا يلزم الاستقرار مع التقريب للتجميع؟',['A good approximation space does not guarantee that the discrete system is well conditioned or solvable','فضاء تقريب جيد لا يضمن أن يكون النظام المتقطع جيد الشرط أو قابلاً للحل'],[['Consistency + stability ⇒ convergence.','الاتساق + الاستقرار ⇒ التقارب.']],[['It is not needed','لا حاجة'],['For speed','للسرعة']]),
+]);
+
+lesson('509',98,[
+  ['The same computations in three systems. Mathematica: ``DiscreteWaveletTransform[data, HaarWavelet[], 3]``, ``InverseWaveletTransform``, ``ContinuousWaveletTransform[data, MexicanHatWavelet[]]``. MATLAB: ``wavedec``, ``waverec``, ``cwt``, ``wdenoise``. Python (PyWavelets):','الحسابات نفسها في ثلاثة أنظمة. Mathematica: ``DiscreteWaveletTransform[data, HaarWavelet[], 3]`` و ``InverseWaveletTransform`` و ``ContinuousWaveletTransform[data, MexicanHatWavelet[]]``. وMATLAB: ``wavedec`` و ``waverec`` و ``cwt`` و ``wdenoise``. وبايثون (PyWavelets):'],
+  '$ coef, freqs = pywt.cwt(x, np.arange(1, 33), \'mexh\')   # scales × samples\nc = pywt.wavedec(x, \'db4\', mode=\'periodization\')\nc = [c[0]] + [pywt.threshold(d, T, \'soft\') for d in c[1:]]',
+  ['Check conventions when moving between systems: normalization of the coefficients, the boundary mode, the ordering of the output and the scale-to-frequency rule differ between packages.','وتحقق من الاصطلاحات عند الانتقال بين الأنظمة: معايرة المعاملات ووضع الحدود وترتيب الخرج وقاعدة تحويل المقياس إلى تردد تختلف بين الحزم.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (32, 256)',[['One row per scale, one column per sample.','صف لكل مقياس وعمود لكل عينة.']],['$ (256, 32)','$ (32,)','$ (256,)'],'import numpy as np\nimport pywt\nx = np.sin(np.linspace(0, 8 * np.pi, 256))\ncoef, freqs = pywt.cwt(x, np.arange(1, 33), \'mexh\')\nprint(coef.shape)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 6 4',[['db3: 2·3 coefficients; sym4: 4 vanishing moments.','db3: معاملات 2·3، و sym4: أربعة عزوم منعدمة.']],['$ 3 4','$ 6 8','$ 4 4'],'import pywt\nw = pywt.Wavelet(\'sym4\')\nprint(pywt.Wavelet(\'db3\').dec_len, w.vanishing_moments_psi)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [ 2.   0.   0.2 -1. ]',[['Soft thresholding with T = 1.','عتبة لينة مع T = 1.']],['$ [ 3.   0.   1.2 -2. ]','$ [ 2.   0.5  0.2 -1. ]','$ [ 2.   0.   0.2  1. ]'],'import numpy as np\nimport pywt\nprint(pywt.threshold(np.array([3, 0.5, 1.2, -2]), 1, \'soft\'))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 4 [1, 1, 2, 4]',[['Three levels for 8 samples, plus the approximation.','ثلاثة مستويات لثماني عينات زائد التقريب.']],['$ 3 [4, 2, 1]','$ 4 [4, 2, 1, 1]','$ 8 [1, 1, 1, 1]'],'import numpy as np\nimport pywt\nc = pywt.wavedec(np.arange(8.0), \'haar\')\nprint(len(c), [len(a) for a in c])'),
+]);
+
+lesson('509',99,[
+  ['Reproducing a wavelet paper: for example the Haar operational matrix of Chen and Hsiao. Rebuild every matrix from its definition and compare entry by entry before trusting the tables:','إعادة إنتاج بحث في المويجات: مثلاً المصفوفة التشغيلية لهار لتشن وهسياو. أعد بناء كل مصفوفة من تعريفها وقارن عنصراً عنصراً قبل الوثوق بالجداول:'],
+  'P_4 = #f{1}{8}#m{4, −2, −1, −1 ;; 2, 0, −1, 1 ;; #f{1}{2}, #f{1}{2}, 0, 0 ;; #f{1}{2}, −#f{1}{2}, 0, 0}',
+  ['Typical pitfalls: Haar functions with or without the factor `2^{j/2}`, collocation points `(l − 1/2)/m` against `l/m`, the boundary mode, and the ordering of the coefficients. Record versions (for example PyWavelets 1.8) and parameters, rerun the paper’s examples, and explain every difference.','والمزالق المعتادة: دوال هار بالعامل `2^{j/2}` أو دونه، ونقاط التجميع `(l − 1/2)/m` مقابل `l/m`، ووضع الحدود، وترتيب المعاملات. سجّل الإصدارات (مثلاً PyWavelets 1.8) والوسائط، وأعد تشغيل أمثلة البحث، وفسّر كل اختلاف.'],
+],[
+  Q('Check row 3 of `P_4` by integrating `h_3 = ψ_{1,0}` (without normalization) at t = 1/8 and 3/8.','تحقق من الصف 3 من `P_4` بتكامل `h_3 = ψ_{1,0}` (دون معايرة) عند t = 1/8 و 3/8.','#f{1}{8},   #f{1}{8}',['∫_0^{1/8}1 = #f{1}{8},   ∫_0^{3/8}h_3 = #f{1}{4} − #f{1}{8}',['`(1/16)(h_1 + h_2) = 1/8` at both points.','`(1/16)(h_1 + h_2) = 1/8` عند النقطتين.']],['#f{1}{8},   #f{3}{8}','0,   0','#f{1}{4},   #f{1}{8}']),
+  Q('A reproduction gives errors twice those of the paper for every m. Name a likely cause.','إعادة إنتاج تعطي أخطاء ضعف أخطاء البحث لكل m. اذكر سبباً محتملاً.',['A different error measure or point set, for example errors at all points against errors at the collocation points','مقياس خطأ أو مجموعة نقاط مختلفة، مثل الأخطاء عند كل النقاط مقابل الأخطاء عند نقاط التجميع'],[['A constant factor suggests a definition, not a bug in the method.','العامل الثابت يوحي بتعريف لا بخطأ في الطريقة.']],[['Rounding','التقريب'],['The paper is wrong','البحث خاطئ']]),
+  Q('Why record the package version?','لماذا يُسجَّل إصدار الحزمة؟',['Defaults (for example boundary modes or scale conventions) can change between versions','القيم الافتراضية (مثل أوضاع الحدود أو اصطلاحات المقياس) قد تتغير بين الإصدارات'],[['Reproducibility needs the full setup.','قابلية الإعادة تحتاج الإعداد الكامل.']],[['For citation only','للاستشهاد فقط'],['It is not needed','لا حاجة']]),
+  Q('Haar functions are used with the factor `2^{j/2}` in one paper and without it in another. How are the coefficients related?','تُستخدم دوال هار بالعامل `2^{j/2}` في بحث ودونه في آخر. كيف ترتبط المعاملات؟','c = 2^{j/2}c′',['c′h′ = c h,   h′ = 2^{j/2}h'],['c = c′','c = 2^{−j/2}c′','c = 2^jc′']),
+]);
+
+lesson('509',100,[
+  ['Capstone project: choose one task and carry it through with wavelets and with a competing method, for example (a) denoise a recorded signal and compare with Fourier low-pass filtering, or (b) solve a fractional or integral equation with Haar or Legendre wavelets and compare with the mapped Legendre method of course 508.','المشروع الختامي: اختر مهمة واحدة ونفّذها بالمويجات وبطريقة منافسة، مثلاً (أ) إزالة الضجيج من إشارة مسجلة ومقارنتها بترشيح تمرير منخفض بفورييه، أو (ب) حل معادلة كسرية أو تكاملية بمويجات هار أو ليجندر ومقارنتها بطريقة ليجندر المحوَّلة في المقرر 508.'],
+  'e(N) ≈ CN^{−r},     r = log_2#f{e(N)}{e(2N)}',
+  ['The report states the problem and the reference solution or clean signal, the wavelet and why, the parameters (levels, threshold, boundary mode), error tables with observed rates, timings, and a fair comparison. All code is published so that every number can be regenerated.','ويذكر التقرير المسألة والحل المرجعي أو الإشارة النظيفة، والمويجة وسبب اختيارها، والوسائط (المستويات والعتبة ووضع الحدود)، وجداول الخطأ مع المعدلات الملاحظة، والأزمنة، ومقارنة منصفة. وكل الكود يُنشر لتُعاد كل الأرقام.'],
+],[
+  Q('From `e(64) = 3.0 × 10^{−5}` and `e(128) = 7.6 × 10^{−6}`, compute the observed rate.','من `e(64) = 3.0 × 10^{−5}` و `e(128) = 7.6 × 10^{−6}` احسب المعدل الملاحظ.','r ≈ 2',['log_2#f{3.0}{0.76} ≈ log_2 3.95'],['r ≈ 4','r ≈ 1','r ≈ 0.5']),
+  Q('For a denoising project without a clean signal, how can the error be measured?','لمشروع إزالة ضجيج دون إشارة نظيفة كيف يُقاس الخطأ؟',['Add known noise to a clean test signal first, or use synthetic signals with the same features','أضف ضجيجاً معلوماً إلى إشارة اختبار نظيفة أولاً، أو استخدم إشارات صناعية بالملامح نفسها'],[['Then report RMS errors against the truth.','ثم قدّم أخطاء RMS مقابل الحقيقة.']],[['By eye','بالعين'],['It cannot be measured','لا يمكن قياسه']]),
+  Q('What makes a comparison between two methods fair?','ما الذي يجعل المقارنة بين طريقتين منصفة؟',['Equal accuracy targets or equal cost, the same problem and data, and tuned parameters for both','أهداف دقة متساوية أو كلفة متساوية، والمسألة والبيانات نفسها، ووسائط مضبوطة للطريقتين'],[['Not a tuned method against a default one.','لا طريقة مضبوطة مقابل أخرى افتراضية.']],[['Running each once','تشغيل كل منهما مرة'],['Using different data','استخدام بيانات مختلفة']]),
+  Q('Which wavelet would you try first for denoising a piecewise smooth signal?','أي مويجة تجرّب أولاً لإزالة الضجيج من إشارة ملساء قطعياً؟',['A short Daubechies or symlet wavelet such as db4 or sym4, with soft or hard thresholding','مويجة دوبيشي أو symlet قصيرة مثل db4 أو sym4 مع عتبة لينة أو قاسية'],[['Lesson 75 used db4.','الدرس 75 استخدم db4.']],[['Morlet','مورليه'],['Shannon','شانون']]),
 ]);
 
 export const MS509 = true;
