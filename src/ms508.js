@@ -923,4 +923,115 @@ lesson('508',70,[
   Q('Why measure the error on many points, not only at t = 1?','لماذا يُقاس الخطأ على نقاط كثيرة لا عند t = 1 فقط؟',['The error can be much larger elsewhere, for example near t = 0','قد يكون الخطأ أكبر بكثير في مكان آخر، مثلاً قرب t = 0'],[['A single point can also hit a lucky zero of the error.','ونقطة واحدة قد تصادف صفراً محظوظاً للخطأ.']],[['t = 1 is always the worst','t = 1 الأسوأ دائماً'],['It is not needed','لا حاجة']]),
 ]);
 
+/* ---- 508 · Unit 8 (lessons 71–80): fractional partial differential equations ---- */
+lesson('508',71,[
+  ['The time-fractional diffusion equation replaces `∂_t` by a Caputo derivative of order 0 < α ≤ 1. With zero boundary values on (0, 1) and `u(x, 0) = sin πx`:','معادلة الانتشار الكسرية الزمنية تستبدل `∂_t` بمشتقة كابوتو من الرتبة 0 < α ≤ 1. ومع قيم حدية صفرية على (0, 1) و `u(x, 0) = sin πx`:'],
+  '^CD_t^{α}u = κ u_{xx}     ⇒     u(x, t) = E_{α}(−κπ^2t^{α}) sin πx',
+  ['For κ = 1 at t = 1: `E_{1/2}(−π^2) = 0.0569` against `e^{−π^2} = 5.2 × 10^{−5}` for α = 1. The fractional solution falls faster at first (half of its value is lost by t = 0.0061, against 0.070) and then much more slowly, like `t^{−α}`. Particles spread sub-diffusively: the mean square displacement is `2κt^{α}/Γ(1 + α)`.','ولـ κ = 1 عند t = 1: `E_{1/2}(−π^2) = 0.0569` مقابل `e^{−π^2} = 5.2 × 10^{−5}` عند α = 1. والحل الكسري يهبط أسرع في البداية (يفقد نصف قيمته عند t = 0.0061 مقابل 0.070) ثم أبطأ بكثير مثل `t^{−α}`. والجسيمات تنتشر انتشاراً بطيئاً: متوسط مربع الإزاحة `2κt^{α}/Γ(1 + α)`.'],
+],[
+  Q('Reduce the solution to α = 1.','اختصر الحل إلى α = 1.','u = e^{−κπ^2t} sin πx',['E_1(z) = e^z'],['u = cos(πt) sin πx','u = sin πx','u = t sin πx']),
+  Q('Estimate `E_{1/2}(−π^2)` from the leading asymptotic term.','قدّر `E_{1/2}(−π^2)` من الحد التقاربي الأول.','#f{1}{π^2#r{π}} ≈ 0.0572',['#f{1}{zΓ(1/2)},   z = π^2'],['≈ e^{−π^2}','≈ #f{1}{π^2}','≈ 0.5']),
+  Q('Compute the mean square displacement at t = 1 for κ = 1, α = 1/2.','احسب متوسط مربع الإزاحة عند t = 1 لـ κ = 1 و α = 1/2.','#f{2}{Γ(3/2)} = #f{4}{#r{π}} ≈ 2.257',['#f{2κt^{α}}{Γ(1 + α)}'],['2','1','#f{2}{#r{π}}']),
+  Q('Why is this called sub-diffusion?','لماذا يسمى هذا انتشاراً بطيئاً؟',['The mean square displacement grows like `t^{α}`, slower than the linear growth of ordinary diffusion','متوسط مربع الإزاحة ينمو مثل `t^{α}` أبطأ من النمو الخطي للانتشار العادي'],[['Particles are trapped for long random times.','الجسيمات تُحبس أزمنة عشوائية طويلة.']],[['It is slower at every time','أبطأ في كل الأزمنة'],['The solution is smaller','الحل أصغر']]),
+]);
+
+lesson('508',72,[
+  ['For 1 < α < 2 the equation `^CD_t^{α}u = κu_{xx}` interpolates between diffusion and waves. It needs two initial conditions, `u(x, 0)` and `u_t(x, 0)`. With `u(x, 0) = sin πx` and `u_t(x, 0) = 0`:','عند 1 < α < 2 تتوسط المعادلة `^CD_t^{α}u = κu_{xx}` بين الانتشار والموجات. وتحتاج شرطين ابتدائيين `u(x, 0)` و `u_t(x, 0)`. ومع `u(x, 0) = sin πx` و `u_t(x, 0) = 0`:'],
+  'u(x, t) = E_{α}(−κπ^2t^{α}) sin πx,     α = 2:   cos(π#r{κ}t) sin πx',
+  ['For α = 1.5, κ = 1 the first zero comes at t = 0.358 (0.5 for the wave) and `E_{1.5}(−π^2) = −0.115`: a damped oscillation that decays like `t^{−α}`. An initial velocity `u_t(x, 0) = sin πx` adds the term `tE_{α,2}(−κπ^2t^{α}) sin πx`.','وعند α = 1.5 و κ = 1 يأتي أول صفر عند t = 0.358 (0.5 للموجة) و `E_{1.5}(−π^2) = −0.115`: تذبذب متخامد يتناقص مثل `t^{−α}`. والسرعة الابتدائية `u_t(x, 0) = sin πx` تضيف الحد `tE_{α,2}(−κπ^2t^{α}) sin πx`.'],
+],[
+  Q('Reduce `E_{2}(−π^2t^2)` to an elementary function.','اختصر `E_{2}(−π^2t^2)` إلى دالة أولية.','cos πt',['E_2(−z^2) = Σ #f{(−1)^kz^{2k}}{(2k)!}'],['e^{−πt}','cosh πt','sin πt']),
+  Q('How many initial conditions does α = 1.5 need?','كم شرطاً ابتدائياً تحتاج α = 1.5؟','2',['⌈1.5⌉ = 2'],['1','3','0']),
+  Q('Reduce the velocity term `tE_{α,2}(−π^2t^{α})` to α = 2.','اختصر حد السرعة `tE_{α,2}(−π^2t^{α})` إلى α = 2.','#f{sin πt}{π}',['tE_{2,2}(−π^2t^2) = t Σ #f{(−π^2t^2)^k}{(2k + 1)!}'],['cos πt','t cos πt','sin πt']),
+  Q('Does the fractional wave keep its energy as the classical wave does?','هل تحافظ الموجة الكسرية على طاقتها كالموجة الكلاسيكية؟',['No: it is damped, and the amplitude decays like `t^{−α}`','لا: إنها متخامدة والسعة تتناقص مثل `t^{−α}`'],[['The memory acts as a damping.','الذاكرة تعمل مثل التخامد.']],[['Yes','نعم'],['Its energy grows','طاقتها تنمو']]),
+]);
+
+lesson('508',73,[
+  ['Separation of variables works as for the heat equation. Each sine mode evolves by its own Mittag-Leffler function:','فصل المتغيرات يعمل كما في معادلة الحرارة. وكل نمط جيبي يتطور بدالة ميتاج–ليفلر خاصة به:'],
+  'u = Σ_{n≥1} b_n E_{α}(−κ(nπ)^2t^{α}) sin nπx,     b_n = 2∫_0^1 u_0(x) sin nπx dx',
+  ['For `u_0 = x(1 − x)`, `b_n = 8/(nπ)^3` for odd n and 0 for even n. The modes decay only algebraically: at t = 1, α = 1/2, mode 3 is still `E_{1/2}(−9π^2)/E_{1/2}(−π^2) = 0.0064/0.0569 ≈ 1/9` of mode 1, while for α = 1 the ratio is `e^{−8π^2} ≈ 10^{−34}`. There is no strong smoothing in time.','ولـ `u_0 = x(1 − x)` تكون `b_n = 8/(nπ)^3` لـ n الفردية و 0 للزوجية. والأنماط تتناقص جبرياً فقط: عند t = 1 و α = 1/2 يبقى النمط 3 نحو `E_{1/2}(−9π^2)/E_{1/2}(−π^2) = 0.0064/0.0569 ≈ 1/9` من النمط 1، بينما النسبة عند α = 1 هي `e^{−8π^2} ≈ 10^{−34}`. فلا تنعيم قوي في الزمن.'],
+],[
+  Q('Compute `b_1` for `u_0 = x(1 − x)`.','احسب `b_1` لـ `u_0 = x(1 − x)`.','#f{8}{π^3} ≈ 0.258',['b_n = #f{8}{(nπ)^3},   n = 1'],['#f{4}{π^3}','#f{8}{π^2}','#f{1}{4}']),
+  Q('Why is `b_2 = 0`?','لماذا `b_2 = 0`؟',['`x(1 − x)` is symmetric about 1/2 and `sin 2πx` is antisymmetric','`x(1 − x)` متماثلة حول 1/2 و `sin 2πx` ضد متماثلة'],[['Their product integrates to zero.','تكامل حاصل ضربهما صفر.']],[['Because n is even','لأن n زوجي'],['It is not zero','ليست صفراً']]),
+  Q('For large t, how does mode n compare with mode 1 when α < 1?','لـ t الكبيرة كيف يقارن النمط n بالنمط 1 عند α < 1؟','#f{E_{α}(−n^2π^2t^{α})}{E_{α}(−π^2t^{α})} → #f{1}{n^2}',['E_{α}(−z) ≈ #f{1}{zΓ(1 − α)}'],[['→ 0 exponentially','→ 0 أسياً'],'→ 1','→ n^2']),
+  Q('Is recovering `u_0` from `u(·, T)` easier or harder than for the heat equation?','هل استرجاع `u_0` من `u(·, T)` أسهل أم أصعب منه لمعادلة الحرارة؟',['Easier: high modes are damped only by `1/n^2`, not exponentially','أسهل: الأنماط العليا تتخامد بـ `1/n^2` فقط لا أسياً'],[['Backward problems are only mildly ill-posed.','المسائل العكسية سيئة الطرح بدرجة خفيفة فقط.']],[['Harder','أصعب'],['Impossible in both cases','مستحيل في الحالتين']]),
+]);
+
+lesson('508',74,[
+  ['On the whole line the fundamental solution is found by Laplace transform in t and Fourier transform in x. In the Laplace domain it is explicit:','على المستقيم كله يوجد الحل الأساسي بتحويل لابلاس في t وتحويل فورييه في x. وهو صريح في مجال لابلاس:'],
+  'Ĝ(x, s) = #f{s^{α/2−1}}{2#r{κ}} e^{−|x|s^{α/2}/#r{κ}},     G(0, t) = #f{t^{−α/2}}{2#r{κ} Γ(1 − α/2)}',
+  ['G depends on x only through the similarity variable `x/t^{α/2}` and is expressed by the M-Wright (Mainardi) function. Its peak at x = 0 has a cusp for α < 1, and its width grows like `t^{α/2}`.','و G تعتمد على x عبر متغير التشابه `x/t^{α/2}` فقط وتُعبَّر بدالة M-Wright (ماينردي). وقمتها عند x = 0 لها رأس حاد عند α < 1 وعرضها ينمو مثل `t^{α/2}`.'],
+],[
+  Q('Reduce `G(0, t)` to α = 1.','اختصر `G(0, t)` إلى α = 1.','#f{1}{2#r{πκt}}',['Γ(#f{1}{2}) = #r{π}'],['#f{1}{2#r{κt}}','#f{1}{#r{4πt}}·κ','#f{t^{−1}}{2}']),
+  Q('Compute the constant in `G(0, t)` for α = 1/2, κ = 1.','احسب الثابت في `G(0, t)` عند α = 1/2 و κ = 1.','#f{1}{2Γ(3/4)} ≈ 0.408',['Γ(#f{3}{4}) ≈ 1.2254'],['≈ 0.282','≈ 0.5','≈ 0.886']),
+  Q('How does the width of G grow for α = 1/2?','كيف ينمو عرض G عند α = 1/2؟','~ t^{1/4}',['t^{α/2}'],['~ t^{1/2}','~ t','~ t^{1/8}']),
+  Q('Check: for α = 1, `Ĝ(x, s)` is the Laplace transform of which function?','تحقق: عند α = 1 يكون `Ĝ(x, s)` تحويل لابلاس لأي دالة؟','#f{1}{2#r{πκt}} e^{−x^2/(4κt)}',['ℒ{#f{e^{−x^2/(4κt)}}{#r{πκt}}} = #f{e^{−|x|#r{s/κ}}}{#r{κs}}'],['e^{−|x|t}','#f{1}{2} e^{−|x|}','δ(x)']),
+]);
+
+lesson('508',75,[
+  ['The paper treats a general multi-term problem on `[0, γ] × [0, 1]` that contains the equations of Lessons 71–72 as special cases:','يعالج البحث مسألة عامة متعددة الحدود على `[0, γ] × [0, 1]` تحتوي معادلات الدرسين 71–72 حالاتٍ خاصة:'],
+  '^CD^{μ_s} y + Σ_{i=1}^{s−1} a_i ^CD^{μ_i} y + Σ_{i=1}^{s} b_i ^CD^{ν_i} y + c y = d Δy + e Δ ^CD^{η} y + f Δ ^CD^{υ} y + g',
+  '1 < μ_1 < … < μ_s < 2,     0 < ν_i ≤ 1,     0 < η ≤ 1,     1 < υ ≤ 2',
+  ['The highest order `μ_s` decides the number of initial conditions (two) and the integration operator `D^{−μ_s}` used in Unit 9. For the integrated form to contain only integrals, every order on the right must satisfy `υ ≤ μ_s`.','وأعلى رتبة `μ_s` تحدد عدد الشروط الابتدائية (اثنان) ومؤثر التكامل `D^{−μ_s}` المستخدم في الوحدة 9. ولكي لا تحتوي الصيغة التكاملية إلا تكاملات يجب أن تحقق كل رتبة في الطرف الأيمن `υ ≤ μ_s`.'],
+],[
+  Q('Which choice of parameters gives `^CD^{1.5}y = Δy + g`?','أي اختيار للوسائط يعطي `^CD^{1.5}y = Δy + g`؟','s = 1,   μ_1 = 1.5,   b_1 = c = e = f = 0,   d = 1',[['Only the top derivative and ordinary diffusion remain.','تبقى المشتقة العليا والانتشار العادي فقط.']],['s = 2,   d = 0','μ_1 = 1.5,   d = 0','c = 1,   d = 1']),
+  Q('With `μ_s = 1.8`, which value of υ is not allowed: 1.5 or 1.9?','مع `μ_s = 1.8` أي قيمة لـ υ غير مسموحة: 1.5 أم 1.9؟','υ = 1.9',['υ ≤ μ_s'],['υ = 1.5',['both','كلاهما'],['neither','لا شيء منهما']]),
+  Q('Why is the time domain `[0, 1]` no loss of generality?','لماذا لا يفقد مجال الزمن `[0, 1]` العمومية؟',['Scaling `t = Tτ` turns `[0, T]` into `[0, 1]`, multiplying each term by a power of T','التحجيم `t = Tτ` يحوّل `[0, T]` إلى `[0, 1]` ويضرب كل حد في قوة من T'],['^CD_t^{β} = T^{−β} ^CD_τ^{β}'],[['Solutions end at t = 1','الحلول تنتهي عند t = 1'],['It is a loss','إنه فقد']]),
+  Q('How many orders does the problem have for s = 2?','كم رتبة في المسألة عند s = 2؟','6:   μ_1, μ_2, ν_1, ν_2, η, υ',[['The values of λ must fit all of them.','يجب أن تناسب λ جميعها.']],['4','2','3']),
+]);
+
+lesson('508',76,[
+  ['Each term has a physical role:','لكل حد دور فيزيائي:'],
+  '^CD^{μ_i}y:  1 < μ_i < 2,     ^CD^{ν_i}y:  0 < ν_i ≤ 1,     cy,     dΔy,     eΔ ^CD^{η}y,     fΔ ^CD^{υ}y',
+  ['Orders in (1, 2) give inertia with memory (damped waves), orders in (0, 1] friction or sub-diffusion, `cy` reaction or a restoring force, `dΔy` ordinary diffusion, and the e and f terms viscoelastic diffusion: the flux depends on the history of the gradient, as in fractional Kelvin–Voigt or second-grade fluid models.','الرتب في (1, 2) تعطي قصوراً بذاكرة (موجات متخامدة)، والرتب في (0, 1] احتكاكاً أو انتشاراً بطيئاً، و `cy` تفاعلاً أو قوة إرجاع، و `dΔy` انتشاراً عادياً، وحدّا e و f انتشاراً لزجاً مرناً: التدفق يعتمد على تاريخ التدرج كما في نماذج كلفن–فويغت الكسرية أو موائع الدرجة الثانية.'],
+],[
+  Q('Which classical equation is `y_{tt} + 2by_t + cy = dy_{xx}`?','أي معادلة كلاسيكية هي `y_{tt} + 2by_t + cy = dy_{xx}`؟',['The telegraph equation','معادلة البرق'],[['Its fractional version has orders μ and ν instead of 2 and 1.','نسختها الكسرية لها الرتبتان μ و ν بدل 2 و 1.']],[['The heat equation','معادلة الحرارة'],['Laplace’s equation','معادلة لابلاس']]),
+  Q('Which term models a viscoelastic stress that depends on the history of the strain rate?','أي حد يمثل إجهاداً لزجاً مرناً يعتمد على تاريخ معدل الانفعال؟','eΔ ^CD^{η}y',[['The derivative acts on Δy: the flux has memory.','المشتقة تعمل على Δy: للتدفق ذاكرة.']],['cy','dΔy','^CD^{μ_s}y']),
+  Q('What does a term `cy` with c > 0 do in a diffusion setting?','ماذا يفعل الحد `cy` مع c > 0 في سياق الانتشار؟',['It removes material (decay or reaction)','يزيل مادة (تحلل أو تفاعل)'],[['On the left-hand side with c > 0 it is a sink.','في الطرف الأيسر مع c > 0 هو مصرف.']],[['It adds material','يضيف مادة'],['Nothing','لا شيء']]),
+  Q('In the limit `μ_s → 2` with all `a_i = b_i = e = f = 0`, what equation remains?','في النهاية `μ_s → 2` مع كل `a_i = b_i = e = f = 0` أي معادلة تبقى؟','y_{tt} + cy = dΔy + g',[['The Klein–Gordon type wave equation.','معادلة موجة من نوع كلاين–غوردن.']],['y_t = dΔy','Δy = 0','y_{tt} = 0']),
+]);
+
+lesson('508',77,[
+  ['Two initial conditions and two boundary conditions complete the problem:','شرطان ابتدائيان وشرطان حديان يكملان المسألة:'],
+  'y(x, 0) = ψ_0(x),     ∂_t y(x, 0) = ψ_1(x),     y(0, t) = φ_0(t),     y(γ, t) = φ_1(t)',
+  ['The data must agree at the corners: `φ_0(0) = ψ_0(0)`, `φ_1(0) = ψ_0(γ)`, and for the velocities `φ_0′(0) = ψ_1(0)`, `φ_1′(0) = ψ_1(γ)`. Test problems are manufactured: choose y, then compute g and the data from it. For Example 1 of the paper, `y = t^3x^2(1 − x)^2e^x` with γ = 1, all four data functions vanish.','ويجب أن تتفق المعطيات عند الأركان: `φ_0(0) = ψ_0(0)` و `φ_1(0) = ψ_0(γ)`، وللسرعات `φ_0′(0) = ψ_1(0)` و `φ_1′(0) = ψ_1(γ)`. ومسائل الاختبار تُصنَّع: اختر y ثم احسب منها g والمعطيات. وللمثال 1 في البحث `y = t^3x^2(1 − x)^2e^x` مع γ = 1 تنعدم دوال المعطيات الأربع.'],
+],[
+  Q('For `y = t^2 sin πx` on [0, 1], give the four data functions.','لـ `y = t^2 sin πx` على [0, 1] أعط دوال المعطيات الأربع.','ψ_0 = ψ_1 = 0,   φ_0 = φ_1 = 0',['y(x, 0) = 0,   ∂_ty(x, 0) = 2t sin πx|_{t=0} = 0,   sin 0 = sin π = 0'],['ψ_0 = sin πx,   ψ_1 = 0','φ_0 = t^2,   φ_1 = t^2','ψ_1 = 2 sin πx']),
+  Q('Manufacture g for `^CD^{1.5}y = Δy + g` with `y = t^2 sin πx`.','صنّع g لـ `^CD^{1.5}y = Δy + g` مع `y = t^2 sin πx`.','g = (#f{2}{Γ(3/2)}t^{1/2} + π^2t^2) sin πx',['^CD^{1.5}t^2 = #f{Γ(3)}{Γ(3/2)}t^{1/2},   Δy = −π^2t^2 sin πx'],['g = (2t^{1/2} − π^2t^2) sin πx','g = π^2t^2 sin πx','g = #f{2}{Γ(3/2)}t^{1/2} sin πx']),
+  Q('For Example 2, `y = t^{3.9} sin x` on [0, γ], give `φ_1(t)`.','للمثال 2 `y = t^{3.9} sin x` على [0, γ] أعط `φ_1(t)`.','φ_1(t) = t^{3.9} sin γ',['y(γ, t)'],['φ_1 = 0','φ_1 = t^{3.9}','φ_1 = sin γ']),
+  Q('Why must `φ_0(0) = ψ_0(0)`?','لماذا يجب أن يكون `φ_0(0) = ψ_0(0)`؟',['Both give the value of y at the corner (0, 0)','كلاهما يعطي قيمة y عند الركن (0, 0)'],[['Otherwise the solution is discontinuous there.','وإلا كان الحل غير متصل هناك.']],[['By convention','اصطلاحاً'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('508',78,[
+  ['Space-fractional equations replace the Laplacian by a fractional power. They model Lévy flights: jumps with heavy-tailed lengths. With the spectral definition on (0, 1) and zero boundary values:','المعادلات الكسرية المكانية تستبدل اللابلاسي بقوة كسرية. وهي تنمذج طيران ليفي: قفزات بأطوال ذات ذيول ثقيلة. ومع التعريف الطيفي على (0, 1) وقيم حدية صفرية:'],
+  'u_t = −(−Δ)^{β/2}u,     (−Δ)^{β/2} sin nπx = (nπ)^{β} sin nπx,     u = Σ b_n e^{−(nπ)^{β}t} sin nπx',
+  ['On the whole line the operator has the Fourier symbol `|ξ|^{β}` (the Riesz derivative), and the fundamental solution decays like `|x|^{−1−β}` instead of a Gaussian. The operator is nonlocal: different definitions on a bounded domain (spectral, integral) give different solutions.','وعلى المستقيم كله للمؤثر الرمز `|ξ|^{β}` في فورييه (مشتقة ريس)، والحل الأساسي يتناقص مثل `|x|^{−1−β}` بدل التوزيع الجاوسي. والمؤثر غير محلي: التعريفات المختلفة على مجال محدود (الطيفي والتكاملي) تعطي حلولاً مختلفة.'],
+],[
+  Q('Give the decay rate of mode 1 for β = 1.5.','أعط معدل تناقص النمط 1 عند β = 1.5.','π^{1.5} ≈ 5.57',['(nπ)^{β},   n = 1'],['π^2 ≈ 9.87','π ≈ 3.14','1.5π']),
+  Q('Reduce the operator to β = 2.','اختصر المؤثر إلى β = 2.','−Δ',['(nπ)^2 sin nπx = −#f{d^2}{dx^2} sin nπx'],['Δ','(−Δ)^{1/2}','I']),
+  Q('How does the fundamental solution decay for β = 1.5?','كيف يتناقص الحل الأساسي عند β = 1.5؟','~ |x|^{−2.5}',['|x|^{−1−β}'],['~ e^{−x^2}','~ |x|^{−1.5}','~ e^{−|x|}']),
+  Q('Why do the spectral and integral definitions differ on (0, 1)?','لماذا يختلف التعريفان الطيفي والتكاملي على (0, 1)؟',['The operator is nonlocal, so how the outside of the domain is treated matters','المؤثر غير محلي فطريقة معالجة خارج المجال تؤثر'],[['For β = 2 they coincide.','عند β = 2 يتطابقان.']],[['They do not differ','لا يختلفان'],['Because β < 2','لأن β < 2']]),
+]);
+
+lesson('508',79,[
+  ['A maximum principle holds for time-fractional diffusion (Luchko). Its key is a property of the Caputo derivative at a maximum: if f attains its maximum on [0, T] at `t_0 > 0`, then','يصح مبدأ القيمة العظمى للانتشار الكسري الزمني (لوتشكو). ومفتاحه خاصية لمشتقة كابوتو عند القيمة العظمى: إذا بلغت f قيمتها العظمى على [0, T] عند `t_0 > 0` فإن'],
+  '^CD^{α}f(t_0) ≥ 0     (0 < α < 1)',
+  ['Consequence: if `^CD_t^{α}u − u_{xx} ≤ 0`, then u is at most the largest of its initial and boundary values. This gives uniqueness and the stability bound `‖u(t)‖ ≤ ‖u_0‖ + #f{t^{α}}{Γ(1 + α)}‖F‖` for a source F. Unlike the integer case, the derivative at a maximum is not zero.','والنتيجة: إذا كان `^CD_t^{α}u − u_{xx} ≤ 0` فإن u لا تتجاوز أكبر قيمها الابتدائية والحدية. وهذا يعطي الوحدانية وحد الاستقرار `‖u(t)‖ ≤ ‖u_0‖ + #f{t^{α}}{Γ(1 + α)}‖F‖` لمصدر F. وبخلاف الحالة الصحيحة لا تساوي المشتقة صفراً عند القيمة العظمى.'],
+],[
+  Q('Compute `^CD^{1/2}f` at the maximum t = 1/2 of `f = t(1 − t)`.','احسب `^CD^{1/2}f` عند القيمة العظمى t = 1/2 لـ `f = t(1 − t)`.','#f{2}{#r{π}}(t^{1/2} − #f{4}{3}t^{3/2}) ≈ 0.266',['^CD^{1/2}t = #f{2}{#r{π}}t^{1/2},   ^CD^{1/2}t^2 = #f{8}{3#r{π}}t^{3/2}'],['0','−0.266','0.5']),
+  Q('What is `f′(1/2)` for the same f?','ما `f′(1/2)` للدالة f نفسها؟','0',['1 − 2t'],['0.266','1','−1']),
+  Q('Why is `^CD^{α}f(t_0)` positive although f is at its maximum?','لماذا تكون `^CD^{α}f(t_0)` موجبة مع أن f عند قيمتها العظمى؟',['It averages the whole history, during which f was rising','إنها تأخذ متوسط التاريخ كله الذي كانت f فيه صاعدة'],[['`^CD^{α}f(t_0)` weights `f′(s)` on `[0, t_0]` by `(t_0 − s)^{−α}`.','`^CD^{α}f(t_0)` تزن `f′(s)` على `[0, t_0]` بـ `(t_0 − s)^{−α}`.']],[['Rounding','التقريب'],['f is not smooth','f ليست ملساء']]),
+  Q('Bound `‖u(1)‖` for `‖u_0‖ = 1`, `‖F‖ = 2`, α = 1/2.','قدّر `‖u(1)‖` لـ `‖u_0‖ = 1` و `‖F‖ = 2` و α = 1/2.','1 + #f{2}{Γ(3/2)} ≈ 3.26',['‖u_0‖ + #f{t^{α}}{Γ(1 + α)}‖F‖'],['3','1','5']),
+]);
+
+lesson('508',80,[
+  ['Worked problems for Unit 8: modes, Mittag-Leffler decay, data and the maximum principle.','مسائل محلولة للوحدة 8: الأنماط وتناقص ميتاج–ليفلر والمعطيات ومبدأ القيمة العظمى.'],
+  'u = Σ b_n E_{α}(−κ(nπ)^2t^{α}) sin nπx,     E_{α}(−z) ≈ #f{1}{zΓ(1 − α)}',
+],[
+  Q('Solve `^CD_t^{1/2}u = u_{xx}`, `u(x, 0) = 3 sin 2πx`, zero boundary values.','حل `^CD_t^{1/2}u = u_{xx}` مع `u(x, 0) = 3 sin 2πx` وقيم حدية صفرية.','u = 3E_{1/2}(−4π^2t^{1/2}) sin 2πx',['n = 2:   (2π)^2 = 4π^2'],['u = 3e^{−4π^2t} sin 2πx','u = 3E_{1/2}(−2πt^{1/2}) sin 2πx','u = 3 sin 2πx']),
+  Q('Estimate the amplitude of that solution at t = 100.','قدّر سعة ذلك الحل عند t = 100.','#f{3}{4π^2·10·#r{π}} ≈ 0.0043',['E_{1/2}(−z) ≈ #f{1}{z#r{π}},   z = 4π^2·10'],['≈ 0','≈ 3','≈ 0.43']),
+  Q('Which data does `^CD_t^{1.3}u = u_{xx}` need?','أي معطيات تحتاجها `^CD_t^{1.3}u = u_{xx}`؟',['`u(x, 0)`, `u_t(x, 0)` and two boundary values','`u(x, 0)` و `u_t(x, 0)` وقيمتان حديتان'],[['The order exceeds 1.','الرتبة تتجاوز 1.']],[['`u(x, 0)` only','`u(x, 0)` فقط'],['Two boundary values only','قيمتان حديتان فقط']]),
+  Q('If `^CD_t^{α}u = u_{xx}`, `0 ≤ u_0 ≤ 1` and zero boundary values, what bounds hold for u?','إذا كان `^CD_t^{α}u = u_{xx}` و `0 ≤ u_0 ≤ 1` وقيم حدية صفرية، فأي حدود تصح لـ u؟','0 ≤ u ≤ 1',[['The maximum principle applied to u and to −u.','مبدأ القيمة العظمى مطبقاً على u وعلى −u.']],['u ≤ 2','−1 ≤ u ≤ 0','u ≤ e^{t}']),
+]);
+
 export const MS508 = true;
