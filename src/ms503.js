@@ -603,4 +603,116 @@ lesson('503',40,[
   Q('Find the eigenvalue of `P_3^{(1,0)}` in the Jacobi equation.','أوجد القيمة الذاتية لـ `P_3^{(1,0)}` في معادلة جاكوبي.','15',['3(3 + 1 + 0 + 1) = 15'],['12','9','18']),
 ]);
 
+/* ---- 503 · Unit 5 (lessons 41–50): zeros and quadrature ---- */
+lesson('503',41,[
+  ['Like every orthogonal family, `P_n^{(α,β)}` has n real, simple zeros, all inside `(−1, 1)`. The proof: if `P_n` changed sign at only m < n points `x_1, …, x_m`, then `q = Π(x − x_k)` would make `w P_n q` of one sign, so `∫ w P_n q dx ≠ 0`, contradicting orthogonality to polynomials of lower degree.',
+   'ككل عائلة متعامدة، لـ `P_n^{(α,β)}` عدد n من الجذور الحقيقية البسيطة وكلها داخل `(−1, 1)`. والبرهان: لو غيّرت `P_n` إشارتها عند m < n نقطة فقط `x_1, …, x_m` لجعلت `q = Π(x − x_k)` الحاصل `w P_n q` بإشارة واحدة، فيكون `∫ w P_n q dx ≠ 0`، وهذا يناقض التعامد مع الكثيرات الأقل درجة.'],
+  'P_1^{(α,β)}(x) = 0   ⇔   x = #f{β − α}{α + β + 2}',
+],[
+  Q('Find the zero of `P_1^{(1,0)}`.','أوجد جذر `P_1^{(1,0)}`.','x = −#f{1}{3}',['#f{0 − 1}{1 + 0 + 2}'],['x = #f{1}{3}','x = 0','x = −#f{1}{2}']),
+  Q('Find the zeros of `P_2^{(1,1)} = (15x^2 − 3)/4`.','أوجد جذور `P_2^{(1,1)} = (15x^2 − 3)/4`.','x = ±#f{1}{#r{5}} ≈ ±0.4472',['x^2 = #f{3}{15} = #f{1}{5}'],['x = ±#f{1}{#r{3}}','x = ±#f{1}{5}','x = ±#r{#f{3}{5}}']),
+  Q('Find the zero of `P_1^{(0,1)}`.','أوجد جذر `P_1^{(0,1)}`.','x = #f{1}{3}',['#f{1 − 0}{3}'],['x = −#f{1}{3}','x = 0','x = #f{2}{3}']),
+  Q('How many zeros does `P_7^{(2,3)}` have in `(−1, 1)`?','كم جذراً لـ `P_7^{(2,3)}` في `(−1, 1)`؟','7',[['All n zeros are real, simple and inside the interval.','كل الجذور الـ n حقيقية بسيطة وداخل المجال.']],['5','9','3']),
+]);
+
+lesson('503',42,[
+  ['The zeros of `P_n` and `P_{n+1}` interlace, and they move continuously with the parameters: increasing α moves every zero towards −1 (away from the end where the weight `(1 − x)^α` vanishes), increasing β moves them towards +1.','جذور `P_n` و `P_{n+1}` متشابكة، وتتحرك باستمرار مع الوسيطين: زيادة α تحرك كل جذر نحو −1 (بعيداً عن الطرف الذي ينعدم عنده الوزن `(1 − x)^α`)، وزيادة β تحركها نحو +1.'],
+  'P_1^{(α,0)}:   x = −#f{α}{α + 2} = 0,  −#f{1}{3},  −#f{1}{2}   (α = 0, 1, 2)',
+  ['This is why the choice of α, β changes where the collocation points cluster.','ولهذا يغيّر اختيار α و β مكان تكاثف نقاط التجميع.'],
+],[
+  Q('Find the zeros of `P_2^{(1,0)} = 5x^2/2 + x − 1/2`.','أوجد جذور `P_2^{(1,0)} = 5x^2/2 + x − 1/2`.','x ≈ −0.6899,   0.2899',['5x^2 + 2x − 1 = 0  ⇒  x = #f{−2 ± #r{24}}{10}'],['x ≈ ±0.4472','x ≈ −0.2899,   0.6899','x ≈ −1,   0.2']),
+  Q('Check that they interlace with the zero −1/3 of `P_1^{(1,0)}`.','تحقق أنها متشابكة مع الجذر −1/3 لـ `P_1^{(1,0)}`.',['Yes: −0.6899 < −0.3333 < 0.2899','نعم: −0.6899 < −0.3333 < 0.2899'],[['Exactly one zero of `P_1` lies between the two zeros of `P_2`.','يقع جذر واحد تماماً لـ `P_1` بين جذري `P_2`.']],[['No','لا']]),
+  Q('Find the zero of `P_1^{(2,0)}`.','أوجد جذر `P_1^{(2,0)}`.','x = −#f{1}{2}',['−#f{2}{2 + 2}'],['x = −#f{1}{3}','x = #f{1}{2}','x = −#f{2}{3}']),
+  Q('If β increases with α fixed, in which direction do the zeros move?','إذا زادت β مع ثبات α ففي أي اتجاه تتحرك الجذور؟',['Towards x = 1','نحو x = 1'],['P_1^{(0,β)}:   x = #f{β}{β + 2}'],[['Towards x = −1','نحو x = −1'],['They do not move','لا تتحرك']]),
+]);
+
+lesson('503',43,[
+  ['The zeros are computed by Newton’s method with values and derivatives from the recurrence and the derivative law:','تُحسب الجذور بطريقة نيوتن بقيم ومشتقات من علاقة التكرار وقانون المشتقة:'],
+  'x_{k+1} = x_k − #f{P_n(x_k)}{P_n′(x_k)}',
+  ['Good starting values are the Chebyshev-like guesses `cos((4i − 1)π/(4n + 2))` adjusted for α, β, or the zeros of `P_{n−1}` (interlacing). Newton converges quadratically, so three or four steps give full precision.','والقيم الابتدائية الجيدة تخمينات شبيهة بتشيبيشيف `cos((4i − 1)π/(4n + 2))` معدّلة حسب α و β، أو جذور `P_{n−1}` (التشابك). ونيوتن يتقارب تربيعياً فتكفي ثلاث أو أربع خطوات لدقة كاملة.'],
+],[
+  Q('Do one Newton step for `P_2^{(1,1)} = (15x^2 − 3)/4` from `x_0 = 0.5`.','نفذ خطوة نيوتن واحدة لـ `P_2^{(1,1)} = (15x^2 − 3)/4` من `x_0 = 0.5`.','x_1 = 0.45',['P(0.5) = #f{3.75 − 3}{4} = 0.1875,   P′(0.5) = 7.5·0.5 = 3.75','x_1 = 0.5 − 0.05'],['x_1 = 0.4472','x_1 = 0.55','x_1 = 0.4']),
+  Q('Do a second step from `x_1 = 0.45`.','نفذ خطوة ثانية من `x_1 = 0.45`.','x_2 ≈ 0.447222',['P(0.45) = #f{3.0375 − 3}{4} = 0.009375,   P′ = 3.375','x_2 = 0.45 − 0.002778'],['x_2 = 0.45','x_2 ≈ 0.4444','x_2 ≈ 0.4528']),
+  Q('The exact zero is `1/#r{5} = 0.4472136`. How many correct digits did each step give?','الجذر المضبوط `1/#r{5} = 0.4472136`. كم رقماً صحيحاً أعطت كل خطوة؟',['About 1, then about 4: the digits roughly double','نحو رقم ثم نحو أربعة: الأرقام تتضاعف تقريباً'],['|0.45 − 0.44721| ≈ 2.8 × 10^{−3},   |0.447222 − 0.4472136| ≈ 8 × 10^{−6}'],[['No improvement','لا تحسن'],['One digit per step','رقم في كل خطوة']]),
+  Q('Which law gives `P_n′` needed in Newton’s method?','أي قانون يعطي `P_n′` اللازمة في طريقة نيوتن؟','P_n′ = #f{n + α + β + 1}{2} P_{n−1}^{(α+1,β+1)}',[['The derivative is again a Jacobi polynomial, evaluated by its own recurrence.','المشتقة كثيرة جاكوبي أيضاً تُحسب بعلاقة تكرارها.']],['P_n′ = n P_{n−1}','P_n′ = (2n + 1)P_{n−1}','P_n′ = #f{n}{2}P_{n−1}^{(α,β)}']),
+]);
+
+lesson('503',44,[
+  ['As in Course 501, the Gauss nodes are the eigenvalues of the Jacobi matrix of the recurrence of the orthonormal polynomials (Golub–Welsch):','كما في المقرر 501، عقد جاوس هي القيم الذاتية لمصفوفة جاكوبي لعلاقة تكرار الكثيرات المتعامدة المعيارية (Golub–Welsch):'],
+  'x_i = λ_i(J_n),   w_i = μ_0 v_{1i}^2,   μ_0 = h_0',
+  ['For the Jacobi weight the diagonal is `a_k = (β^2 − α^2)/((2k + α + β)(2k + α + β + 2))`, zero when α = β. The weights are the total mass `μ_0` times the squared first components of the normalised eigenvectors.','ولوزن جاكوبي يكون القطر `a_k = (β^2 − α^2)/((2k + α + β)(2k + α + β + 2))`، وهو صفر عندما α = β. والأوزان هي الكتلة الكلية `μ_0` مضروبة في مربعات المركبات الأولى للمتجهات الذاتية المعيارية.'],
+],[
+  Q('Find `a_0` for α = 1, β = 0, and compare with the zero of `P_1^{(1,0)}`.','أوجد `a_0` عند α = 1 و β = 0، وقارنه بجذر `P_1^{(1,0)}`.','a_0 = −#f{1}{3}',['#f{0 − 1}{(1)(3)}',['`J_1 = (a_0)`, so the one-point node is `−1/3`, the zero of `P_1^{(1,0)}`.','`J_1 = (a_0)` فعقدة النقطة الواحدة `−1/3` وهي جذر `P_1^{(1,0)}`.']],['a_0 = #f{1}{3}','a_0 = 0','a_0 = −1']),
+  Q('What is the diagonal of `J_n` when α = β?','ما قطر `J_n` عندما α = β؟','0',['β^2 − α^2 = 0'],['1','#f{1}{2}','α']),
+  Q('What is `μ_0` for α = β = 1?','ما `μ_0` عند α = β = 1؟','#f{4}{3}',['∫_{−1}^{1}(1 − x^2) dx'],['2','#f{2}{3}','π']),
+  Q('For a symmetric two-point rule, the eigenvectors are `(1, ±1)/#r{2}`. Find the weights for α = β = 1.','لقاعدة متماثلة بنقطتين المتجهات الذاتية `(1, ±1)/#r{2}`. أوجد الأوزان عند α = β = 1.','#f{2}{3},   #f{2}{3}',['μ_0·#f{1}{2} = #f{4}{3}·#f{1}{2}'],['1,   1','#f{4}{3},   #f{4}{3}','#f{1}{3},   #f{1}{3}']),
+]);
+
+lesson('503',45,[
+  ['The Gauss–Jacobi rule uses the n zeros of `P_n^{(α,β)}` and integrates the weight exactly:','قاعدة جاوس–جاكوبي تستخدم جذور `P_n^{(α,β)}` الـ n وتكامل الوزن بدقة:'],
+  '∫_{−1}^{1} (1 − x)^α(1 + x)^β f(x) dx ≈ Σ_{i=1}^{n} w_i f(x_i)',
+  ['The rule is exact whenever f is a polynomial of degree ≤ 2n − 1.','والقاعدة مضبوطة متى كانت f كثيرة حدود درجتها ≤ 2n − 1.'],
+  ['The proof is the same as for Gauss–Legendre: divide f by `P_n` and use orthogonality. The one-point rule is `μ_0 f((β − α)/(α + β + 2))`.','والبرهان كما في جاوس–ليجندر: نقسم f على `P_n` ونستخدم التعامد. وقاعدة النقطة الواحدة `μ_0 f((β − α)/(α + β + 2))`.'],
+],[
+  Q('Check the one-point rule for α = 1, β = 0 on f = x.','تحقق من قاعدة النقطة الواحدة عند α = 1 و β = 0 على f = x.','−#f{2}{3}',['μ_0 = 2,   x_1 = −#f{1}{3}:   2·(−#f{1}{3})','∫_{−1}^{1}(1 − x)x dx = 0 − #f{2}{3}'],['0','#f{2}{3}','−#f{1}{3}']),
+  Q('Apply the two-point rule for α = β = 1 (nodes `±1/#r{5}`, weights 2/3) to `f = x^2`.','طبّق قاعدة النقطتين عند α = β = 1 (العقدتان `±1/#r{5}` والوزنان 2/3) على `f = x^2`.','#f{4}{15}',['2·#f{2}{3}·#f{1}{5} = #f{4}{15}','∫_{−1}^{1}(1 − x^2)x^2 dx = #f{2}{3} − #f{2}{5} = #f{4}{15}'],['#f{2}{15}','#f{2}{5}','#f{8}{15}']),
+  Q('Up to which degree is the four-point Gauss–Jacobi rule exact?','حتى أي درجة تكون قاعدة جاوس–جاكوبي ذات النقاط الأربع مضبوطة؟','7',['2n − 1'],['4','8','5']),
+  Q('Apply the two-point rule for α = β = 1 to `f = x^4` and compare with the exact value.','طبّق قاعدة النقطتين عند α = β = 1 على `f = x^4` وقارنها بالقيمة المضبوطة.','#f{4}{75}  vs  #f{4}{35}',['2·#f{2}{3}·#f{1}{25} = #f{4}{75}','∫_{−1}^{1}(1 − x^2)x^4 dx = #f{2}{5} − #f{2}{7} = #f{4}{35}',['Degree 4 > 3, so the rule is no longer exact.','الدرجة 4 > 3 فلم تعد القاعدة مضبوطة.']],['#f{4}{35}  vs  #f{4}{35}','#f{4}{15}  vs  #f{4}{35}','0  vs  #f{4}{35}']),
+]);
+
+lesson('503',46,[
+  ['The Gauss–Jacobi weights have a closed form in terms of the derivative at the nodes:','لأوزان جاوس–جاكوبي صيغة مغلقة بدلالة المشتقة عند العقد:'],
+  'w_i = #f{2^{α+β+1} Γ(n + α + 1) Γ(n + β + 1)}{n! Γ(n + α + β + 1)}·#f{1}{(1 − x_i^2)[P_n′(x_i)]^2}',
+  ['With α = β = 0 it reduces to `2/((1 − x_i^2)P_n′(x_i)^2)` of Course 501. All weights are positive.','ومع α = β = 0 تؤول إلى `2/((1 − x_i^2)P_n′(x_i)^2)` في المقرر 501. وكل الأوزان موجبة.'],
+],[
+  Q('Use the formula for n = 1, α = 1, β = 0.','استخدم الصيغة عند n = 1 و α = 1 و β = 0.','w = 2',['#f{2^2 Γ(3)Γ(2)}{1!·Γ(3)} = 4,   1 − x^2 = #f{8}{9},   P_1′ = #f{3}{2}','w = #f{4}{#f{8}{9}·#f{9}{4}} = 2'],['w = 1','w = 4','w = #f{4}{3}']),
+  Q('Use the formula for the two-point rule with α = β = 1.','استخدم الصيغة لقاعدة النقطتين مع α = β = 1.','w = #f{2}{3}',['#f{2^3 Γ(4)Γ(4)}{2!·Γ(5)} = #f{8·36}{48} = 6','P_2′(#f{1}{#r{5}}) = 7.5·0.4472 = 3.354,   1 − x^2 = #f{4}{5}','w = #f{6}{0.8·11.25} = #f{6}{9}'],['w = 1','w = #f{4}{3}','w = #f{1}{3}']),
+  Q('Reduce the constant in front to Legendre.','اختصر الثابت في المقدمة إلى ليجندر.','2',['α = β = 0:   #f{2·n!·n!}{n!·n!}'],['1','#f{2}{2n + 1}','n']),
+  Q('Why are Gauss–Jacobi weights always positive?','لماذا تكون أوزان جاوس–جاكوبي موجبة دائماً؟',['They are integrals of the squares of Lagrange functions: `w_i = ∫ w ℓ_i^2 dx > 0`','لأنها تكاملات مربعات دوال لاجرانج: `w_i = ∫ w ℓ_i^2 dx > 0`'],[['`ℓ_i^2` has degree 2n − 2, so the rule integrates it exactly and gives `w_i`.','`ℓ_i^2` درجتها 2n − 2، فالقاعدة تكاملها بدقة وتعطي `w_i`.']],[['Because the nodes are positive','لأن العقد موجبة']]),
+]);
+
+lesson('503',47,[
+  ['The weights add up to the total mass of the Jacobi weight (exactness for f = 1):','مجموع الأوزان هو الكتلة الكلية لوزن جاكوبي (الضبط عند f = 1):'],
+  'Σ_i w_i = μ_0 = 2^{α+β+1} #f{Γ(α + 1) Γ(β + 1)}{Γ(α + β + 2)}',
+  ['This is a cheap check of any computed rule, and it shows how the weight changes the scale: for α = β = −1/2 the weights add up to π, for α = β = 1 to 4/3.','وهذا فحص رخيص لأي قاعدة محسوبة، ويبيّن كيف يغيّر الوزن المقياس: عند α = β = −1/2 مجموع الأوزان π، وعند α = β = 1 يساوي 4/3.'],
+],[
+  Q('Find `Σ w_i` for α = 1, β = 0.','أوجد `Σ w_i` عند α = 1 و β = 0.','2',['2^2·#f{Γ(2)Γ(1)}{Γ(3)} = 4·#f{1}{2}'],['1','4','#f{4}{3}']),
+  Q('Find `Σ w_i` for α = β = −1/2.','أوجد `Σ w_i` عند α = β = −1/2.','π',['2^0·#f{Γ(1/2)^2}{Γ(1)} = π'],['2','#f{π}{2}','1']),
+  Q('Find `Σ w_i` for α = 2, β = 0.','أوجد `Σ w_i` عند α = 2 و β = 0.','#f{8}{3}',['2^3·#f{Γ(3)Γ(1)}{Γ(4)} = 8·#f{2}{6}'],['#f{4}{3}','2','4']),
+  Q('Find `Σ w_i` for α = 1/2, β = 0.','أوجد `Σ w_i` عند α = 1/2 و β = 0.','#f{4#r{2}}{3} ≈ 1.8856',['2^{3/2}·#f{Γ(3/2)Γ(1)}{Γ(5/2)} = 2#r{2}·#f{2}{3}'],['2','#r{2}','1.5']),
+]);
+
+lesson('503',48,[
+  ['Gauss–Jacobi–Radau rules fix one end. With the node x = −1 fixed, the other n − 1 nodes are the zeros of `P_{n−1}^{(α,β+1)}`; the rule is exact for degree ≤ 2n − 2. With x = +1 fixed, use `P_{n−1}^{(α+1,β)}`.','قواعد جاوس–جاكوبي–رادو تثبّت طرفاً. ومع تثبيت العقدة x = −1 تكون العقد الأخرى n − 1 جذور `P_{n−1}^{(α,β+1)}`، والقاعدة مضبوطة للدرجة ≤ 2n − 2. ومع تثبيت x = +1 نستخدم `P_{n−1}^{(α+1,β)}`.'],
+  'x_0 = −1,   P_{n−1}^{(α,β+1)}(x_i) = 0',
+  ['The extra factor `(1 + x)` in the weight of the free nodes is what makes room for the fixed node. For α = β = 0 and n = 2 the free node is the zero `1/3` of `P_1^{(0,1)}`, the Radau rule of Course 501.','والعامل الإضافي `(1 + x)` في وزن العقد الحرة هو ما يفسح المجال للعقدة الثابتة. وعند α = β = 0 و n = 2 تكون العقدة الحرة الجذر `1/3` لـ `P_1^{(0,1)}`، وهي قاعدة رادو في المقرر 501.'],
+],[
+  Q('Find the free node of the two-point Legendre–Radau rule fixed at −1.','أوجد العقدة الحرة لقاعدة ليجندر–رادو ذات النقطتين المثبتة عند −1.','x = #f{1}{3}',['P_1^{(0,1)} = 0  ⇒  x = #f{1}{3}'],['x = −#f{1}{3}','x = 0','x = #f{1}{#r{3}}']),
+  Q('Up to which degree is the three-point Radau rule exact?','حتى أي درجة تكون قاعدة رادو ذات النقاط الثلاث مضبوطة؟','4',['2n − 2'],['5','3','6']),
+  Q('Which polynomial gives the free nodes when x = +1 is fixed?','أي كثيرة حدود تعطي العقد الحرة عند تثبيت x = +1؟','P_{n−1}^{(α+1,β)}',[['The fixed end x = 1 adds the factor `(1 − x)`, raising α.','الطرف الثابت x = 1 يضيف العامل `(1 − x)` فيرتفع α.']],['P_{n−1}^{(α,β+1)}','P_n^{(α,β)}','P_{n−2}^{(α+1,β+1)}']),
+  Q('Find the free node for α = 1, β = 0 and n = 2, fixed at −1.','أوجد العقدة الحرة عند α = 1 و β = 0 و n = 2 مع التثبيت عند −1.','x = 0',['P_1^{(1,1)} = 2x = 0'],['x = −#f{1}{3}','x = #f{1}{3}','x = #f{1}{2}']),
+]);
+
+lesson('503',49,[
+  ['Gauss–Jacobi–Lobatto rules fix both ends; the interior nodes are the zeros of `P_{n−2}^{(α+1,β+1)}`, and the rule is exact for degree ≤ 2n − 3.','قواعد جاوس–جاكوبي–لوباتو تثبّت الطرفين، والعقد الداخلية جذور `P_{n−2}^{(α+1,β+1)}`، والقاعدة مضبوطة للدرجة ≤ 2n − 3.'],
+  'x_0 = −1,   x_{n−1} = 1,   P_{n−2}^{(α+1,β+1)}(x_i) = 0',
+  ['By the derivative law these interior nodes are the extrema of `P_{n−1}^{(α,β)}`. For Legendre (α = β = 0) they are the zeros of `P_{n−1}′`, as in Course 501.','وبقانون المشتقة هذه العقد الداخلية هي القيم القصوى لـ `P_{n−1}^{(α,β)}`. ولليجندر (α = β = 0) هي جذور `P_{n−1}′` كما في المقرر 501.'],
+],[
+  Q('Find the interior node of the three-point Legendre–Lobatto rule.','أوجد العقدة الداخلية لقاعدة ليجندر–لوباتو ذات النقاط الثلاث.','x = 0',['P_1^{(1,1)} = 2x'],['x = ±#f{1}{#r{5}}','x = #f{1}{3}','x = #f{1}{2}']),
+  Q('Find the interior nodes of the four-point Legendre–Lobatto rule.','أوجد العقد الداخلية لقاعدة ليجندر–لوباتو ذات النقاط الأربع.','x = ±#f{1}{#r{5}}',['P_2^{(1,1)} = #f{15x^2 − 3}{4} = 0'],['x = ±#f{1}{#r{3}}','x = 0, ±1','x = ±#r{#f{3}{5}}']),
+  Q('Up to which degree is the five-point Lobatto rule exact?','حتى أي درجة تكون قاعدة لوباتو ذات النقاط الخمس مضبوطة؟','7',['2n − 3'],['9','8','5']),
+  Q('Why are the interior Lobatto nodes the extrema of `P_{n−1}^{(α,β)}`?','لماذا العقد الداخلية للوباتو هي القيم القصوى لـ `P_{n−1}^{(α,β)}`؟',['Because `P_{n−1}′ ∝ P_{n−2}^{(α+1,β+1)}`','لأن `P_{n−1}′ ∝ P_{n−2}^{(α+1,β+1)}`'],[['The derivative law turns zeros of the derivative into zeros of the raised family.','قانون المشتقة يحوّل جذور المشتقة إلى جذور العائلة المرفوعة.']],[['By symmetry','بالتماثل'],['They are not','ليست كذلك']]),
+]);
+
+lesson('503',50,[
+  ['Gauss–Jacobi rules integrate end singularities of power type exactly, by putting them into the weight. For example, with α = 1/2, β = 0:','قواعد جاوس–جاكوبي تكامل الانفرادات الطرفية من نوع القوى بدقة بإدخالها في الوزن. فمثلاً مع α = 1/2 و β = 0:'],
+  '∫_{−1}^{1} #r{1 − x} f(x) dx ≈ Σ w_i f(x_i)',
+  ['The one-point rule already gives `∫ #r{1 − x} dx = 4#r{2}/3 ≈ 1.8856` exactly, while the plain three-point Gauss–Legendre rule on `#r{1 − x}` gives 1.8927, an error of 0.007, because the square root has an infinite derivative at x = 1.','وقاعدة النقطة الواحدة تعطي مسبقاً `∫ #r{1 − x} dx = 4#r{2}/3 ≈ 1.8856` بدقة، بينما تعطي قاعدة جاوس–ليجندر العادية ذات النقاط الثلاث على `#r{1 − x}` القيمة 1.8927 بخطأ 0.007، لأن للجذر التربيعي مشتقة لانهائية عند x = 1.'],
+],[
+  Q('Use the one-point rule (α = 1/2, β = 0) for `∫_{−1}^{1} x#r{1 − x} dx`.','استخدم قاعدة النقطة الواحدة (α = 1/2 و β = 0) لـ `∫_{−1}^{1} x#r{1 − x} dx`.','≈ −0.3771',['x_1 = #f{0 − 1/2}{5/2} = −0.2,   μ_0 = 1.8856','1.8856·(−0.2) ≈ −0.3771',['Exact, since f = x has degree 1.','مضبوطة لأن f = x درجتها 1.']],['≈ 0.3771','0','≈ −1.8856']),
+  Q('Plain three-point Gauss gives 1.8927 for `∫_{−1}^{1} #r{1 − x} dx`. Find its error.','قاعدة جاوس العادية بثلاث نقاط تعطي 1.8927 لـ `∫_{−1}^{1} #r{1 − x} dx`. أوجد خطأها.','≈ 0.0071',['|1.8927 − 1.8856|'],['0','≈ 0.071','≈ 0.0007']),
+  Q('Which parameters treat `(1 + x)^{−0.3}`?','أي وسيطين يعالجان `(1 + x)^{−0.3}`؟','α = 0,   β = −0.3',[['The singular factor sits at x = −1.','العامل الشاذ عند x = −1.']],['α = −0.3,   β = 0','α = β = −0.3','α = 0.3,   β = 0']),
+  Q('For `∫_0^1 t^{−1/2} g(t) dt`, which Jacobi weight appears after `t = (x + 1)/2`?','للتكامل `∫_0^1 t^{−1/2} g(t) dt` أي وزن لجاكوبي يظهر بعد `t = (x + 1)/2`؟','(1 + x)^{−1/2}:   α = 0,   β = −#f{1}{2}',['t^{−1/2} = #r{2}(1 + x)^{−1/2}'],['(1 − x)^{−1/2}:   α = −#f{1}{2},   β = 0','(1 − x^2)^{−1/2}','1']),
+]);
+
 export const MS503 = true;
