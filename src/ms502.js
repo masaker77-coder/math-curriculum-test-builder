@@ -1068,4 +1068,145 @@ lesson('502',60,[
     [['Converting to the power form first would throw the advantage away.','التحويل إلى صيغة القوى أولاً يضيّع الميزة.']], [['Horner’s rule after converting to powers','قاعدة هورنر بعد التحويل إلى القوى']]),
 ]);
 
+/* ---- 502 · Unit 7 (lessons 61–70): operational matrices ---- */
+lesson('502',61,[
+  ['Collect the basis in the vector `Φ(x) = [B_{0,n}(x), …, B_{n,n}(x)]^T` and write a function as `y = c^T Φ`. An operational matrix turns an operation on y into a matrix acting on the coefficient vector c:','نجمع الأساس في المتجه `Φ(x) = [B_{0,n}(x), …, B_{n,n}(x)]^T` ونكتب الدالة `y = c^T Φ`. والمصفوفة التشغيلية تحوّل عملية على y إلى مصفوفة تعمل على متجه المعاملات c:'],
+  '#f{d}{dx} Φ = D Φ,   ∫_0^x Φ ≈ J Φ,   D^{−μ} Φ ≈ I_{(−μ)} Φ   ⇒   y′ = c^T D Φ,   …',
+  ['Then a differential or integral equation becomes an algebraic system for c. The same idea was used with Legendre polynomials in Course 501; the Bernstein matrices are built from the derivative, product and integral formulas of Units 2 and 6.','فتصبح المعادلة التفاضلية أو التكاملية نظاماً جبرياً في c. والفكرة نفسها استُخدمت مع كثيرات ليجندر في المقرر 501، ومصفوفات بيرنشتاين تُبنى من صيغ المشتقة والضرب والتكامل في الوحدتين 2 و 6.'],
+],[
+  Q('If `y = c^T Φ` and `y′ = c^T D Φ`, what are the coefficients of `y″`?','إذا كانت `y = c^T Φ` و `y′ = c^T D Φ` فما معاملات `y″`؟','c^T D^2',
+    ['y″ = (c^T D)D Φ = c^T D^2 Φ'], ['c^T D','D^2 c','c^T D^T D']),
+  Q('Which of D, J, `I_{(−μ)}` is exact (no truncation) in the Bernstein basis of degree n?','أي المصفوفات D و J و `I_{(−μ)}` مضبوطة (بلا قطع) في أساس بيرنشتاين من الدرجة n؟','D',
+    [['The derivative of a polynomial of degree n has degree n − 1, which lies in `Π_n`; integrals raise the degree or leave the space.','مشتقة كثيرة حدود من الدرجة n درجتها n − 1 وهي داخل `Π_n`، أما التكاملات فترفع الدرجة أو تخرج من الفضاء.']], ['J','I_{(−μ)}',['All three','الثلاث']]),
+  Q('What is the size of the operational matrices for n = 6?','ما حجم المصفوفات التشغيلية عند n = 6؟','7 × 7',['(n + 1) × (n + 1)'],['6 × 6','8 × 8','6 × 7']),
+  Q('Write `y′ + 2y = 0` as an equation for the coefficients.','اكتب `y′ + 2y = 0` معادلةً في المعاملات.','c^T(D + 2I) = 0',
+    ['c^T D Φ + 2c^T Φ = c^T(D + 2I)Φ = 0', ['Together with the initial condition this gives a linear system.','ومع الشرط الابتدائي يعطي نظاماً خطياً.']], ['(D + 2)c = 0','c^T D = 2c^T','D c + 2 = 0']),
+]);
+
+lesson('502',62,[
+  ['The derivative rule `B_{i,n}′ = n(B_{i−1,n−1} − B_{i,n−1})` gives polynomials of degree n − 1; degree elevation writes them back in the basis of degree n. The result is the differentiation matrix D. For n = 1 and n = 2:','قاعدة المشتقة `B_{i,n}′ = n(B_{i−1,n−1} − B_{i,n−1})` تعطي كثيرات من الدرجة n − 1، ورفع الدرجة يعيد كتابتها في أساس الدرجة n. والنتيجة مصفوفة التفاضل D. وعند n = 1 و n = 2:'],
+  'D_1 = #m{−1, −1 ;; 1, 1},     D_2 = #m{−2, −1, 0 ;; 2, 0, −2 ;; 0, 1, 2}',
+  ['Row i holds the coefficients of `B_{i,n}′`. Every column sums to 0, because `Σ_i B_{i,n} = 1` has derivative 0. The matrix is exact and nilpotent: `D^{n+1} = 0`.','الصف i يحمل معاملات `B_{i,n}′`. ومجموع كل عمود 0 لأن مشتقة `Σ_i B_{i,n} = 1` صفر. والمصفوفة مضبوطة ومعدومة القوى: `D^{n+1} = 0`.'],
+],[
+  Q('Derive the first row of `D_2` (the coefficients of `B_{0,2}′`).','اشتق الصف الأول من `D_2` (معاملات `B_{0,2}′`).','(−2,  −1,  0)',
+    ['B_{0,2}′ = −2B_{0,1}', 'B_{0,1} = B_{0,2} + #f{1}{2}B_{1,2}  ⇒  −2B_{0,2} − B_{1,2}'], ['(−2,  0,  0)','(−2,  2,  0)','(−1,  −1,  0)']),
+  Q('Use `D_2` to differentiate `p = x^2 = B_{2,2}`.','استخدم `D_2` لاشتقاق `p = x^2 = B_{2,2}`.','(0,  1,  2)',
+    ['c^T D = (0, 0, 1)·D_2 = (0, 1, 2)', ['This is the third row of `D_2`.','وهو الصف الثالث من `D_2`.'], ['These are the degree-2 coefficients of `2x` (the values 0, 1, 2 at 0, 1/2, 1).','وهي معاملات `2x` في الدرجة 2 (القيم 0 و 1 و 2 عند 0 و 1/2 و 1).']], ['(0,  0,  2)','(2,  1,  0)','(0,  2,  4)']),
+  Q('Use `D_2` to differentiate `p = 1 = B_{0,2} + B_{1,2} + B_{2,2}`.','استخدم `D_2` لاشتقاق `p = 1 = B_{0,2} + B_{1,2} + B_{2,2}`.','(0,  0,  0)',
+    ['(1, 1, 1)·D_2 = (0, 0, 0)', ['These are the column sums.','وهي مجاميع الأعمدة.']], ['(1,  1,  1)','(−2,  0,  2)','(0,  1,  0)']),
+  Q('Compute `D_1^2`.','احسب `D_1^2`.','#m{0, 0 ;; 0, 0}',
+    ['#m{−1, −1 ;; 1, 1}^2 = #m{1 − 1, 1 − 1 ;; −1 + 1, −1 + 1}', ['The second derivative of a line is 0.','المشتقة الثانية للمستقيم صفر.']], ['#m{2, 2 ;; −2, −2}','#m{1, 0 ;; 0, 1}','#m{−1, −1 ;; 1, 1}']),
+]);
+
+lesson('502',63,[
+  ['Integration raises the degree by one:','التكامل يرفع الدرجة بواحد:'],
+  '∫_0^x B_{i,n}(s) ds = #f{1}{n + 1} Σ_{j=i+1}^{n+1} B_{j,n+1}(x)',
+  ['So the exact integration matrix is rectangular, `(n + 1) × (n + 2)`. To stay in `Π_n` the result must be projected back (least squares, Lesson 66) or the basis must be one degree larger than the unknown. The lower limit 0 is built in: every integral starts with coefficient 0.','فمصفوفة التكامل المضبوطة مستطيلة `(n + 1) × (n + 2)`. وللبقاء في `Π_n` يجب إسقاط النتيجة (المربعات الصغرى، الدرس 66) أو أخذ الأساس أعلى درجة من المجهول بواحد. والحد الأدنى 0 مدمج: كل تكامل يبدأ بمعامل 0.'],
+],[
+  Q('Write `∫_0^x B_{0,1}` in degree 2.','اكتب `∫_0^x B_{0,1}` في الدرجة 2.','(0,  #f{1}{2},  #f{1}{2})',['#f{1}{2}(B_{1,2} + B_{2,2})'],['(#f{1}{2},  #f{1}{2},  0)','(0,  1,  1)','(0,  0,  #f{1}{2})']),
+  Q('Write `∫_0^x B_{1,1}` in degree 2.','اكتب `∫_0^x B_{1,1}` في الدرجة 2.','(0,  0,  #f{1}{2})',['#f{1}{2}B_{2,2} = #f{x^2}{2}'],['(0,  #f{1}{2},  #f{1}{2})','(0,  0,  1)','(#f{1}{2},  0,  0)']),
+  Q('What is the size of the exact integration matrix for n = 4?','ما حجم مصفوفة التكامل المضبوطة عند n = 4؟','5 × 6',['(n + 1) × (n + 2)'],['5 × 5','4 × 5','6 × 6']),
+  Q('Integrate `p = 2B_{0,1} + 4B_{1,1}` from 0 to x.','كامل `p = 2B_{0,1} + 4B_{1,1}` من 0 إلى x.','(0,  1,  3)',
+    ['2·(0, #f{1}{2}, #f{1}{2}) + 4·(0, 0, #f{1}{2})'], ['(0,  2,  6)','(1,  3,  0)','(2,  3,  4)']),
+]);
+
+lesson('502',64,[
+  ['Variable coefficients and nonlinear terms need products. A product of two Bernstein polynomials is again a Bernstein polynomial, of the summed degree:','المعاملات المتغيرة والحدود غير الخطية تحتاج حواصل ضرب. وحاصل ضرب كثيرتي بيرنشتاين كثيرة بيرنشتاين أيضاً من مجموع الدرجتين:'],
+  'B_{k,m} B_{i,n} = #f{C(m, k) C(n, i)}{C(m + n, k + i)} B_{k+i,m+n}',
+  ['So multiplication by a known function `a = Σ a_k B_{k,m}` is a matrix from degree n to degree m + n. In a method with a fixed degree the result is then reduced back (projection), which is the product operational matrix.','فالضرب في دالة معلومة `a = Σ a_k B_{k,m}` مصفوفة من الدرجة n إلى الدرجة m + n. وفي طريقة بدرجة ثابتة تُخفض النتيجة بعدها (بالإسقاط)، وهذه مصفوفة الضرب التشغيلية.'],
+],[
+  Q('Compute `x·B_{0,1}` in degree 2.','احسب `x·B_{0,1}` في الدرجة 2.','#f{1}{2}B_{1,2}',['B_{1,1}B_{0,1} = #f{1·1}{C(2, 1)}B_{1,2}'],['B_{1,2}','#f{1}{2}B_{0,2}','2B_{1,2}']),
+  Q('Compute `x·B_{1,1}` in degree 2.','احسب `x·B_{1,1}` في الدرجة 2.','B_{2,2}',['B_{1,1}B_{1,1} = #f{1·1}{C(2, 2)}B_{2,2}'],['#f{1}{2}B_{2,2}','B_{1,2}','2B_{2,2}']),
+  Q('Write the matrix of multiplication by x from degree 1 to degree 2 (row i: coefficients of `x·B_{i,1}`).','اكتب مصفوفة الضرب في x من الدرجة 1 إلى الدرجة 2 (الصف i: معاملات `x·B_{i,1}`).','#m{0, 1/2, 0 ;; 0, 0, 1}',
+    ['x B_{0,1} = #f{1}{2}B_{1,2},   x B_{1,1} = B_{2,2}'], ['#m{1/2, 0, 0 ;; 0, 1, 0}','#m{0, 1, 0 ;; 0, 0, 1}','#m{0, 1/2 ;; 0, 1}']),
+  Q('What is the degree of `y^2` when y has degree n?','ما درجة `y^2` إذا كانت درجة y هي n؟','2n',['B_{i,n}B_{j,n} ∈ Π_{2n}'],['n','n^2','n + 1']),
+]);
+
+lesson('502',65,[
+  ['For fractional problems the Riemann–Liouville integral of each basis polynomial is computed exactly, term by term, by the power law:','للمسائل الكسرية يُحسب تكامل ريمان–ليوفيل لكل كثيرة أساسية بدقة حداً حداً بقانون القوى:'],
+  'D^{−μ} B_{i,n}(t) = C(n, i) Σ_{k=0}^{n−i} (−1)^k C(n − i, k) #f{Γ(i + k + 1)}{Γ(i + k + μ + 1)} t^{i+k+μ}',
+  ['It comes from expanding `(1 − t)^{n−i}` and applying `D^{−μ} t^p = Γ(p + 1)/Γ(p + μ + 1)·t^{p+μ}`. The powers `t^{i+k+μ}` are not polynomials unless μ is a whole number, which is the source of the truncation in the next lesson.','وهي تأتي من فك `(1 − t)^{n−i}` وتطبيق `D^{−μ} t^p = Γ(p + 1)/Γ(p + μ + 1)·t^{p+μ}`. والقوى `t^{i+k+μ}` ليست كثيرات حدود إلا إذا كانت μ عدداً صحيحاً، ومن هنا القطع في الدرس التالي.'],
+],[
+  Q('Compute `D^{−1/2} B_{0,1}`.','احسب `D^{−1/2} B_{0,1}`.','#f{t^{1/2}}{Γ(3/2)} − #f{t^{3/2}}{Γ(5/2)} ≈ 1.1284#r{t} − 0.7523t^{3/2}',
+    ['B_{0,1} = 1 − t', 'D^{−1/2} 1 = #f{t^{1/2}}{Γ(3/2)},   D^{−1/2} t = #f{Γ(2)}{Γ(5/2)} t^{3/2}'], ['#r{t} − t^{3/2}','1.1284#r{t}','0.7523t^{3/2} − 1.1284#r{t}']),
+  Q('Compute `D^{−1/2} B_{1,1}`.','احسب `D^{−1/2} B_{1,1}`.','#f{t^{3/2}}{Γ(5/2)} ≈ 0.7523t^{3/2}',['D^{−1/2} t = #f{Γ(2)}{Γ(5/2)}t^{3/2}'],['1.1284t^{3/2}','t^{3/2}','0.7523#r{t}']),
+  Q('Compute `D^{−1} B_{1,1}`.','احسب `D^{−1} B_{1,1}`.','#f{t^2}{2}',['∫_0^t s ds'],['t^2','#f{t}{2}','t']),
+  Q('For which μ is `D^{−μ} B_{i,n}` a polynomial?','لأي μ تكون `D^{−μ} B_{i,n}` كثيرة حدود؟',['When μ is a whole number','عندما تكون μ عدداً صحيحاً'],
+    ['t^{i+k+μ}'], [['For every μ','لكل μ'],['Only for μ = 1/2','لـ μ = 1/2 فقط']]),
+]);
+
+lesson('502',66,[
+  ['To keep the method in `Π_n`, each `D^{−μ} B_{i,n}` is replaced by its best approximation in `Π_n`, computed with the dual basis: the coefficients are `⟨D^{−μ} B_{i,n}, D_j⟩`. These rows form the operational matrix of (fractional) integration:','للإبقاء على الطريقة في `Π_n` تُستبدل كل `D^{−μ} B_{i,n}` بأفضل تقريب لها في `Π_n`، ويُحسب بالأساس الثنوي: المعاملات هي `⟨D^{−μ} B_{i,n}, D_j⟩`. وهذه الصفوف تكوّن المصفوفة التشغيلية للتكامل (الكسري):'],
+  'D^{−μ} Φ ≈ I_{(−μ)} Φ,   I_{(−μ)}(i, j) = ⟨D^{−μ} B_{i,n}, D_j⟩',
+  ['For n = 1 and μ = 1 (an ordinary integral) the matrix is `(1/12, 7/12; −1/12, 5/12)`. The approximation is the only error of the method in time, exactly as with Theorem 3.2 in the Legendre basis.','وعند n = 1 و μ = 1 (تكامل عادي) المصفوفة `(1/12, 7/12; −1/12, 5/12)`. والتقريب هو الخطأ الوحيد للطريقة في الزمن، تماماً كما في النظرية 3.2 بأساس ليجندر.'],
+],[
+  Q('With `D_0 = 4 − 6t`, `D_1 = 6t − 2`, compute the first row of `I_{(−1)}` for n = 1.','مع `D_0 = 4 − 6t` و `D_1 = 6t − 2` احسب الصف الأول من `I_{(−1)}` عند n = 1.','(#f{1}{12},  #f{7}{12})',
+    ['D^{−1}B_{0,1} = t − #f{t^2}{2}', '∫_0^1 (t − #f{t^2}{2})(4 − 6t) dt = #f{1}{12},   ∫_0^1 (t − #f{t^2}{2})(6t − 2) dt = #f{7}{12}'],
+    ['(0,  #f{1}{2})','(#f{1}{12},  #f{5}{12})','(#f{7}{12},  #f{1}{12})']),
+  Q('Compute the second row of `I_{(−1)}` for n = 1.','احسب الصف الثاني من `I_{(−1)}` عند n = 1.','(−#f{1}{12},  #f{5}{12})',
+    ['D^{−1}B_{1,1} = #f{t^2}{2}', '∫_0^1 #f{t^2}{2}(4 − 6t) dt = −#f{1}{12},   ∫_0^1 #f{t^2}{2}(6t − 2) dt = #f{5}{12}'],
+    ['(0,  #f{1}{2})','(#f{1}{12},  #f{5}{12})','(−#f{1}{12},  #f{7}{12})']),
+  Q('The exact integral `t − t^2/2` vanishes at t = 0, but the first row gives `1/12` there. Why?','التكامل المضبوط `t − t^2/2` ينعدم عند t = 0، لكن الصف الأول يعطي `1/12` هناك. لماذا؟',['The row is the least-squares line, not an interpolant: it trades the end value for a small average error','الصف هو خط المربعات الصغرى لا استكمال: يتنازل عن قيمة الطرف مقابل خطأ متوسط صغير'],
+    [['With a larger n the projection error shrinks quickly.','ومع n أكبر يصغر خطأ الإسقاط بسرعة.']], [['A computing error','خطأ حسابي'],['The integral starts at t = 1','التكامل يبدأ عند t = 1']]),
+  Q('Use `I_{(−1)}` to integrate `y = 1 = B_{0,1} + B_{1,1}`.','استخدم `I_{(−1)}` لتكامل `y = 1 = B_{0,1} + B_{1,1}`.','(0,  1)',
+    ['(1, 1)·I_{(−1)} = (#f{1}{12} − #f{1}{12},  #f{7}{12} + #f{5}{12})', ['`(0, 1)` means `B_{1,1} = t`: exact, because `∫_0^t 1 = t` is in `Π_1`.','`(0, 1)` تعني `B_{1,1} = t`: مضبوط لأن `∫_0^t 1 = t` داخل `Π_1`.']],
+    ['(1,  1)','(#f{1}{12},  #f{7}{12})','(#f{1}{2},  #f{1}{2})']),
+]);
+
+lesson('502',67,[
+  ['The Caputo derivative of a basis polynomial is also explicit; the constant term disappears:','مشتقة كابوتو لكثيرة أساسية صريحة أيضاً، والحد الثابت يختفي:'],
+  '^CD^{α} B_{i,n}(t) = C(n, i) Σ_{k: i+k≥1} (−1)^k C(n − i, k) #f{Γ(i + k + 1)}{Γ(i + k + 1 − α)} t^{i+k−α}',
+  ['The result contains powers `t^{m−α}`, which are not polynomials. A Bernstein method either projects them (next lesson) or, better, works with the integrated form of Lemma 2.1, which only needs integrals.','والنتيجة تحتوي قوى `t^{m−α}` ليست كثيرات حدود. وطريقة بيرنشتاين إما أن تسقطها (الدرس التالي)، أو، وهو الأفضل، تعمل بالصيغة التكاملية من اللمة 2.1 التي لا تحتاج إلا التكاملات.'],
+],[
+  Q('Compute `^CD^{1/2} B_{1,1}`.','احسب `^CD^{1/2} B_{1,1}`.','#f{t^{1/2}}{Γ(3/2)} ≈ 1.1284#r{t}',['^CD^{1/2} t = #f{Γ(2)}{Γ(3/2)} t^{1/2}'],['0.7523t^{3/2}','#r{t}','0.5642#r{t}']),
+  Q('Compute `^CD^{1/2} B_{0,1}`.','احسب `^CD^{1/2} B_{0,1}`.','−1.1284#r{t}',['^CD^{1/2}(1 − t) = 0 − 1.1284#r{t}'],['1.1284#r{t}','#f{1}{Γ(1/2)}t^{−1/2}','0']),
+  Q('Compute `^CD^{1/2} B_{2,2}`.','احسب `^CD^{1/2} B_{2,2}`.','#f{Γ(3)}{Γ(5/2)} t^{3/2} ≈ 1.5045t^{3/2}',['B_{2,2} = t^2'],['2t^{3/2}','1.1284t^{3/2}','0.7523t^{3/2}']),
+  Q('Why is `^CD^{α} Σ_i B_{i,n} = 0`?','لماذا `^CD^{α} Σ_i B_{i,n} = 0`؟',['The sum is the constant 1, and the Caputo derivative of a constant is 0','المجموع هو الثابت 1، ومشتقة كابوتو للثابت صفر'],
+    ['Σ_i B_{i,n} = 1'], [['Because α < 1','لأن α < 1'],['It is not zero','ليس صفراً']]),
+]);
+
+lesson('502',68,[
+  ['Projecting `^CD^{α} B_{i,n}` onto `Π_n` with the dual basis gives the operational matrix of fractional differentiation. For n = 1 and α = 1/2 it needs only the projection of `#r{t}`:','بإسقاط `^CD^{α} B_{i,n}` على `Π_n` بالأساس الثنوي نحصل على المصفوفة التشغيلية للتفاضل الكسري. وعند n = 1 و α = 1/2 لا تحتاج إلا إسقاط `#r{t}`:'],
+  '#r{t} ≈ #f{4}{15} B_{0,1} + #f{16}{15} B_{1,1},     D^{(1/2)} ≈ 1.1284·#m{−4/15, −16/15 ;; 4/15, 16/15}',
+  ['As for D, the columns sum to 0. For α = 1 the matrix becomes the exact D. Because `t^{m−α}` behaves badly near 0, this matrix converges slowly; the integrated form avoids it.','وكما في D مجموع الأعمدة 0. وعند α = 1 تصبح المصفوفة D المضبوطة. ولأن `t^{m−α}` تسلك سلوكاً سيئاً قرب 0 تتقارب هذه المصفوفة ببطء، والصيغة التكاملية تتجنبها.'],
+],[
+  Q('Project `#r{t}` onto `Π_1` with the dual basis.','أسقط `#r{t}` على `Π_1` بالأساس الثنوي.','(#f{4}{15},  #f{16}{15})',
+    ['∫_0^1 #r{t}(4 − 6t) dt = #f{8}{3} − #f{12}{5} = #f{4}{15}', '∫_0^1 #r{t}(6t − 2) dt = #f{12}{5} − #f{4}{3} = #f{16}{15}'], ['(0,  1)','(#f{1}{3},  1)','(#f{16}{15},  #f{4}{15})']),
+  Q('Write the second row of `D^{(1/2)}` for n = 1 numerically.','اكتب الصف الثاني من `D^{(1/2)}` عند n = 1 عددياً.','(0.3009,  1.2036)',['1.1284·(#f{4}{15}, #f{16}{15})'],['(−0.3009,  −1.2036)','(0.2667,  1.0667)','(1.1284,  1.1284)']),
+  Q('Apply `D^{(1/2)}` to `y = 1`.','طبّق `D^{(1/2)}` على `y = 1`.','(0,  0)',['(1, 1)·D^{(1/2)} = (0, 0)', ['These are the column sums.','وهي مجاميع الأعمدة.']],['(1,  1)','(0.3009,  1.2036)','(1.1284,  1.1284)']),
+  Q('Why do Bernstein methods for fractional equations usually prefer the integrated form?','لماذا تفضّل طرق بيرنشتاين للمعادلات الكسرية الصيغة التكاملية عادةً؟',['Fractional integrals of the basis are smoother than fractional derivatives, so their projections are more accurate','التكاملات الكسرية للأساس أنعم من المشتقات الكسرية، فتكون إسقاطاتها أدق'],
+    [['`D^{−α}` produces `t^{m+α}`; `^CD^{α}` produces `t^{m−α}`, with an unbounded derivative near 0.','`D^{−α}` تنتج `t^{m+α}` بينما `^CD^{α}` تنتج `t^{m−α}` بمشتقة غير محدودة قرب 0.']], [['Because derivatives are not defined','لأن المشتقات غير معرّفة'],['There is no difference','لا فرق']]),
+]);
+
+lesson('502',69,[
+  ['In practice the projections are computed with inner products against the basis and one solve with the Gram matrix. For any operator 𝓛:','عملياً تُحسب الإسقاطات بضروب داخلية مع الأساس وحل واحد بمصفوفة جرام. ولأي مؤثر 𝓛:'],
+  'Q_{ij} = ⟨𝓛 B_{i,n}, B_{j,n}⟩,   M_{𝓛} = Q G^{−1}',
+  ['since `⟨·, D_j⟩ = Σ_k ⟨·, B_k⟩ (G^{−1})_{kj}`. These are the dual operational matrices. All entries of Q are integrals of powers, available in closed form, so the only numerical step is the solve with G (which should be done through an orthogonal basis for large n).','لأن `⟨·, D_j⟩ = Σ_k ⟨·, B_k⟩ (G^{−1})_{kj}`. وهذه المصفوفات التشغيلية الثنوية. وكل عناصر Q تكاملات قوى بصيغ مغلقة، فالخطوة العددية الوحيدة الحل بمصفوفة G (ويُفضَّل إجراؤه عبر أساس متعامد عند n كبير).'],
+],[
+  Q('For 𝓛 = d/dx and n = 1, compute the first row of Q.','للمؤثر 𝓛 = d/dx عند n = 1 احسب الصف الأول من Q.','(−#f{1}{2},  −#f{1}{2})',
+    ['B_{0,1}′ = −1:   ⟨−1, 1 − x⟩ = −#f{1}{2},   ⟨−1, x⟩ = −#f{1}{2}'], ['(−1,  −1)','(#f{1}{2},  #f{1}{2})','(−#f{1}{3},  −#f{1}{6})']),
+  Q('Multiply that row by `G^{−1} = (4, −2; −2, 4)` and compare with `D_1`.','اضرب ذلك الصف في `G^{−1} = (4, −2; −2, 4)` وقارن بـ `D_1`.','(−1,  −1)',
+    ['(−#f{1}{2}, −#f{1}{2})·#m{4, −2 ;; −2, 4} = (−2 + 1,  1 − 2)', ['It is the first row of `D_1`: the projection of an exact result returns it unchanged.','وهو الصف الأول من `D_1`: إسقاط نتيجة مضبوطة يعيدها كما هي.']],
+    ['(−2,  −2)','(−#f{1}{2},  −#f{1}{2})','(1,  1)']),
+  Q('Why are the entries of Q available in closed form?','لماذا تتوفر عناصر Q بصيغ مغلقة؟',['They are integrals of products of powers of t, e.g. `∫_0^1 t^a dt = 1/(a + 1)`','لأنها تكاملات حواصل ضرب قوى t، مثل `∫_0^1 t^a dt = 1/(a + 1)`'],
+    [['Even for fractional operators the integrands are powers `t^{a}` with real a > −1.','وحتى للمؤثرات الكسرية تكون الدوال المكامَلة قوى `t^{a}` بأسس حقيقية a > −1.']], [['Because Q is diagonal','لأن Q قطرية'],['They are not','لا تتوفر']]),
+  Q('Which step of building `M_𝓛` is numerically delicate for large n?','أي خطوة في بناء `M_𝓛` حساسة عددياً عند n كبير؟',['The solve with the Gram matrix G','الحل بمصفوفة جرام G'],
+    [['G is ill-conditioned; using orthonormal Bernstein or Legendre coordinates avoids the problem.','G رديئة الشرط، واستخدام إحداثيات بيرنشتاين المتعامدة المعيارية أو ليجندر يتجنب المشكلة.']], [['Computing the integrals','حساب التكاملات'],['Multiplying matrices','ضرب المصفوفات']]),
+]);
+
+lesson('502',70,[
+  ['A compact implementation in Python builds D by applying the derivative rule and then degree elevation:','تنفيذ مختصر في بايثون يبني D بتطبيق قاعدة المشتقة ثم رفع الدرجة:'],
+  '$import numpy as np\n\ndef elevate(c):                      # degree m -> m + 1\n    m = len(c) - 1\n    return [c[0]] + [(i*c[i-1] + (m+1-i)*c[i])/(m+1)\n                     for i in range(1, m+1)] + [c[m]]\n\ndef bern_D(n):                       # row i: coefficients of B_{i,n}\'\n    rows = []\n    for i in range(n+1):\n        d = [0.0]*n                  # B_{i,n}\' in degree n - 1\n        if i > 0: d[i-1] += n\n        if i < n: d[i]   -= n\n        rows.append(elevate(d))\n    return np.array(rows)',
+  ['The same few lines translate directly to MATLAB or Mathematica (``BernsteinBasis[n, i, x]`` gives the basis there). Always test a new matrix on functions with known results: the column sums of D must be 0, and `x^n = B_{n,n}` must give `n x^{n−1}`.','والسطور القليلة نفسها تُترجم مباشرة إلى MATLAB أو Mathematica (حيث يعطي ``BernsteinBasis[n, i, x]`` الأساس). واختبر دائماً أي مصفوفة جديدة على دوال معلومة النتائج: مجاميع أعمدة D يجب أن تكون 0، و `x^n = B_{n,n}` يجب أن تعطي `n x^{n−1}`.'],
+],[
+  Q('What does `bern_D(1)` return?','ماذا تعيد `bern_D(1)`؟','#m{−1, −1 ;; 1, 1}',
+    [['For i = 0 the derivative in degree 0 is `[−1]`, and elevation gives `[−1, −1]`; for i = 1 it is `[1]`, giving `[1, 1]`.','عند i = 0 تكون المشتقة في الدرجة 0 هي `[−1]` والرفع يعطي `[−1, −1]`، وعند i = 1 هي `[1]` فتعطي `[1, 1]`.']], ['#m{−1, 1 ;; −1, 1}','#m{0, 0 ;; 1, 0}','#m{1, 1 ;; −1, −1}']),
+  Q('Which NumPy test checks that every column of D sums to 0?','أي اختبار في NumPy يتحقق أن مجموع كل عمود في D صفر؟','$np.allclose(D.sum(axis=0), 0)',
+    [['`axis=0` sums down the columns.','`axis=0` يجمع على الأعمدة.']], ['$np.allclose(D.sum(axis=1), 0)','$D.trace() == 0','$np.linalg.det(D) == 0']),
+  Q('Which Mathematica function gives `B_{i,n}(x)`?','أي دالة في Mathematica تعطي `B_{i,n}(x)`؟','$BernsteinBasis[n, i, x]',
+    [['It is built in, together with ``BezierCurve`` for drawing.','وهي مدمجة، ومعها ``BezierCurve`` للرسم.']], ['$Binomial[n, i]','$LegendreP[n, x]','$Bernstein[i, n]']),
+  Q('Check `bern_D(2)` on `p = x^2 = B_{2,2}`: which row should equal `(0, 1, 2)`?','تحقق من `bern_D(2)` على `p = x^2 = B_{2,2}`: أي صف يجب أن يساوي `(0, 1, 2)`؟',['The last row (i = 2)','الصف الأخير (i = 2)'],
+    ['(0, 0, 1)·D_2 = row 2 = (0, 1, 2)  ↔  2x'], [['The first row','الصف الأول'],['No row','لا صف']]),
+]);
+
 export const MS502 = true;
