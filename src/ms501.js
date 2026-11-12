@@ -1725,4 +1725,192 @@ lesson('501',80,[
     ['y(1) ≈ 0.9188,   |y(1) − 0.4276| ≈ 0.49','y(1) ≈ 0.4276','y(1) ≈ 0.6440,   |y(1) − 0.4276| ≈ 0.22']),
 ]);
 
+/* ---- 501 · Unit 9 (lessons 81–90): the mapped Legendre method for fractional PDEs ---- */
+lesson('501',81,[
+  ['The paper solves a multi-term time-fractional equation on `[0, γ] × [0, 1]`:','يحل البحث معادلة كسرية زمنية متعددة الحدود على `[0, γ] × [0, 1]`:'],
+  '^CD^{μ_s} y + Σ_{i=1}^{s−1} a_i ^CD^{μ_i} y + Σ_{i=1}^{s} b_i ^CD^{ν_i} y + c y = d Δy + e Δ ^CD^{η} y + f Δ ^CD^{υ} y + g(x, t)',
+  '1 < μ_1 < … < μ_s < 2,   0 < ν_1 < … < ν_s ≤ 1,   0 < η ≤ 1,   1 < υ ≤ 2',
+  ['Orders between 1 and 2 give damped wave-like behaviour, orders in `(0, 1]` slow sub-diffusion, `cy` reaction, `dΔy` ordinary diffusion, and the e, f terms diffusion with memory. Because the top order exceeds 1, two initial conditions are needed, `y(x, 0) = ψ_0`, `∂_t y(x, 0) = ψ_1`, together with boundary values `φ_0`, `φ_1`. For the integrated form to work one also needs `υ ≤ μ_s`.',
+   'الرتب بين 1 و 2 تعطي سلوكاً موجياً متخامداً، والرتب في `(0, 1]` انتشاراً بطيئاً، و `cy` تفاعلاً، و `dΔy` انتشاراً عادياً، وحدّا e و f انتشاراً بذاكرة. ولأن أعلى رتبة تتجاوز 1 يلزم شرطان ابتدائيان `y(x, 0) = ψ_0` و `∂_t y(x, 0) = ψ_1` مع القيم الحدية `φ_0` و `φ_1`. ولكي تعمل الصيغة التكاملية يلزم أيضاً `υ ≤ μ_s`.'],
+],[
+  Q('How many initial conditions does the problem need when `μ_s = 1.8`, and why?','كم شرطاً ابتدائياً تحتاج المسألة عندما `μ_s = 1.8`، ولماذا؟',['Two: `y(x, 0)` and `∂_t y(x, 0)`, because `⌈1.8⌉ = 2`','اثنان: `y(x, 0)` و `∂_t y(x, 0)` لأن `⌈1.8⌉ = 2`'],
+    [['A Caputo derivative of order ζ needs the values of `y, y′, …, y^{(⌈ζ⌉−1)}` at 0.','مشتقة كابوتو من الرتبة ζ تحتاج قيم `y, y′, …, y^{(⌈ζ⌉−1)}` عند 0.']],
+    [['One: `y(x, 0)`','واحد: `y(x, 0)`'],['None','لا شيء'],['Three','ثلاثة']]),
+  Q('Which term models sub-diffusion: `^CD^{1.4} y` or `^CD^{0.6} y`?','أي الحدين يمثّل الانتشار البطيء: `^CD^{1.4} y` أم `^CD^{0.6} y`؟','^CD^{0.6} y',
+    [['Orders in `(0, 1]` interpolate between no change and first-order decay: memory slows the diffusion.','الرتب في `(0, 1]` تتوسط بين عدم التغير والتناقص من الرتبة الأولى: الذاكرة تبطئ الانتشار.']],
+    ['^CD^{1.4} y',['Both','كلاهما'],['Neither','ولا واحد']]),
+  Q('Why must `υ ≤ μ_s` hold?','لماذا يجب أن يتحقق `υ ≤ μ_s`؟',['Otherwise `D^{−μ_s+υ}` has a positive order and is a derivative, not an integral','وإلا كانت رتبة `D^{−μ_s+υ}` موجبة فهو مشتقة لا تكامل'],
+    ['D^{−μ_s} ^CD^{υ} = D^{−(μ_s−υ)} …,   μ_s − υ ≥ 0', ['This condition is missing from the printed problem (correction 13 of the code-enhancement project).','وهذا الشرط غائب عن المسألة المطبوعة (التصويب 13 في مشروع تحسين الكود).']],
+    [['Because υ is an integer','لأن υ عدد صحيح'],['It is not needed','لا حاجة إليه']]),
+  Q('Classify the problem `^CD^{1.5} y = Δy + g`: what kind of equation is it?','صنّف المسألة `^CD^{1.5} y = Δy + g`: ما نوع المعادلة؟',['A time-fractional diffusion-wave equation','معادلة انتشار–موجة كسرية زمنياً'],
+    [['Order 1.5 lies between the heat equation (order 1) and the wave equation (order 2).','الرتبة 1.5 تقع بين معادلة الحرارة (الرتبة 1) ومعادلة الموجة (الرتبة 2).']],
+    [['The heat equation','معادلة الحرارة'],['Laplace’s equation','معادلة لابلاس']]),
+]);
+
+lesson('501',82,[
+  ['Instead of approximating fractional derivatives, apply `D^{−μ_s}` to the whole equation. By Lemma 2.1 the top derivative disappears, leaving y itself, and every other derivative becomes an integral of lower order:','بدلاً من تقريب المشتقات الكسرية نطبّق `D^{−μ_s}` على المعادلة كلها. بفضل اللمة 2.1 تختفي أعلى مشتقة ويبقى y نفسه، وتصبح كل مشتقة أخرى تكاملاً من رتبة أقل:'],
+  'y + Σ a_i D^{−μ_s+μ_i} y + Σ b_i D^{−μ_s+ν_i} y + c D^{−μ_s} y = d D^{−μ_s} Δy + e D^{−μ_s+η} Δy + f D^{−μ_s+υ} Δy + h',
+  ['Three benefits: only y and integral operators remain, the two initial conditions go into h automatically, and integrals are numerically far more stable than derivatives.','وثلاث فوائد: لا يبقى إلا y ومؤثرات تكامل، ويدخل الشرطان الابتدائيان في h تلقائياً، والتكاملات أكثر استقراراً عددياً من المشتقات بكثير.'],
+],[
+  Q('With `μ_s = 1.8`, what does the term `a_1 ^CD^{1.3} y` become?','مع `μ_s = 1.8` إلامَ يتحول الحد `a_1 ^CD^{1.3} y`؟',['`a_1 D^{−0.5} y`, with its initial terms moved into h','`a_1 D^{−0.5} y` مع نقل حدوده الابتدائية إلى h'],
+    ['D^{−1.8} ^CD^{1.3} = D^{−0.5} D^{−1.3} ^CD^{1.3}', ['`D^{−1.3} ^CD^{1.3} y = y − ψ_0 − tψ_1`, and those values move into h.','`D^{−1.3} ^CD^{1.3} y = y − ψ_0 − tψ_1`، وتنتقل هذه القيم إلى h.']],
+    ['a_1 D^{−1.3} y','a_1 D^{0.5} y','a_1 D^{−3.1} y']),
+  Q('With `μ_s = 1.8`, what does `b_1 ^CD^{0.6} y` become?','مع `μ_s = 1.8` إلامَ يتحول `b_1 ^CD^{0.6} y`؟','b_1 D^{−1.2} y',
+    ['−μ_s + ν_1 = −1.8 + 0.6 = −1.2'], ['b_1 D^{−0.6} y','b_1 D^{−2.4} y','b_1 D^{1.2} y']),
+  Q('With `μ_s = 1.8`, what does `d Δy` become?','مع `μ_s = 1.8` إلامَ يتحول `d Δy`؟','d D^{−1.8} Δy',
+    [['The whole equation is integrated, so a term without a time derivative gets the full integral.','المعادلة كلها تُكامل، فالحد الذي لا مشتقة زمنية فيه يأخذ التكامل كاملاً.']],
+    ['d Δy','d D^{1.8} Δy','d D^{−0.8} Δy']),
+  Q('Name the three benefits of the integrated form.','اذكر الفوائد الثلاث للصيغة التكاملية.',['Only y and integrals remain; the initial conditions enter h; integrals are more stable','لا يبقى إلا y والتكاملات؛ والشروط الابتدائية تدخل h؛ والتكاملات أكثر استقراراً'],
+    [['The integration matrices of Theorem 3.2 are then the only time operators needed.','وتكون مصفوفات التكامل في النظرية 3.2 هي مؤثرات الزمن الوحيدة اللازمة.']],
+    [['It removes the space derivatives','يزيل المشتقات المكانية'],['It makes the problem nonlinear','يجعل المسألة غير خطية']]),
+]);
+
+lesson('501',83,[
+  ['Every initial value enters the right-hand side h. The pattern is simple: a derivative of order in `(0, 1]` subtracts `ψ_0`, one of order in `(1, 2)` subtracts `ψ_0` and `tψ_1`, each smoothed by the integral that remains. For example a term `b_i ^CD^{ν_i} y` contributes',
+   'كل قيمة ابتدائية تدخل الطرف الأيمن h. والنمط بسيط: المشتقة ذات الرتبة في `(0, 1]` تطرح `ψ_0`، وذات الرتبة في `(1, 2)` تطرح `ψ_0` و `tψ_1`، وكل منهما يُنعَّم بالتكامل الباقي. فمثلاً الحد `b_i ^CD^{ν_i} y` يساهم بـ'],
+  'b_i #f{ψ_0 t^{μ_s−ν_i}}{Γ(μ_s − ν_i + 1)}',
+  ['and the top derivative itself leaves `ψ_0 + tψ_1`. The sign flips when a term moves to the right-hand side, and the e, f terms, which start on the right, keep a minus sign. This pattern lets a program build h automatically for any problem.',
+   'والمشتقة العليا نفسها تترك `ψ_0 + tψ_1`. والإشارة تنقلب عند نقل الحد إلى الطرف الأيمن، وحدّا e و f اللذان يبدآن في الأيمن يبقيان بإشارة سالبة. وهذا النمط يسمح للبرنامج ببناء h آلياً لأي مسألة.'],
+],[
+  Q('With `μ_s = 1.8` and `ν_1 = 0.6`, write the contribution of `b_1 ^CD^{0.6} y` to h.','مع `μ_s = 1.8` و `ν_1 = 0.6` اكتب مساهمة `b_1 ^CD^{0.6} y` في h.','b_1 #f{ψ_0 t^{1.2}}{Γ(2.2)} ≈ 0.9076 b_1 ψ_0 t^{1.2}',
+    ['D^{−1.2} ψ_0 = #f{ψ_0 t^{1.2}}{Γ(2.2)},   Γ(2.2) ≈ 1.1018'], ['b_1 ψ_0 t^{0.6}','b_1 #f{ψ_0 t^{1.2}}{Γ(1.2)}','b_1 (ψ_0 + tψ_1)']),
+  Q('With `μ_s = 1.8` and `μ_1 = 1.3`, write the contribution of `a_1 ^CD^{1.3} y` to h.','مع `μ_s = 1.8` و `μ_1 = 1.3` اكتب مساهمة `a_1 ^CD^{1.3} y` في h.','a_1(#f{ψ_0 t^{0.5}}{Γ(1.5)} + #f{ψ_1 t^{1.5}}{Γ(2.5)})',
+    ['D^{−0.5}(ψ_0 + tψ_1) = ψ_0 #f{t^{0.5}}{Γ(1.5)} + ψ_1 #f{t^{1.5}}{Γ(2.5)}', ['Order 1.3 > 1, so both initial values appear.','الرتبة 1.3 > 1 فتظهر القيمتان الابتدائيتان.']],
+    ['a_1 #f{ψ_0 t^{0.5}}{Γ(1.5)}','a_1(ψ_0 + tψ_1)','a_1 #f{ψ_1 t^{1.5}}{Γ(1.5)}']),
+  Q('Which part of h comes from the top derivative `^CD^{μ_s} y` itself?','أي جزء من h يأتي من المشتقة العليا `^CD^{μ_s} y` نفسها؟','ψ_0 + t ψ_1',
+    ['D^{−μ_s} ^CD^{μ_s} y = y − ψ_0 − tψ_1', ['Moving the initial values to the right gives `+ψ_0 + tψ_1`.','نقل القيم الابتدائية إلى الأيمن يعطي `+ψ_0 + tψ_1`.']],
+    ['ψ_0','D^{−μ_s} g','0']),
+  Q('If `g = 0`, `ψ_0 = ψ_1 = 0`, what is h?','إذا كانت `g = 0` و `ψ_0 = ψ_1 = 0` فما h؟','h = 0',
+    [['Every term of h is either `D^{−μ_s} g` or a multiple of an initial value.','كل حد في h إما `D^{−μ_s} g` أو مضاعف لقيمة ابتدائية.']],
+    ['h = t','h = D^{−μ_s} y','h = 1']),
+]);
+
+lesson('501',84,[
+  ['The solution is approximated in fractional Legendre functions in time and shifted Legendre polynomials in space:','يُقرَّب الحل بدوال ليجندر الكسرية في الزمن وكثيرات ليجندر المزاحة في المكان:'],
+  'y_{N,M}(x, t) = 𝔏_{M,λ}^T(t) 𝒴 𝔏_N^{γ}(x) = Σ_{k=0}^{M} Σ_{i=0}^{N} 𝒴_{k,i} L_k^{λ}(t) L_i^{γ}(x)',
+  ['The unknown is the coefficient matrix 𝒴, with M + 1 rows (time) and N + 1 columns (space), so `(M + 1)(N + 1)` numbers. Everything that follows aims to find them; the solution at any point is then a double sum.',
+   'والمجهول مصفوفة المعاملات 𝒴 ذات M + 1 صفاً (الزمن) و N + 1 عموداً (المكان)، أي `(M + 1)(N + 1)` عدداً. وكل ما يلي يهدف إلى إيجادها، ثم يكون الحل عند أي نقطة مجموعاً مزدوجاً.'],
+],[
+  Q('How many unknowns are there for N = M = 10?','كم مجهولاً عند N = M = 10؟','121',
+    ['(M + 1)(N + 1) = 11·11 = 121'], ['100','20','1331']),
+  Q('For M = N = 1 and `𝒴 = #m{1, 2 ;; 3, 4}`, evaluate y at `t = 1`, `x = γ`.','عند M = N = 1 و `𝒴 = #m{1, 2 ;; 3, 4}` احسب y عند `t = 1` و `x = γ`.','10',
+    ['L_k^{λ}(1) = 1,   L_i^{γ}(γ) = 1', 'y = 1 + 2 + 3 + 4 = 10'], ['1','4','0']),
+  Q('For the same 𝒴, evaluate y at `t = 0`, `x = 0`.','لمصفوفة 𝒴 نفسها احسب y عند `t = 0` و `x = 0`.','0',
+    ['L_k^{λ}(0) = (−1)^k,   L_i^{γ}(0) = (−1)^i', 'y = 1 − 2 − 3 + 4 = 0'], ['10','−2','1']),
+  Q('In `𝒴_{k,i}`, which index belongs to time?','في `𝒴_{k,i}` أي دليل يخص الزمن؟',['k, the row index, multiplies `L_k^{λ}(t)`','k، دليل الصف، ويضرب `L_k^{λ}(t)`'],
+    ['y = 𝔏_{M,λ}^T(t) 𝒴 𝔏_N^{γ}(x)', ['The time vector multiplies from the left, the space vector from the right.','متجه الزمن يضرب من اليسار ومتجه المكان من اليمين.']],
+    [['i, the column index','i، دليل العمود'],['Both','كلاهما']]),
+]);
+
+lesson('501',85,[
+  ['With `y = 𝔏_t^T 𝒴 𝔏_x`, each operator becomes a matrix product: time integration multiplies 𝒴 from the left, space differentiation from the right:','مع `y = 𝔏_t^T 𝒴 𝔏_x` يصبح كل مؤثر ضرب مصفوفات: التكامل الزمني يضرب 𝒴 من اليسار والاشتقاق المكاني من اليمين:'],
+  'D^{−β} y ≈ 𝔏_t^T I_{(−β)}^T 𝒴 𝔏_x,     ∂_x^2 y = 𝔏_t^T 𝒴 D^{(2)} 𝔏_x,     D^{−β} ∂_x^2 y ≈ 𝔏_t^T I_{(−β)}^T 𝒴 D^{(2)} 𝔏_x',
+  ['The transpose comes from `D^{−β} 𝔏_t ≈ I_{(−β)} 𝔏_t`, so `(I 𝔏_t)^T = 𝔏_t^T I^T`. Space and time operators commute because they act on different sides.','والمنقول يأتي من `D^{−β} 𝔏_t ≈ I_{(−β)} 𝔏_t` إذن `(I 𝔏_t)^T = 𝔏_t^T I^T`. ومؤثرات المكان والزمن تتبادل لأنها تعمل على جهتين مختلفتين.'],
+],[
+  Q('Write the matrix form of `D^{−0.5} ∂_x^2 y`.','اكتب الصيغة المصفوفية لـ `D^{−0.5} ∂_x^2 y`.','I_{(−0.5)}^T 𝒴 D^{(2)}',
+    [['Time from the left, space from the right.','الزمن من اليسار والمكان من اليمين.']], ['D^{(2)} 𝒴 I_{(−0.5)}','I_{(−0.5)} 𝒴 D^{(2)}','𝒴 I_{(−0.5)}^T D^{(2)}']),
+  Q('With γ = 1, N = 2 and `𝒴 = (0, 0, 1)` (one time row), find the coefficients of `∂_x^2 y`.','مع γ = 1 و N = 2 و `𝒴 = (0, 0, 1)` (صف زمني واحد) أوجد معاملات `∂_x^2 y`.','(12, 0, 0)',
+    ['𝒴 D^{(2)} = (0, 0, 1)·#m{0, 0, 0 ;; 0, 0, 0 ;; 12, 0, 0} = (12, 0, 0)', ['Here `y = L_2^{1}(x)` and `y″ = 12 = 12L_0`.','هنا `y = L_2^{1}(x)` و `y″ = 12 = 12L_0`.']],
+    ['(0, 0, 12)','(0, 12, 0)','(12, 0, 12)']),
+  Q('Why does `I_{(−β)}` appear transposed?','لماذا تظهر `I_{(−β)}` منقولة؟',['Because `D^{−β} 𝔏_t ≈ I 𝔏_t` and `y` uses `𝔏_t^T`','لأن `D^{−β} 𝔏_t ≈ I 𝔏_t` و y تستخدم `𝔏_t^T`'],
+    ['D^{−β} y = (D^{−β} 𝔏_t)^T 𝒴 𝔏_x ≈ (I 𝔏_t)^T 𝒴 𝔏_x = 𝔏_t^T I^T 𝒴 𝔏_x'],
+    [['It is a convention with no reason','إنه اصطلاح بلا سبب'],['Because I is symmetric','لأن I متماثلة']]),
+  Q('Do `I^T 𝒴` and `𝒴 D^{(2)}` commute when combined into `I^T 𝒴 D^{(2)}`?','هل يتبادل `I^T 𝒴` و `𝒴 D^{(2)}` عند جمعهما في `I^T 𝒴 D^{(2)}`؟',['Yes: `(I^T 𝒴) D^{(2)} = I^T (𝒴 D^{(2)})`','نعم: `(I^T 𝒴) D^{(2)} = I^T (𝒴 D^{(2)})`'],
+    [['Matrix multiplication is associative; one acts on rows (time), the other on columns (space).','ضرب المصفوفات تجميعي، وأحدهما يعمل على الصفوف (الزمن) والآخر على الأعمدة (المكان).']],
+    [['No, the order matters','لا، الترتيب مهم']]),
+]);
+
+lesson('501',86,[
+  ['Substituting the approximation in the integrated form and collecting coefficients gives the residual matrix:','بالتعويض بالتقريب في الصيغة التكاملية وجمع المعاملات نحصل على مصفوفة الباقي:'],
+  'ℜ = 𝒴 + Σ a_i I_{(−μ_s+μ_i)}^T 𝒴 + Σ b_i I_{(−μ_s+ν_i)}^T 𝒴 + c I_{(−μ_s)}^T 𝒴 − (d I_{(−μ_s)}^T + e I_{(−μ_s+η)}^T + f I_{(−μ_s+υ)}^T) 𝒴 D^{(2)} − ℋ',
+  ['Here ℋ is the coefficient matrix of h in the same basis. Every term is linear in 𝒴, so ℜ = 0 at the collocation points is a linear system. The ODE of Lesson 80 is the special case without space: `ℜ = a^T + a^T I_{(−α)} − e_0^T`.',
+   'و ℋ مصفوفة معاملات h في الأساس نفسه. وكل حد خطي في 𝒴، فيكون ℜ = 0 عند نقاط التجميع نظاماً خطياً. ومعادلة الدرس 80 العادية حالة خاصة بلا مكان: `ℜ = a^T + a^T I_{(−α)} − e_0^T`.'],
+],[
+  Q('Write ℜ for `^CD^{1.5} y = d Δy + g`.','اكتب ℜ للمسألة `^CD^{1.5} y = d Δy + g`.','ℜ = 𝒴 − d I_{(−1.5)}^T 𝒴 D^{(2)} − ℋ',
+    ['y = d D^{−1.5}Δy + h', ['Only the d term and h remain.','لا يبقى إلا حد d و h.']],
+    ['ℜ = 𝒴 + d I_{(−1.5)}^T 𝒴 D^{(2)} − ℋ','ℜ = 𝒴 − d 𝒴 D^{(2)} − ℋ','ℜ = I_{(−1.5)}^T 𝒴 − d 𝒴 D^{(2)}']),
+  Q('With which sign does the reaction term `cy` enter ℜ?','بأي إشارة يدخل حد التفاعل `cy` في ℜ؟','+ c I_{(−μ_s)}^T 𝒴',
+    [['It is on the left side of the equation, like y itself.','إنه في الطرف الأيسر من المعادلة مثل y نفسها.']],
+    ['− c I_{(−μ_s)}^T 𝒴','+ c 𝒴','− c 𝒴 D^{(2)}']),
+  Q('Is the system ℜ = 0 linear or nonlinear in 𝒴?','هل النظام ℜ = 0 خطي أم غير خطي في 𝒴؟',['Linear','خطي'],
+    [['Every term is a fixed matrix times 𝒴 (from the left, the right or both), plus the known ℋ.','كل حد مصفوفة ثابتة مضروبة في 𝒴 (من اليسار أو اليمين أو كليهما) مع ℋ المعلومة.']],
+    [['Nonlinear','غير خطي'],['It depends on λ','يعتمد على λ']]),
+  Q('Write ℜ for `^CD^{1.8} y + 2 ^CD^{0.6} y = Δy + g`.','اكتب ℜ للمسألة `^CD^{1.8} y + 2 ^CD^{0.6} y = Δy + g`.','ℜ = 𝒴 + 2I_{(−1.2)}^T 𝒴 − I_{(−1.8)}^T 𝒴 D^{(2)} − ℋ',
+    ['−μ_s + ν_1 = −1.2,   −μ_s = −1.8'],
+    ['ℜ = 𝒴 + 2I_{(−0.6)}^T 𝒴 − I_{(−1.8)}^T 𝒴 D^{(2)} − ℋ','ℜ = 𝒴 + 2I_{(−1.2)}^T 𝒴 − 𝒴 D^{(2)} − ℋ','ℜ = 𝒴 − 2I_{(−1.2)}^T 𝒴 + I_{(−1.8)}^T 𝒴 D^{(2)} − ℋ']),
+]);
+
+lesson('501',87,[
+  ['The residual is forced to vanish at chosen points, and the boundary conditions are imposed directly:','يُجبر الباقي على الانعدام عند نقاط مختارة، وتُفرض الشروط الحدية مباشرة:'],
+  ['In time: the M + 1 roots of `L_{M+1}^{λ}`, which are Legendre roots mapped by `t = ((z + 1)/2)^{1/λ}`. In space: the N − 1 interior roots of `L_{N−1}^{γ}`. The initial conditions are already in h.','في الزمن: جذور `L_{M+1}^{λ}` وعددها M + 1، وهي جذور ليجندر محوّلة بـ `t = ((z + 1)/2)^{1/λ}`. وفي المكان: جذور `L_{N−1}^{γ}` الداخلية وعددها N − 1. والشروط الابتدائية موجودة في h.'],
+  '(N − 1)(M + 1) + 2(M + 1) = (N + 1)(M + 1)',
+  ['Residual equations plus boundary equations equal the number of unknowns, so the system is square.','معادلات الباقي ومعادلات الحدود تساوي عدد المجاهيل، فالنظام مربع.'],
+],[
+  Q('Check the count for N = M = 8.','تحقق من العدّ عند N = M = 8.','63 + 18 = 81',
+    ['(N − 1)(M + 1) = 7·9 = 63,   2(M + 1) = 18', '(N + 1)(M + 1) = 81'], ['72 + 9 = 81','64 + 16 = 80','63 + 9 = 72']),
+  Q('Find the time collocation points for M = 1 and λ = 1/2.','أوجد نقاط التجميع الزمنية عند M = 1 و λ = 1/2.','t = 0.0447,  0.6220',
+    ['L_2^{1/2} = 0  ⇒  s = t^{1/2} = #f{1 ∓ 1/#r{3}}{2} = 0.2113,  0.7887', 't = s^2 = 0.0447,  0.6220'],
+    ['t = 0.2113,  0.7887','t = 0.25,  0.75','t = 0.4597,  0.8881']),
+  Q('Find the space collocation points for N = 3, γ = 1.','أوجد نقاط التجميع المكانية عند N = 3 و γ = 1.','x = 0.2113,  0.7887',
+    ['L_2^{1}(x) = 6x^2 − 6x + 1 = 0  ⇒  x = #f{3 ∓ #r{3}}{6}'], ['x = 0,  0.5,  1','x = 0.1127,  0.5,  0.8873','x = 0.0447,  0.6220']),
+  Q('Why do no equations for the initial conditions appear in the system?','لماذا لا تظهر معادلات للشروط الابتدائية في النظام؟',['They are already in h through the integrated form','موجودة مسبقاً في h عبر الصيغة التكاملية'],
+    [['Lemma 2.1 turned the initial values into known functions on the right-hand side.','اللمة 2.1 حوّلت القيم الابتدائية إلى دوال معلومة في الطرف الأيمن.']],
+    [['They are ignored','تُهمل'],['They are imposed after solving','تُفرض بعد الحل']]),
+]);
+
+lesson('501',88,[
+  ['Because every equation is linear in the coefficients, one direct solve is enough. The paper speaks of “an iteration method” and the notebooks call `FindRoot`, but a linear solver does the same job. With the vectorisation rule','لأن كل معادلة خطية في المعاملات يكفي حل مباشر واحد. يتحدث البحث عن «طريقة تكرارية» وتستدعي الدفاتر `FindRoot`، لكن حلّال النظم الخطية يؤدي المهمة نفسها. ومع قاعدة التحويل إلى متجه'],
+  'vec(A 𝒴 B) = (B^T ⊗ A) vec(𝒴)',
+  ['every term of ℜ becomes a Kronecker matrix acting on `vec(𝒴)`, giving one square matrix of order `(N + 1)(M + 1)`. In the stage-2 measurements the time of the notebooks went into substituting the symbolic residual at the points, not into the solve.',
+   'يصبح كل حد في ℜ مصفوفة كرونيكر تعمل على `vec(𝒴)`، فنحصل على مصفوفة مربعة واحدة رتبتها `(N + 1)(M + 1)`. وفي قياسات المرحلة 2 ذهب وقت الدفاتر في تعويض الباقي الرمزي عند النقاط لا في الحل.'],
+],[
+  Q('What is the order of the linear system for N = M = 12?','ما رتبة النظام الخطي عند N = M = 12؟','169',
+    ['13·13 = 169'], ['144','24','2197']),
+  Q('Dense elimination costs about `n^3/3` operations. How much more does the system of N = M = 12 cost than that of N = M = 6?','الحذف الكثيف يكلف نحو `n^3/3` عملية. بكم يزيد نظام N = M = 12 عن نظام N = M = 6؟',['About 41 times','نحو 41 ضعفاً'],
+    ['(#f{169}{49})^3 ≈ 3.45^3 ≈ 41', ['Doubling N and M multiplies the unknowns by about 3.4 and the work by about 41.','مضاعفة N و M تضرب المجاهيل في نحو 3.4 والعمل في نحو 41.']],
+    [['About 3.4 times','نحو 3.4 أضعاف'],['About 12 times','نحو 12 ضعفاً'],['About 1000 times','نحو 1000 ضعف']]),
+  Q('Write `vec(I^T 𝒴 D^{(2)})` as a matrix times `vec(𝒴)`.','اكتب `vec(I^T 𝒴 D^{(2)})` على صورة مصفوفة مضروبة في `vec(𝒴)`.','(D^{(2)T} ⊗ I^T) vec(𝒴)',
+    ['A = I^T,   B = D^{(2)}:   vec(A𝒴B) = (B^T ⊗ A) vec(𝒴)'], ['(I^T ⊗ D^{(2)}) vec(𝒴)','(D^{(2)} ⊗ I) vec(𝒴)','(I ⊗ D^{(2)T}) vec(𝒴)']),
+  Q('Why is `FindRoot` unnecessary here?','لماذا لا حاجة إلى `FindRoot` هنا؟',['The equations are linear, so one linear solve gives the exact solution of the discrete system','المعادلات خطية، فحل خطي واحد يعطي الحل المضبوط للنظام المتقطع'],
+    [['A Newton iteration on a linear system converges in one step anyway, after much more set-up work.','وتكرار نيوتن على نظام خطي يتقارب في خطوة واحدة على أي حال، بعد عمل تحضيري أكثر بكثير.']],
+    [['Because the system has no solution','لأن النظام لا حل له'],['Because FindRoot is less accurate','لأن FindRoot أقل دقة']]),
+]);
+
+lesson('501',89,[
+  ['In two space dimensions the idea does not change. The space basis becomes a tensor product, and the second derivatives become Kronecker products:','في بعدين مكانيين لا تتغير الفكرة. يصبح الأساس المكاني ضرباً تنسورياً، وتصبح المشتقات الثانية ضرب كرونيكر:'],
+  'D_1^{(2)} = D^{(2)} ⊗ I_{N_2},     D_2^{(2)} = I_{N_1} ⊗ D^{(2)},     Δ → D_1^{(2)} + D_2^{(2)}',
+  '(N_1 − 1)(N_2 − 1)(M + 1) + 2(N_2 + 1)(M + 1) + 2(N_1 − 1)(M + 1) = (N_1 + 1)(N_2 + 1)(M + 1)',
+  ['The terms count interior points, the full sides `x_1 = 0, γ_1`, and the sides `x_2 = 0, γ_2` without repeating the corners. With `N_1 = N_2 = M = 10` there are 1331 unknowns, still small for a direct solve.',
+   'والحدود تعدّ النقاط الداخلية، والضلعين الكاملين `x_1 = 0, γ_1`، والضلعين `x_2 = 0, γ_2` دون تكرار الأركان. ومع `N_1 = N_2 = M = 10` يوجد 1331 مجهولاً، وهو حجم صغير لحل مباشر.'],
+],[
+  Q('How many unknowns are there for `N_1 = N_2 = M = 10`?','كم مجهولاً عند `N_1 = N_2 = M = 10`؟','1331',
+    ['11·11·11 = 1331'], ['121','1000','363']),
+  Q('Check the counting formula for `N_1 = N_2 = 2`, `M = 0`.','تحقق من صيغة العدّ عند `N_1 = N_2 = 2` و `M = 0`.','1 + 6 + 2 = 9',
+    ['(1)(1)(1) + 2·3·1 + 2·1·1 = 9', '(N_1 + 1)(N_2 + 1)(M + 1) = 9'], ['1 + 4 + 4 = 9','4 + 4 + 1 = 9','1 + 6 + 4 = 11']),
+  Q('What is the size of `D_1^{(2)} = D^{(2)} ⊗ I_{N_2}` for `N_1 = N_2 = 4`?','ما حجم `D_1^{(2)} = D^{(2)} ⊗ I_{N_2}` عند `N_1 = N_2 = 4`؟','25 × 25',
+    ['(N_1 + 1)(N_2 + 1) = 25'], ['5 × 5','16 × 16','10 × 10']),
+  Q('Why are the corners counted only once?','لماذا تُعدّ الأركان مرة واحدة فقط؟',['They belong to two sides; the sides `x_2 = 0, γ_2` are counted without their end points','تنتمي إلى ضلعين، والضلعان `x_2 = 0, γ_2` يُعدّان دون نقطتي طرفيهما'],
+    [['This is why the third term has `N_1 − 1`, not `N_1 + 1` (correction 16 of the project: the printed system is four rows short per time node).','ولهذا في الحد الثالث `N_1 − 1` لا `N_1 + 1` (التصويب 16 في المشروع: النظام المطبوع ينقصه أربعة صفوف لكل عقدة زمنية).']],
+    [['Because corners have no equations','لأن الأركان بلا معادلات'],['They are counted twice','تُعدّ مرتين']]),
+]);
+
+lesson('501',90,[
+  ['The paper reports three examples. Example 1 has the exact solution `t^3 x^2(1 − x)^2 e^x` and reaches about `4 × 10^{−16}` at M = N = 15; Example 2 has `t^{1+ν_1+ν_2} sin x` and reaches `5.98 × 10^{−10}` at N = M = 12; Example 3 is two-dimensional.',
+   'يعرض البحث ثلاثة أمثلة. المثال 1 حله المضبوط `t^3 x^2(1 − x)^2 e^x` ويصل إلى نحو `4 × 10^{−16}` عند M = N = 15، والمثال 2 حله `t^{1+ν_1+ν_2} sin x` ويصل إلى `5.98 × 10^{−10}` عند N = M = 12، والمثال 3 ثنائي البعد.'],
+  ['The plots are semi-logarithmic: a straight line means exponential convergence. Rerunning the notebook gave `2.5865 × 10^{−9}` at N = 10, matching Table 1. A critical reading: Examples 1 and 3 are smooth in t and lie exactly in the time space for M ≥ 6 with λ = 1/2; Example 2, with `t^{3.9}`, is the one that tests the non-smooth case.',
+   'والرسومات شبه لوغاريتمية: الخط المستقيم يعني تقارباً أسياً. وإعادة تشغيل الدفتر أعطت `2.5865 × 10^{−9}` عند N = 10 مطابقة للجدول 1. وقراءة ناقدة: المثالان 1 و 3 أملسان في t ويقعان تماماً في الفضاء الزمني عند M ≥ 6 مع λ = 1/2، والمثال 2 بحلّه `t^{3.9}` هو الذي يختبر الحالة غير الملساء.'],
+],[
+  Q('With λ = 1/2, why is the time part `t^3` of Example 1 exact for M ≥ 6?','مع λ = 1/2 لماذا يكون الجزء الزمني `t^3` في المثال 1 مضبوطاً عند M ≥ 6؟',['`t^3 = s^6` with `s = t^{1/2}`, a polynomial of degree 6','`t^3 = s^6` مع `s = t^{1/2}` وهي كثيرة حدود من الدرجة 6'],
+    ['t^3 = (t^{1/2})^6'], [['Because `t^3` is smooth','لأن `t^3` ملساء'],['Because M ≥ 3 is enough','لأن M ≥ 3 يكفي']]),
+  Q('In Example 2, `ν_1 + ν_2 = 2.9`. What power of t does the solution contain, and which λ makes it a polynomial in `t^{λ}`?','في المثال 2 يكون `ν_1 + ν_2 = 2.9`. ما قوة t في الحل، وأي λ يجعلها كثيرة حدود في `t^{λ}`؟',['`t^{3.9}`; `λ = 0.1` (or 0.3)','`t^{3.9}`، و `λ = 0.1` (أو 0.3)'],
+    ['1 + 2.9 = 3.9 = 39·0.1 = 13·0.3', ['A small λ needs a high degree (39 or 13), which is why this example is harder.','و λ الصغيرة تحتاج درجة عالية (39 أو 13)، ولهذا هذا المثال أصعب.']],
+    ['t^{2.9};   λ = 0.5','t^{3.9};   λ = 0.5','t^{1.9};   λ = 0.1']),
+  Q('The errors at t = 1 of an independent solve were `4.19 × 10^{−4}`, `2.80 × 10^{−6}`, `2.00 × 10^{−9}` for N = M = 6, 8, 10. Is the convergence exponential?','أخطاء حل مستقل عند t = 1 كانت `4.19 × 10^{−4}` و `2.80 × 10^{−6}` و `2.00 × 10^{−9}` عند N = M = 6 و 8 و 10. هل التقارب أسي؟',['Yes: each step of 2 gains 2–3 digits','نعم: كل خطوة بمقدار 2 تكسب 2–3 أرقام'],
+    ['#f{4.19 × 10^{−4}}{2.80 × 10^{−6}} ≈ 150,   #f{2.80 × 10^{−6}}{2.00 × 10^{−9}} = 1400', ['On a semi-log plot the points fall on a (slightly steepening) line.','وعلى رسم شبه لوغاريتمي تقع النقاط على خط (يزداد ميله قليلاً).']],
+    [['No: the error falls like a power of N','لا: الخطأ يتناقص مثل قوة لـ N'],['No: the error grows','لا: الخطأ يزداد']]),
+  Q('Why does the error level off near `10^{−15}` in Example 1?','لماذا يستقر الخطأ قرب `10^{−15}` في المثال 1؟',['It has reached the rounding level of double precision','وصل إلى مستوى أخطاء التقريب في الدقة المضاعفة'],
+    [['Beyond this, more terms cannot help: rounding errors of about `10^{−16}`, amplified by the condition number, dominate.','بعد ذلك لا تفيد الحدود الإضافية: أخطاء التقريب بنحو `10^{−16}` المضخّمة بعدد الشرط هي الغالبة.']],
+    [['The method stops converging for N > 14','تتوقف الطريقة عن التقارب عند N > 14'],['The exact solution is not smooth','الحل المضبوط ليس أملس']]),
+]);
+
 export const MS501 = true;
