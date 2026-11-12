@@ -368,4 +368,225 @@ lesson('506',20,[
   Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [6 6]',[['Sizes multiply: (2·3) × (2·3).','الأحجام تُضرب: (2·3) × (2·3).']],['$ [5 5]','$ [2 3]','$ [4 9]'],'disp(mat2str(size(kron(ones(2), eye(3)))))'),
 ]);
 
+/* ---- 506 · Unit 3 (lessons 21–30): programming;  Unit 4 (lessons 31–40): graphics ---- */
+lesson('506',21,[
+  ['``if`` runs a block when its condition is true; ``elseif`` and ``else`` give the other cases; every block ends with ``end``:','``if`` تنفذ كتلة حين يكون شرطها صحيحاً، و ``elseif`` و ``else`` تعطيان الحالات الأخرى، وكل كتلة تنتهي بـ ``end``:'],
+  '$ if err < 1e-10\n    disp("converged")\nelseif err < 1e-6\n    disp("almost")\nelse\n    disp("not yet")\nend',
+  ['Conditions use ``==  ~=  <  <=  >  >=`` and combine with ``&&`` (and), ``||`` (or), ``~`` (not). A condition on an array is true only if all its elements are nonzero, so write ``all(...)`` or ``any(...)`` explicitly.','والشروط تستخدم ``==  ~=  <  <=  >  >=`` وتتحد بـ ``&&`` (و) و ``||`` (أو) و ``~`` (ليس). والشرط على مصفوفة صحيح فقط إذا كانت كل عناصرها غير صفرية، فاكتب ``all(...)`` أو ``any(...)`` صراحة.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ almost',[['`10^{−8}` is not below `10^{−10}` but is below `10^{−6}`.','`10^{−8}` ليست أقل من `10^{−10}` لكنها أقل من `10^{−6}`.']],['$ converged','$ not yet','$ almost converged'],'err = 1e-8;\nif err < 1e-10\n    disp("converged")\nelseif err < 1e-6\n    disp("almost")\nelse\n    disp("not yet")\nend'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ no',[['The condition on an array needs all elements true; one is 0.','الشرط على مصفوفة يحتاج كل العناصر صحيحة، وأحدها 0.']],['$ yes','$ yes no','$ Error'],'v = [1 0 2];\nif v\n    disp("yes")\nelse\n    disp("no")\nend'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1 0',[['``~=`` means «not equal».','``~=`` تعني «لا يساوي».']],['$ 0 1','$ 1 1','$ 0 0'],'a = 3;\nfprintf("%d %d\\n", a ~= 2, a == 2)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ inside',[['Both parts of the ``&&`` are true.','جزءا ``&&`` صحيحان.']],['$ outside','$ 1','$ inside outside'],'t = 0.4;\nif t >= 0 && t <= 1\n    disp("inside")\nelse\n    disp("outside")\nend'),
+]);
+
+lesson('506',22,[
+  ['``for`` runs a block once for each column of the array after ``=``; usually that array is a row vector such as ``1:n``:','``for`` تنفذ كتلة مرة لكل عمود في المصفوفة بعد ``=``، وغالباً تكون تلك المصفوفة متجهاً صفياً مثل ``1:n``:'],
+  '$ s = 0;\nfor k = 1:10\n    s = s + k^2;\nend\ndisp(s)            % 385',
+  ['Because the loop runs over columns, ``for c = A`` gives each column of A in turn, and a column vector gives one single pass. Avoid ``i`` and ``j`` as counters; they are the imaginary unit.','ولأن الحلقة تمر على الأعمدة فإن ``for c = A`` تعطي كل عمود من A تباعاً، والمتجه العمودي يعطي دورة واحدة فقط. وتجنب ``i`` و ``j`` عدّادين لأنهما الوحدة التخيلية.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 385',['Σ_{k=1}^{10} k^2 = #f{10·11·21}{6}'],['$ 55','$ 100','$ 285'],'s = 0;\nfor k = 1:10\n    s = s + k^2;\nend\ndisp(s)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 4 6',[['The loop variable is each column: [1; 3], then [2; 4].','متغير الحلقة هو كل عمود: [1; 3] ثم [2; 4].']],['$ 3 7','$ 1 2 3 4','$ 10'],'A = [1 2; 3 4];\nfor c = A\n    fprintf("%d ", sum(c));\nend\nfprintf("\\n")'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['A column vector is one column: one pass, with the whole vector.','المتجه العمودي عمود واحد: دورة واحدة بالمتجه كله.']],['$ 3','$ 0','$ 6'],'n = 0;\nfor v = [1; 2; 3]\n    n = n + 1;\nend\ndisp(n)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 120',['5! = 120'],['$ 24','$ 15','$ 720'],'p = 1;\nfor k = 5:-1:1\n    p = p*k;\nend\ndisp(p)'),
+]);
+
+lesson('506',23,[
+  ['``while`` repeats as long as its condition holds; ``break`` leaves the loop and ``continue`` skips to the next pass:','``while`` تكرر ما دام شرطها صحيحاً، و ``break`` تخرج من الحلقة و ``continue`` تقفز إلى الدورة التالية:'],
+  '$ x = 1;  it = 0;\nwhile true\n    xn = (x + 2/x)/2;   it = it + 1;\n    if abs(xn - x) < 1e-12, break, end\n    x = xn;\nend\nfprintf("%.15f in %d steps\\n", xn, it)',
+  ['Always bound an iteration that may not converge: ``while err > tol && it < maxit``.','وضع دائماً حداً لتكرار قد لا يتقارب: ``while err > tol && it < maxit``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.414213562373095 in 6 steps',[['Five steps give all digits, the sixth confirms convergence.','خمس خطوات تعطي كل الأرقام والسادسة تؤكد التقارب.']],['$ 1.414213562373095 in 5 steps','$ 1.5 in 1 steps','$ 1.414213562373095 in 50 steps'],'x = 1;  it = 0;\nwhile true\n    xn = (x + 2/x)/2;   it = it + 1;\n    if abs(xn - x) < 1e-12, break, end\n    x = xn;\nend\nfprintf("%.15f in %d steps\\n", xn, it)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 7',[['`2^7 = 128` is the first power above 100.','`2^7 = 128` أول قوة فوق 100.']],['$ 6','$ 128','$ 100'],'n = 0;\nwhile 2^n <= 100\n    n = n + 1;\nend\ndisp(n)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1 3 5',[['``continue`` skips the even numbers.','``continue`` تتجاوز الأعداد الزوجية.']],['$ 2 4 6','$ 1 2 3 4 5 6','$ 1 3 5 7'],'for k = 1:6\n    if mod(k, 2) == 0, continue, end\n    fprintf("%d ", k);\nend\nfprintf("\\n")'),
+  Q('Why add ``it < maxit`` to a while condition?','لماذا نضيف ``it < maxit`` إلى شرط while؟',['So that a non-converging iteration still stops','حتى يتوقف التكرار غير المتقارب مع ذلك'],[['Then check after the loop whether the tolerance was reached.','ثم افحص بعد الحلقة هل بُلغت السماحية.']],[['To make it faster','لتسريعه'],['It is required by MATLAB','يتطلبه MATLAB']]),
+]);
+
+lesson('506',24,[
+  ['A function lives in its own file whose name matches the function, or at the end of a script as a local function:','الدالة تعيش في ملفها الخاص الذي يطابق اسمه اسمها، أو في آخر ملف نصي دالةً محلية:'],
+  '$ % file legendre_p.m\nfunction P = legendre_p(n, x)\n%LEGENDRE_P  Values of P_0..P_n at the points x (one column per degree).\n    P = zeros(numel(x), n + 1);   P(:, 1) = 1;\n    if n > 0, P(:, 2) = x(:); end\n    for k = 1:n-1\n        P(:, k+2) = ((2*k + 1)*x(:).*P(:, k+1) - k*P(:, k))/(k + 1);\n    end\nend',
+  ['A function has its own workspace: it sees only its inputs and returns only its outputs. The first comment block is its help text. MATLAB indices start at 1, so column k + 1 holds `P_k`.','وللدالة مساحة عمل خاصة: لا ترى إلا مدخلاتها ولا تعيد إلا مخرجاتها. وأول كتلة تعليق هي نص مساعدتها. وفهارس MATLAB تبدأ من 1 فالعمود k + 1 يحمل `P_k`.'],
+],[
+  Q('Which column of ``legendre_p(5, x)`` holds `P_3`?','أي عمود في ``legendre_p(5, x)`` يحمل `P_3`؟','4',[['Column k + 1 holds `P_k`.','العمود k + 1 يحمل `P_k`.']],['3','5','2']),
+  Q('What size does ``legendre_p(4, linspace(-1, 1, 11))`` have?','ما حجم ``legendre_p(4, linspace(-1, 1, 11))``؟','11 × 5',[['One row per point, one column per degree 0..4.','صف لكل نقطة وعمود لكل درجة من 0 إلى 4.']],['5 × 11','11 × 4','4 × 11']),
+  Q('Why does a variable set inside the function not appear in the Workspace?','لماذا لا يظهر في مساحة العمل متغير عُيّن داخل الدالة؟',['Functions have their own workspace that disappears when they return','للدوال مساحة عمل خاصة تختفي عند العودة'],[['Only the outputs come back.','لا يعود إلا المخرجات.']],[['Because of the semicolon','بسبب الفاصلة المنقوطة'],['It does appear','بل يظهر']]),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1 0.5 -0.125 -0.4375',[['The recurrence of the function, written inline at x = 0.5.','علاقة التكرار في الدالة مكتوبة مباشرة عند x = 0.5.']],['$ 1 0.5 0.125 0.4375','$ 0.5 -0.125 -0.4375','$ 1 0.5 -0.125 0.4375'],'x = 0.5;  n = 3;\nP = zeros(1, n + 1);  P(1) = 1;  P(2) = x;\nfor k = 1:n-1\n    P(k+2) = ((2*k + 1)*x*P(k+1) - k*P(k))/(k + 1);\nend\nfprintf("%g %g %g %g\\n", P)'),
+]);
+
+lesson('506',25,[
+  ['An anonymous function is defined in one line with ``@`` and can be passed to other functions:','الدالة المجهولة تُعرَّف في سطر واحد بـ ``@`` ويمكن تمريرها لدوال أخرى:'],
+  '$ f = @(x) x.^2 .* exp(-x);\nf(1)                         % 0.3679\nintegral(f, 0, 1)            % 0.1606\nw = @(x, a, b) (1 - x).^a .* (1 + x).^b;\nw(0.5, 1, 0)                 % 0.5',
+  ['Variables used inside an anonymous function are copied when it is created: changing them afterwards has no effect. Use the dot operators so that the function works on vectors, as ``integral`` requires.','والمتغيرات المستخدمة داخل الدالة المجهولة تُنسخ عند إنشائها، فتغييرها بعد ذلك لا أثر له. واستخدم العمليات المنقطة لتعمل الدالة على المتجهات كما تتطلب ``integral``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2',[['a was 2 when f was created; the copy is kept.','a كانت 2 عند إنشاء f، وتُحفظ النسخة.']],['$ 5','$ 1','$ Error'],'a = 2;\nf = @(x) a*x;\na = 5;\ndisp(f(1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.160603',['∫_0^1 x^2 e^{−x} dx = 2 − #f{5}{e}'],['$ 0.367879','$ 0.333333','$ 0.264241'],'f = @(x) x.^2 .* exp(-x);\nfprintf("%.6f\\n", integral(f, 0, 1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.5000',['(1 − 0.5)^1(1 + 0.5)^0',['``disp`` shows 4 decimals in the default format.','``disp`` تعرض 4 أرقام عشرية في الصيغة الافتراضية.']],['$ 0.7500','$ 1.5000','$ 0.2500'],'w = @(x, a, b) (1 - x).^a .* (1 + x).^b;\ndisp(w(0.5, 1, 0))'),
+  Q('Why must ``f = @(x) x.^2`` use ``.^`` to work with ``integral``?','لماذا يجب أن تستخدم ``f = @(x) x.^2`` العامل ``.^`` لتعمل مع ``integral``؟',['integral calls f with a vector of points at once','integral تستدعي f بمتجه من النقاط دفعة واحدة'],[['``x^2`` of a row vector is an error.','``x^2`` لمتجه صفي خطأ.']],[['For speed only','للسرعة فقط'],['It does not matter','لا يهم']]),
+]);
+
+lesson('506',26,[
+  ['A function can return several outputs and accept optional inputs; ``nargin`` counts the inputs given:','يمكن للدالة أن تعيد عدة مخرجات وأن تقبل مدخلات اختيارية، و ``nargin`` تعد المدخلات المعطاة:'],
+  '$ function [x, w] = gauss_legendre(n, a, b)\n    if nargin < 2, a = -1; b = 1; end        % default interval\n    k = 1:n-1;  beta = k./sqrt(4*k.^2 - 1);\n    [V, D] = eig(diag(beta, 1) + diag(beta, -1));\n    [x, i] = sort(diag(D));  w = 2*V(1, i)\'.^2;\n    x = (b - a)/2*x + (a + b)/2;  w = (b - a)/2*w;\nend',
+  ['The caller decides how many outputs it wants: ``x = gauss_legendre(5)`` takes only the nodes, ``[x, w] = …`` both. Built-in functions work the same way: ``[m, i] = max(v)``, ``[V, D] = eig(A)``.','والمستدعي يقرر كم مخرجاً يريد: ``x = gauss_legendre(5)`` تأخذ العقد فقط، و ``[x, w] = …`` الاثنين. والدوال الجاهزة تعمل بالطريقة نفسها: ``[m, i] = max(v)`` و ``[V, D] = eig(A)``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.555556 0.888889 0.555556',[['The 3-point Gauss–Legendre weights from Golub–Welsch.','أوزان جاوس–ليجندر الثلاثة من Golub–Welsch.']],['$ 0.333333 1.333333 0.333333','$ 1 1 1','$ 0.666667 0.666667 0.666667'],'n = 3;  k = 1:n-1;  beta = k./sqrt(4*k.^2 - 1);\n[V, D] = eig(diag(beta, 1) + diag(beta, -1));\n[x, i] = sort(diag(D));  w = 2*V(1, i)\'.^2;\nfprintf("%.6f %.6f %.6f\\n", w)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.5 0.5',[['Mapping [−1, 1] to [0, 1] halves the weights of the 2-point rule.','نقل [−1, 1] إلى [0, 1] ينصّف أوزان قاعدة النقطتين.']],['$ 1 1','$ 0.25 0.75','$ 2 2'],'n = 2;  a = 0;  b = 1;  k = 1:n-1;  beta = k./sqrt(4*k.^2 - 1);\n[V, D] = eig(diag(beta, 1) + diag(beta, -1));\n[x, i] = sort(diag(D));  w = 2*V(1, i)\'.^2;\nw = (b - a)/2*w;\nfprintf("%g %g\\n", round(w*1e12)/1e12)'),
+  Q('What does ``nargin < 2`` test in the function above?','ماذا يختبر ``nargin < 2`` في الدالة أعلاه؟',['Whether the interval was omitted, so that the default [−1, 1] is used','هل حُذف المجال فتُستخدم القيمة الافتراضية [−1, 1]'],[['``nargin`` is the number of inputs actually passed.','``nargin`` عدد المدخلات الممررة فعلاً.']],[['The number of outputs','عدد المخرجات'],['Whether n < 2','هل n < 2']]),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 7 2',[['The value and the position of the maximum.','القيمة وموضع الأكبر.']],['$ 2 7','$ 7 3','$ 3 7'],'[m, i] = max([3 7 2]);\nfprintf("%d %d\\n", m, i)'),
+]);
+
+lesson('506',27,[
+  ['Vectorized code works on whole arrays instead of looping over elements. It is shorter and usually much faster:','الكود المتجهي يعمل على مصفوفات كاملة بدل المرور على العناصر، وهو أقصر وأسرع عادة بكثير:'],
+  '$ % loop\ns = 0;  for k = 1:n, s = s + 1/k^2; end\n% vectorized\ns = sum(1./(1:n).^2);\n% Gauss rule\nI = w(:)\' * f(x(:));',
+  ['Most built-in functions accept arrays; combine them with element-wise operators, logical indexing and ``sum``/``cumsum``/``diff``. Modern MATLAB also compiles loops efficiently, so vectorize for clarity first and for speed when profiling says so.','ومعظم الدوال الجاهزة تقبل المصفوفات، فادمجها مع العمليات المنقطة والفهرسة المنطقية و ``sum``/``cumsum``/``diff``. و MATLAB الحديث يترجم الحلقات بكفاءة أيضاً، فحوّل إلى متجهي للوضوح أولاً وللسرعة حين يقول قياس الأداء ذلك.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.643935',[['The partial sum of `Σ 1/k^2` up to 1000; the limit is `π^2/6 ≈ 1.644934`.','المجموع الجزئي لـ `Σ 1/k^2` حتى 1000، والنهاية `π^2/6 ≈ 1.644934`.']],['$ 1.644934','$ 1.000000','$ 0.693147'],'fprintf("%.6f\\n", sum(1./(1:1000).^2))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.666667',['∫_{−1}^{1} x^2 dx = #f{2}{3}'],['$ 0.333333','$ 2.000000','$ 1.154701'],'x = [-1; 1]/sqrt(3);  w = [1; 1];\nf = @(x) x.^2;\nfprintf("%.6f\\n", w\'*f(x))'),
+  Q('Write the maximum error between vectors ``u`` and ``ue`` without a loop.','اكتب أكبر خطأ بين المتجهين ``u`` و ``ue`` دون حلقة.','$ max(abs(u - ue))',[['Every operation acts on the whole vector.','كل عملية تعمل على المتجه كاملاً.']],['$ max(u - ue)','$ abs(max(u) - max(ue))','$ for k = 1:n, max(abs(u(k))); end']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3',[['Count the entries above 0.5 with a logical sum.','عدّ العناصر الأكبر من 0.5 بمجموع منطقي.']],['$ 2','$ 5','$ 0.75'],'v = [0.2 0.7 0.9 0.4 0.6];\ndisp(sum(v > 0.5))'),
+]);
+
+lesson('506',28,[
+  ['Growing an array inside a loop makes MATLAB reallocate and copy it many times. Allocate the final size first:','تكبير مصفوفة داخل حلقة يجعل MATLAB يعيد حجزها ونسخها مرات كثيرة. فاحجز الحجم النهائي أولاً:'],
+  '$ % slow: grows at every step\ne = [];  for N = 4:4:40, e(end+1) = err(N); end\n% fast: preallocated\nNs = 4:4:40;  e = zeros(size(Ns));\nfor k = 1:numel(Ns), e(k) = err(Ns(k)); end',
+  ['The Editor underlines growing arrays with a warning. Preallocate with ``zeros``, ``ones``, ``nan`` or ``cell``.','والمحرر يضع خطاً تحت المصفوفات المتنامية مع تحذير. احجز مسبقاً بـ ``zeros`` أو ``ones`` أو ``nan`` أو ``cell``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1 4 9 16 25]',[['The same result as the growing version, without reallocation.','النتيجة نفسها كالنسخة المتنامية دون إعادة حجز.']],['$ [1 2 3 4 5]','$ [0 0 0 0 0]','$ [1 4 9 16]'],'n = 5;  v = zeros(1, n);\nfor k = 1:n, v(k) = k^2; end\ndisp(mat2str(v))'),
+  Q('About how many element copies does growing a vector to length n one element at a time make?','كم نسخ عنصر تقريباً يُجري تكبير متجه إلى الطول n عنصراً بعنصر؟','≈ #f{n^2}{2}',['1 + 2 + … + (n − 1)'],['≈ n','≈ n log n','≈ 2n']),
+  Q('Why preallocate with ``nan`` rather than ``zeros`` for a table of errors?','لماذا يُحجز مسبقاً بـ ``nan`` بدل ``zeros`` لجدول أخطاء؟',['An entry that was never filled shows up as ``nan`` instead of a misleading 0','العنصر الذي لم يُملأ يظهر ``nan`` بدل صفر مضلل'],[['A zero error would look like a perfect result.','الخطأ الصفري يبدو نتيجة مثالية.']],[['nan is faster','nan أسرع'],['zeros cannot be used','لا يمكن استخدام zeros']]),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1 2]',[['``size(Ns)`` gives a 1 × 2 shape for the preallocated vector.','``size(Ns)`` تعطي الشكل 1 × 2 للمتجه المحجوز.']],['$ [2 1]','$ [2]','$ [0 0]'],'Ns = [8 16];\ne = zeros(size(Ns));\ndisp(mat2str(size(e)))'),
+]);
+
+lesson('506',29,[
+  ['A cell array holds values of different types and sizes; a structure holds named fields:','مصفوفة الخلايا تحمل قيماً مختلفة الأنواع والأحجام، والهيكل يحمل حقولاً مسماة:'],
+  '$ c = {8, "Legendre", [0.5 1.9]};\nc{2}                     % the content: "Legendre"\nc(2)                     % a 1 × 1 cell containing it\np.N = 8;  p.lam = 0.5;  p.orders = [1.9];\nfieldnames(p), isfield(p, "lam")',
+  ['Braces ``{}`` give the content of a cell, round brackets ``()`` a sub-array of cells. A structure is the natural way to pass the parameters of a problem to a solver.','والأقواس المعقوفة ``{}`` تعطي محتوى الخلية والمستديرة ``()`` جزءاً من مصفوفة الخلايا. والهيكل الطريقة الطبيعية لتمرير وسائط مسألة إلى حلّال.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ char cell',[['Braces give the content, round brackets a cell.','المعقوفة تعطي المحتوى والمستديرة خلية.']],['$ cell char','$ char char','$ cell cell'],'c = {8, \'Legendre\', [0.5 1.9]};\nfprintf("%s %s\\n", class(c{2}), class(c(2)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 8 0.5 1',[['Fields are read with a dot; isfield returns 1 (true).','الحقول تُقرأ بالنقطة، و isfield تعيد 1 (صحيح).']],['$ 8 0.5 0','$ N lam 1','$ Error'],'p.N = 8;  p.lam = 0.5;\nfprintf("%d %g %d\\n", p.N, p.lam, isfield(p, "lam"))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3',[['Three cells, whatever their contents.','ثلاث خلايا مهما كانت محتوياتها.']],['$ 4','$ 1','$ 11'],'c = {8, \'Legendre\', [0.5 1.9]};\ndisp(numel(c))'),
+  Q('Why pass a structure ``p`` to a solver instead of eight separate inputs?','لماذا يُمرر هيكل ``p`` إلى حلّال بدل ثمانية مدخلات منفصلة؟',['Named fields cannot be passed in the wrong order, and new parameters do not change the call','الحقول المسماة لا تُمرر بترتيب خاطئ، والوسائط الجديدة لا تغيّر الاستدعاء'],[['``solve(p)`` stays the same for every example.','``solve(p)`` تبقى كما هي لكل مثال.']],[['It is faster','أسرع'],['MATLAB requires it','يتطلبه MATLAB']]),
+]);
+
+lesson('506',30,[
+  ['The debugger stops a program inside its own workspace so you can inspect it:','المصحح يوقف البرنامج داخل مساحة عمله فتستطيع فحصه:'],
+  '$ dbstop if error       % stop where the next error occurs\ndbstop in solver at 42  % a breakpoint (or click the line number)\n% at the K>> prompt: inspect variables, then\ndbstep, dbcont, dbquit',
+  ['At a breakpoint the prompt becomes ``K>>`` and the Workspace shows the function’s variables. Test small cases first; most errors already appear for N = 2.','عند نقطة التوقف يصبح المحث ``K>>`` وتعرض مساحة العمل متغيرات الدالة. واختبر الحالات الصغيرة أولاً، فمعظم الأخطاء تظهر عند N = 2.'],
+],[
+  Q('Which command makes MATLAB stop at the line where an error occurs?','أي أمر يجعل MATLAB يتوقف عند السطر الذي يحدث فيه خطأ؟','$ dbstop if error',[['The workspace at that moment is then available.','فتتاح مساحة العمل في تلك اللحظة.']],['$ dbcont','$ keyboard off','$ error on']),
+  Q('What does the prompt ``K>>`` mean?','ماذا يعني المحث ``K>>``؟',['MATLAB is paused in debug mode inside a function','MATLAB متوقف في وضع التصحيح داخل دالة'],[['``dbcont`` continues, ``dbquit`` leaves.','``dbcont`` تكمل و ``dbquit`` تخرج.']],[['An error occurred and MATLAB closed','حدث خطأ وأُغلق MATLAB'],['The kernel is busy','النواة مشغولة']]),
+  Q('Which command executes only the next line while debugging?','أي أمر ينفذ السطر التالي فقط أثناء التصحيح؟','$ dbstep',[['``dbstep in`` enters a called function.','``dbstep in`` تدخل دالة مستدعاة.']],['$ dbcont','$ dbquit','$ dbstop']),
+  Q('A solver gives a wrong matrix for N = 30. What is the first test?','حلّال يعطي مصفوفة خاطئة عند N = 30. ما أول اختبار؟',['Run N = 1 or 2 and compare with a hand computation','شغّل N = 1 أو 2 وقارن بحساب يدوي'],[['Small cases can be checked line by line.','الحالات الصغيرة تُفحص سطراً سطراً.']],[['Run N = 60','شغّل N = 60'],['Restart MATLAB','أعد تشغيل MATLAB']]),
+]);
+
+lesson('506',31,[
+  ['``plot(x, y)`` joins the points `(x_k, y_k)`; a third argument gives colour, line style and marker:','``plot(x, y)`` تصل النقاط `(x_k, y_k)`، ومتغير ثالث يعطي اللون ونمط الخط والعلامة:'],
+  '$ x = linspace(-1, 1, 200);\nplot(x, (3*x.^2 - 1)/2, "b-", "LineWidth", 1.5)\nhold on\nplot(x, (5*x.^3 - 3*x)/2, "r--")\ngrid on;  axis([-1 1 -1 1])',
+  ['Name–value pairs set other properties: ``"LineWidth"``, ``"MarkerSize"``, ``"Color"``. ``axis([xmin xmax ymin ymax])`` fixes the visible region.','وأزواج الاسم والقيمة تحدد خصائص أخرى: ``"LineWidth"`` و ``"MarkerSize"`` و ``"Color"``. و ``axis([xmin xmax ymin ymax])`` تثبت المنطقة الظاهرة.'],
+],[
+  Q('Which format string draws red circles joined by a dashed line?','أي سلسلة تنسيق ترسم دوائر حمراء موصولة بخط متقطع؟','$ "r--o"',[['Colour r, style --, marker o.','اللون r والنمط -- والعلامة o.']],['$ "o--red"','$ "r:o"','$ "ro"']),
+  Q('Why use 200 points instead of 5 for the curve?','لماذا نستخدم 200 نقطة بدل 5 للمنحنى؟',['plot joins points with straight segments; few points give a broken line','plot تصل النقاط بقطع مستقيمة، والنقاط القليلة تعطي خطاً مكسوراً'],[['The function is only evaluated at the given points.','الدالة تُحسب عند النقاط المعطاة فقط.']],[['To make it exact','لجعله مضبوطاً'],['plot needs at least 100 points','plot تحتاج 100 نقطة على الأقل']]),
+  Q('Which command keeps the current curve when the next plot is drawn?','أي أمر يُبقي المنحنى الحالي عند رسم التالي؟','$ hold on',[['Without it each plot replaces the previous one.','دونه يستبدل كل رسم سابقه.']],['$ keep on','$ figure','$ grid on']),
+  Q('Which call fixes the axes to `[−1, 1] × [0, 2]`?','أي استدعاء يثبت المحاور على `[−1, 1] × [0, 2]`؟','$ axis([-1 1 0 2])',[['Four numbers: x range, then y range.','أربعة أعداد: مدى x ثم مدى y.']],['$ axis([-1 0 1 2])','$ xlim([-1 1 0 2])','$ axis(-1, 1, 0, 2)']),
+]);
+
+lesson('506',32,[
+  ['Several curves in one figure: plot several pairs in one call, or use ``hold on``; ``legend`` names them in order:','عدة منحنيات في شكل واحد: ارسم عدة أزواج في استدعاء واحد أو استخدم ``hold on``، و ``legend`` تسميها بالترتيب:'],
+  '$ t = linspace(0, 1, 101);\nplot(t, exp(-t), t, 1 - 2*t/3, "--")\nlegend("exact", "tau, N = 1", "Location", "northeast")\n% or give names while plotting:\nplot(t, exp(-t), "DisplayName", "exact"); hold on\nplot(t, 1 - 2*t/3, "--", "DisplayName", "tau"); legend show',
+  ['``"DisplayName"`` keeps each name with its curve, which is safer than a separate list when curves are added in a loop.','و ``"DisplayName"`` تبقي كل اسم مع منحناه، وهذا أسلم من قائمة منفصلة حين تُضاف المنحنيات في حلقة.'],
+],[
+  Q('How many curves does ``plot(t, exp(-t), t, 1 - 2*t/3, "--")`` draw?','كم منحنى يرسم ``plot(t, exp(-t), t, 1 - 2*t/3, "--")``؟','2',[['Two (x, y) pairs.','زوجان (x, y).']],['1','3','4']),
+  Q('In which order does ``legend("a", "b")`` assign names?','بأي ترتيب تعيّن ``legend("a", "b")`` الأسماء؟',['In the order the curves were plotted','بترتيب رسم المنحنيات'],[['The first name goes to the first curve.','الاسم الأول للمنحنى الأول.']],[['Alphabetically','أبجدياً'],['From the top curve down','من المنحنى الأعلى نزولاً']]),
+  Q('Which option names a curve when it is drawn?','أي خيار يسمّي المنحنى عند رسمه؟','$ "DisplayName"',[['Then ``legend show`` collects the names.','ثم تجمع ``legend show`` الأسماء.']],['$ "Label"','$ "Name"','$ "Legend"']),
+  Q('Plot the errors of four runs in a loop with a legend entry for each N.','ارسم أخطاء أربعة تشغيلات في حلقة مع مدخل مفتاح لكل N.','$ for N = [4 8 16 32], semilogy(x, e{N}, "DisplayName", "N = " + N); hold on, end; legend show',[['Each curve carries its own name.','كل منحنى يحمل اسمه.']],['$ for N = [4 8 16 32], plot(x, e{N}); end; legend(N)','$ semilogy(x, e); legend("N")','$ for N = [4 8 16 32], semilogy(x, e{N}); end; legend show']),
+]);
+
+lesson('506',33,[
+  ['Axis labels, titles and fonts accept TeX (the default interpreter) or LaTeX:','تسميات المحاور والعناوين والخطوط تقبل TeX (المفسر الافتراضي) أو LaTeX:'],
+  '$ xlabel("t");  ylabel("max error")\ntitle("D^{1/2} y = -y,  \\lambda = 1/2")              % TeX: ^, _, \\lambda\nylabel("$\\|u - u_N\\|_\\infty$", "Interpreter", "latex")\nset(gca, "FontSize", 12)',
+  ['With the TeX interpreter ``^{}`` and ``_{}`` make super- and subscripts and Greek letters are written ``\\alpha``; for full formulas use ``"Interpreter", "latex"`` with dollar signs.','مع مفسر TeX تصنع ``^{}`` و ``_{}`` الأسس والأدلة، وتُكتب الحروف اليونانية ``\\alpha``، وللصيغ الكاملة استخدم ``"Interpreter", "latex"`` مع علامات الدولار.'],
+],[
+  Q('Write the title `μ = 1/2` with the TeX interpreter.','اكتب العنوان `μ = 1/2` بمفسر TeX.','$ title("\\mu = 1/2")',[['Greek letters with a backslash.','الحروف اليونانية بشرطة مائلة.']],['$ title("mu = 1/2")','$ title("$mu$ = 1/2")','$ title(mu = 1/2)']),
+  Q('Which option is needed for ``ylabel("$\\frac{1}{2}$")``?','أي خيار نحتاجه لـ ``ylabel("$\\frac{1}{2}$")``؟','$ "Interpreter", "latex"',[['TeX does not know ``\\frac``.','TeX لا يعرف ``\\frac``.']],['$ "Interpreter", "tex"','$ "FontName", "latex"','$ "Math", "on"']),
+  Q('Which call sets the font size of the tick labels of the current axes?','أي استدعاء يحدد حجم خط تسميات تدريج المحاور الحالية؟','$ set(gca, "FontSize", 12)',[['``gca`` is the current axes.','``gca`` المحاور الحالية.']],['$ fontsize(12)','$ set(gcf, "Size", 12)','$ xlabel(12)']),
+  Q('How is `t_{k}` written with the TeX interpreter?','كيف تُكتب `t_{k}` بمفسر TeX؟','$ "t_{k}"',[['Braces group the subscript.','الأقواس تجمع الدليل.']],['$ "t[k]"','$ "t__k"','$ "t^k"']),
+]);
+
+lesson('506',34,[
+  ['Errors are plotted on logarithmic axes: ``semilogy`` for spectral convergence (a straight line in N), ``loglog`` for algebraic convergence (a straight line of slope −p):','تُرسم الأخطاء على محاور لوغاريتمية: ``semilogy`` للتقارب الطيفي (خط مستقيم في N) و ``loglog`` للتقارب الجبري (خط مستقيم ميله −p):'],
+  '$ N = [4 8 12 16];  e = [1.2e-3 1.1e-6 1.3e-9 1.2e-12];\nsemilogy(N, e, "o-");  grid on\nc = polyfit(N, log10(e), 1);      % slope c(1) ≈ -0.75\nrho = 10^(-c(1))                  % ≈ 5.6',
+  ['A least-squares line through the logarithms gives the observed rate; leave out points at the round-off floor near `10^{−15}`.','ومستقيم المربعات الصغرى عبر اللوغاريتمات يعطي المعدل الملاحظ، واستبعد النقاط عند أرضية التقريب قرب `10^{−15}`.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 5.6',[['`ρ = 10^{−slope}` from the fitted line.','`ρ = 10^{−slope}` من الخط الملاءم.']],['$ 0.75','$ 10','$ 1.78'],'N = [4 8 12 16];  e = [1.2e-3 1.1e-6 1.3e-9 1.2e-12];\nc = polyfit(N, log10(e), 1);\nfprintf("%.1f\\n", 10^(-c(1)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -4.00',[['Algebraic rate: the slope on log–log axes.','معدل جبري: الميل على محاور لوغاريتمية مزدوجة.']],['$ 4.00','$ -1.00','$ -16.00'],'N = [8 16 32 64];  e = 3*N.^-4;\nc = polyfit(log10(N), log10(e), 1);\nfprintf("%.2f\\n", c(1))'),
+  Q('Which plot shows `e_N = 5N^{−3}` as a straight line?','أي رسم يُظهر `e_N = 5N^{−3}` خطاً مستقيماً؟','$ loglog(N, e)',['log e = log 5 − 3 log N'],['$ semilogy(N, e)','$ plot(N, e)','$ semilogx(N, e)']),
+  Q('Why leave out errors near `10^{−15}` from the fit?','لماذا تُستبعد الأخطاء القريبة من `10^{−15}` من الملاءمة؟',['They are round-off, not discretization error, and bend the line','هي خطأ تقريب لا خطأ تقطيع وتحني الخط'],[['The fitted rate must describe the method.','المعدل الملاءم يجب أن يصف الطريقة.']],[['They are negative','سالبة'],['To shorten the table','لتقصير الجدول']]),
+]);
+
+lesson('506',35,[
+  ['Several panels in one figure: the classic ``subplot(m, n, k)`` or the newer ``tiledlayout`` with ``nexttile``:','عدة لوحات في شكل واحد: ``subplot(m, n, k)`` الكلاسيكية أو ``tiledlayout`` الأحدث مع ``nexttile``:'],
+  '$ for n = 0:3\n    subplot(2, 2, n + 1)\n    plot(x, legendreP(n, x)), title("P_" + n)\nend\n% newer, with compact spacing\ntiledlayout(2, 2, "TileSpacing", "compact")\nnexttile, plot(x, y1)\nnexttile, semilogy(N, e)',
+  ['In ``subplot(m, n, k)`` the panels are numbered row by row. ``tiledlayout`` (R2019b and later) handles spacing and shared titles better.','وفي ``subplot(m, n, k)`` تُرقّم اللوحات صفاً صفاً. و ``tiledlayout`` (من R2019b) تعالج التباعد والعناوين المشتركة أفضل.'],
+],[
+  Q('In ``subplot(2, 3, k)``, which k is the first panel of the second row?','في ``subplot(2, 3, k)`` أي k هي أول لوحة في الصف الثاني؟','4',[['Row by row: 1, 2, 3, then 4.','صفاً صفاً: 1 و 2 و 3 ثم 4.']],['2','3','5']),
+  Q('How many panels does ``tiledlayout(3, 2)`` provide?','كم لوحة توفر ``tiledlayout(3, 2)``؟','6',['3·2'],['5','3','2']),
+  Q('Which call moves to the next panel of a tiled layout?','أي استدعاء ينتقل إلى اللوحة التالية في تخطيط متجانب؟','$ nexttile',[['Each call creates the next axes.','كل استدعاء ينشئ المحاور التالية.']],['$ subplot next','$ hold on','$ figure']),
+  Q('Which option reduces the empty space between tiles?','أي خيار يقلل المساحة الفارغة بين اللوحات؟','$ "TileSpacing", "compact"',[['Also ``"Padding", "compact"`` for the outer margin.','وأيضاً ``"Padding", "compact"`` للهامش الخارجي.']],['$ "Gap", 0','$ "Spacing", "none"','$ "Margin", "small"']),
+]);
+
+lesson('506',36,[
+  ['Surfaces and contours of `u(x, t)` on a grid from ``meshgrid``:','السطوح وخطوط الكنتور لـ `u(x, t)` على شبكة من ``meshgrid``:'],
+  '$ [X, T] = meshgrid(linspace(0, 1, 41), linspace(0, 1, 21));\nU = T.^1.5 .* sin(pi*X);\nsurf(X, T, U), shading interp, xlabel("x"), ylabel("t")\ncontourf(X, T, U, 20), colorbar\nmesh(X, T, U)',
+  ['``meshgrid(x, t)`` returns arrays of size ``numel(t) × numel(x)``: rows follow t, columns follow x. Surfaces of the error, ``abs(U - Uexact)``, show where an approximation is worst.','و ``meshgrid(x, t)`` تعيد مصفوفات حجمها ``numel(t) × numel(x)``: الصفوف تتبع t والأعمدة تتبع x. وسطوح الخطأ ``abs(U - Uexact)`` تُظهر أين يكون التقريب أسوأ.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [21 41]',[['Rows follow t (21 values), columns follow x (41 values).','الصفوف تتبع t (21 قيمة) والأعمدة تتبع x (41 قيمة).']],['$ [41 21]','$ [41 41]','$ [861 1]'],'[X, T] = meshgrid(linspace(0, 1, 41), linspace(0, 1, 21));\ndisp(mat2str(size(X)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['`u(1/2, 1) = 1·sin(π/2)`.','`u(1/2, 1) = 1·sin(π/2)`.']],['$ 0','$ 0.5','$ 1.5'],'[X, T] = meshgrid(linspace(0, 1, 3), linspace(0, 1, 3));\nU = T.^1.5 .* sin(pi*X);\ndisp(round(U(3, 2)*1e12)/1e12)'),
+  Q('Which command draws filled contours with 20 levels?','أي أمر يرسم خطوط كنتور مملوءة بـ 20 مستوى؟','$ contourf(X, T, U, 20)',[['Add ``colorbar`` for the scale.','أضف ``colorbar`` للمقياس.']],['$ contour(X, T, U, "fill", 20)','$ surf(X, T, U, 20)','$ mesh(X, T, 20)']),
+  Q('What does ``shading interp`` do on a surf plot?','ماذا تفعل ``shading interp`` في رسم surf؟',['It removes the grid lines and interpolates the colours smoothly','تحذف خطوط الشبكة وتستكمل الألوان بنعومة'],[['A purely visual setting.','إعداد مرئي فقط.']],[['It refines the grid','تنقّح الشبكة'],['It interpolates the data','تستكمل البيانات']]),
+]);
+
+lesson('506',37,[
+  ['Look at a matrix before solving with it: ``spy`` shows the nonzero pattern, ``imagesc`` the magnitudes as colours:','انظر إلى المصفوفة قبل الحل بها: ``spy`` تُظهر نمط العناصر غير الصفرية و ``imagesc`` المقادير ألواناً:'],
+  '$ spy(D2)        % Theorem 3.1: strictly lower, checkerboard\nimagesc(log10(abs(A) + eps)), colorbar      % orders of magnitude\nspy(kron(eye(4), T))                        % block structure',
+  ['Adding ``eps`` avoids `log 0`. Structure seen in ``spy`` suggests the solver: banded, block diagonal or Kronecker structure can be exploited.','وإضافة ``eps`` تتجنب `log 0`. والبنية الظاهرة في ``spy`` تقترح الحلّال: البنية الشريطية أو القطرية الكتلية أو بنية كرونيكر يمكن استغلالها.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 6',[['Pairs (r, j) with r − j even and positive for N = 5 (indices from 0).','الأزواج (r, j) التي فيها r − j زوجي موجب عند N = 5 (الأدلة من 0).']],['$ 9','$ 15','$ 4'],'N = 5;  D = zeros(N + 1);\nfor r = 0:N\n    for j = 0:r-1\n        if mod(r - j, 2) == 0\n            D(r+1, j+1) = 4*(r - j)/2*(2*j + 1)*(r + j + 1);\n        end\n    end\nend\ndisp(nnz(D))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 10',[['A 4 × 4 tridiagonal matrix: 4 + 3 + 3 nonzeros.','مصفوفة 4 × 4 ثلاثية القطر: 4 + 3 + 3.']],['$ 16','$ 4','$ 12'],'T = diag(2*ones(4, 1)) + diag(-ones(3, 1), 1) + diag(-ones(3, 1), -1);\ndisp(nnz(T))'),
+  Q('Why add ``eps`` in ``log10(abs(A) + eps)``?','لماذا تُضاف ``eps`` في ``log10(abs(A) + eps)``؟',['To avoid `log 0 = −∞` for zero entries','لتجنب `log 0 = −∞` للعناصر الصفرية'],[['Zeros then show as about −16.','فتظهر الأصفار نحو −16.']],[['To make A invertible','لجعل A قابلة للعكس'],['To scale the colours','لتحجيم الألوان']]),
+  Q('What pattern does ``spy(kron(eye(4), T))`` show for tridiagonal T?','أي نمط تُظهره ``spy(kron(eye(4), T))`` لـ T ثلاثية القطر؟',['Four tridiagonal blocks along the diagonal','أربع كتل ثلاثية القطر على القطر'],[['One copy of T per block.','نسخة من T لكل كتلة.']],[['A full matrix','مصفوفة كاملة'],['A single band of width 4','شريط واحد عرضه 4']]),
+]);
+
+lesson('506',38,[
+  ['Tables of results: ``fprintf`` for text output, ``table`` for a data table that can be sorted and exported:','جداول النتائج: ``fprintf`` لمخرج نصي و ``table`` لجدول بيانات يمكن ترتيبه وتصديره:'],
+  '$ Ns = [4 8 12];  e = [1.2e-3 1.1e-6 1.3e-9];\nfprintf("%4s %12s\\n", "N", "error");\nfprintf("%4d %12.3e\\n", [Ns; e]);\nT = table(Ns\', e\', \'VariableNames\', {\'N\', \'error\'});\nwritetable(T, "errors.csv")',
+  ['Stacking ``[Ns; e]`` makes each column one row of the table, because ``fprintf`` reads column by column.','ورص ``[Ns; e]`` يجعل كل عمود صفاً في الجدول لأن ``fprintf`` تقرأ عموداً عموداً.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 4 1.200e-03\n8 1.100e-06',[['Each column of ``[Ns; e]`` fills one line.','كل عمود في ``[Ns; e]`` يملأ سطراً.']],['$ 4 8\n1.200e-03 1.100e-06','$ 4 1.2e-03 8 1.1e-06','$ 4 8 1.200e-03 1.100e-06'],'Ns = [4 8];  e = [1.2e-3 1.1e-6];\nfprintf("%d %.3e\\n", [Ns; e]);'),
+  Q('Why is ``[Ns; e]`` used instead of ``[Ns e]``?','لماذا يُستخدم ``[Ns; e]`` بدل ``[Ns e]``؟',['fprintf reads column by column, so each column must be one row of the table','fprintf تقرأ عموداً عموداً فيجب أن يكون كل عمود صفاً في الجدول'],[['``[Ns e]`` would print all N first, then all errors.','``[Ns e]`` تطبع كل N أولاً ثم كل الأخطاء.']],[['Both are the same','الاثنان متطابقان'],['To make it faster','لتسريعه']]),
+  Q('Which function writes a table to a CSV file?','أي دالة تكتب جدولاً في ملف CSV؟','$ writetable',[['``readtable`` reads it back.','``readtable`` تقرؤه.']],['$ fprintf','$ save','$ csvsave']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 4.0',[['The order between two rows of a table: `log(e_1/e_2)/log 2`.','الرتبة بين صفين في جدول: `log(e_1/e_2)/log 2`.']],['$ 16.0','$ 2.0','$ -4.0'],'e = [1e-3 6.25e-5];\nfprintf("%.1f\\n", log(e(1)/e(2))/log(2))'),
+]);
+
+lesson('506',39,[
+  ['Figures for a paper are exported in a vector format at their final size:','أشكال البحث تُصدَّر بصيغة متجهية بحجمها النهائي:'],
+  '$ f = figure("Units", "centimeters", "Position", [2 2 9 6.5]);   % one column\n...\nexportgraphics(f, "convergence.pdf", "ContentType", "vector")\nexportgraphics(f, "convergence.png", "Resolution", 300)\n% older releases: print(f, "-dpdf", "convergence.pdf")',
+  ['``exportgraphics`` (R2020a and later) trims the margins automatically. Set the size before plotting so that fonts keep their size in the paper.','و ``exportgraphics`` (من R2020a) تقص الهوامش تلقائياً. وحدد الحجم قبل الرسم حتى تحافظ الخطوط على حجمها في البحث.'],
+],[
+  Q('Which format keeps a figure sharp at any zoom in a LaTeX paper?','أي صيغة تبقي الشكل حاداً بأي تكبير في بحث LaTeX؟','$ PDF',[['A vector format.','صيغة متجهية.']],['$ JPG','$ PNG at 72 dpi','$ BMP']),
+  Q('Which call exports a figure as a 300 dpi PNG?','أي استدعاء يصدّر شكلاً PNG بدقة 300 نقطة؟','$ exportgraphics(f, "fig.png", "Resolution", 300)',[['Resolution in dots per inch.','الدقة بالنقاط لكل بوصة.']],['$ saveas(f, 300, "fig.png")','$ print("fig.png", 300)','$ exportgraphics(f, "fig.png", "dpi")']),
+  Q('Why create the figure at its final size?','لماذا يُنشأ الشكل بحجمه النهائي؟',['Scaling later changes the font size relative to the paper','التحجيم لاحقاً يغيّر حجم الخط نسبة إلى البحث'],[['About 9 cm wide for one column.','نحو 9 سم عرضاً لعمود واحد.']],[['To make the file smaller','لتصغير الملف'],['It does not matter','لا يهم']]),
+  Q('Which command exports a PDF in releases without exportgraphics?','أي أمر يصدّر PDF في الإصدارات التي لا فيها exportgraphics؟','$ print(f, "-dpdf", "fig.pdf")',[['The ``-d`` option names the device.','الخيار ``-d`` يسمي الجهاز.']],['$ save(f, "fig.pdf")','$ export(f, "pdf")','$ writepdf(f)']),
+]);
+
+lesson('506',40,[
+  ['The standard convergence figure: errors on ``semilogy`` with markers, a reference line for the predicted rate, labels, a grid and a legend:','شكل التقارب القياسي: الأخطاء على ``semilogy`` بعلامات، وخط مرجعي للمعدل المتوقع، وتسميات وشبكة ومفتاح:'],
+  '$ semilogy(N, e, "o-", "DisplayName", "mapped Legendre"); hold on\nsemilogy(N, 10.^(-0.75*N), "k--", ...\n         "DisplayName", "\\rho^{-N}, \\rho = 10^{0.75}")\nxlabel("N"); ylabel("max error"); grid on; legend show\nexportgraphics(gcf, "conv.pdf", "ContentType", "vector")',
+  ['The figure should let a reader see the rate and where it stops; state in the caption how the error was measured (grid, norm, time t).','ويجب أن يسمح الشكل للقارئ برؤية المعدل وأين يتوقف، واذكر في التعليق كيف قيس الخطأ (الشبكة والمعيار والزمن t).'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1e-06',['10^{−0.75·8}'],['$ 1e-08','$ 0.001','$ 6e-01'],'N = 8;\nfprintf("%g\\n", 10.^(-0.75*N))'),
+  Q('What should the caption say about the error?','ماذا يجب أن يقول التعليق عن الخطأ؟',['How it was measured: the norm, the grid and the time','كيف قيس: المعيار والشبكة والزمن'],[['For example `L∞` on 101 points at t = 1.','مثلاً `L∞` على 101 نقطة عند t = 1.']],[['Nothing','لا شيء'],['The colour of the curve','لون المنحنى']]),
+  Q('Two curves on semilogy are parallel. What does it mean?','منحنيان متوازيان على semilogy. ماذا يعني ذلك؟',['The same exponential rate, differing by a constant factor','المعدل الأسي نفسه مع اختلاف بعامل ثابت'],[['Only the starting error differs.','الخطأ الابتدائي وحده يختلف.']],[['The same errors','الأخطاء نفسها'],['Different rates','معدلات مختلفة']]),
+  Q('Which line style draws the black dashed reference line?','أي نمط خط يرسم الخط المرجعي الأسود المتقطع؟','$ "k--"',[['k is black.','k هو الأسود.']],['$ "b--"','$ "k-"','$ "black:"']),
+]);
+
 export const MS506 = true;
