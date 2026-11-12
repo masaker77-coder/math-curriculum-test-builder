@@ -810,4 +810,225 @@ lesson('506',60,[
   Q('Which function solves `D^{α}y = −y`, `y(0) = 1`?','أي دالة تحل `D^{α}y = −y` مع `y(0) = 1`؟','y = E_{α}(−t^{α})',[['The fractional analogue of `e^{−t}`.','النظير الكسري لـ `e^{−t}`.']],['y = e^{−t^{α}}','y = E_{α}(−t)','y = t^{α}']),
 ]);
 
+/* ---- 506 · Unit 7 (lessons 61–70): the Symbolic Math Toolbox;  Unit 8 (lessons 71–80): differential equations ---- */
+lesson('506',61,[
+  ['The Symbolic Math Toolbox computes exactly with symbols. ``syms`` creates symbolic variables, and ordinary operators build expressions:','صندوق الرياضيات الرمزية يحسب بالرموز بالضبط. و ``syms`` تنشئ متغيرات رمزية، والعمليات العادية تبني المقادير:'],
+  '$ syms x t\nf = (x + 1)^2;\nexpand(f)            % x^2 + 2*x + 1\nsubs(f, x, 3)        % 16\nsyms mu positive     % an assumption on mu',
+  ['Symbolic expressions do not need the dot operators. ``subs`` replaces a symbol without changing the expression; ``double`` turns an exact result into a number. Assumptions such as ``positive`` help ``simplify`` and ``int``.','والمقادير الرمزية لا تحتاج العمليات المنقطة. و ``subs`` تستبدل رمزاً دون تغيير المقدار، و ``double`` تحوّل النتيجة المضبوطة إلى عدد. والافتراضات مثل ``positive`` تساعد ``simplify`` و ``int``.'],
+],[
+  Q('What is ``expand((x + 1)^2)`` for a symbolic x?','ما ``expand((x + 1)^2)`` لـ x رمزي؟','$ x^2 + 2*x + 1',['(x + 1)^2 = x^2 + 2x + 1'],['$ (x + 1)^2','$ x.^2 + 2.*x + 1','$ 1 + 2*x + x^2']),
+  Q('What is ``subs((x + 1)^2, x, 3)``?','ما ``subs((x + 1)^2, x, 3)``؟','$ 16',['(3 + 1)^2'],['$ 9','$ (x + 1)^2','$ 4']),
+  Q('What does ``double(sym(1)/3)`` return?','ماذا تعيد ``double(sym(1)/3)``؟','$ 0.3333',[['The exact 1/3 converted to a double, shown with 4 decimals.','الكسر المضبوط 1/3 محولاً إلى عدد مزدوج ومعروضاً بأربعة أرقام عشرية.']],['$ 1/3','$ 0','$ sym(0.3333)']),
+  Q('Why is ``sym(1)/3`` exact while ``sym(1/3)`` may not be what you want?','لماذا يكون ``sym(1)/3`` مضبوطاً بينما قد لا يكون ``sym(1/3)`` ما تريده؟',['``1/3`` is computed in double first; sym then guesses the fraction from that double','``1/3`` تُحسب بالدقة المزدوجة أولاً ثم تخمّن sym الكسر من ذلك العدد'],[['For simple fractions the guess is right, but not for every number.','للكسور البسيطة يكون التخمين صحيحاً لكن ليس لكل عدد.']],[['They are always identical','متطابقان دائماً'],['sym(1)/3 is a double','sym(1)/3 عدد مزدوج']]),
+]);
+
+lesson('506',62,[
+  ['Simplification commands:','أوامر التبسيط:'],
+  '$ syms x\nsimplify(sin(x)^2 + cos(x)^2)     % 1\nexpand((x - 1)*(x + 2))           % x^2 + x - 2\nfactor(x^2 - 1)                   % [x - 1, x + 1]   (a vector of factors)\npartfrac(1/(x^2 - 1))             % partial fractions\nsimplify(sqrt(x^2), "IgnoreAnalyticConstraints", true)   % x',
+  ['In recent releases ``factor`` returns the factors as a vector; use ``prod(factor(p))`` to get the product back. ``simplify`` only uses identities valid for all complex x unless told otherwise.','وفي الإصدارات الحديثة تعيد ``factor`` العوامل متجهاً، فاستخدم ``prod(factor(p))`` لاستعادة الضرب. و ``simplify`` لا تستخدم إلا متطابقات صحيحة لكل x مركب ما لم يُطلب غير ذلك.'],
+],[
+  Q('What is ``simplify(sin(x)^2 + cos(x)^2)``?','ما ``simplify(sin(x)^2 + cos(x)^2)``؟','$ 1',[['The Pythagorean identity.','متطابقة فيثاغورس.']],['$ 0','$ sin(x)^2 + cos(x)^2','$ 2']),
+  Q('What kind of result does ``factor(x^2 - 1)`` give?','أي نوع من النتائج تعطيه ``factor(x^2 - 1)``؟',['A vector of the factors `x − 1` and `x + 1`','متجه من العاملين `x − 1` و `x + 1`'],[['Not a single product expression.','لا مقداراً واحداً على صورة ضرب.']],['$ (x - 1)*(x + 1)','$ x^2 - 1']),
+  Q('What is ``expand((x - 1)*(x + 2))``?','ما ``expand((x - 1)*(x + 2))``؟','$ x^2 + x - 2',['x^2 + 2x − x − 2'],['$ x^2 - x - 2','$ x^2 + 3*x - 2','$ (x - 1)*(x + 2)']),
+  Q('Why does ``simplify(sqrt(x^2))`` not give x?','لماذا لا تعطي ``simplify(sqrt(x^2))`` القيمة x؟',['`#r{x^2} = x` is false for negative or complex x','`#r{x^2} = x` خاطئة لـ x سالبة أو مركبة'],[['Declare ``syms x positive`` or use ``IgnoreAnalyticConstraints``.','أعلن ``syms x positive`` أو استخدم ``IgnoreAnalyticConstraints``.']],[['simplify is broken','simplify معطوبة'],['It does give x','بل تعطي x']]),
+]);
+
+lesson('506',63,[
+  ['``diff`` differentiates and ``int`` integrates, indefinitely or between limits:','``diff`` تشتق و ``int`` تكامل، تكاملاً غير محدد أو بين حدين:'],
+  '$ syms x t mu positive\ndiff(x^3)                       % 3*x^2\ndiff(sin(x), 2)                 % -sin(x)\nint(x^2, 0, 1)                  % 1/3\nint(t^mu*(1 - t), t, 0, 1)      % 1/((mu + 1)*(mu + 2))\nint(legendreP(3, x)^2, -1, 1)   % 2/7',
+  ['With the positive assumption on μ, integrals with fractional powers come out in closed form. These exact values are the references for numerical code.','ومع افتراض أن μ موجبة تخرج التكاملات ذات القوى الكسرية بصيغة مغلقة. وهذه القيم المضبوطة مراجع للكود العددي.'],
+],[
+  Q('What is ``int(legendreP(3, x)^2, -1, 1)``?','ما ``int(legendreP(3, x)^2, -1, 1)``؟','$ 2/7',['#f{2}{2n + 1},   n = 3'],['$ 2/5','$ 0.2857','$ 1/7']),
+  Q('What is ``diff(sin(x), 2)``?','ما ``diff(sin(x), 2)``؟','$ -sin(x)',['(sin x)″ = −sin x'],['$ cos(x)','$ -cos(x)','$ 2*sin(x)']),
+  Q('What is ``int(sqrt(t), 0, 1)``?','ما ``int(sqrt(t), 0, 1)``؟','$ 2/3',['∫_0^1 t^{1/2} dt'],['$ 1/2','$ 3/2','$ 0.6667']),
+  Q('What is `∫_0^1 t^{μ}(1 − t) dt` for μ > 0?','ما `∫_0^1 t^{μ}(1 − t) dt` عند μ > 0؟','#f{1}{(μ + 1)(μ + 2)}',['#f{1}{μ + 1} − #f{1}{μ + 2}'],['#f{1}{μ + 1}','#f{μ}{μ + 2}','#f{1}{μ + 2}']),
+]);
+
+lesson('506',64,[
+  ['``solve`` finds exact solutions, ``vpasolve`` numerical ones to many digits:','``solve`` تجد الحلول المضبوطة و ``vpasolve`` الحلول العددية بأرقام كثيرة:'],
+  '$ syms x a b\nsolve(x^2 - 5*x + 6 == 0, x)           % [2; 3]\nsolve(legendreP(2, x) == 0, x)          % [-3^(1/2)/3; 3^(1/2)/3]\n[as, bs] = solve([a + 2*b == 3, 3*a - b == 1], [a, b])   % 5/7, 8/7\nvpasolve(legendreP(4, x) == 0, x, 0.9) % 0.86113631159405257522...',
+  ['Equations use ``==``. For several unknowns give a list of equations and of variables, and ask for as many outputs. ``vpasolve`` with a starting point finds the root near it.','والمعادلات تستخدم ``==``. ولعدة مجاهيل أعطِ قائمة معادلات ومتغيرات واطلب مخرجات بعددها. و ``vpasolve`` مع نقطة بدء تجد الجذر القريب منها.'],
+],[
+  Q('What is ``solve(x^2 - 5*x + 6 == 0, x)``?','ما ``solve(x^2 - 5*x + 6 == 0, x)``؟','$ [2; 3]',['(x − 2)(x − 3) = 0'],['$ [-2; -3]','$ [1; 6]','$ 2']),
+  Q('What are the solutions a and b of `a + 2b = 3`, `3a − b = 1`?','ما الحلان a و b للمعادلتين `a + 2b = 3` و `3a − b = 1`؟','a = #f{5}{7},   b = #f{8}{7}',['a = 3 − 2b,   9 − 7b = 1'],['a = #f{8}{7},   b = #f{5}{7}','a = 1,   b = 1','a = #f{3}{7},   b = #f{2}{7}']),
+  Q('What does ``vpasolve(legendreP(4, x) == 0, x, 0.9)`` return, to 6 digits?','ماذا تعيد ``vpasolve(legendreP(4, x) == 0, x, 0.9)`` بستة أرقام؟','0.861136',[['The largest Gauss–Legendre node for n = 4.','أكبر عقدة جاوس–ليجندر عند n = 4.']],['0.339981','0.9','0.774597']),
+  Q('Why write ``x^2 == 4`` and not ``x^2 = 4`` inside solve?','لماذا نكتب ``x^2 == 4`` لا ``x^2 = 4`` داخل solve؟',['``=`` is assignment; an equation is written with ``==``','``=`` إسناد، والمعادلة تُكتب بـ ``==``'],[['``x^2 = 4`` is a syntax error.','``x^2 = 4`` خطأ في الصياغة.']],[['They are the same','متطابقان'],['== is faster','== أسرع']]),
+]);
+
+lesson('506',65,[
+  ['``taylor`` gives Taylor polynomials and ``limit`` limits, including one-sided ones:','``taylor`` تعطي كثيرات تايلور و ``limit`` النهايات بما فيها من جهة واحدة:'],
+  '$ syms x n\ntaylor(exp(x), x, "Order", 4)       % x^3/6 + x^2/2 + x + 1\ntaylor(gamma(1 + x), x, "Order", 2)  % 1 - eulergamma*x\nlimit(sin(x)/x, x, 0)                % 1\nlimit((1 + 1/n)^n, n, Inf)           % exp(1)\nlimit(1/x, x, 0, "right")            % Inf',
+  ['``"Order", k`` gives terms up to degree k − 1 (the O term is not shown). MATLAB writes symbolic polynomials with the highest power first.','و ``"Order", k`` تعطي الحدود حتى الدرجة k − 1 (حد O لا يظهر). ويكتب MATLAB كثيرات الحدود الرمزية بأعلى قوة أولاً.'],
+],[
+  Q('What is ``taylor(exp(x), x, "Order", 4)``?','ما ``taylor(exp(x), x, "Order", 4)``؟','$ x^3/6 + x^2/2 + x + 1',['1 + x + #f{x^2}{2} + #f{x^3}{6}'],['$ x^4/24 + x^3/6 + x^2/2 + x + 1','$ x^2/2 + x + 1','$ 1 + x + x^2 + x^3']),
+  Q('What is ``limit(sin(x)/x, x, 0)``?','ما ``limit(sin(x)/x, x, 0)``؟','$ 1',[['A classic limit.','نهاية كلاسيكية.']],['$ 0','$ Inf','$ -1']),
+  Q('What is ``limit(1/x, x, 0, "left")``?','ما ``limit(1/x, x, 0, "left")``؟','$ -Inf',[['x < 0 near 0.','x < 0 قرب 0.']],['$ Inf','$ 0','$ 1']),
+  Q('What is the coefficient of x in ``taylor(gamma(1 + x), x, "Order", 2)``?','ما معامل x في ``taylor(gamma(1 + x), x, "Order", 2)``؟','−γ ≈ −0.5772',['Γ′(1) = −γ'],['γ ≈ 0.5772','1','0']),
+]);
+
+lesson('506',66,[
+  ['The orthogonal polynomials are symbolic functions of the toolbox, and also accept numeric arguments:','كثيرات الحدود المتعامدة دوال رمزية في الصندوق وتقبل متغيرات عددية أيضاً:'],
+  '$ syms x\nlegendreP(2, x)        % (3*x^2)/2 - 1/2\njacobiP(1, 1, 0, x)    % (3*x)/2 + 1/2\nchebyshevT(3, x)       % 4*x^3 - 3*x\nlegendreP(2, 0.5)      % -0.1250   (numeric input, numeric result)\nexpand(legendreP(2, 2*x - 1))   % 6*x^2 - 6*x + 1',
+  ['``legendreP`` is the Legendre polynomial; the core function ``legendre`` gives the associated functions (Lesson 58). For large-scale numerical work the recurrence is faster than the symbolic functions.','و ``legendreP`` كثيرة ليجندر، والدالة الأساسية ``legendre`` تعطي الدوال المرافقة (الدرس 58). وللعمل العددي الكبير تكون علاقة التكرار أسرع من الدوال الرمزية.'],
+],[
+  Q('What is ``jacobiP(1, 1, 0, x)``?','ما ``jacobiP(1, 1, 0, x)``؟','$ (3*x)/2 + 1/2',['P_1^{(1,0)}(x) = #f{3x + 1}{2}'],['$ x','$ 2*x + 1','$ 3*x + 1']),
+  Q('What is ``expand(legendreP(2, 2*x - 1))``?','ما ``expand(legendreP(2, 2*x - 1))``؟','$ 6*x^2 - 6*x + 1',['P_2^*(x) = P_2(2x − 1)'],['$ 3*x^2 - 1','$ 6*x^2 + 6*x + 1','$ 2*x - 1']),
+  Q('What is ``chebyshevT(3, x)``?','ما ``chebyshevT(3, x)``؟','$ 4*x^3 - 3*x',['T_3 = 4x^3 − 3x'],['$ (5*x^3)/2 - (3*x)/2','$ 4*x^3 + 3*x','$ 8*x^3 - 6*x']),
+  Q('Which function gives `P_2(x)` itself, ``legendreP(2, x)`` or the first row of ``legendre(2, x)``?','أي دالة تعطي `P_2(x)` نفسها: ``legendreP(2, x)`` أم الصف الأول من ``legendre(2, x)``؟',['Both: the m = 0 row of legendre is `P_2`','الاثنتان: الصف m = 0 من legendre هو `P_2`'],[['The other rows of legendre are the associated functions.','والصفوف الأخرى من legendre هي الدوال المرافقة.']],[['Only legendreP','legendreP فقط'],['Only legendre','legendre فقط']]),
+]);
+
+lesson('506',67,[
+  ['``vpa`` evaluates with variable precision; ``digits`` sets the default number of significant digits (32):','``vpa`` تحسب بدقة متغيرة، و ``digits`` تحدد العدد الافتراضي للأرقام المعنوية (32):'],
+  '$ vpa(pi, 30)              % 3.14159265358979323846264338328\ndigits(50);\nvpa(sqrt(sym(2)))        % 50 digits of sqrt(2)\nA = vpa(hilb(sym(12)));   % Hilbert matrix with 50-digit entries\nx = A \\ ones(12, 1);      % a solve that keeps about 34 digits',
+  ['Convert exact values (``sym(2)``) rather than doubles, otherwise the 16-digit rounding of the double comes along. High precision is the tool for checking ill-conditioned computations such as the power form of Theorem 3.2.','حوّل القيم المضبوطة (``sym(2)``) لا الأعداد المزدوجة، وإلا جاء معها التقريب إلى 16 رقماً. والدقة العالية أداة التحقق من الحسابات سيئة الشرط مثل صيغة القوى في النظرية 3.2.'],
+],[
+  Q('What is ``vpa(pi, 30)``?','ما ``vpa(pi, 30)``؟','$ 3.14159265358979323846264338328',[['30 significant digits.','30 رقماً معنوياً.']],['$ 3.141592653589793','$ 3.14','$ pi']),
+  Q('What is the default value of ``digits``?','ما القيمة الافتراضية لـ ``digits``؟','32',[['vpa uses 32 significant digits unless changed.','vpa تستخدم 32 رقماً معنوياً ما لم تُغيَّر.']],['16','15','64']),
+  Q('Why is ``vpa(sqrt(sym(2)), 40)`` better than ``vpa(sqrt(2), 40)``?','لماذا تكون ``vpa(sqrt(sym(2)), 40)`` أفضل من ``vpa(sqrt(2), 40)``؟',['``sqrt(2)`` is a double, already rounded to 16 digits','``sqrt(2)`` عدد مزدوج مقرّب أصلاً إلى 16 رقماً'],[['Start from exact symbolic values.','ابدأ من قيم رمزية مضبوطة.']],[['They are the same','متطابقتان'],['sym is slower','sym أبطأ']]),
+  Q('`κ(H_{12}) ≈ 1.7 × 10^{16}`. About how many correct digits does a 50-digit solve keep?','`κ(H_{12}) ≈ 1.7 × 10^{16}`. كم رقماً صحيحاً تقريباً يبقى في حل بـ 50 رقماً؟','≈ 34',['50 − 16'],['≈ 0','≈ 16','≈ 50']),
+]);
+
+lesson('506',68,[
+  ['``dsolve`` solves ordinary differential equations symbolically. Define the unknown with ``syms y(t)`` and give conditions as equations:','``dsolve`` تحل المعادلات التفاضلية العادية رمزياً. عرّف المجهول بـ ``syms y(t)`` وأعطِ الشروط معادلات:'],
+  '$ syms y(t)\ndsolve(diff(y, t) == -2*t*y, y(0) == 1)           % exp(-t^2)\nDy = diff(y, t);\ndsolve(diff(y, t, 2) + y == 0, [y(0) == 0, Dy(0) == 1])   % sin(t)\ndsolve(diff(y, t) == y)                           % C1*exp(t)',
+  ['Without conditions the answer contains constants ``C1``, ``C2``. Derivative conditions use a named derivative such as ``Dy``.','ودون شروط يحوي الجواب ثوابت ``C1`` و ``C2``. وشروط المشتقات تستخدم مشتقة مسماة مثل ``Dy``.'],
+],[
+  Q('What is ``dsolve(diff(y, t) == -2*t*y, y(0) == 1)``?','ما ``dsolve(diff(y, t) == -2*t*y, y(0) == 1)``؟','$ exp(-t^2)',['y′ = −2ty,   y(0) = 1'],['$ exp(-2*t)','$ exp(t^2)','$ C1*exp(-t^2)']),
+  Q('What is the solution of `y″ + y = 0`, `y(0) = 0`, `y′(0) = 1`?','ما حل `y″ + y = 0` مع `y(0) = 0` و `y′(0) = 1`؟','$ sin(t)',['y = A cos t + B sin t,   A = 0,   B = 1'],['$ cos(t)','$ exp(-t)','$ t']),
+  Q('How many constants appear in the general solution of a second-order equation?','كم ثابتاً يظهر في الحل العام لمعادلة من الرتبة الثانية؟','2',[['``C1`` and ``C2``.','``C1`` و ``C2``.']],['1','0','3']),
+  Q('Why is ``Dy = diff(y, t)`` defined before ``dsolve``?','لماذا تُعرَّف ``Dy = diff(y, t)`` قبل ``dsolve``؟',['To write the condition `y′(0) = 1` as ``Dy(0) == 1``','لكتابة الشرط `y′(0) = 1` بالصورة ``Dy(0) == 1``'],[['A derivative evaluated at a point needs a name.','المشتقة المحسوبة عند نقطة تحتاج اسماً.']],[['To speed up dsolve','لتسريع dsolve'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('506',69,[
+  ['``matlabFunction`` turns a symbolic expression into a fast numeric function handle, with element-wise operators inserted automatically:','``matlabFunction`` تحوّل المقدار الرمزي إلى مقبض دالة عددية سريعة مع إدراج العمليات المنقطة تلقائياً:'],
+  '$ syms x t\nf = matlabFunction(legendreP(5, x));       % @(x) ...\nf(linspace(-1, 1, 5))                      % a numeric row\ng = matlabFunction(t^(3/2)*sin(pi*x), "Vars", [x t]);\nmatlabFunction(expr, "File", "source_f")   % write it to a file',
+  ['Derive once symbolically (a source term f, an exact solution), convert, then evaluate on grids. ``"Vars"`` fixes the order of the inputs; ``"File"`` writes an optimized .m file.','اشتق مرة رمزياً (حد مصدر f أو حل مضبوط) ثم حوّل واحسب على الشبكات. و ``"Vars"`` تثبت ترتيب المدخلات، و ``"File"`` تكتب ملف .m محسّناً.'],
+],[
+  Q('What is ``f(0.5)`` for ``f = matlabFunction(legendreP(2, x))``?','ما ``f(0.5)`` لـ ``f = matlabFunction(legendreP(2, x))``؟','$ -0.1250',['#f{3(0.25) − 1}{2}'],['$ 0.1250','$ -0.5000','$ 0.2500']),
+  Q('Why does ``matlabFunction`` insert ``.^`` and ``.*``?','لماذا تدرج ``matlabFunction`` العمليات ``.^`` و ``.*``؟',['So that the function works on whole vectors and grids','حتى تعمل الدالة على متجهات وشبكات كاملة'],[['The symbolic expression has no notion of arrays.','المقدار الرمزي لا يعرف المصفوفات.']],[['For exactness','للضبط'],['It does not','لا تدرجها']]),
+  Q('What does the option ``"Vars", [x t]`` decide?','ماذا يحدد الخيار ``"Vars", [x t]``؟',['The order of the inputs of the handle: ``g(x, t)``','ترتيب مدخلات المقبض: ``g(x, t)``'],[['Without it the variables are sorted alphabetically.','دونه تُرتب المتغيرات أبجدياً.']],[['The output type','نوع المخرج'],['The precision','الدقة']]),
+  Q('What is ``g(0.5, 1)`` for ``g = matlabFunction(t^(3/2)*sin(pi*x), "Vars", [x t])``?','ما ``g(0.5, 1)`` لـ ``g = matlabFunction(t^(3/2)*sin(pi*x), "Vars", [x t])``؟','1',['1^{3/2} sin(#f{π}{2})'],['0','0.5','π']),
+]);
+
+lesson('506',70,[
+  ['Check every formula exactly on small cases before coding it. For Theorem 3.1 compare the formula with direct symbolic differentiation, with a symbolic γ:','تحقق من كل صيغة بالضبط على حالات صغيرة قبل برمجتها. فللنظرية 3.1 قارن الصيغة بالاشتقاق الرمزي المباشر مع γ رمزية:'],
+  '$ syms x g positive\nL = @(i) legendreP(i, 2*x/g - 1);\nd = @(r, j) 4/g^2*(r - j)/2*(2*j + 1)*(r + j + 1);\nfor r = 0:6\n    s = 0;\n    for j = r-2:-2:0, s = s + d(r, j)*L(j); end\n    assert(simplify(diff(L(r), x, 2) - s) == 0)\nend',
+  ['The loop over ``j = r-2:-2:0`` visits exactly the even gaps `r − j = 2s`. A symbolic γ catches a wrong power of γ that a test at γ = 1 would miss.','والحلقة على ``j = r-2:-2:0`` تمر على الفجوات الزوجية `r − j = 2s` بالضبط. و γ الرمزية تكشف قوة خاطئة لـ γ قد يفوتها اختبار عند γ = 1.'],
+],[
+  Q('Which j does ``r-2:-2:0`` give for r = 5?','أي قيم j تعطيها ``r-2:-2:0`` عند r = 5؟','3, 1',[['Odd gaps are skipped: r − j = 2, 4.','الفجوات الفردية تُتجاوز: r − j = 2, 4.']],['3, 1, 0','4, 2, 0','5, 3, 1']),
+  Q('What is `d_{3,1}` for γ = 2?','ما `d_{3,1}` عند γ = 2؟','15',['#f{4}{4}·1·3·5'],['60','30','#f{15}{4}']),
+  Q('What does ``assert`` do if the difference is not zero?','ماذا تفعل ``assert`` إذا لم يكن الفرق صفراً؟',['It stops with an error at that r','تتوقف بخطأ عند r تلك'],[['A silent pass means the formula holds for r = 0, …, 6.','والمرور الصامت يعني صحة الصيغة عند r = 0, …, 6.']],[['It prints a warning and continues','تطبع تحذيراً وتكمل'],['Nothing','لا شيء']]),
+  Q('Why test with a symbolic γ instead of γ = 1?','لماذا الاختبار مع γ رمزية بدل γ = 1؟',['The factor `4/γ^2` is invisible at γ = 1','العامل `4/γ^2` غير مرئي عند γ = 1'],[['A wrong power of γ would pass.','قوة خاطئة لـ γ ستنجح.']],[['It is faster','أسرع'],['γ = 1 is not allowed','γ = 1 غير مسموح']]),
+]);
+
+lesson('506',71,[
+  ['``ode45`` solves `y′ = f(t, y)` with an adaptive Runge–Kutta pair. The right-hand side is a function of t and y that returns a column:','``ode45`` تحل `y′ = f(t, y)` بزوج رونغه–كوتا تكيفي. والطرف الأيمن دالة في t و y تعيد عموداً:'],
+  '$ [t, y] = ode45(@(t, y) -y, [0 1], 1);\ny(end) - exp(-1)                 % small: default RelTol = 1e-3\nopts = odeset("RelTol", 1e-10, "AbsTol", 1e-12);\n[t, y] = ode45(@(t, y) -y, [0 1], 1, opts);\nsol = ode45(@(t, y) -y, [0 1], 1);  deval(sol, 0.5)   % value at any t',
+  ['The output times are chosen by the solver; give a vector ``[0 0.1 … 1]`` as tspan to get values at those times. Tighten the tolerances for reference solutions.','وأزمنة المخرجات يختارها الحلّال، فأعطِ متجهاً ``[0 0.1 … 1]`` بدل tspan للحصول على قيم عند تلك الأزمنة. وشدّد السماحيات للحلول المرجعية.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['Even the default tolerances give `e^{−1}` to about `10^{−4}`.','حتى السماحيات الافتراضية تعطي `e^{−1}` بدقة نحو `10^{−4}`.']],['$ 0','$ 0.3679','$ Error'],'[t, y] = ode45(@(t, y) -y, [0 1], 1);\ndisp(abs(y(end) - exp(-1)) < 1e-3)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['With tight tolerances the error is far below `10^{−8}`.','مع السماحيات المشددة يكون الخطأ أقل بكثير من `10^{−8}`.']],['$ 0','$ 1e-10','$ 0.3679'],'opts = odeset("RelTol", 1e-10, "AbsTol", 1e-12);\n[t, y] = ode45(@(t, y) -y, [0 1], 1, opts);\ndisp(abs(y(end) - exp(-1)) < 1e-8)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.5',['y = #f{1}{1 + t},   t = 1'],['$ 0.3679','$ 1','$ 2'],'opts = odeset("RelTol", 1e-10, "AbsTol", 1e-12);\n[t, y] = ode45(@(t, y) -y.^2, [0 1], 1, opts);\nfprintf("%.4g\\n", y(end))'),
+  Q('How do you get the solution exactly at t = 0, 0.25, 0.5, 0.75, 1?','كيف تحصل على الحل بالضبط عند t = 0, 0.25, 0.5, 0.75, 1؟','$ [t, y] = ode45(f, 0:0.25:1, y0);',[['A vector tspan sets the output times.','متجه tspan يحدد أزمنة المخرجات.']],['$ [t, y] = ode45(f, [0 1], y0, 5);','$ ode45(f, [0 1], y0, "Times", 5)','$ [t, y] = ode45(f, [0 1], y0); t = 0:0.25:1;']),
+]);
+
+lesson('506',72,[
+  ['A higher-order equation is written as a first-order system. For `y″ = −y`, set `Y = (y, y′)`:','المعادلة من رتبة أعلى تُكتب نظاماً من الرتبة الأولى. لـ `y″ = −y` نضع `Y = (y, y′)`:'],
+  '$ f = @(t, Y) [Y(2); -Y(1)];\n[t, Y] = ode45(f, [0 pi], [1; 0], opts);\nY(end, 1)          % cos(pi) = -1\n% predator–prey\nf = @(t, u) [u(1)*(1 - u(2)); u(2)*(u(1) - 1)];',
+  ['The state is a column, and each row of the output ``Y`` is the state at one time: ``Y(:, 1)`` is y, ``Y(:, 2)`` is y′.','والحالة عمود، وكل صف في المخرج ``Y`` هو الحالة عند زمن واحد: ``Y(:, 1)`` هي y و ``Y(:, 2)`` هي y′.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -1.000000',['cos π = −1'],['$ 1.000000','$ 0.000000','$ 3.141593'],'opts = odeset("RelTol", 1e-10, "AbsTol", 1e-12);\n[t, Y] = ode45(@(t, Y) [Y(2); -Y(1)], [0 pi], [1; 0], opts);\nfprintf("%.6f\\n", Y(end, 1))'),
+  Q('Write `y‴ = −y` as a first-order system.','اكتب `y‴ = −y` نظاماً من الرتبة الأولى.','$ f = @(t, Y) [Y(2); Y(3); -Y(1)];',[['`Y = (y, y′, y″)`.','`Y = (y, y′, y″)`.']],['$ f = @(t, Y) [Y(2); -Y(1)];','$ f = @(t, Y) [Y(3); Y(2); -Y(1)];','$ f = @(t, Y) -Y;']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.000000',[['`y′(π) = −sin π = 0`.','`y′(π) = −sin π = 0`.']],['$ -1.000000','$ 1.000000','$ 3.141593'],'opts = odeset("RelTol", 1e-10, "AbsTol", 1e-12);\n[t, Y] = ode45(@(t, Y) [Y(2); -Y(1)], [0 pi], [1; 0], opts);\nfprintf("%.6f\\n", abs(Y(end, 2)))'),
+  Q('Which column of the output holds y′?','أي عمود في المخرج يحمل y′؟','2',[['The second component of the state.','المركبة الثانية من الحالة.']],['1','3',['The last row','الصف الأخير']]),
+]);
+
+lesson('506',73,[
+  ['A stiff problem has very different time scales; explicit solvers such as ode45 then need tiny steps for stability. Implicit solvers such as ``ode15s`` take steps set by accuracy only:','المسألة الجاسئة فيها مقاييس زمنية مختلفة جداً، فتحتاج الحلّالات الصريحة مثل ode45 خطوات صغيرة جداً للاستقرار. والحلّالات الضمنية مثل ``ode15s`` تأخذ خطوات تحددها الدقة فقط:'],
+  '$ f = @(t, y) -1000*(y - cos(t));\n[t1, y1] = ode45(f, [0 1], 1);     % about 1200 steps\n[t2, y2] = ode15s(f, [0 1], 1);    % about 20 steps\ny2(end)                             % 0.5411',
+  ['The semi-discretized heat equation (Lesson 77) is stiff: its eigenvalues grow like `N^2`. If ode45 is unexpectedly slow, try ode15s.','ومعادلة الحرارة المقطعة جزئياً (الدرس 77) جاسئة لأن قيمها الذاتية تنمو مثل `N^2`. وإذا كانت ode45 بطيئة على غير المتوقع فجرّب ode15s.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['ode45 needs more than ten times as many steps.','ode45 تحتاج خطوات أكثر بعشر مرات.']],['$ 0','$ 1233','$ 19'],'f = @(t, y) -1000*(y - cos(t));\n[t1, y1] = ode45(f, [0 1], 1);\n[t2, y2] = ode15s(f, [0 1], 1);\ndisp(numel(t1) > 10*numel(t2))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.5411',[['The solution follows `cos t` closely, plus a small lag `≈ sin(t)/1000`.','الحل يتبع `cos t` عن قرب مع تأخر صغير `≈ sin(t)/1000`.']],['$ 0.5403','$ 1.0000','$ 0.0000'],'f = @(t, y) -1000*(y - cos(t));\n[t, y] = ode15s(f, [0 1], 1);\nfprintf("%.4f\\n", y(end))'),
+  Q('Why is the semi-discrete heat equation stiff?','لماذا تكون معادلة الحرارة المقطعة جزئياً جاسئة؟',['Its eigenvalues range from about −π^2 to about −4/h^2','قيمها الذاتية تمتد من نحو −π^2 إلى نحو −4/h^2'],[['Fast modes decay quickly but force small explicit steps.','الأنماط السريعة تتلاشى بسرعة لكنها تفرض خطوات صريحة صغيرة.']],[['Because it is nonlinear','لأنها غير خطية'],['It is not stiff','ليست جاسئة']]),
+  Q('Which solver is the first choice for a suspected stiff problem?','أي حلّال هو الخيار الأول لمسألة يُشتبه في جساءتها؟','$ ode15s',[['ode23s is an alternative for crude tolerances.','و ode23s بديل للسماحيات المتساهلة.']],['$ ode45','$ ode23','$ ode113']),
+]);
+
+lesson('506',74,[
+  ['``odeset`` sets options: tolerances, a maximum step, and events that stop the integration when a function crosses zero:','``odeset`` تحدد الخيارات: السماحيات والخطوة القصوى والأحداث التي توقف التكامل حين تعبر دالة الصفر:'],
+  '$ ev = @(t, y) deal(y(1), 1, -1);   % value, stop?, direction (falling)\nopts = odeset("Events", ev, "RelTol", 1e-8);\n[t, y, te] = ode45(@(t, y) [y(2); -9.81], [0 5], [10; 0], opts);\nte                                % time of impact: 1.4278',
+  ['The event function returns three things: the value whose zero is sought, whether to stop (1) and the direction of crossing (−1 falling, +1 rising, 0 both).','ودالة الحدث تعيد ثلاثة أشياء: القيمة التي يُبحث عن صفرها، وهل يتوقف (1)، واتجاه العبور (−1 نازل و +1 صاعد و 0 الاثنان).'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.4278',['t = #r{#f{2·10}{9.81}}'],['$ 1.0194','$ 2.0389','$ 5.0000'],'opts = odeset("Events", @(t, y) deal(y(1), 1, -1), "RelTol", 1e-8);\n[t, y, te] = ode45(@(t, y) [y(2); -9.81], [0 5], [10; 0], opts);\nfprintf("%.4f\\n", te)'),
+  Q('What does the third output of the event function, −1, mean?','ماذا يعني المخرج الثالث لدالة الحدث −1؟',['Only zero crossings where the value is decreasing count','لا تُحتسب إلا عبورات الصفر التي تتناقص فيها القيمة'],[['A falling object crosses y = 0 downward.','الجسم الساقط يعبر y = 0 نزولاً.']],[['Stop at the first step','توقف عند الخطوة الأولى'],['Integrate backwards','كامل إلى الخلف']]),
+  Q('Which option limits the largest step size?','أي خيار يحد أكبر طول خطوة؟','$ "MaxStep"',[['Useful when the right-hand side has short features.','مفيد حين يكون للطرف الأيمن تفاصيل قصيرة.']],['$ "InitialStep"','$ "RelTol"','$ "Refine"']),
+  Q('What are the default RelTol and AbsTol of ode45?','ما قيمتا RelTol و AbsTol الافتراضيتان لـ ode45؟','$ 1e-3 and 1e-6',[['Often too loose for reference solutions.','غالباً متساهلتان جداً للحلول المرجعية.']],['$ 1e-6 and 1e-10','$ 1e-10 and 1e-12','$ eps and eps']),
+]);
+
+lesson('506',75,[
+  ['``bvp4c`` solves two-point boundary-value problems written as first-order systems, with a function for the boundary residuals and an initial guess from ``bvpinit``:','``bvp4c`` تحل مسائل القيم الحدية ذات النقطتين مكتوبة أنظمة من الرتبة الأولى، مع دالة لبواقي الشروط الحدية وتخمين ابتدائي من ``bvpinit``:'],
+  '$ % y″ = -y,  y(0) = 0,  y(1) = 1\nodefun = @(x, Y) [Y(2); -Y(1)];\nbcfun  = @(Ya, Yb) [Ya(1); Yb(1) - 1];\nsolinit = bvpinit(linspace(0, 1, 11), [0 0]);\nsol = bvp4c(odefun, bcfun, solinit);\ndeval(sol, 0.5)          % [0.5697; ...] = sin(0.5)/sin(1)',
+  ['``bcfun`` returns the residuals that must vanish. ``bvp5c`` is a higher-order alternative; ``deval`` evaluates the solution anywhere.','و ``bcfun`` تعيد البواقي التي يجب أن تنعدم. و ``bvp5c`` بديل أعلى رتبة، و ``deval`` تحسب الحل في أي مكان.'],
+],[
+  Q('What is `y(0.5)` for the example?','ما `y(0.5)` للمثال؟','0.569747',['#f{sin 0.5}{sin 1} = #f{0.479426}{0.841471}'],['0.5','0.479426','0.841471']),
+  Q('Write ``bcfun`` for `y(−1) = 0`, `y(1) = 2`.','اكتب ``bcfun`` لـ `y(−1) = 0` و `y(1) = 2`.','$ bcfun = @(Ya, Yb) [Ya(1); Yb(1) - 2];',[['Residuals that vanish at the solution.','بواقٍ تنعدم عند الحل.']],['$ bcfun = @(Ya, Yb) [Ya(1); Yb(1)];','$ bcfun = @(Ya, Yb) [0; 2];','$ bcfun = @(Ya, Yb) [Ya(2); Yb(2) - 2];']),
+  Q('Write ``odefun`` for `u″ = 6x`.','اكتب ``odefun`` لـ `u″ = 6x`.','$ odefun = @(x, Y) [Y(2); 6*x];',[['Y(1) = u, Y(2) = u′.','Y(1) = u و Y(2) = u′.']],['$ odefun = @(x, Y) 6*x;','$ odefun = @(x, Y) [6*x; Y(1)];','$ odefun = @(Y, x) [Y(2); 6]']),
+  Q('What does ``bvpinit(linspace(0, 1, 11), [0 0])`` provide?','ماذا توفر ``bvpinit(linspace(0, 1, 11), [0 0])``؟',['An initial mesh of 11 points and a constant initial guess for y and y′','شبكة ابتدائية من 11 نقطة وتخميناً ابتدائياً ثابتاً لـ y و y′'],[['bvp4c refines the mesh as needed.','bvp4c تنقّح الشبكة حسب الحاجة.']],[['The final solution','الحل النهائي'],['The boundary conditions','الشروط الحدية']]),
+]);
+
+lesson('506',76,[
+  ['Finite differences for `−u″ = f`, `u(0) = u(1) = 0`, with a sparse tridiagonal matrix:','الفروق المحدودة لـ `−u″ = f` مع `u(0) = u(1) = 0` بمصفوفة ثلاثية القطر متفرقة:'],
+  '$ n = 99;  h = 1/(n + 1);  x = (1:n)\'*h;  e = ones(n, 1);\nA = spdiags([-e 2*e -e], -1:1, n, n)/h^2;\nu = A \\ (pi^2*sin(pi*x));\nerr = max(abs(u - sin(pi*x)))       % O(h^2)',
+  ['The error falls by about 4 when n is doubled. Non-zero boundary values move to the right-hand side: the first equation gets `+u(0)/h^2`, the last `+u(1)/h^2`.','والخطأ يصغر نحو 4 مرات عند مضاعفة n. والقيم الحدية غير الصفرية تنتقل إلى الطرف الأيمن: المعادلة الأولى تأخذ `+u(0)/h^2` والأخيرة `+u(1)/h^2`.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 4.0',[['Second order: halving h divides the error by 4.','رتبة ثانية: تنصيف h يقسم الخطأ على 4.']],['$ 2.0','$ 8.0','$ 16.0'],'err = zeros(1, 2);  ns = [49 99];\nfor k = 1:2\n    n = ns(k);  h = 1/(n + 1);  x = (1:n)\'*h;  e = ones(n, 1);\n    A = spdiags([-e 2*e -e], -1:1, n, n)/h^2;\n    u = A \\ (pi^2*sin(pi*x));\n    err(k) = max(abs(u - sin(pi*x)));\nend\nfprintf("%.1f\\n", err(1)/err(2))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['For `u = x(1 − x)` the scheme is exact at the nodes.','لـ `u = x(1 − x)` يكون المخطط مضبوطاً عند العقد.']],['$ 0','$ 0.25','$ 9'],'n = 9;  h = 1/(n + 1);  x = (1:n)\'*h;  e = ones(n, 1);\nA = spdiags([-e 2*e -e], -1:1, n, n)/h^2;\nu = A \\ (2*ones(n, 1));\ndisp(max(abs(u - x.*(1 - x))) < 1e-12)'),
+  Q('With `u(0) = 1`, what is added to the first entry of the right-hand side?','مع `u(0) = 1` ماذا يُضاف إلى أول عنصر في الطرف الأيمن؟','#f{1}{h^2}',['−#f{u_0 − 2u_1 + u_2}{h^2}',['The known `u_0 = 1` moves to the right-hand side.','القيمة المعلومة `u_0 = 1` تنتقل إلى الطرف الأيمن.']],['1','h^2','2/h^2']),
+  Q('About how many unknowns give `10^{−8}` if the error is `0.08h^2`?','كم مجهولاً تقريباً يعطي `10^{−8}` إذا كان الخطأ `0.08h^2`؟','≈ 2800',['h ≈ #r{#f{10^{−8}}{0.08}} ≈ 3.5 × 10^{−4}'],['≈ 30','≈ 300','≈ 10^8']),
+]);
+
+lesson('506',77,[
+  ['The method of lines: discretize `u_t = u_{xx}` in space with finite differences, then integrate the system of ordinary equations in time with a stiff solver:','طريقة الخطوط: قطّع `u_t = u_{xx}` في المكان بالفروق المحدودة ثم كامل نظام المعادلات العادية في الزمن بحلّال للمسائل الجاسئة:'],
+  '$ n = 49;  h = 1/(n + 1);  x = (1:n)\'*h;  e = ones(n, 1);\nA = spdiags([e -2*e e], -1:1, n, n)/h^2;\nopts = odeset("RelTol", 1e-8, "AbsTol", 1e-10, "Jacobian", A);\n[t, U] = ode15s(@(t, u) A*u, [0 0.1], sin(pi*x), opts);\nU(end, 25)            % u(0.5, 0.1), exact exp(-pi^2/10) = 0.3727',
+  ['Giving the constant Jacobian ``A`` saves the solver from estimating it. Each row of ``U`` is the solution at one time on the interior nodes.','وإعطاء الجاكوبي الثابت ``A`` يوفر على الحلّال تقديره. وكل صف في ``U`` هو الحل عند زمن واحد على العقد الداخلية.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The value at the middle node agrees with `e^{−π^2/10}` to about `10^{−4}`.','القيمة عند العقدة الوسطى تتفق مع `e^{−π^2/10}` بدقة نحو `10^{−4}`.']],['$ 0','$ 0.3727','$ 25'],'n = 49;  h = 1/(n + 1);  x = (1:n)\'*h;  e = ones(n, 1);\nA = spdiags([e -2*e e], -1:1, n, n)/h^2;\nopts = odeset("RelTol", 1e-8, "AbsTol", 1e-10);\n[t, U] = ode15s(@(t, u) A*u, [0 0.1], sin(pi*x), opts);\ndisp(abs(U(end, 25) - exp(-pi^2*0.1)) < 1e-3)'),
+  Q('Which node is x = 0.5 for n = 49 interior nodes?','أي عقدة هي x = 0.5 مع 49 عقدة داخلية؟','25',['x_k = #f{k}{50}'],['24','49','50']),
+  Q('What is the exact value `u(0.5, 0.1)`?','ما القيمة المضبوطة `u(0.5, 0.1)`؟','≈ 0.3727',['e^{−π^2·0.1} sin(#f{π}{2})'],['≈ 0.9870','≈ 0.5','≈ 0.1']),
+  Q('Why give ``"Jacobian", A`` to ode15s?','لماذا تُعطى ``"Jacobian", A`` لـ ode15s؟',['The solver needs `∂f/∂u = A`; giving it avoids finite-difference estimates','الحلّال يحتاج `∂f/∂u = A`، وإعطاؤه يتجنب تقديرات الفروق المحدودة'],[['For a sparse A it also keeps the linear algebra sparse.','ولـ A متفرقة يبقي الجبر الخطي متفرقاً أيضاً.']],[['It changes the equation','يغيّر المعادلة'],['It is required','إلزامي']]),
+]);
+
+lesson('506',78,[
+  ['``pdepe`` solves one-dimensional parabolic–elliptic systems written as `c u_t = x^{−m}(x^m f)_x + s`. You supply three functions and a mesh:','``pdepe`` تحل الأنظمة المكافئية–الناقصية الأحادية المكتوبة `c u_t = x^{−m}(x^m f)_x + s`. وتوفر ثلاث دوال وشبكة:'],
+  '$ m = 0;                                        % slab geometry\npdefun = @(x, t, u, dudx) deal(1, dudx, 0);    % c = 1, f = u_x, s = 0\nicfun  = @(x) sin(pi*x);\n% p + q f = 0, here u = 0 at both ends:\nbcfun  = @(xl, ul, xr, ur, t) deal(ul, 0, ur, 0);\nx = linspace(0, 1, 51);  t = linspace(0, 0.1, 11);\nsol = pdepe(m, pdefun, icfun, bcfun, x, t);\nsol(end, 26)                                   % ≈ exp(-pi^2/10)',
+  ['The boundary conditions are written as `p + q f = 0` at each end. pdepe has no fractional time derivative, so the time-fractional problems of Unit 9 need the spectral solver.','والشروط الحدية تُكتب `p + q f = 0` عند كل طرف. ولا تتعامل pdepe مع المشتقة الزمنية الكسرية، فمسائل الوحدة 9 الكسرية الزمنية تحتاج الحلّال الطيفي.'],
+],[
+  Q('What is m for a problem on an interval (slab), a cylinder and a sphere?','ما m لمسألة على مجال (شريحة) وأسطوانة وكرة؟','0, 1, 2',[['The factor `x^{−m}(x^m f)_x` gives the radial Laplacian.','العامل `x^{−m}(x^m f)_x` يعطي اللابلاسي القطري.']],['1, 2, 3','0, 0, 0','2, 1, 0']),
+  Q('For `u_t = u_{xx}`, what are c, f and s?','لـ `u_t = u_{xx}` ما c و f و s؟','c = 1,   f = u_x,   s = 0',['u_t = (u_x)_x'],['c = 0,   f = u,   s = 1','c = 1,   f = u,   s = u_{xx}','c = u_x,   f = 1,   s = 0']),
+  Q('How is `u = 0` at the left end written as `p + q f = 0`?','كيف يُكتب `u = 0` عند الطرف الأيسر بالصورة `p + q f = 0`؟','p = u_l,   q = 0',[['Then the condition is `u_l = 0`.','فيكون الشرط `u_l = 0`.']],['p = 0,   q = 1','p = 1,   q = u_l','p = u_l,   q = 1']),
+  Q('Can pdepe solve `D_t^{1/2}u = u_{xx}`?','هل تستطيع pdepe حل `D_t^{1/2}u = u_{xx}`؟',['No: its time derivative is of first order only','لا: مشتقتها الزمنية من الرتبة الأولى فقط'],[['Unit 9 builds a spectral solver for this.','الوحدة 9 تبني حلّالاً طيفياً لذلك.']],[['Yes, with m = 1/2','نعم مع m = 1/2'],['Yes, with c = 1/2','نعم مع c = 1/2']]),
+]);
+
+lesson('506',79,[
+  ['A manufactured pair (u, f) tests a solver: choose u, compute f exactly, and check the pair. For `D_t^{1/2}u = u_{xx} + f` with `u = t^{3/2} sin(πx)`, the Caputo power rule gives','الزوج المصنَّع (u, f) يختبر الحلّال: اختر u واحسب f بالضبط وتحقق من الزوج. ولـ `D_t^{1/2}u = u_{xx} + f` مع `u = t^{3/2} sin(πx)` تعطي قاعدة القوة لكابوتو'],
+  'f = #f{Γ(5/2)}{Γ(2)} t sin(πx) + π^2 t^{3/2} sin(πx)',
+  ['Code it as a vectorized handle, ``f = @(x, t) (gamma(2.5)*t + pi^2*t.^1.5).*sin(pi*x)``, and check it against the symbolic derivation at a few points. Check also that u satisfies the initial and boundary conditions the solver will use.','واكتبها مقبضاً متجهياً ``f = @(x, t) (gamma(2.5)*t + pi^2*t.^1.5).*sin(pi*x)``، وتحقق منها مقابل الاشتقاق الرمزي عند بضع نقاط. وتحقق أيضاً أن u تحقق الشروط الابتدائية والحدية التي سيستخدمها الحلّال.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 11.198945',['#f{3#r{π}}{4} + π^2   at (x, t) = (#f{1}{2}, 1)'],['$ 9.869604','$ 1.329340','$ 0.000000'],'f = @(x, t) (gamma(2.5)*t + pi^2*t.^1.5).*sin(pi*x);\nfprintf("%.6f\\n", f(0.5, 1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0 0 0',[['u vanishes at t = 0 and at x = 0, 1.','u تنعدم عند t = 0 وعند x = 0, 1.']],['$ 0 1 0','$ 1 0 0','$ 0 0 1'],'u = @(x, t) t.^1.5.*sin(pi*x);\na = round(u(0, 0.7)*1e12);  b = round(u(1, 0.7)*1e12);\nfprintf("%g %g %g\\n", u(0.3, 0), a, b)'),
+  Q('Compute `D_t^{1/2}t^{3/2}`.','احسب `D_t^{1/2}t^{3/2}`.','#f{3#r{π}}{4} t',['#f{Γ(5/2)}{Γ(2)} t'],['#f{#r{π}}{2} t','#f{3}{4} t','#f{4}{3#r{π}} t']),
+  Q('Which λ makes this u polynomial in time?','أي λ تجعل u هذه كثيرة حدود في الزمن؟','λ = #f{1}{2}',['t^{3/2} = s^3,   s = t^{1/2}'],['λ = #f{3}{2}','λ = 1','λ = #f{1}{4}']),
+]);
+
+lesson('506',80,[
+  ['The maximum error on a grid that includes the boundary, and the relative error:','أكبر خطأ على شبكة تتضمن الحدود، والخطأ النسبي:'],
+  '$ [X, T] = meshgrid(linspace(0, 1, 101), linspace(0, 1, 51));\nE = abs(uN(X, T) - uex(X, T));\nerr = max(E(:));\nrel = err / max(abs(uex(X(:), T(:))));\n[~, k] = max(E(:));  [X(k), T(k)]        % where the error is largest',
+  ['``E(:)`` flattens the grid so that ``max`` gives one number. The location of the largest error often points to the cause, for example the singular behaviour near t = 0.','و ``E(:)`` تسطّح الشبكة فتعطي ``max`` عدداً واحداً. وموقع أكبر خطأ يدل غالباً على السبب، مثل السلوك الشاذ قرب t = 0.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 5151',['101·51'],['$ 152','$ 101','$ 5000'],'[X, T] = meshgrid(linspace(0, 1, 101), linspace(0, 1, 51));\ndisp(numel(X))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.5 1',[['The largest error of `0.01·u` sits where u is largest.','أكبر خطأ لـ `0.01·u` يقع حيث u أكبر.']],['$ 0 0','$ 1 1','$ 0.5 0.5'],'[X, T] = meshgrid(linspace(0, 1, 11), linspace(0, 1, 11));\nE = abs(0.01*T.^1.5.*sin(pi*X));\n[~, k] = max(E(:));\nfprintf("%g %g\\n", X(k), T(k))'),
+  Q('`max |u − u_N| = 3 × 10^{−7}` and `max |u| = 1.5`. What is the relative error?','`max |u − u_N| = 3 × 10^{−7}` و `max |u| = 1.5`. ما الخطأ النسبي؟','2 × 10^{−7}',['#f{3 × 10^{−7}}{1.5}'],['3 × 10^{−7}','4.5 × 10^{−7}','2 × 10^{−6}']),
+  Q('Why use ``max(E(:))`` rather than ``max(E)``?','لماذا نستخدم ``max(E(:))`` بدل ``max(E)``؟',['``max(E)`` gives the maximum of each column; ``E(:)`` gives one overall maximum','``max(E)`` تعطي أكبر قيمة لكل عمود، و ``E(:)`` تعطي أكبر قيمة كلية'],[['Or ``max(E, [], "all")`` in recent releases.','أو ``max(E, [], "all")`` في الإصدارات الحديثة.']],[['They are the same','متطابقتان'],['E(:) is faster','E(:) أسرع']]),
+]);
+
 export const MS506 = true;
