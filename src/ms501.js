@@ -1164,4 +1164,184 @@ lesson('501',50,[
     ['0','−#f{4}{3} P_2','#f{3}{4} P_2']),
 ]);
 
+/* ---- 501 · Unit 6 (lessons 51–60): Chebyshev and Jacobi bases ---- */
+lesson('501',51,[
+  ['The Chebyshev polynomials are cosines in disguise. With `x = cos θ`:','كثيرات حدود تشيبيشيف جيوب تمام متنكرة. مع `x = cos θ`:'],
+  'T_n(cos θ) = cos nθ:   T_0 = 1,   T_1 = x,   T_2 = 2x^2 − 1,   T_3 = 4x^3 − 3x',
+  ['Everything about `T_n` follows from trigonometry: `|T_n(x)| ≤ 1` on `[−1, 1]`, `T_n(1) = 1`, `T_n(−1) = (−1)^n`, and `T_n` equioscillates n + 1 times between −1 and 1. A Chebyshev expansion of f is a cosine series of `f(cos θ)`, which is why the FFT can be used.',
+   'وكل خواص `T_n` تأتي من حساب المثلثات: `|T_n(x)| ≤ 1` على `[−1, 1]` و `T_n(1) = 1` و `T_n(−1) = (−1)^n`، و `T_n` تتذبذب بالتساوي n + 1 مرة بين −1 و 1. ومفكوك تشيبيشيف للدالة f متسلسلة جيوب تمام للدالة `f(cos θ)`، ولهذا يمكن استخدام FFT.'],
+],[
+  Q('Use `cos 2θ = 2cos^2 θ − 1` to find `T_2(x)`.','استخدم `cos 2θ = 2cos^2 θ − 1` لإيجاد `T_2(x)`.','T_2 = 2x^2 − 1',
+    ['T_2(cos θ) = cos 2θ = 2cos^2 θ − 1', 'x = cos θ  ⇒  T_2 = 2x^2 − 1'], ['T_2 = x^2 − 1','T_2 = 2x^2 + 1','T_2 = #f{3x^2 − 1}{2}']),
+  Q('Compute `T_3(0.5)` with the cosine definition.','احسب `T_3(0.5)` بتعريف جيب التمام.','−1',
+    ['0.5 = cos #f{π}{3}  ⇒  T_3(0.5) = cos π = −1', ['Check: `4(0.125) − 3(0.5) = −1`.','تحقق: `4(0.125) − 3(0.5) = −1`.']], ['1','0','−0.5']),
+  Q('Find `T_4(x)` from `cos 4θ = 2cos^2 2θ − 1`.','أوجد `T_4(x)` من `cos 4θ = 2cos^2 2θ − 1`.','T_4 = 8x^4 − 8x^2 + 1',
+    ['T_4 = 2T_2^2 − 1 = 2(2x^2 − 1)^2 − 1', '= 2(4x^4 − 4x^2 + 1) − 1 = 8x^4 − 8x^2 + 1'],
+    ['T_4 = 8x^4 − 8x^2 − 1','T_4 = 4x^4 − 4x^2 + 1','T_4 = 8x^4 − 4x^2 + 1']),
+  Q('Find `T_7(−1)` and `T_8(0)`.','أوجد `T_7(−1)` و `T_8(0)`.','T_7(−1) = −1,   T_8(0) = 1',
+    ['−1 = cos π:   T_7(−1) = cos 7π = −1', '0 = cos #f{π}{2}:   T_8(0) = cos 4π = 1'],
+    ['T_7(−1) = 1,   T_8(0) = 1','T_7(−1) = −1,   T_8(0) = 0','T_7(−1) = −1,   T_8(0) = −1']),
+]);
+
+lesson('501',52,[
+  ['From `cos(n + 1)θ + cos(n − 1)θ = 2cos θ cos nθ` comes the recurrence, and from `d^2/dθ^2 cos nθ = −n^2 cos nθ` the differential equation:','من `cos(n + 1)θ + cos(n − 1)θ = 2cos θ cos nθ` تأتي علاقة التكرار، ومن `d^2/dθ^2 cos nθ = −n^2 cos nθ` تأتي المعادلة التفاضلية:'],
+  'T_{n+1} = 2x T_n − T_{n−1},     (1 − x^2) y″ − x y′ + n^2 y = 0',
+  ['The leading coefficient of `T_n` is `2^{n−1}` (n ≥ 1), and the explicit formula is','والمعامل الرئيس لـ `T_n` هو `2^{n−1}` (n ≥ 1)، والصيغة الصريحة هي'],
+  'T_n(x) = #f{n}{2} Σ_{k=0}^{⌊n/2⌋} (−1)^k #f{(n − k − 1)!}{k! (n − 2k)!} (2x)^{n−2k}',
+],[
+  Q('Use the recurrence to find `T_3` from `T_1` and `T_2`.','استخدم علاقة التكرار لإيجاد `T_3` من `T_1` و `T_2`.','T_3 = 4x^3 − 3x',
+    ['T_3 = 2x(2x^2 − 1) − x = 4x^3 − 2x − x = 4x^3 − 3x'], ['T_3 = 4x^3 − x','T_3 = 2x^3 − 3x','T_3 = 4x^3 + 3x']),
+  Q('Verify that `T_2 = 2x^2 − 1` satisfies `(1 − x^2)y″ − xy′ + 4y = 0`.','تحقق أن `T_2 = 2x^2 − 1` تحقق `(1 − x^2)y″ − xy′ + 4y = 0`.',['Verified: the left side is 0','تحقق: الطرف الأيسر صفر'],
+    ['y′ = 4x,   y″ = 4', '(1 − x^2)·4 − x·4x + 4(2x^2 − 1) = 4 − 4x^2 − 4x^2 + 8x^2 − 4 = 0']),
+  Q('Compute `T_5(0.5)` with the recurrence.','احسب `T_5(0.5)` بعلاقة التكرار.','0.5',
+    ['T_0 = 1,   T_1 = 0.5,   T_2 = −0.5,   T_3 = −1', 'T_4 = 2(0.5)(−1) − (−0.5) = −0.5,   T_5 = 2(0.5)(−0.5) − (−1) = 0.5', ['Check: `cos(5π/3) = 0.5`.','تحقق: `cos(5π/3) = 0.5`.']],
+    ['−0.5','1','−1']),
+  Q('Find the leading coefficient of `T_6`.','أوجد المعامل الرئيس لـ `T_6`.','32',
+    ['2^{n−1} = 2^5 = 32', ['Each recurrence step doubles it.','كل خطوة تكرار تضاعفه.']], ['64','16','6']),
+]);
+
+lesson('501',53,[
+  ['The Chebyshev polynomials are orthogonal with the weight `w(x) = (1 − x^2)^{−1/2}`:','كثيرات تشيبيشيف متعامدة بالوزن `w(x) = (1 − x^2)^{−1/2}`:'],
+  '∫_{−1}^{1} #f{T_m(x) T_n(x)}{#r{1 − x^2}} dx = π (m = n = 0),   #f{π}{2} (m = n ≥ 1),   0 (m ≠ n)',
+  ['With `x = cos θ` this is just the orthogonality of cosines on `[0, π]`. The polynomials of the second kind are `U_n(cos θ) = sin((n + 1)θ)/sin θ`; they are orthogonal with the weight `#r{1 − x^2}` and give the derivatives: `T_n′ = n U_{n−1}`.',
+   'ومع `x = cos θ` يصبح هذا تعامد جيوب التمام على `[0, π]`. وكثيرات النوع الثاني `U_n(cos θ) = sin((n + 1)θ)/sin θ` متعامدة بالوزن `#r{1 − x^2}` وتعطي المشتقات: `T_n′ = n U_{n−1}`.'],
+],[
+  Q('Compute `∫_{−1}^{1} T_2(x)^2 / #r{1 − x^2} dx`.','احسب `∫_{−1}^{1} T_2(x)^2 / #r{1 − x^2} dx`.','#f{π}{2}',
+    ['x = cos θ,   #f{dx}{#r{1 − x^2}} = −dθ', '∫_0^{π} cos^2 2θ dθ = #f{π}{2}'], ['π','#f{2}{5}','#f{π}{4}']),
+  Q('Compute `∫_{−1}^{1} T_1(x) / #r{1 − x^2} dx`.','احسب `∫_{−1}^{1} T_1(x) / #r{1 − x^2} dx`.','0',
+    ['∫_0^{π} cos θ dθ = [sin θ]_0^{π} = 0', ['This is `⟨T_1, T_0⟩_w = 0`.','وهذا هو `⟨T_1, T_0⟩_w = 0`.']], ['π','#f{π}{2}','2']),
+  Q('Find `U_2(x)` from `sin 3θ = 3sin θ − 4sin^3 θ`.','أوجد `U_2(x)` من `sin 3θ = 3sin θ − 4sin^3 θ`.','U_2 = 4x^2 − 1',
+    ['U_2 = #f{sin 3θ}{sin θ} = 3 − 4sin^2 θ = 3 − 4(1 − x^2) = 4x^2 − 1'], ['U_2 = 2x^2 − 1','U_2 = 4x^2 + 1','U_2 = 3 − 4x^2']),
+  Q('Check `T_3′ = 3U_2`.','تحقق من `T_3′ = 3U_2`.','12x^2 − 3',
+    ['T_3′ = #f{d}{dx}(4x^3 − 3x) = 12x^2 − 3', '3U_2 = 3(4x^2 − 1) = 12x^2 − 3'], ['12x^2 − 1','4x^2 − 1','12x^2 + 3']),
+]);
+
+lesson('501',54,[
+  ['`T_n` has its zeros and extrema at explicit points:','لـ `T_n` جذور وقيم قصوى عند نقاط صريحة:'],
+  ['Zeros, and extrema:','الجذور، والقيم القصوى:'],
+  'x_k = cos #f{(2k − 1)π}{2n}  (k = 1, …, n),     x_k = cos #f{kπ}{n}  (k = 0, …, n)',
+  ['Minimax property: among all monic polynomials of degree n, `2^{1−n} T_n` has the smallest maximum on `[−1, 1]`, equal to `2^{1−n}`. That is why the zeros of `T_{n+1}` are the best interpolation nodes for the factor ω, and the extrema are the Chebyshev (Lobatto-type) points used in practice.',
+   'خاصية أصغر قيمة عظمى: من بين كل كثيرات الحدود الواحدية من الدرجة n تكون `2^{1−n} T_n` صاحبة أصغر قيمة عظمى على `[−1, 1]` وهي `2^{1−n}`. ولهذا جذور `T_{n+1}` أفضل عقد استكمال للعامل ω، والقيم القصوى هي نقاط تشيبيشيف (من نوع لوباتو) المستخدمة عملياً.'],
+],[
+  Q('Find the zeros of `T_3`.','أوجد جذور `T_3`.','x = 0,   ±#f{#r{3}}{2} ≈ ±0.8660',
+    ['cos #f{π}{6} = #f{#r{3}}{2},   cos #f{π}{2} = 0,   cos #f{5π}{6} = −#f{#r{3}}{2}', ['Check: `4x^3 − 3x = x(4x^2 − 3)`.','تحقق: `4x^3 − 3x = x(4x^2 − 3)`.']],
+    ['x = 0,   ±#r{#f{3}{5}}','x = ±#f{1}{2},   0','x = 0,   ±1']),
+  Q('What is the smallest possible maximum of `|x^3 + bx^2 + cx + d|` on `[−1, 1]`?','ما أصغر قيمة عظمى ممكنة لـ `|x^3 + bx^2 + cx + d|` على `[−1, 1]`؟','#f{1}{4}',
+    ['2^{1−3} = #f{1}{4}', ['It is attained by `T_3/4 = x^3 − (3/4)x`.','وتتحقق عند `T_3/4 = x^3 − (3/4)x`.']], ['1','#f{1}{2}','#f{2}{3#r{3}}']),
+  Q('Find the best approximation of `x^3` by a polynomial of degree ≤ 2 on `[−1, 1]` (maximum norm), and its error.','أوجد أفضل تقريب لـ `x^3` بكثيرة حدود درجتها ≤ 2 على `[−1, 1]` (بمعيار القيمة العظمى) وخطأه.','p = #f{3}{4}x,   max|x^3 − p| = #f{1}{4}',
+    [['`x^3 − p` must be the monic cubic of least maximum:','يجب أن تكون `x^3 − p` الكثيرة التكعيبية الواحدية ذات أصغر قيمة عظمى:'], 'x^3 − p = #f{T_3}{4}', 'p = x^3 − (x^3 − #f{3}{4}x) = #f{3}{4}x'],
+    ['p = x,   max|x^3 − p| = #f{2}{3#r{3}}','p = 0,   max|x^3 − p| = 1','p = #f{3}{5}x,   max|x^3 − p| = #f{2}{5}']),
+  Q('List the extrema points of `T_4` on `[−1, 1]`.','اذكر نقاط القيم القصوى لـ `T_4` على `[−1, 1]`.','±1,  ±0.7071,  0',
+    ['cos #f{kπ}{4},   k = 0, …, 4', ['At these points `T_4 = ±1` with alternating signs.','عند هذه النقاط `T_4 = ±1` بإشارات متناوبة.']],
+    ['±0.9239,  ±0.3827','±1,  ±0.5,  0','±0.8611,  ±0.3400']),
+]);
+
+lesson('501',55,[
+  ['The Gauss–Chebyshev rule has equal weights and explicit nodes:','قاعدة جاوس–تشيبيشيف أوزانها متساوية وعقدها صريحة:'],
+  '∫_{−1}^{1} #f{f(x)}{#r{1 − x^2}} dx ≈ #f{π}{n} Σ_{k=1}^{n} f(x_k),   x_k = cos #f{(2k − 1)π}{2n}',
+  ['It is exact for degree ≤ 2n − 1. To evaluate a Chebyshev sum `S = Σ_{k=0}^{n} c_k T_k(x)` stably, Clenshaw’s algorithm runs the recurrence backwards:','وهي مضبوطة للدرجة ≤ 2n − 1. ولحساب مجموع تشيبيشيف `S = Σ_{k=0}^{n} c_k T_k(x)` بثبات تُشغّل خوارزمية كلينشو علاقة التكرار إلى الخلف:'],
+  'b_{n+1} = b_{n+2} = 0,   b_k = c_k + 2x b_{k+1} − b_{k+2},   S = c_0 + x b_1 − b_2',
+],[
+  Q('Apply the two-point Gauss–Chebyshev rule to `∫_{−1}^{1} x^2/#r{1 − x^2} dx`.','طبّق قاعدة جاوس–تشيبيشيف ذات النقطتين على `∫_{−1}^{1} x^2/#r{1 − x^2} dx`.','#f{π}{2}',
+    ['x_k = ±#f{#r{2}}{2},   x_k^2 = #f{1}{2}', '#f{π}{2}(#f{1}{2} + #f{1}{2}) = #f{π}{2}', ['Exact: `∫_0^{π} cos^2 θ dθ = π/2`.','مضبوطة: `∫_0^{π} cos^2 θ dθ = π/2`.']],
+    ['π','#f{π}{4}','#f{2}{3}']),
+  Q('Use Clenshaw’s algorithm to evaluate `S = 1 + 2T_1 + 3T_2` at x = 0.5.','استخدم خوارزمية كلينشو لحساب `S = 1 + 2T_1 + 3T_2` عند x = 0.5.','0.5',
+    ['b_3 = b_4 = 0,   b_2 = 3,   b_1 = 2 + 2(0.5)(3) − 0 = 5', 'S = 1 + 0.5·5 − 3 = 0.5', ['Directly: `1 + 1 + 3(−0.5) = 0.5`.','مباشرة: `1 + 1 + 3(−0.5) = 0.5`.']],
+    ['3.5','−0.5','2']),
+  Q('Up to which degree is the five-point Gauss–Chebyshev rule exact?','حتى أي درجة تكون قاعدة جاوس–تشيبيشيف ذات النقاط الخمس مضبوطة؟','9',
+    ['2n − 1 = 9'], ['5','10','4']),
+  Q('Compute `∫_{−1}^{1} T_4(x)/#r{1 − x^2} dx` with the three-point rule.','احسب `∫_{−1}^{1} T_4(x)/#r{1 − x^2} dx` بقاعدة النقاط الثلاث.','0',
+    ['x_k = cos #f{π}{6}, cos #f{π}{2}, cos #f{5π}{6}', 'T_4(x_k) = cos #f{2π}{3}, cos 2π, cos #f{10π}{3} = −#f{1}{2}, 1, −#f{1}{2}', '#f{π}{3}(−#f{1}{2} + 1 − #f{1}{2}) = 0'],
+    ['π','#f{π}{3}','−#f{π}{3}']),
+]);
+
+lesson('501',56,[
+  ['The Chebyshev series of f is','متسلسلة تشيبيشيف للدالة f هي'],
+  'f = Σ′ a_k T_k,   a_k = #f{2}{π} ∫_{−1}^{1} #f{f(x) T_k(x)}{#r{1 − x^2}} dx',
+  ['(the prime halves the first term). For analytic f it converges at the same geometric rate `ρ^{−n}` as the Legendre series. Its advantage is speed: the coefficients from n values cost `O(n log n)` by the fast cosine transform. Legendre’s advantage is the weight 1, which keeps Galerkin matrices simple; in the paper, the fractional Legendre basis is used for this reason.',
+   '(الشرطة تعني تنصيف الحد الأول). وللدوال التحليلية تتقارب بالمعدل الهندسي نفسه `ρ^{−n}` الذي لمتسلسلة ليجندر. وميزتها السرعة: المعاملات من n قيمة تكلف `O(n log n)` بتحويل جيب التمام السريع. وميزة ليجندر الوزن 1 الذي يبقي مصفوفات جاليركن بسيطة، ولهذا يستخدم البحث أساس ليجندر الكسري.'],
+],[
+  Q('Write `x^2` in Chebyshev polynomials.','اكتب `x^2` بدلالة كثيرات تشيبيشيف.','x^2 = #f{1}{2}T_0 + #f{1}{2}T_2',
+    ['T_2 = 2x^2 − 1  ⇒  x^2 = #f{T_2 + 1}{2}'], ['x^2 = #f{1}{3}T_0 + #f{2}{3}T_2','x^2 = T_2','x^2 = #f{1}{2}T_2']),
+  Q('Write `x^3` in Chebyshev polynomials.','اكتب `x^3` بدلالة كثيرات تشيبيشيف.','x^3 = #f{3}{4}T_1 + #f{1}{4}T_3',
+    ['T_3 = 4x^3 − 3x  ⇒  x^3 = #f{T_3 + 3x}{4} = #f{3}{4}T_1 + #f{1}{4}T_3'], ['x^3 = #f{3}{5}T_1 + #f{2}{5}T_3','x^3 = #f{1}{4}T_1 + #f{3}{4}T_3','x^3 = #f{1}{4}T_3']),
+  Q('The Chebyshev coefficients of `e^x` are `a_k = 2I_k(1)`. Compute `a_0/2` and `a_1` with `I_0(1) = 1.2661`, `I_1(1) = 0.5652`.','معاملات تشيبيشيف لـ `e^x` هي `a_k = 2I_k(1)`. احسب `a_0/2` و `a_1` علماً بأن `I_0(1) = 1.2661` و `I_1(1) = 0.5652`.','a_0/2 = 1.2661,   a_1 = 1.1303',
+    ['#f{a_0}{2} = I_0(1) = 1.2661,   a_1 = 2I_1(1) = 1.1303', ['Compare the Legendre coefficients `1.1752` and `1.1036`: similar size, similar decay.','قارن بمعاملات ليجندر `1.1752` و `1.1036`: حجم متقارب وتناقص متقارب.']],
+    ['a_0/2 = 1.1752,   a_1 = 1.1036','a_0/2 = 2.5321,   a_1 = 0.5652','a_0/2 = 1.2661,   a_1 = 0.5652']),
+  Q('About how many operations does the fast transform need for the coefficients of 1024 values, compared with a direct sum?','كم عملية تقريباً يحتاج التحويل السريع لمعاملات 1024 قيمة، مقارنة بالجمع المباشر؟','≈ 10^4  vs  ≈ 10^6',
+    ['n log_2 n = 1024·10 ≈ 10^4,   n^2 ≈ 10^6'], ['≈ 10^6  vs  ≈ 10^4','≈ 10^3  vs  ≈ 10^3','≈ 10^9  vs  ≈ 10^6']),
+]);
+
+lesson('501',57,[
+  ['As for Legendre, the Chebyshev polynomials are moved to `[0, 1]` and then to fractional powers:','كما في ليجندر تُنقل كثيرات تشيبيشيف إلى `[0, 1]` ثم إلى القوى الكسرية:'],
+  'T_n^*(t) = T_n(2t − 1),     T_n^{λ}(t) = T_n(2t^{λ} − 1)',
+  ['`T_1^* = 2t − 1`, `T_2^* = 8t^2 − 8t + 1`. The weight becomes `(t − t^2)^{−1/2}` on `[0, 1]`, and for the fractional functions `λt^{λ−1}(t^{λ} − t^{2λ})^{−1/2}`. Fractional Chebyshev functions are a common alternative to the fractional Legendre basis; the choice changes the weights, not the idea.',
+   '`T_1^* = 2t − 1` و `T_2^* = 8t^2 − 8t + 1`. ويصبح الوزن `(t − t^2)^{−1/2}` على `[0, 1]`، وللدوال الكسرية `λt^{λ−1}(t^{λ} − t^{2λ})^{−1/2}`. ودوال تشيبيشيف الكسرية بديل شائع لأساس ليجندر الكسري، والاختيار يغيّر الأوزان لا الفكرة.'],
+],[
+  Q('Find `T_2^*(t)`.','أوجد `T_2^*(t)`.','T_2^* = 8t^2 − 8t + 1',
+    ['T_2^* = 2(2t − 1)^2 − 1 = 2(4t^2 − 4t + 1) − 1 = 8t^2 − 8t + 1'], ['T_2^* = 6t^2 − 6t + 1','T_2^* = 8t^2 − 8t − 1','T_2^* = 4t^2 − 4t + 1']),
+  Q('Write `T_2^{1/2}(t)`.','اكتب `T_2^{1/2}(t)`.','T_2^{1/2} = 8t − 8#r{t} + 1',
+    ['T_2^* (s) = 8s^2 − 8s + 1,   s = t^{1/2}'], ['T_2^{1/2} = 6t − 6#r{t} + 1','T_2^{1/2} = 8t^2 − 8t + 1','T_2^{1/2} = 8#r{t} − 8t + 1']),
+  Q('Find the zero of `T_1^{λ}(t)` for `λ = 1/3`.','أوجد جذر `T_1^{λ}(t)` عند `λ = 1/3`.','t = #f{1}{8}',
+    ['2t^{1/3} − 1 = 0  ⇒  t^{1/3} = #f{1}{2}  ⇒  t = #f{1}{8}'], ['t = #f{1}{2}','t = #f{1}{6}','t = #f{1}{27}']),
+  Q('Compute `∫_0^1 T_1^*(t)^2 (t − t^2)^{−1/2} dt`.','احسب `∫_0^1 T_1^*(t)^2 (t − t^2)^{−1/2} dt`.','#f{π}{2}',
+    ['x = 2t − 1:   t − t^2 = #f{1 − x^2}{4},   dt = #f{dx}{2}', '∫_{−1}^{1} x^2 #f{2}{#r{1 − x^2}}·#f{dx}{2} = ∫_{−1}^{1} #f{x^2}{#r{1 − x^2}} dx = #f{π}{2}'],
+    ['π','#f{π}{4}','#f{1}{3}']),
+]);
+
+lesson('501',58,[
+  ['The Jacobi polynomials `P_n^{(α,β)}` (α, β > −1) are orthogonal on `[−1, 1]` with the weight `(1 − x)^{α}(1 + x)^{β}`. They contain the earlier families as special cases:','كثيرات جاكوبي `P_n^{(α,β)}` (α, β > −1) متعامدة على `[−1, 1]` بالوزن `(1 − x)^{α}(1 + x)^{β}`، وتضم العائلات السابقة حالات خاصة:'],
+  ['`α = β = 0`: Legendre.   `α = β = −1/2`: Chebyshev (up to a constant factor).','`α = β = 0`: ليجندر.   `α = β = −1/2`: تشيبيشيف (مع عامل ثابت).'],
+  'P_1^{(α,β)}(x) = (α + 1) + (α + β + 2)#f{x − 1}{2},   P_n^{(α,β)}(1) = #f{(α + 1)_n}{n!}',
+  ['Weights with powers of `1 ± x` match solutions with end singularities, and the symmetry `P_n^{(α,β)}(−x) = (−1)^n P_n^{(β,α)}(x)` swaps the two ends. Course 503 studies them in depth.',
+   'والأوزان بقوى `1 ± x` تناسب الحلول ذات الانفرادات عند الأطراف، والتماثل `P_n^{(α,β)}(−x) = (−1)^n P_n^{(β,α)}(x)` يبادل بين الطرفين. ويدرسها المقرر 503 بالتفصيل.'],
+],[
+  Q('Find `P_1^{(1,1)}(x)`.','أوجد `P_1^{(1,1)}(x)`.','P_1^{(1,1)} = 2x',
+    ['(1 + 1) + (1 + 1 + 2)#f{x − 1}{2} = 2 + 2(x − 1) = 2x'], ['P_1^{(1,1)} = x','P_1^{(1,1)} = 4x − 2','P_1^{(1,1)} = 2x + 2']),
+  Q('Find `P_3^{(1,0)}(1)`.','أوجد `P_3^{(1,0)}(1)`.','4',
+    ['#f{(α + 1)_3}{3!} = #f{2·3·4}{6} = 4'], ['1','3','6']),
+  Q('Find `P_1^{(0,1)}(x)` and its zero.','أوجد `P_1^{(0,1)}(x)` وجذرها.','P_1^{(0,1)} = #f{3x − 1}{2},   x = #f{1}{3}',
+    ['1 + 3·#f{x − 1}{2} = #f{3x − 1}{2}', 'x = #f{1}{3}'], ['P_1^{(0,1)} = #f{3x + 1}{2},   x = −#f{1}{3}','P_1^{(0,1)} = x,   x = 0','P_1^{(0,1)} = 3x − 1,   x = #f{1}{3}']),
+  Q('Use the symmetry relation to find `P_1^{(1,0)}(x)` from `P_1^{(0,1)}(x) = (3x − 1)/2`.','استخدم علاقة التماثل لإيجاد `P_1^{(1,0)}(x)` من `P_1^{(0,1)}(x) = (3x − 1)/2`.','P_1^{(1,0)} = #f{3x + 1}{2}',
+    ['P_1^{(1,0)}(x) = −P_1^{(0,1)}(−x) = −#f{−3x − 1}{2} = #f{3x + 1}{2}', ['Check with the formula: `2 + 3(x − 1)/2 = (3x + 1)/2`.','تحقق بالصيغة: `2 + 3(x − 1)/2 = (3x + 1)/2`.']],
+    ['P_1^{(1,0)} = #f{3x − 1}{2}','P_1^{(1,0)} = #f{1 − 3x}{2}','P_1^{(1,0)} = 3x + 1']),
+]);
+
+lesson('501',59,[
+  ['Gauss–Jacobi quadrature integrates the weight exactly and only f numerically:','تربيع جاوس–جاكوبي يكامل الوزن بدقة و f وحدها عددياً:'],
+  '∫_{−1}^{1} (1 − x)^{α}(1 + x)^{β} f(x) dx ≈ Σ_i w_i f(x_i),   P_n^{(α,β)}(x_i) = 0',
+  ['It is exact for f of degree ≤ 2n − 1, even when the weight is singular at an end. The one-point rule has the node `x_1 = (β − α)/(α + β + 2)` and the weight equal to the integral of the weight function:','وهي مضبوطة للدوال f التي درجتها ≤ 2n − 1 حتى إذا كان الوزن شاذاً عند طرف. وقاعدة النقطة الواحدة عقدتها `x_1 = (β − α)/(α + β + 2)` ووزنها تكامل دالة الوزن:'],
+  'w_1 = ∫_{−1}^{1} (1 − x)^{α}(1 + x)^{β} dx = #f{2^{α+β+1} Γ(α + 1) Γ(β + 1)}{Γ(α + β + 2)}',
+],[
+  Q('Find the one-point Gauss–Jacobi rule for `α = 0`, `β = 1`.','أوجد قاعدة جاوس–جاكوبي ذات النقطة الواحدة عند `α = 0` و `β = 1`.','x_1 = #f{1}{3},   w_1 = 2',
+    ['x_1 = #f{1 − 0}{0 + 1 + 2} = #f{1}{3}', 'w_1 = #f{2^2·Γ(1)Γ(2)}{Γ(3)} = #f{4}{2} = 2', ['Check: `∫(1 + x)x dx = 2/3 = 2·(1/3)`.','تحقق: `∫(1 + x)x dx = 2/3 = 2·(1/3)`.']],
+    ['x_1 = −#f{1}{3},   w_1 = 2','x_1 = 0,   w_1 = 2','x_1 = #f{1}{3},   w_1 = 1']),
+  Q('Find the one-point rule for `α = −1/2`, `β = 0`.','أوجد قاعدة النقطة الواحدة عند `α = −1/2` و `β = 0`.','x_1 = #f{1}{3},   w_1 = 2#r{2} ≈ 2.8284',
+    ['x_1 = #f{0 + 1/2}{3/2} = #f{1}{3}', 'w_1 = ∫_{−1}^{1} (1 − x)^{−1/2} dx = [−2#r{1 − x}]_{−1}^{1} = 2#r{2}'],
+    ['x_1 = −#f{1}{3},   w_1 = 2#r{2} ≈ 2.8284','x_1 = #f{1}{3},   w_1 = 2','x_1 = 0,   w_1 = π']),
+  Q('Use the rule of the previous question to approximate `∫_{−1}^{1} x/#r{1 − x} dx`.','استخدم قاعدة السؤال السابق لتقريب `∫_{−1}^{1} x/#r{1 − x} dx`.','#f{2#r{2}}{3} ≈ 0.9428',
+    ['w_1 f(x_1) = 2#r{2}·#f{1}{3}', ['Exact, since f = x has degree 1 = 2n − 1. A plain Gauss rule would struggle with the infinite weight at x = 1.','مضبوطة لأن f = x درجتها 1 = 2n − 1. والقاعدة العادية تتعثر مع الوزن اللانهائي عند x = 1.']],
+    ['2#r{2} ≈ 2.8284','0','#f{#r{2}}{3} ≈ 0.4714']),
+  Q('Which weight should be used to integrate `∫_0^1 t^{−1/2} g(t) dt` on `[−1, 1]` after `t = (x + 1)/2`?','أي وزن يُستخدم لتكامل `∫_0^1 t^{−1/2} g(t) dt` على `[−1, 1]` بعد `t = (x + 1)/2`؟','(1 + x)^{−1/2}:   α = 0,   β = −#f{1}{2}',
+    ['t^{−1/2} = #r{2}(1 + x)^{−1/2},   dt = #f{dx}{2}', ['The singular factor sits at x = −1, so β = −1/2 and α = 0.','العامل الشاذ عند x = −1 إذن β = −1/2 و α = 0.']],
+    ['(1 − x)^{−1/2}:   α = −#f{1}{2},   β = 0','1:   α = β = 0','(1 − x^2)^{−1/2}:   α = β = −#f{1}{2}']),
+]);
+
+lesson('501',60,[
+  ['Combining the Jacobi weight with the map `s = t^{λ}` gives the fractional Jacobi functions:','بجمع وزن جاكوبي مع التحويل `s = t^{λ}` نحصل على دوال جاكوبي الكسرية:'],
+  'J_n^{λ}(t) = P_n^{(α,β)}(2t^{λ} − 1),   w(t) = (1 − t^{λ})^{α} t^{λβ}·λt^{λ−1}',
+  ['They are orthogonal on `[0, 1]` with this weight. With α = β = 0 they are the fractional Legendre functions `L_n^{λ}`; with λ = 1 they are shifted Jacobi polynomials. The extra parameters let the basis match both the power behaviour `t^{λ}` and a weight that absorbs known singular factors of the problem.',
+   'وهي متعامدة على `[0, 1]` بهذا الوزن. وعند α = β = 0 تكون دوال ليجندر الكسرية `L_n^{λ}`، وعند λ = 1 تكون كثيرات جاكوبي المزاحة. والمعاملات الإضافية تسمح للأساس بمطابقة سلوك القوى `t^{λ}` وبوزن يمتص العوامل الشاذة المعروفة في المسألة.'],
+],[
+  Q('Write `J_1^{λ}(t)` for `α = 0`, `β = 1`.','اكتب `J_1^{λ}(t)` عند `α = 0` و `β = 1`.','J_1^{λ} = 3t^{λ} − 2',
+    ['P_1^{(0,1)}(x) = #f{3x − 1}{2},   x = 2t^{λ} − 1', '#f{3(2t^{λ} − 1) − 1}{2} = 3t^{λ} − 2'], ['J_1^{λ} = 3t^{λ} − 1','J_1^{λ} = 2t^{λ} − 1','J_1^{λ} = 6t^{λ} − 4']),
+  Q('Find the zero of that `J_1^{λ}` for `λ = 1/2`.','أوجد جذر `J_1^{λ}` السابقة عند `λ = 1/2`.','t = #f{4}{9}',
+    ['3t^{1/2} = 2  ⇒  t^{1/2} = #f{2}{3}  ⇒  t = #f{4}{9}'], ['t = #f{2}{3}','t = #f{1}{4}','t = #f{9}{4}']),
+  Q('What do `J_n^{λ}` and their weight become for α = β = 0?','إلامَ تؤول `J_n^{λ}` ووزنها عند α = β = 0؟',['The fractional Legendre functions `L_n^{λ}`, with weight `λt^{λ−1}`','دوال ليجندر الكسرية `L_n^{λ}` بالوزن `λt^{λ−1}`'],
+    ['P_n^{(0,0)} = P_n,   (1 − t^{λ})^0 t^0 = 1'],
+    [['Chebyshev functions','دوال تشيبيشيف'],['Shifted Jacobi polynomials with weight 1','كثيرات جاكوبي المزاحة بالوزن 1']]),
+  Q('Compute `∫_0^1 w(t) dt` for `α = 0`, `β = 1`.','احسب `∫_0^1 w(t) dt` عند `α = 0` و `β = 1`.','#f{1}{2}',
+    ['s = t^{λ}:   ∫_0^1 s ds = #f{1}{2}', ['The answer does not depend on λ.','ولا يعتمد الجواب على λ.']], ['1','#f{λ}{2}','2']),
+]);
+
 export const MS501 = true;
