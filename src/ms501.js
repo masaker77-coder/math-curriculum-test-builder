@@ -1533,4 +1533,196 @@ lesson('501',70,[
     [['Degree N, so N + 1 terms','الدرجة N، أي N + 1 حداً'],['Degree `N^2`, so `N^2 + 1` terms','الدرجة `N^2`، أي `N^2 + 1` حداً'],['Degree 2N, but N + 1 terms','الدرجة 2N لكن N + 1 حداً']]),
 ]);
 
+/* ---- 501 · Unit 8 (lessons 71–80): the three classical methods ---- */
+lesson('501',71,[
+  ['The Galerkin method looks for `u_N` in a space `V_N` of functions that satisfy the boundary conditions, and makes the residual orthogonal to every function of the space. For `−u″ = f`, `u(±1) = 0`, integrating by parts gives the weak form:',
+   'طريقة جاليركن تبحث عن `u_N` في فضاء `V_N` من دوال تحقق الشروط الحدية، وتجعل الباقي عمودياً على كل دالة في الفضاء. ولـ `−u″ = f` و `u(±1) = 0` يعطي التكامل بالتجزئة الصيغة الضعيفة:'],
+  '(u_N′, φ_j′) = (f, φ_j),   j = 0, …, N − 2,   u_N = Σ_k a_k φ_k',
+  ['In matrix form `A a = b` with the stiffness matrix `A_{jk} = (φ_k′, φ_j′)`, symmetric and positive definite, and the load vector `b_j = (f, φ_j)`. The error is orthogonal to the space in the energy product: the approximation is the best one in that norm.',
+   'وبصيغة المصفوفات `A a = b` حيث مصفوفة الجساءة `A_{jk} = (φ_k′, φ_j′)` متماثلة موجبة التعريف، ومتجه الحمل `b_j = (f, φ_j)`. والخطأ عمودي على الفضاء في ضرب الطاقة، فالتقريب هو الأفضل في ذلك المعيار.'],
+],[
+  Q('Solve `−u″ = 1`, `u(±1) = 0` by Galerkin with one function `φ = 1 − x^2`.','حل `−u″ = 1` و `u(±1) = 0` بطريقة جاليركن بدالة واحدة `φ = 1 − x^2`.','u = #f{1 − x^2}{2}',
+    ['A = ∫_{−1}^{1} (−2x)^2 dx = #f{8}{3},   b = ∫_{−1}^{1} (1 − x^2) dx = #f{4}{3}', 'a = #f{b}{A} = #f{1}{2}', ['It is the exact solution, because the solution lies in the space.','وهو الحل المضبوط لأن الحل يقع في الفضاء.']],
+    ['u = 1 − x^2','u = #f{1 − x^2}{4}','u = #f{1 − x^2}{3}']),
+  Q('Repeat for `−u″ = x^2` and compare `u_N(0)` with the exact `u(0) = 1/12`.','أعد الحل لـ `−u″ = x^2` وقارن `u_N(0)` بالقيمة المضبوطة `u(0) = 1/12`.','u_N = #f{1 − x^2}{10};   u_N(0) = 0.1',
+    ['b = ∫_{−1}^{1} x^2(1 − x^2) dx = #f{2}{3} − #f{2}{5} = #f{4}{15}', 'a = #f{4/15}{8/3} = #f{1}{10}', ['The exact solution is `(1 − x^4)/12`, so `u(0) = 0.0833`: one function gives the right size.','الحل المضبوط `(1 − x^4)/12` فيكون `u(0) = 0.0833`: دالة واحدة تعطي الحجم الصحيح.']],
+    ['u_N = #f{1 − x^2}{12};   u_N(0) = 0.0833','u_N = #f{1 − x^2}{6};   u_N(0) = 0.1667','u_N = #f{1 − x^2}{15};   u_N(0) = 0.0667']),
+  Q('Why is the Galerkin stiffness matrix for `−u″` symmetric?','لماذا مصفوفة الجساءة في جاليركن لـ `−u″` متماثلة؟',['Because `A_{jk} = (φ_k′, φ_j′) = (φ_j′, φ_k′) = A_{kj}`','لأن `A_{jk} = (φ_k′, φ_j′) = (φ_j′, φ_k′) = A_{kj}`'],
+    [['The same functions are used as trial and test functions, and the weak form is symmetric in them.','الدوال نفسها تُستخدم دوال تجربة واختبار، والصيغة الضعيفة متماثلة فيها.']],
+    [['Because the nodes are symmetric','لأن العقد متماثلة'],['It is not symmetric in general','ليست متماثلة في العموم']]),
+  Q('What does Galerkin orthogonality say about the error `e = u − u_N` for `−u″ = f`?','ماذا تقول متعامدة جاليركن عن الخطأ `e = u − u_N` في `−u″ = f`؟','(e′, φ_j′) = 0,   φ_j ∈ V_N',
+    ['(u′, φ_j′) = (f, φ_j) = (u_N′, φ_j′)  ⇒  (e′, φ_j′) = 0', ['So `u_N` is the best approximation of u in the energy norm `‖v′‖`.','إذن `u_N` أفضل تقريب لـ u في معيار الطاقة `‖v′‖`.']],
+    ['e = 0','(e, 1) = 0','e(0) = 0']),
+]);
+
+lesson('501',72,[
+  ['A clever basis makes the Galerkin matrices sparse. Shen’s basis combines two Legendre polynomials so that both boundary conditions hold automatically:','الأساس الذكي يجعل مصفوفات جاليركن قليلة العناصر. أساس شين يجمع كثيرتي ليجندر بحيث يتحقق الشرطان الحديان تلقائياً:'],
+  'φ_k = P_k − P_{k+2},   φ_k(1) = 1 − 1 = 0,   φ_k(−1) = (−1)^k − (−1)^{k+2} = 0',
+  ['Its derivative is a single Legendre polynomial, from `P_{k+2}′ − P_k′ = (2k + 3)P_{k+1}`:','ومشتقته كثيرة ليجندر واحدة، من `P_{k+2}′ − P_k′ = (2k + 3)P_{k+1}`:'],
+  'φ_k′ = −(2k + 3) P_{k+1}',
+],[
+  Q('Write `φ_0 = P_0 − P_2` explicitly.','اكتب `φ_0 = P_0 − P_2` صراحة.','φ_0 = #f{3}{2}(1 − x^2)',
+    ['1 − #f{3x^2 − 1}{2} = #f{3 − 3x^2}{2}'], ['φ_0 = 1 − x^2','φ_0 = #f{3}{2}(1 + x^2)','φ_0 = #f{1}{2}(1 − x^2)']),
+  Q('Write `φ_1 = P_1 − P_3` explicitly.','اكتب `φ_1 = P_1 − P_3` صراحة.','φ_1 = #f{5}{2}(x − x^3)',
+    ['x − #f{5x^3 − 3x}{2} = #f{5x − 5x^3}{2}'], ['φ_1 = x − x^3','φ_1 = #f{5}{2}(x^3 − x)','φ_1 = #f{3}{2}(x − x^3)']),
+  Q('Check `φ_1′ = −5P_2`.','تحقق من `φ_1′ = −5P_2`.','φ_1′ = #f{5 − 15x^2}{2}',
+    ['#f{d}{dx}·#f{5}{2}(x − x^3) = #f{5}{2}(1 − 3x^2)', '−5P_2 = −5·#f{3x^2 − 1}{2} = #f{5 − 15x^2}{2}'],
+    ['φ_1′ = #f{15x^2 − 5}{2}','φ_1′ = 5 − 15x^2','φ_1′ = −5x']),
+  Q('How many functions `φ_k` span the polynomials of degree ≤ N that vanish at ±1?','كم دالة `φ_k` تولّد كثيرات الحدود ذات الدرجة ≤ N التي تنعدم عند ±1؟','N − 1',
+    ['φ_0, …, φ_{N−2}', ['Polynomials of degree ≤ N form a space of dimension N + 1, and the two conditions remove 2.','كثيرات الحدود ذات الدرجة ≤ N فضاء بُعده N + 1، والشرطان يحذفان 2.']],
+    ['N + 1','N','N − 2']),
+]);
+
+lesson('501',73,[
+  ['With Shen’s basis the stiffness matrix of `−u″` is diagonal:','مع أساس شين تكون مصفوفة الجساءة لـ `−u″` قطرية:'],
+  '(φ_k′, φ_j′) = (2k + 3)(2j + 3)(P_{k+1}, P_{j+1}) = (4k + 6) δ_{jk}',
+  ['So the system is solved by division: `a_k = b_k/(4k + 6)`. The load is `b_k = (f, φ_k) = (f, P_k) − (f, P_{k+2})`, which comes from the Legendre coefficients of f. The method costs `O(N)` once the coefficients of f are known.',
+   'فيُحل النظام بالقسمة: `a_k = b_k/(4k + 6)`. والحمل `b_k = (f, φ_k) = (f, P_k) − (f, P_{k+2})` يأتي من معاملات ليجندر لـ f. وتكلفة الطريقة `O(N)` بعد معرفة معاملات f.'],
+],[
+  Q('Find `A_00` and `A_11`.','أوجد `A_00` و `A_11`.','A_00 = 6,   A_11 = 10',
+    ['4k + 6:   k = 0 → 6,   k = 1 → 10', ['Directly: `∫ (3P_1)^2 = 9·2/3 = 6`.','مباشرة: `∫ (3P_1)^2 = 9·2/3 = 6`.']], ['A_00 = 3,   A_11 = 5','A_00 = 2,   A_11 = #f{2}{3}','A_00 = 6,   A_11 = 6']),
+  Q('Solve `−u″ = 1`, `u(±1) = 0` with Shen’s basis.','حل `−u″ = 1` و `u(±1) = 0` بأساس شين.','u = #f{1}{3}φ_0 = #f{1 − x^2}{2}',
+    ['b_k = (1, P_k − P_{k+2}) = 2δ_{k0}', 'a_0 = #f{2}{6} = #f{1}{3},   a_k = 0 (k ≥ 1)', 'u = #f{1}{3}·#f{3}{2}(1 − x^2) = #f{1 − x^2}{2}'],
+    ['u = #f{1}{6}φ_0','u = 2φ_0','u = #f{1}{3}φ_0 + #f{1}{3}φ_1']),
+  Q('Solve `−u″ = x`, `u(±1) = 0` with Shen’s basis.','حل `−u″ = x` و `u(±1) = 0` بأساس شين.','u = #f{1}{15}φ_1 = #f{x − x^3}{6}',
+    ['b_1 = (x, P_1 − P_3) = #f{2}{3},   b_k = 0  (k ≠ 1)', 'a_1 = #f{2/3}{10} = #f{1}{15}', 'u = #f{1}{15}·#f{5}{2}(x − x^3) = #f{x − x^3}{6}', ['This is the exact solution.','وهذا هو الحل المضبوط.']],
+    ['u = #f{1}{10}φ_1','u = #f{2}{3}φ_1','u = #f{1}{15}φ_0']),
+  Q('Find the condition number of the stiffness matrix for N = 10 (k = 0, …, 8).','أوجد عدد الشرط لمصفوفة الجساءة عند N = 10 (k = 0, …, 8).','#f{38}{6} ≈ 6.33',
+    ['κ = #f{max(4k + 6)}{min(4k + 6)} = #f{4·8 + 6}{6} = #f{38}{6}', ['It grows only like N, far better than collocation.','ينمو مثل N فقط، وهذا أفضل بكثير من التجميع.']],
+    ['10','#f{46}{6} ≈ 7.67','10^4']),
+]);
+
+lesson('501',74,[
+  ['The Tau method expands `u_N = Σ_{k=0}^{N} a_k P_k` without building the boundary conditions into the basis. It requires the residual to be orthogonal to the first N − 1 polynomials and adds the boundary conditions as rows:','طريقة تاو تنشر `u_N = Σ_{k=0}^{N} a_k P_k` دون إدخال الشروط الحدية في الأساس. وتشترط تعامد الباقي مع أول N − 1 كثيرة حدود، وتضيف الشروط الحدية صفوفاً:'],
+  '(𝓛u_N − f, P_j) = 0,   j = 0, …, N − 2;     Σ_k a_k = u(1),   Σ_k (−1)^k a_k = u(−1)',
+  ['That is N + 1 equations for N + 1 coefficients. The boundary rows use `P_k(±1) = (±1)^k`. Tau is natural when the operator acts simply on coefficients, for example constant-coefficient equations with the operational matrices.',
+   'وهذه N + 1 معادلة لـ N + 1 معاملاً. وصفوف الحدود تستخدم `P_k(±1) = (±1)^k`. وطريقة تاو طبيعية حين يعمل المؤثر ببساطة على المعاملات، مثل المعادلات ثابتة المعاملات مع المصفوفات التشغيلية.'],
+],[
+  Q('Solve `−u″ = 1`, `u(±1) = 0` by the Tau method with N = 2.','حل `−u″ = 1` و `u(±1) = 0` بطريقة تاو عند N = 2.','u = #f{1}{3} − #f{1}{3}P_2 = #f{1 − x^2}{2}',
+    ['u_N″ = 3a_2:   (−3a_2 − 1, P_0) = 0  ⇒  a_2 = −#f{1}{3}', 'a_0 + a_1 + a_2 = 0,   a_0 − a_1 + a_2 = 0  ⇒  a_1 = 0,   a_0 = #f{1}{3}'],
+    ['u = #f{1}{3} + #f{1}{3}P_2','u = −#f{1}{3}P_2','u = #f{1}{2} − #f{1}{2}P_2']),
+  Q('Write the boundary rows for `u(1) = 2`, `u(−1) = 0` with N = 1, and solve them.','اكتب صفوف الحدود للشرطين `u(1) = 2` و `u(−1) = 0` عند N = 1 وحلّها.','a_0 = 1,   a_1 = 1:   u = 1 + x',
+    ['a_0 + a_1 = 2,   a_0 − a_1 = 0', 'a_0 = a_1 = 1'], ['a_0 = 2,   a_1 = 0','a_0 = 1,   a_1 = −1','a_0 = 0,   a_1 = 2']),
+  Q('For a second-order problem with N = 10, how many residual equations and boundary rows does Tau use?','لمسألة من الرتبة الثانية عند N = 10، كم معادلة باقٍ وكم صف حدود تستخدم تاو؟','9 + 2 = 11',
+    [['Residual equations for `j = 0, …, N − 2`: 9 of them; and 2 boundary rows.','معادلات الباقي لـ `j = 0, …, N − 2` وعددها 9، وصفّا حدود.'], ['Together they match the 11 coefficients `a_0, …, a_10`.','ومعاً تطابق المعاملات الأحد عشر `a_0, …, a_10`.']],
+    ['11 + 2 = 13','10 + 1 = 11','8 + 2 = 10']),
+  Q('In the Tau method, which coefficients of the residual are not forced to vanish?','في طريقة تاو، أي معاملات الباقي لا يُفرض انعدامها؟',['The coefficients of `P_{N−1}` and `P_N`','معاملا `P_{N−1}` و `P_N`'],
+    [['Only the projections on `P_0, …, P_{N−2}` are set to 0; the last two are free, and the boundary rows take their place.','لا يُجعل صفراً إلا الإسقاطات على `P_0, …, P_{N−2}`، والأخيرتان حرتان وتحل محلهما صفوف الحدود.']],
+    [['The coefficients of `P_0` and `P_1`','معاملا `P_0` و `P_1`'],['All of them vanish','كلها تنعدم'],['The coefficients of `P_N` and `P_{N+1}`','معاملا `P_N` و `P_{N+1}`']]),
+]);
+
+lesson('501',75,[
+  ['Lanczos’ view of the Tau method: the approximation `u_N` is the exact solution of a slightly perturbed problem,','نظرة لانتشوس إلى طريقة تاو: التقريب `u_N` هو الحل المضبوط لمسألة مضطربة قليلاً،'],
+  '𝓛u_N = f + τ_{N−1} P_{N−1} + τ_N P_N',
+  ['The added terms are small multiples of high-degree polynomials, so the error depends on the size of the τ’s. On `[0, 1]` the same idea uses the shifted polynomials. For `y′ − y = 0`, `y(0) = 1` with a polynomial of degree N, one tau term `τ P_N^*(t)` is enough.',
+   'والحدود المضافة مضاعفات صغيرة لكثيرات عالية الدرجة، فيعتمد الخطأ على حجم τ. وعلى `[0, 1]` تستخدم الفكرة نفسها الكثيرات المزاحة. ولـ `y′ − y = 0` و `y(0) = 1` بكثيرة حدود من الدرجة N يكفي حد تاو واحد `τ P_N^*(t)`.'],
+],[
+  Q('For `y′ − y = 0`, `y(0) = 1`, put `y_1 = 1 + at` and require `y_1′ − y_1 = τ P_1^*(t)`. Find a and τ.','للمسألة `y′ − y = 0` و `y(0) = 1` ضع `y_1 = 1 + at` واشترط `y_1′ − y_1 = τ P_1^*(t)`. أوجد a و τ.','a = 2,   τ = −1',
+    ['a − 1 − at = τ(2t − 1)', 't:  −a = 2τ,     1:  a − 1 = −τ  ⇒  a = 2,   τ = −1'],
+    ['a = 1,   τ = 0','a = 2,   τ = 1','a = #f{1}{2},   τ = −#f{1}{4}']),
+  Q('With `y_1 = 1 + 2t`, compare `y_1(1)` with e.','مع `y_1 = 1 + 2t` قارن `y_1(1)` بالعدد e.','y_1(1) = 3,   |3 − e| ≈ 0.28',
+    ['y_1(1) = 3,   e ≈ 2.7183'], ['y_1(1) = 2,   |2 − e| ≈ 0.72','y_1(1) = e','y_1(1) = 3,   |3 − e| ≈ 0.03']),
+  Q('Repeat with `y_2 = 1 + at + bt^2` and `y_2′ − y_2 = τ P_2^*(t)`, `P_2^* = 6t^2 − 6t + 1`. Find `y_2(1)`.','أعد الحل مع `y_2 = 1 + at + bt^2` و `y_2′ − y_2 = τ P_2^*(t)` حيث `P_2^* = 6t^2 − 6t + 1`. أوجد `y_2(1)`.','y_2(1) = #f{19}{7} ≈ 2.7143',
+    ['t^2:  −b = 6τ,     t:  2b − a = −6τ = b  ⇒  a = b,     1:  a − 1 = τ', '−a = 6(a − 1)  ⇒  a = b = #f{6}{7},   τ = −#f{1}{7}', 'y_2(1) = 1 + #f{12}{7} = #f{19}{7}',
+     ['The error is now 0.004: the tau term fell from 1 to 1/7.','الخطأ الآن 0.004: حد تاو انخفض من 1 إلى 1/7.']],
+    ['y_2(1) = #f{5}{2} = 2.5','y_2(1) = 3','y_2(1) = #f{8}{3} ≈ 2.6667']),
+  Q('For `−u″ = 1`, `u(±1) = 0` with N = 2, what are the tau terms?','للمسألة `−u″ = 1` و `u(±1) = 0` عند N = 2 ما حدود تاو؟','τ_1 = τ_2 = 0',
+    [['The Tau solution `(1 − x^2)/2` is exact, so the equation holds without any perturbation.','حل تاو `(1 − x^2)/2` مضبوط فتتحقق المعادلة دون أي اضطراب.']],
+    ['τ_1 = 0,   τ_2 = 1','τ_1 = 1,   τ_2 = 0','τ_1 = τ_2 = −#f{1}{3}']),
+]);
+
+lesson('501',76,[
+  ['Collocation (pseudo-spectral) asks the residual to vanish exactly at chosen points, usually the interior Gauss–Lobatto points, and imposes the boundary conditions at the ends:','التجميع (الطريقة شبه الطيفية) يطلب انعدام الباقي تماماً عند نقاط مختارة، عادةً نقاط جاوس–لوباتو الداخلية، ويفرض الشروط الحدية عند الطرفين:'],
+  '𝓛u_N(x_i) = f(x_i),   i = 1, …, N − 1;     u_N(x_0) = u(−1),   u_N(x_N) = u(1)',
+  ['With the differentiation matrices of Unit 5 this is simply `D^{(2)} u = f` at the interior rows, with the first and last rows replaced by the boundary conditions. It needs only values of f, never integrals.',
+   'ومع مصفوفات التفاضل في الوحدة 5 يصبح ببساطة `D^{(2)} u = f` في الصفوف الداخلية، مع استبدال الصفين الأول والأخير بالشروط الحدية. ولا يحتاج إلا قيم f دون أي تكاملات.'],
+],[
+  Q('Solve `u″ = 2`, `u(±1) = 0` by collocation at x = 0 with `u_N = a(1 − x^2)`.','حل `u″ = 2` و `u(±1) = 0` بالتجميع عند x = 0 مع `u_N = a(1 − x^2)`.','u_N = x^2 − 1',
+    ['u_N″ = −2a = 2  ⇒  a = −1'], ['u_N = 1 − x^2','u_N = 2(x^2 − 1)','u_N = #f{x^2 − 1}{2}']),
+  Q('Solve `u″ = 6x`, `u(±1) = 0` by collocation at `x = ±1/2` with `u_N = (1 − x^2)(a + bx)`.','حل `u″ = 6x` و `u(±1) = 0` بالتجميع عند `x = ±1/2` مع `u_N = (1 − x^2)(a + bx)`.','a = 0,   b = −1:   u_N = x^3 − x',
+    ['u_N″ = −2a − 6bx', 'x = #f{1}{2}:  −2a − 3b = 3,     x = −#f{1}{2}:  −2a + 3b = −3', 'a = 0,   b = −1', ['This is the exact solution.','وهذا هو الحل المضبوط.']],
+    ['a = 0,   b = 1:   u_N = x − x^3','a = 1,   b = 0:   u_N = 1 − x^2','a = −1,   b = −1']),
+  Q('Use the three-point matrices (nodes −1, 0, 1) to solve `u″ − u = 0`, `u(±1) = 1`. Compare with `1/cosh 1`.','استخدم مصفوفات النقاط الثلاث (العقد −1 و 0 و 1) لحل `u″ − u = 0` و `u(±1) = 1`. قارن بـ `1/cosh 1`.','u(0) = #f{2}{3} ≈ 0.6667',
+    ['(D^{(2)} u)_0 = u_{−1} − 2u_0 + u_1 = 2 − 2u_0', '2 − 2u_0 − u_0 = 0  ⇒  u_0 = #f{2}{3}', ['Exact: `cosh 0/cosh 1 = 0.6481`. More points converge quickly.','المضبوط: `cosh 0/cosh 1 = 0.6481`، والنقاط الأكثر تتقارب بسرعة.']],
+    ['u(0) = 1','u(0) = #f{1}{2}','u(0) = 0.6481']),
+  Q('With N = 8, how many collocation equations and boundary equations are there for a second-order problem?','عند N = 8 كم معادلة تجميع وكم معادلة حدية لمسألة من الرتبة الثانية؟','7 + 2 = 9',
+    [['The interior points `x_1, …, x_7` and the two ends.','النقاط الداخلية `x_1, …, x_7` والطرفان.'], ['They match the 9 nodal values.','وتطابق القيم العقدية التسع.']],
+    ['9 + 2 = 11','8 + 2 = 10','6 + 2 = 8']),
+]);
+
+lesson('501',77,[
+  ['Collocation handles variable coefficients and nonlinear terms point by point. On nodal values a coefficient `a(x)` becomes a diagonal matrix, and a nonlinear term is evaluated pointwise:','التجميع يعالج المعاملات المتغيرة والحدود غير الخطية نقطةً نقطة. فعلى القيم العقدية يصبح المعامل `a(x)` مصفوفة قطرية، والحد غير الخطي يُحسب نقطةً نقطة:'],
+  'a(x)u″ + b(x)u  →  diag(a(x_i)) D^{(2)} u + diag(b(x_i)) u,     u^2  →  (u_i^2)',
+  ['A nonlinear system `F(u) = 0` is solved by Newton’s method; for `u″ = g(u)` the Jacobian is `D^{(2)} − diag(g′(u_i))`. Galerkin and Tau would need the integrals of such terms, which is why collocation is the method of choice for them.',
+   'ويُحل النظام غير الخطي `F(u) = 0` بطريقة نيوتن، ولـ `u″ = g(u)` يكون جاكوبي النظام `D^{(2)} − diag(g′(u_i))`. أما جاليركن وتاو فيحتاجان تكاملات هذه الحدود، ولهذا يُفضَّل التجميع معها.'],
+],[
+  Q('Write the collocation equation of `u″ + xu = 1` at an interior node `x_i`.','اكتب معادلة التجميع لـ `u″ + xu = 1` عند عقدة داخلية `x_i`.','Σ_j D^{(2)}_{ij} u_j + x_i u_i = 1',
+    [['The second derivative becomes a row of `D^{(2)}`; the coefficient x is just its value at the node.','المشتقة الثانية صف من `D^{(2)}` والمعامل x قيمته عند العقدة.']],
+    ['Σ_j D^{(2)}_{ij} u_j + Σ_j x_j u_j = 1','Σ_j D^{(2)}_{ij} x_j u_j = 1','D^{(2)}_{ii} u_i + x_i u_i = 1']),
+  Q('Write the Newton Jacobian for the collocation system of `u″ = u^2`.','اكتب جاكوبي نيوتن لنظام التجميع لـ `u″ = u^2`.','J = D^{(2)} − 2 diag(u_i)',
+    ['F(u) = D^{(2)} u − (u_i^2)', '#f{∂F_i}{∂u_j} = D^{(2)}_{ij} − 2u_i δ_{ij}'], ['J = D^{(2)} − diag(u_i^2)','J = D^{(2)} − 2u','J = D^{(2)}']),
+  Q('With the nodes −1, 0, 1 and `u(±1) = 0`, solve `u″ + (1 + x^2) = 0`.','مع العقد −1 و 0 و 1 و `u(±1) = 0` حل `u″ + (1 + x^2) = 0`.','u(0) = #f{1}{2}',
+    ['(D^{(2)}u)_0 + 1 = 0  ⇒  −2u_0 + 1 = 0', 'u_0 = #f{1}{2}', ['The exact value is `u(0) = 7/12 ≈ 0.583`; three points give a first estimate.','القيمة المضبوطة `u(0) = 7/12 ≈ 0.583`، وثلاث نقاط تعطي تقديراً أولياً.']],
+    ['u(0) = 1','u(0) = #f{7}{12}','u(0) = −#f{1}{2}']),
+  Q('Why is a variable coefficient harder for Galerkin than for collocation?','لماذا يصعب المعامل المتغير على جاليركن أكثر من التجميع؟',['Galerkin needs the integrals `(a φ_k′, φ_j′)`, which fill the matrix; collocation only multiplies by `a(x_i)`','جاليركن يحتاج التكاملات `(a φ_k′, φ_j′)` التي تملأ المصفوفة، أما التجميع فيضرب في `a(x_i)` فقط'],
+    [['The diagonal structure of Shen’s basis is lost as soon as `a(x)` is not constant.','تضيع البنية القطرية لأساس شين بمجرد أن يكون `a(x)` غير ثابت.']],
+    [['It is not harder','ليس أصعب'],['Because collocation uses fewer points','لأن التجميع يستخدم نقاطاً أقل']]),
+]);
+
+lesson('501',78,[
+  ['Spectral accuracy is useless if the linear system loses the digits. The condition numbers for `−u″` grow very differently:','الدقة الطيفية لا تنفع إذا أضاع النظام الخطي الأرقام. وأعداد الشرط لـ `−u″` تنمو بطرق مختلفة جداً:'],
+  ['Galerkin with Shen’s basis: `κ ~ N`.   Tau: `κ ~ N^4`.   Collocation: `κ ~ N^4`.','جاليركن مع أساس شين: `κ ~ N`.   تاو: `κ ~ N^4`.   التجميع: `κ ~ N^4`.'],
+  ['In double precision about `log_{10} κ` digits are lost. With N = 100, collocation has `κ ≈ 10^8` and keeps about 8 digits, while Galerkin keeps almost all. Preconditioning (for example by a finite-difference matrix) or a well-chosen basis restores the accuracy.',
+   'وفي الدقة المضاعفة يضيع نحو `log_{10} κ` رقماً. فعند N = 100 يكون للتجميع `κ ≈ 10^8` فيبقى نحو 8 أرقام، بينما يحتفظ جاليركن بأغلبها. والتكييف المسبق (مثلاً بمصفوفة فروق منتهية) أو الأساس المختار جيداً يعيد الدقة.'],
+],[
+  Q('Compute the Galerkin condition number `(4N − 2)/6` for N = 10.','احسب عدد الشرط في جاليركن `(4N − 2)/6` عند N = 10.','#f{38}{6} ≈ 6.33',
+    ['#f{4·10 − 2}{6} = #f{38}{6}'], ['#f{46}{6} ≈ 7.67','10^4','10']),
+  Q('By what factor does the collocation condition number grow when N is doubled?','بأي عامل يكبر عدد شرط التجميع عند مضاعفة N؟','16',
+    ['κ ~ N^4  ⇒  2^4 = 16'], ['2','4','8']),
+  Q('A system has `κ = 10^{10}`. About how many correct digits remain in double precision?','نظام فيه `κ = 10^{10}`. كم رقماً صحيحاً يبقى تقريباً في الدقة المضاعفة؟','≈ 6',
+    ['16 − log_{10} κ = 16 − 10 = 6'], ['≈ 10','≈ 16','≈ 1']),
+  Q('Why is the Galerkin matrix with Shen’s basis so well conditioned?','لماذا مصفوفة جاليركن مع أساس شين جيدة الشرط إلى هذا الحد؟',['It is diagonal with entries 4k + 6, so `κ` is the ratio of the largest to the smallest entry','لأنها قطرية بعناصر 4k + 6، فـ `κ` نسبة أكبر عنصر إلى أصغرها'],
+    ['κ = #f{4(N − 2) + 6}{6} = #f{4N − 2}{6}'],
+    [['Because N is small','لأن N صغير'],['Because the nodes are equally spaced','لأن العقد متساوية التباعد']]),
+]);
+
+lesson('501',79,[
+  ['All three methods converge at the same spectral rate for smooth problems; they differ in cost, structure and convenience:','الطرق الثلاث تتقارب بالمعدل الطيفي نفسه للمسائل الملساء، وتختلف في التكلفة والبنية والسهولة:'],
+  ['Galerkin: symmetric, often sparse or diagonal, best conditioned, but needs integrals. Tau: works on coefficients, simple for constant coefficients and operational matrices. Collocation: needs only point values, the easiest for variable coefficients and nonlinear terms, but its matrices are dense and ill-conditioned.',
+   'جاليركن: متماثلة وغالباً قليلة العناصر أو قطرية وأفضل شرطاً، لكنها تحتاج تكاملات. تاو: تعمل على المعاملات وبسيطة للمعاملات الثابتة والمصفوفات التشغيلية. التجميع: يحتاج قيم النقاط فقط وهو الأسهل للمعاملات المتغيرة والحدود غير الخطية، لكن مصفوفاته ممتلئة ورديئة الشرط.'],
+  ['The paper combines them: operational matrices (a Tau-like treatment of the operators) with collocation at the roots of the basis functions.','والبحث يجمع بينها: مصفوفات تشغيلية (معالجة شبيهة بتاو للمؤثرات) مع التجميع عند جذور الدوال الأساسية.'],
+],[
+  Q('Which method suits `u″ = e^u` best?','أي الطرق أنسب لـ `u″ = e^u`؟',['Collocation','التجميع'],
+    [['The nonlinear term is evaluated at the nodes, and Newton’s method needs only `diag(e^{u_i})`.','الحد غير الخطي يُحسب عند العقد، ونيوتن يحتاج `diag(e^{u_i})` فقط.']],
+    [['Galerkin','جاليركن'],['Tau','تاو']]),
+  Q('Which method gives a diagonal matrix for `−u″ = f`?','أي الطرق تعطي مصفوفة قطرية لـ `−u″ = f`؟',['Galerkin with Shen’s basis','جاليركن مع أساس شين'],
+    ['(φ_k′, φ_j′) = (4k + 6)δ_{jk}'], [['Collocation at Lobatto points','التجميع عند نقاط لوباتو'],['Tau with Legendre polynomials','تاو مع كثيرات ليجندر']]),
+  Q('For `−u″ = 1`, `u(±1) = 0` with N = 2, which methods give the exact solution?','للمسألة `−u″ = 1` و `u(±1) = 0` عند N = 2، أي الطرق تعطي الحل المضبوط؟',['All three','الثلاث كلها'],
+    [['The exact solution `(1 − x^2)/2` lies in the space, and each method reproduces any solution in its space.','الحل المضبوط `(1 − x^2)/2` يقع في الفضاء، وكل طريقة تعيد إنتاج أي حل في فضائها.']],
+    [['Only Galerkin','جاليركن فقط'],['Only collocation','التجميع فقط']]),
+  Q('Which ingredient of the paper’s method is Tau-like and which is collocation?','أي مكوّن في طريقة البحث شبيه بتاو وأيها تجميع؟',['The operational matrices act on the coefficient matrix 𝒴 (Tau-like); the residual is set to zero at the roots of the basis (collocation)','المصفوفات التشغيلية تعمل على مصفوفة المعاملات 𝒴 (شبيه بتاو)، والباقي يُجعل صفراً عند جذور الأساس (تجميع)'],
+    [['Operators become matrix products on 𝒴; the equations come from points.','المؤثرات تصبح ضرب مصفوفات على 𝒴، والمعادلات تأتي من النقاط.']],
+    [['Both are Galerkin','كلاهما جاليركن'],['Neither: it is a finite-difference method','لا هذا ولا ذاك: إنها طريقة فروق منتهية']]),
+]);
+
+lesson('501',80,[
+  ['A complete small example on `[0, 1]`: the relaxation equation','مثال صغير كامل على `[0, 1]`: معادلة الاسترخاء'],
+  '^CD^{α} y = −y,   y(0) = 1,   y(t) = E_{α}(−t^{α}) = Σ_{k≥0} #f{(−t^{α})^k}{Γ(kα + 1)}',
+  ['Its solution is a series in powers of `t^{α}`, so λ = α is the natural choice. Lemma 2.1 gives the integrated form `y = 1 − D^{−α} y`. With `y = a^T 𝔏_{M,λ}` and `D^{−α} y ≈ a^T I_{(−α)} 𝔏`, matching coefficients gives the linear system','وحلها متسلسلة بقوى `t^{α}`، فالاختيار الطبيعي λ = α. واللمة 2.1 تعطي الصيغة التكاملية `y = 1 − D^{−α} y`. ومع `y = a^T 𝔏_{M,λ}` و `D^{−α} y ≈ a^T I_{(−α)} 𝔏` نحصل بمطابقة المعاملات على النظام الخطي'],
+  '(I + I_{(−α)})^T a = e_0',
+  ['For α = λ = 1/2 the method gives `y(1) ≈ 0.3692` with M = 1, `0.42786` with M = 4 and `0.4275836` with M = 8, against the exact `e·erfc(1) = 0.4275836`.','وعند α = λ = 1/2 تعطي الطريقة `y(1) ≈ 0.3692` مع M = 1، و `0.42786` مع M = 4، و `0.4275836` مع M = 8، والقيمة المضبوطة `e·erfc(1) = 0.4275836`.'],
+],[
+  Q('Apply Lemma 2.1 to write `^CD^{1/2} y = −y`, `y(0) = 1` in integrated form.','طبّق اللمة 2.1 لكتابة `^CD^{1/2} y = −y` و `y(0) = 1` بالصيغة التكاملية.','y = 1 − D^{−1/2} y',
+    ['D^{−1/2} ^CD^{1/2} y = y − y(0)', 'y − 1 = −D^{−1/2} y'], ['y = 1 + D^{−1/2} y','y = −D^{−1/2} y','y = 1 − D^{1/2} y']),
+  Q('Why is λ = α the right choice for this problem?','لماذا λ = α هو الاختيار الصحيح لهذه المسألة؟',['The exact solution is a power series in `t^{α}`','الحل المضبوط متسلسلة قوى في `t^{α}`'],
+    ['E_{α}(−t^{α}) = 1 − #f{t^{α}}{Γ(α + 1)} + #f{t^{2α}}{Γ(2α + 1)} − …', ['So y is smooth (analytic) in `s = t^{α}`, and the expansion converges geometrically.','فتكون y ملساء (تحليلية) في `s = t^{α}` ويتقارب المفكوك هندسياً.']],
+    [['Because α is small','لأن α صغيرة'],['Any λ gives the same accuracy','أي λ تعطي الدقة نفسها']]),
+  Q('For λ = μ = 1/2 and M = 1, `I_{(−1/2)} ≈ #m{0.56419, 0.56419 ;; 0.02663, 0.32204}`. Solve `(I + I_{(−1/2)})^T a = e_0`.','عند λ = μ = 1/2 و M = 1 تكون `I_{(−1/2)} ≈ #m{0.56419, 0.56419 ;; 0.02663, 0.32204}`. حل `(I + I_{(−1/2)})^T a = e_0`.','a_0 ≈ 0.6440,   a_1 ≈ −0.2748',
+    ['1.56419 a_0 + 0.02663 a_1 = 1,   0.56419 a_0 + 1.32204 a_1 = 0', 'a_1 = −0.42676 a_0  ⇒  a_0(1.56419 − 0.01136) = 1', 'a_0 ≈ 0.6440,   a_1 ≈ −0.2748'],
+    ['a_0 ≈ 0.6393,   a_1 ≈ 0','a_0 ≈ 0.5642,   a_1 ≈ −0.5642','a_0 ≈ 0.6440,   a_1 ≈ 0.2748']),
+  Q('With these coefficients, find `y(1) = a_0 + a_1` and its error.','مع هذين المعاملين أوجد `y(1) = a_0 + a_1` وخطأه.','y(1) ≈ 0.3692,   |y(1) − 0.4276| ≈ 0.058',
+    ['L_k^{λ}(1) = 1:   y(1) = 0.6440 − 0.2748 = 0.3692', '|0.4276 − 0.3692| ≈ 0.058', ['With M = 8 the error drops to about `10^{−8}`.','ومع M = 8 ينخفض الخطأ إلى نحو `10^{−8}`.']],
+    ['y(1) ≈ 0.9188,   |y(1) − 0.4276| ≈ 0.49','y(1) ≈ 0.4276','y(1) ≈ 0.6440,   |y(1) − 0.4276| ≈ 0.22']),
+]);
+
 export const MS501 = true;
