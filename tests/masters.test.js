@@ -72,6 +72,20 @@ test('lesson content: bilingual text, balanced math marks, answers, steps and di
   }
 });
 
+// a plain math string is shown as it is in both languages, so it must not carry English words
+const MATHWORD = /^(sinh|cosh|tanh|sign|sgn|gcd|lcm|log|max|min|exp|erf|erfc|arg|det|diag|span|dim|deg|mod|sup|inf|lim|cond|rank|trace|const|Var|Cov)$/;
+test('plain math strings carry no English words (they are shown unchanged in Arabic)', () => {
+  for (const [key, le] of Object.entries(MS_LESSONS)) {
+    const strs = [...le.x.filter(e => typeof e === 'string')];
+    for (const q of le.q) strs.push(...[q.a, ...q.s, ...(q.w || [])].filter(e => typeof e === 'string'));
+    for (const s of strs) {
+      if (s[0] === '$') continue;                                                     // a block of code
+      const bad = (s.replace(/#[frm]\{/g, '{').match(/[A-Za-z]{4,}/g) || []).filter(x => !MATHWORD.test(x));
+      assert.equal(bad.length, 0, `${key}: "${bad.join(', ')}" in ${s.slice(0, 80)}`);
+    }
+  }
+});
+
 test('every question renders: no leftover markup, undefined or NaN; a sheet goes through the whole bank before repeating', () => {
   for (const key of Object.keys(MS_LESSONS)) {
     const n = msCount(key), seen = new Set();

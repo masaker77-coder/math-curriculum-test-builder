@@ -553,7 +553,7 @@ lesson('501',19,[
     ['Λ_2 = λ^2·2·3 = #f{1}{4}·6 = #f{3}{2}'], ['6','3','#f{1}{2}']),
   Q('At which points does `p(t) = t(1 − t^{λ})` vanish on `[0, 1]`?','عند أي نقاط ينعدم `p(t) = t(1 − t^{λ})` على `[0, 1]`؟','t = 0,   t = 1',
     ['t = 0   or   t^{λ} = 1 ⇒ t = 1', ['Because `p` vanishes at both ends, the boundary terms in Green’s formula drop out and the eigenfunctions are orthogonal.','ولأن `p` ينعدم عند الطرفين تسقط الحدود الطرفية في صيغة جرين فتتعامد الدوال الذاتية.']],
-    ['t = 0 only','t = 1 only','t = #f{1}{2}']),
+    [['Only at `t = 0`','عند `t = 0` فقط'],['Only at `t = 1`','عند `t = 1` فقط'],'t = #f{1}{2}']),
 ]);
 
 lesson('501',20,[
@@ -575,6 +575,205 @@ lesson('501',20,[
     ['c = ∫_0^1 #r{t} dt = #f{2}{3}', '‖#r{t} − c‖^2 = ∫_0^1 t dt − c^2 = #f{1}{2} − #f{4}{9} = #f{1}{18}',
      ['With `λ = 1/2` two functions give error 0, while polynomials need many terms for a small error.','ومع `λ = 1/2` تعطي دالتان خطأً صفراً، بينما تحتاج الكثيرات حدوداً كثيرة لخطأ صغير.']],
     ['c = #f{1}{2},   ‖#r{t} − c‖ = #f{1}{#r{12}} ≈ 0.2887','c = #f{2}{3},   ‖#r{t} − c‖ = #f{1}{18}','c = 1,   ‖#r{t} − c‖ = #f{1}{#r{2}} ≈ 0.7071']),
+]);
+
+/* ---- 501 · Unit 3 (lessons 21–30): series expansions ---- */
+lesson('501',21,[
+  ['A function on `[−1, 1]` is expanded as `f = Σ c_n P_n`. Multiplying by `P_m` and integrating, orthogonality keeps one term only, so each coefficient is an integral:','الدالة على `[−1, 1]` تُنشر على صورة `f = Σ c_n P_n`. وبالضرب في `P_m` والتكامل لا يبقى بسبب التعامد إلا حد واحد، فكل معامل تكامل:'],
+  'c_n = #f{2n + 1}{2} ∫_{−1}^{1} f(x) P_n(x) dx',
+  ['These are the projection coefficients: `c_n P_n` is the orthogonal projection of f on the direction `P_n`. Parity saves work: an even f has `c_n = 0` for odd n, an odd f for even n.',
+   'وهذه معاملات الإسقاط: `c_n P_n` هو الإسقاط العمودي لـ f على الاتجاه `P_n`. والزوجية توفّر العمل: الدالة الزوجية معاملاتها الفردية أصفار، والفردية معاملاتها الزوجية أصفار.'],
+],[
+  Q('Find the first two coefficients `c_0`, `c_1` of `e^x`.','أوجد المعاملين الأولين `c_0` و `c_1` للدالة `e^x`.','c_0 = sinh 1 ≈ 1.1752,   c_1 = #f{3}{e} ≈ 1.1036',
+    ['c_0 = #f{1}{2}∫_{−1}^{1} e^x dx = #f{e − e^{−1}}{2} = sinh 1', 'c_1 = #f{3}{2}∫_{−1}^{1} x e^x dx = #f{3}{2}[(x − 1)e^x]_{−1}^{1} = #f{3}{2}·#f{2}{e} = #f{3}{e}'],
+    ['c_0 = e − 1 ≈ 1.7183,   c_1 = #f{3}{e} ≈ 1.1036','c_0 = sinh 1 ≈ 1.1752,   c_1 = #f{1}{e} ≈ 0.3679','c_0 = cosh 1 ≈ 1.5431,   c_1 = #f{3}{e} ≈ 1.1036']),
+  Q('Find `c_2` for `f(x) = |x|`.','أوجد `c_2` للدالة `f(x) = |x|`.','c_2 = #f{5}{8}',
+    ['c_2 = #f{5}{2}∫_{−1}^{1} |x| P_2 dx = 5∫_0^1 x·#f{3x^2 − 1}{2} dx', '= #f{5}{2}(#f{3}{4} − #f{1}{2}) = #f{5}{8}'],
+    ['c_2 = #f{5}{4}','c_2 = #f{1}{8}','c_2 = 0']),
+  Q('Without integrating, find the coefficients of `f(x) = x^3 − x` with odd index above 3 and with even index.','دون تكامل أوجد معاملات `f(x) = x^3 − x` ذات الدليل الفردي الأكبر من 3 وذات الدليل الزوجي.','c_n = 0',
+    [['f is odd, so all even coefficients vanish; f has degree 3, so `c_n = 0` for n > 3 by orthogonality.','f فردية فكل المعاملات الزوجية أصفار، ودرجتها 3 فمن التعامد `c_n = 0` عند n > 3.']],
+    ['c_n = #f{2}{2n + 1}','c_n = 1','c_n = (−1)^n']),
+  Q('Find `c_3` for `f(x) = x^3`.','أوجد `c_3` للدالة `f(x) = x^3`.','c_3 = #f{2}{5}',
+    ['c_3 = #f{7}{2}∫_{−1}^{1} x^3·#f{5x^3 − 3x}{2} dx = #f{7}{4}(5·#f{2}{7} − 3·#f{2}{5})', '= #f{7}{4}·#f{50 − 42}{35} = #f{7}{4}·#f{8}{35} = #f{2}{5}',
+     ['Also `c_3 = 1/k_3 = 2/5`, the reciprocal of the leading coefficient 5/2 of `P_3`.','وأيضاً `c_3 = 1/k_3 = 2/5` مقلوب المعامل الرئيس 5/2 لـ `P_3`.']],
+    ['c_3 = #f{3}{5}','c_3 = #f{5}{2}','c_3 = #f{2}{7}']),
+]);
+
+lesson('501',22,[
+  ['Among all polynomials p of degree ≤ N, the truncated series `S_N f = Σ_{n=0}^{N} c_n P_n` is the closest to f in the `L^2` norm:','من بين كل كثيرات الحدود p التي درجتها ≤ N يكون المجموع المقطوع `S_N f = Σ_{n=0}^{N} c_n P_n` الأقرب إلى f في معيار `L^2`:'],
+  '‖f − S_N f‖ ≤ ‖f − p‖,   ‖f − S_N f‖^2 = ‖f‖^2 − Σ_{n=0}^{N} c_n^2 #f{2}{2n + 1}',
+  ['The reason is geometric: the error `f − S_N f` is orthogonal to every `P_k` with k ≤ N, so by Pythagoras any other p only adds to it. This is the Galerkin idea in its simplest form: make the error orthogonal to the space.',
+   'والسبب هندسي: الخطأ `f − S_N f` عمودي على كل `P_k` حيث k ≤ N، فبنظرية فيثاغورس أي p آخر يزيده. وهذه فكرة جاليركن في أبسط صورها: اجعل الخطأ عمودياً على الفضاء.'],
+],[
+  Q('Find the best linear approximation of `x^2` on `[−1, 1]` and its `L^2` error.','أوجد أفضل تقريب خطي لـ `x^2` على `[−1, 1]` وخطأه في `L^2`.','p = #f{1}{3},   ‖x^2 − p‖ = #r{#f{8}{45}} ≈ 0.4216',
+    ['c_0 = #f{1}{3},   c_1 = 0', '‖x^2‖^2 = #f{2}{5},   ‖x^2 − p‖^2 = #f{2}{5} − #f{1}{9}·2 = #f{8}{45}'],
+    ['p = x,   ‖x^2 − p‖ = #r{#f{8}{45}} ≈ 0.4216','p = #f{1}{2},   ‖x^2 − p‖ = #f{8}{45}','p = #f{1}{3},   ‖x^2 − p‖ = 0']),
+  Q('Write the best linear approximation of `e^x` on `[−1, 1]` and evaluate it at x = 1.','اكتب أفضل تقريب خطي لـ `e^x` على `[−1, 1]` واحسبه عند x = 1.','1.1752 + 1.1036x;   2.2788',
+    ['S_1 = c_0 + c_1 x = sinh 1 + #f{3}{e} x', 'S_1(1) = 1.1752 + 1.1036 = 2.2788', ['It is not the Taylor line `1 + x` (2 at x = 1): it is best on average over the whole interval, not at one point.','وهو ليس خط تايلور `1 + x` (2 عند x = 1): إنه الأفضل في المتوسط على المجال كله لا عند نقطة واحدة.']],
+    ['1 + x;   2','1.5431 + 1.1752x;   2.7183','1.1752 + 0.3679x;   1.5431']),
+  Q('Find the best constant approximation of `x^3 + x` on `[−1, 1]`.','أوجد أفضل تقريب ثابت لـ `x^3 + x` على `[−1, 1]`.','0',
+    ['c_0 = #f{1}{2}∫_{−1}^{1}(x^3 + x) dx = 0', ['The function is odd, so its mean is 0.','الدالة فردية فمتوسطها 0.']],
+    ['1','#f{1}{2}','2']),
+  Q('The error of `S_N f` is orthogonal to which functions?','الخطأ `f − S_N f` عمودي على أي الدوال؟',['To every polynomial of degree ≤ N','على كل كثيرة حدود درجتها ≤ N'],
+    ['⟨f − S_N f, P_k⟩ = #f{2}{2k + 1}(c_k − c_k) = 0,   k ≤ N', ['Every polynomial of degree ≤ N is a combination of `P_0, …, P_N`.','كل كثيرة حدود درجتها ≤ N تركيب من `P_0, …, P_N`.']],
+    [['Only to `P_{N+1}`','على `P_{N+1}` فقط'],['To f itself','على f نفسها'],['To nothing in general','لا شيء في العموم']]),
+]);
+
+lesson('501',23,[
+  ['Pythagoras over all the orthogonal directions gives Parseval’s identity:','بتطبيق فيثاغورس على كل الاتجاهات المتعامدة نحصل على متطابقة بارسيفال:'],
+  '‖f‖^2 = ∫_{−1}^{1} f^2 dx = Σ_{n=0}^{∞} c_n^2 #f{2}{2n + 1}',
+  ['The truncation error is the part of this sum that the series leaves out:','وخطأ القطع هو الجزء من هذا المجموع الذي يتركه المفكوك:'],
+  '‖f − S_N f‖^2 = Σ_{n=N+1}^{∞} c_n^2 #f{2}{2n + 1}',
+  ['So the speed at which the coefficients decay decides the accuracy: fast decay means few terms are enough.','إذن سرعة تناقص المعاملات هي التي تحدد الدقة: التناقص السريع يعني أن حدوداً قليلة تكفي.'],
+],[
+  Q('Check Parseval’s identity for `f = x^2 = (1/3)P_0 + (2/3)P_2`.','تحقق من متطابقة بارسيفال للدالة `f = x^2 = (1/3)P_0 + (2/3)P_2`.','#f{2}{5}',
+    ['Σ c_n^2 #f{2}{2n + 1} = #f{1}{9}·2 + #f{4}{9}·#f{2}{5} = #f{10}{45} + #f{8}{45} = #f{2}{5}', '∫_{−1}^{1} x^4 dx = #f{2}{5}'],
+    ['#f{5}{9}','#f{2}{9}','#f{4}{9}']),
+  Q('Compute `‖P_0 + P_1 + P_2‖^2` on `[−1, 1]`.','احسب `‖P_0 + P_1 + P_2‖^2` على `[−1, 1]`.','#f{46}{15}',
+    ['2 + #f{2}{3} + #f{2}{5} = #f{30 + 10 + 6}{15} = #f{46}{15}'], ['3','#f{46}{5}','#f{16}{15}']),
+  Q('For `f = x^3 = (3/5)P_1 + (2/5)P_3`, find the `L^2` error of `S_2 f`.','للدالة `f = x^3 = (3/5)P_1 + (2/5)P_3` أوجد خطأ `S_2 f` في `L^2`.','#r{#f{8}{175}} ≈ 0.2138',
+    [['`S_2 f` drops only the term n = 3:','`S_2 f` يحذف الحد n = 3 فقط:'], '‖f − S_2 f‖^2 = #f{4}{25}·#f{2}{7} = #f{8}{175}', '‖f − S_2 f‖ ≈ 0.2138'],
+    ['#f{8}{175}','#f{2}{5}','0']),
+  Q('A function has `‖f‖^2 = 1`, and its first N + 1 coefficients give `Σ_{n≤N} c_n^2·2/(2n + 1) = 0.99`. Find `‖f − S_N f‖`.','دالة فيها `‖f‖^2 = 1` ومعاملاتها الأولى تعطي `Σ_{n≤N} c_n^2·2/(2n + 1) = 0.99`. أوجد `‖f − S_N f‖`.','0.1',
+    ['‖f − S_N f‖^2 = 1 − 0.99 = 0.01', '‖f − S_N f‖ = 0.1'], ['0.01','0.99','0.9']),
+]);
+
+lesson('501',24,[
+  ['Powers of x have finite Legendre expansions, found by solving for the top power step by step:','قوى x لها مفكوكات ليجندر منتهية، نجدها بحل القوة العليا خطوة خطوة:'],
+  'x^2 = #f{1}{3}P_0 + #f{2}{3}P_2,   x^3 = #f{3}{5}P_1 + #f{2}{5}P_3,   x^4 = #f{1}{5}P_0 + #f{4}{7}P_2 + #f{8}{35}P_4',
+  ['Two checks are always available: at x = 1 the coefficients add up to 1 (because `P_n(1) = 1`), and the coefficient of `P_0` is the mean value of the power, `1/(m + 1)` for even m.',
+   'ويوجد دائماً تحققان: عند x = 1 مجموع المعاملات 1 (لأن `P_n(1) = 1`)، ومعامل `P_0` هو متوسط القوة، أي `1/(m + 1)` عند m زوجي.'],
+],[
+  Q('Expand `x^4` in Legendre polynomials.','اكتب `x^4` بدلالة كثيرات ليجندر.','x^4 = #f{1}{5}P_0 + #f{4}{7}P_2 + #f{8}{35}P_4',
+    ['P_4 = #f{35x^4 − 30x^2 + 3}{8}  ⇒  x^4 = #f{8}{35}P_4 + #f{6}{7}x^2 − #f{3}{35}', '#f{6}{7}x^2 = #f{6}{7}(#f{1}{3}P_0 + #f{2}{3}P_2) = #f{2}{7}P_0 + #f{4}{7}P_2', '#f{2}{7} − #f{3}{35} = #f{7}{35} = #f{1}{5}',
+     ['Check at x = 1: `1/5 + 4/7 + 8/35 = 1`.','تحقق عند x = 1: `1/5 + 4/7 + 8/35 = 1`.']],
+    ['x^4 = #f{1}{5}P_0 + #f{2}{7}P_2 + #f{8}{35}P_4','x^4 = #f{1}{3}P_0 + #f{4}{7}P_2 + #f{8}{35}P_4','x^4 = #f{1}{5}P_0 + #f{4}{7}P_2 + #f{2}{5}P_4']),
+  Q('Find the coefficient of `P_0` in the expansion of `x^6`.','أوجد معامل `P_0` في مفكوك `x^6`.','#f{1}{7}',
+    ['c_0 = #f{1}{2}∫_{−1}^{1} x^6 dx = #f{1}{2}·#f{2}{7} = #f{1}{7}'], ['#f{1}{6}','#f{2}{7}','#f{6}{7}']),
+  Q('Expand `1 + x + x^2` in Legendre polynomials.','اكتب `1 + x + x^2` بدلالة كثيرات ليجندر.','#f{4}{3}P_0 + P_1 + #f{2}{3}P_2',
+    ['1 + x + x^2 = P_0 + P_1 + #f{1}{3}P_0 + #f{2}{3}P_2', '= #f{4}{3}P_0 + P_1 + #f{2}{3}P_2', ['Check at x = 1: `4/3 + 1 + 2/3 = 3`.','تحقق عند x = 1: `4/3 + 1 + 2/3 = 3`.']],
+    ['P_0 + P_1 + P_2','#f{4}{3}P_0 + P_1 + #f{1}{3}P_2','#f{1}{3}P_0 + P_1 + #f{2}{3}P_2']),
+  Q('Find the coefficient of `P_5` in the expansion of `x^5`.','أوجد معامل `P_5` في مفكوك `x^5`.','#f{8}{63}',
+    [['Only `P_5` contains `x^5`, with leading coefficient `k_5 = 10!/(2^5(5!)^2) = 63/8`.','وحدها `P_5` تحتوي `x^5` بمعامل رئيس `k_5 = 10!/(2^5(5!)^2) = 63/8`.'], 'c_5 = #f{1}{k_5} = #f{8}{63}'],
+    ['#f{63}{8}','#f{1}{6}','#f{8}{35}']),
+]);
+
+lesson('501',25,[
+  ['Three standard examples show how the smoothness of f appears in its coefficients:','ثلاثة أمثلة معيارية تبيّن كيف تظهر نعومة f في معاملاتها:'],
+  'sign(x) = #f{3}{2}P_1 − #f{7}{8}P_3 + #f{11}{16}P_5 − …',
+  '|x| = #f{1}{2}P_0 + #f{5}{8}P_2 − #f{3}{16}P_4 + #f{13}{128}P_6 − …',
+  ['The jump of `sign(x)` makes its coefficients fall like `n^{−1/2}`; the kink of `|x|` gives `n^{−3/2}`. For the smooth `e^{ax}` the coefficients `c_n = (2n + 1) i_n(a)` (modified spherical Bessel functions) fall faster than any power, with `c_0 = sinh(a)/a`.',
+   'قفزة `sign(x)` تجعل معاملاتها تتناقص مثل `n^{−1/2}`، وانكسار `|x|` يعطي `n^{−3/2}`. أما الدالة الملساء `e^{ax}` فمعاملاتها `c_n = (2n + 1) i_n(a)` (دوال بسل الكروية المعدلة) تتناقص أسرع من أي قوة، و `c_0 = sinh(a)/a`.'],
+],[
+  Q('Find `c_3` in the expansion of `sign(x)`.','أوجد `c_3` في مفكوك `sign(x)`.','−#f{7}{8}',
+    ['c_3 = #f{7}{2}·2∫_0^1 #f{5x^3 − 3x}{2} dx = #f{7}{2}(#f{5}{4} − #f{3}{2})', '= #f{7}{2}·(−#f{1}{4}) = −#f{7}{8}'],
+    ['#f{7}{8}','−#f{7}{4}','#f{3}{2}']),
+  Q('Find `c_4` in the expansion of `|x|`.','أوجد `c_4` في مفكوك `|x|`.','−#f{3}{16}',
+    ['c_4 = 9∫_0^1 x·#f{35x^4 − 30x^2 + 3}{8} dx = #f{9}{8}(#f{35}{6} − #f{30}{4} + #f{3}{2})', '= #f{9}{8}·(−#f{1}{6}) = −#f{3}{16}'],
+    ['#f{3}{16}','−#f{3}{8}','#f{5}{8}']),
+  Q('Find `c_0` for `e^{2x}`.','أوجد `c_0` للدالة `e^{2x}`.','#f{sinh 2}{2} ≈ 1.8134',
+    ['c_0 = #f{1}{2}∫_{−1}^{1} e^{2x} dx = #f{e^2 − e^{−2}}{4} = #f{sinh 2}{2}', '≈ #f{3.6269}{2} = 1.8134'],
+    ['sinh 2 ≈ 3.6269','#f{e^2 − 1}{2} ≈ 3.1945','#f{cosh 2}{2} ≈ 1.8811']),
+  Q('Evaluate the partial sum `S_4` of `|x|` at x = 0 and compare with `|0| = 0`.','احسب المجموع الجزئي `S_4` لـ `|x|` عند x = 0 وقارنه بـ `|0| = 0`.','S_4(0) = #f{15}{128} ≈ 0.1172',
+    ['S_4(0) = #f{1}{2} + #f{5}{8}·(−#f{1}{2}) − #f{3}{16}·#f{3}{8}', '= #f{64 − 40 − 9}{128} = #f{15}{128} ≈ 0.1172',
+     ['At the kink the series converges slowly: the error is still 0.12 after five terms.','عند نقطة الانكسار يتقارب المفكوك ببطء: الخطأ ما زال 0.12 بعد خمسة حدود.']],
+    ['S_4(0) = 0','S_4(0) = #f{1}{2}','S_4(0) = #f{3}{16}']),
+]);
+
+lesson('501',26,[
+  ['If f is analytic on `[−1, 1]`, its coefficients fall geometrically. The rate is set by the largest Bernstein ellipse (foci ±1, semi-axes summing to ρ) inside which f stays analytic:','إذا كانت f تحليلية على `[−1, 1]` فإن معاملاتها تتناقص هندسياً. ويحدد المعدلَ أكبرُ قطع ناقص لبرنشتاين (بؤرتاه ±1 ومجموع نصفي محوريه ρ) تبقى f داخله تحليلية:'],
+  '|c_n| ≤ C ρ^{−n},   ρ = |z_0 + #r{z_0^2 − 1}|',
+  ['Here `z_0` is the nearest singularity of f in the complex plane, with the square root chosen so that ρ > 1. A singularity close to the interval (ρ near 1) means slow convergence; an entire function such as `e^x` converges faster than any `ρ^{−n}`. To reach an accuracy ε we need about `N ≈ log(1/ε)/log ρ` terms.',
+   'و `z_0` أقرب نقطة شاذة لـ f في المستوى المركب، والجذر يُختار بحيث ρ > 1. فالنقطة الشاذة القريبة من المجال (ρ قريبة من 1) تعني تقارباً بطيئاً، والدالة الصحيحة مثل `e^x` تتقارب أسرع من أي `ρ^{−n}`. وللوصول إلى دقة ε نحتاج نحو `N ≈ log(1/ε)/log ρ` حداً.'],
+],[
+  Q('Find ρ for `f(x) = 1/(x − 2)`.','أوجد ρ للدالة `f(x) = 1/(x − 2)`.','ρ = 2 + #r{3} ≈ 3.7321',
+    ['z_0 = 2:   ρ = 2 + #r{4 − 1} = 2 + #r{3} ≈ 3.7321'], ['ρ = 2','ρ = #r{3} ≈ 1.7321','ρ = 2 − #r{3} ≈ 0.2679']),
+  Q('About how many terms give `10^{−10}` accuracy for `1/(x − 2)`?','كم حداً تقريباً يعطي دقة `10^{−10}` للدالة `1/(x − 2)`؟','N ≈ 18',
+    ['N ≈ #f{log 10^{10}}{log 3.7321} = #f{10}{0.572} ≈ 17.5', ['So about 18 terms.','أي نحو 18 حداً.']],
+    ['N ≈ 10','N ≈ 35','N ≈ 100']),
+  Q('Find ρ for Runge’s function `1/(1 + 25x^2)`, whose singularities are `z_0 = ±i/5`.','أوجد ρ لدالة رونج `1/(1 + 25x^2)` ونقطتاها الشاذتان `z_0 = ±i/5`.','ρ = 0.2 + #r{1.04} ≈ 1.2198',
+    ['|z_0 + #r{z_0^2 − 1}| = |#f{i}{5} + #r{−1.04}| = 0.2 + 1.0198', 'ρ ≈ 1.2198', ['ρ is close to 1, so about `10/log_{10} 1.22 ≈ 116` terms are needed for 10 digits.','ρ قريبة من 1، فنحتاج نحو `10/log_{10} 1.22 ≈ 116` حداً لعشرة أرقام.']],
+    ['ρ = 5','ρ = 1.04','ρ = 1.2']),
+  Q('Find ρ when the nearest singularity is the real point `z_0 = 1.25`.','أوجد ρ إذا كانت أقرب نقطة شاذة هي النقطة الحقيقية `z_0 = 1.25`.','ρ = 2',
+    ['ρ = 1.25 + #r{1.5625 − 1} = 1.25 + 0.75 = 2', ['Each new coefficient is about half the previous one.','كل معامل جديد نحو نصف السابق.']],
+    ['ρ = 1.25','ρ = 0.75','ρ = 2.5']),
+]);
+
+lesson('501',27,[
+  ['When f is not smooth, the coefficients fall only like a power of n, and the place of the singularity matters:','إذا لم تكن f ملساء تتناقص المعاملات مثل قوة لـ n فقط، ومكان النقطة الشاذة مهم:'],
+  ['Interior singularity `|x − x_0|^{α}`: `c_n ~ n^{−α−1/2}`.   End singularity `(1 + x)^{α}`: `c_n ~ n^{−2α−1}`.','نقطة شاذة داخلية `|x − x_0|^{α}`: `c_n ~ n^{−α−1/2}`.   ونقطة شاذة عند الطرف `(1 + x)^{α}`: `c_n ~ n^{−2α−1}`.'],
+  ['An end singularity is felt only half as strongly, because the Legendre polynomials crowd their oscillations near ±1. This is exactly the situation of fractional problems: the solution behaves like `t^{α}` at t = 0, an end of `[0, T]`. Algebraic decay means slow convergence; the cure is a basis with the same powers, `L_n^{λ}`.',
+   'والنقطة الشاذة عند الطرف أثرها أخف، لأن تذبذبات كثيرات ليجندر تتزاحم قرب ±1. وهذا تماماً وضع المسائل الكسرية: الحل يسلك مثل `t^{α}` عند t = 0 وهو طرف `[0, T]`. والتناقص الجبري يعني تقارباً بطيئاً، وعلاجه أساس فيه القوى نفسها `L_n^{λ}`.'],
+],[
+  Q('At what rate do the Legendre coefficients of `|x|^{1/2}` decay?','بأي معدل تتناقص معاملات ليجندر للدالة `|x|^{1/2}`؟','c_n ~ n^{−1}',
+    [['An interior singularity with `α = 1/2`:','نقطة شاذة داخلية مع `α = 1/2`:'], 'n^{−α−1/2} = n^{−1}'], ['c_n ~ n^{−2}','c_n ~ n^{−1/2}','c_n ~ ρ^{−n}']),
+  Q('At what rate do the Legendre coefficients of `#r{1 + x}` decay?','بأي معدل تتناقص معاملات ليجندر للدالة `#r{1 + x}`؟','c_n ~ n^{−2}',
+    [['An end singularity with `α = 1/2`:','نقطة شاذة عند الطرف مع `α = 1/2`:'], 'n^{−2α−1} = n^{−2}', ['Faster than `|x|^{1/2}`, although both have a square-root singularity.','أسرع من `|x|^{1/2}` مع أن لكليهما نقطة شاذة جذرية.']],
+    ['c_n ~ n^{−1}','c_n ~ n^{−3/2}','c_n ~ ρ^{−n}']),
+  Q('The coefficients of `|x|` satisfy `|c_n| ≈ C n^{−3/2}`. If `|c_20| ≈ 0.0173`, estimate `|c_80|`.','معاملات `|x|` تحقق `|c_n| ≈ C n^{−3/2}`. إذا كان `|c_20| ≈ 0.0173` فقدّر `|c_80|`.','|c_80| ≈ 0.0022',
+    ['|c_80| ≈ 0.0173·(#f{20}{80})^{3/2} = 0.0173·#f{1}{8} ≈ 0.0022', ['Four times as many terms gain less than one digit.','أربعة أضعاف الحدود لا تكسب رقماً واحداً كاملاً.']],
+    ['|c_80| ≈ 0.0043','|c_80| ≈ 0.0011','|c_80| ≈ 10^{−8}']),
+  Q('A solution behaves like `t^{1/2}` near t = 0 on `[0, 1]`. With polynomials, how do its Legendre coefficients decay, and what basis removes the problem?','حل يسلك مثل `t^{1/2}` قرب t = 0 على `[0, 1]`. كيف تتناقص معاملاته بالكثيرات، وأي أساس يزيل المشكلة؟',
+    ['Like `n^{−2}`; use `L_n^{λ}` with `λ = 1/2`','مثل `n^{−2}`؛ ونستخدم `L_n^{λ}` مع `λ = 1/2`'],
+    ['t = #f{x + 1}{2}:   t^{1/2} = #f{(1 + x)^{1/2}}{#r{2}}', ['An end singularity with `α = 1/2`:','نقطة شاذة عند الطرف مع `α = 1/2`:'], 'n^{−2α−1} = n^{−2}', ['In the basis `L_n^{1/2}` it is exact with two functions.','وفي الأساس `L_n^{1/2}` يكون مضبوطاً بدالتين.']],
+    [['Like `ρ^{−n}`; no change is needed','مثل `ρ^{−n}`؛ ولا حاجة إلى تغيير'],['Like `n^{−1}`; use Chebyshev polynomials','مثل `n^{−1}`؛ ونستخدم كثيرات تشيبيشيف']]),
+]);
+
+lesson('501',28,[
+  ['For a function with a jump the partial sums overshoot near the jump, and the overshoot does not shrink as N grows: this is the Gibbs phenomenon. For `sign(x)` the partial sums reach about 1.18 near 0+, an overshoot of about 9% of the jump 2.',
+   'في الدالة ذات القفزة تتجاوز المجاميع الجزئية القيمة قرب القفزة، ولا يصغر هذا التجاوز بزيادة N: وهذه ظاهرة جيبس. ففي `sign(x)` تصل المجاميع الجزئية إلى نحو 1.18 قرب +0، أي تجاوز قدره نحو 9% من القفزة 2.'],
+  'S_3 sign(x) = #f{45x − 35x^3}{16}',
+  ['Away from the jump the error does fall, but only like `N^{−1/2}`, and the overshoot region narrows like `1/N`. A spectral method keeps its speed only if discontinuities are avoided (split the domain at the jump) or filtered.',
+   'وبعيداً عن القفزة يتناقص الخطأ لكن مثل `N^{−1/2}` فقط، وتضيق منطقة التجاوز مثل `1/N`. ولا تحتفظ الطريقة الطيفية بسرعتها إلا بتجنب الانقطاعات (تقسيم المجال عند القفزة) أو بالترشيح.'],
+],[
+  Q('Find the largest value of `S_3 sign(x) = (45x − 35x^3)/16` on `[0, 1]`.','أوجد أكبر قيمة لـ `S_3 sign(x) = (45x − 35x^3)/16` على `[0, 1]`.',['About 1.2276, at `x = #r{3/7} ≈ 0.6547`','نحو 1.2276 عند `x = #r{3/7} ≈ 0.6547`'],
+    ['#f{d}{dx}:  45 − 105x^2 = 0  ⇒  x = #r{#f{3}{7}} ≈ 0.6547', 'S_3 = #f{45(0.6547) − 35(0.2806)}{16} ≈ 1.2276'],
+    [['1, at `x = 1`','1 عند `x = 1`'],['About 1.18, at `x = 0.5`','نحو 1.18 عند `x = 0.5`'],['1.5, at `x = 1`','1.5 عند `x = 1`']]),
+  Q('Find the error of `S_3 sign(x)` at x = 0.5.','أوجد خطأ `S_3 sign(x)` عند x = 0.5.','≈ 0.1328',
+    ['S_3(0.5) = #f{22.5 − 4.375}{16} = 1.1328', '|1.1328 − 1| = 0.1328'], ['≈ 0.0328','0','≈ 0.2276']),
+  Q('As N grows, what happens to the largest value of `S_N sign(x)` near the jump?','بزيادة N ماذا يحدث لأكبر قيمة لـ `S_N sign(x)` قرب القفزة؟',['It tends to about 1.18, not to 1','تقترب من نحو 1.18 لا من 1'],
+    ['N = 21, 51, 101:   max S_N ≈ 1.181, 1.181, 1.185', ['The overshoot stays; only its location moves closer to 0.','يبقى التجاوز، وإنما يقترب موضعه من 0.']],
+    [['It tends to 1','تقترب من 1'],['It grows without bound','تكبر بلا حد'],['It tends to 1.5','تقترب من 1.5']]),
+  Q('`u` has a jump at x = 0.3 inside `[−1, 1]`. How should a spectral method treat it?','الدالة `u` لها قفزة عند x = 0.3 داخل `[−1, 1]`. كيف تعالجها الطريقة الطيفية؟',['Split the domain at 0.3 and expand on each part','نقسم المجال عند 0.3 وننشر على كل جزء'],
+    [['On `[−1, 0.3]` and `[0.3, 1]` the function is smooth, so each piece converges spectrally (a multidomain method).','على `[−1, 0.3]` و `[0.3, 1]` الدالة ملساء، فكل جزء يتقارب طيفياً (طريقة المجالات المتعددة).']],
+    [['Use more terms on the whole interval','نستخدم حدوداً أكثر على المجال كله'],['Ignore it: the error goes to zero everywhere','نتجاهلها: الخطأ يؤول إلى الصفر في كل مكان']]),
+]);
+
+lesson('501',29,[
+  ['On `[0, 1]` the paper expands the solution in the fractional Legendre functions, its expansion (2.10):','على `[0, 1]` ينشر البحث الحل بدوال ليجندر الكسرية، وهذا مفكوكه (2.10):'],
+  'y(t) ≈ Σ_{n=0}^{M} a_n L_n^{λ}(t),   a_n = (2n + 1) ∫_0^1 y(t) L_n^{λ}(t) λt^{λ−1} dt',
+  ['The factor `2n + 1` is the reciprocal of `‖L_n^{λ}‖^2 = 1/(2n + 1)`. With `s = t^{λ}` every coefficient becomes an ordinary shifted-Legendre coefficient of `y(s^{1/λ})`, so all the tools of this unit apply.',
+   'والعامل `2n + 1` مقلوب `‖L_n^{λ}‖^2 = 1/(2n + 1)`. ومع `s = t^{λ}` يصبح كل معامل معاملاً عادياً لكثيرات ليجندر المزاحة للدالة `y(s^{1/λ})`، فتنطبق كل أدوات هذه الوحدة.'],
+],[
+  Q('For `y = t^{1/2}` and `λ = 1/2`, find `a_0`.','للدالة `y = t^{1/2}` مع `λ = 1/2` أوجد `a_0`.','a_0 = #f{1}{2}',
+    ['s = t^{1/2}:   a_0 = ∫_0^1 s ds = #f{1}{2}'], ['a_0 = 1','a_0 = #f{2}{3}','a_0 = #f{1}{3}']),
+  Q('For `y = t` and `λ = 1/2`, find `a_1`.','للدالة `y = t` مع `λ = 1/2` أوجد `a_1`.','a_1 = #f{1}{2}',
+    ['y = s^2:   a_1 = 3∫_0^1 s^2(2s − 1) ds = 3(#f{1}{2} − #f{1}{3}) = #f{1}{2}', ['Indeed `t = (1/3)L_0 + (1/2)L_1 + (1/6)L_2` with `λ = 1/2`.','وفعلاً `t = (1/3)L_0 + (1/2)L_1 + (1/6)L_2` عند `λ = 1/2`.']],
+    ['a_1 = #f{1}{3}','a_1 = #f{1}{6}','a_1 = 1']),
+  Q('For `y = e^t` and `λ = 1`, find `a_0`.','للدالة `y = e^t` مع `λ = 1` أوجد `a_0`.','a_0 = e − 1 ≈ 1.7183',
+    ['a_0 = ∫_0^1 e^t dt = e − 1'], ['a_0 = e ≈ 2.7183','a_0 = 1','a_0 = #f{e − 1}{2} ≈ 0.8591']),
+  Q('For `y = t^{3/2}` and `λ = 1/2`, how many terms does the expansion have?','للدالة `y = t^{3/2}` مع `λ = 1/2` كم حداً في المفكوك؟',['Four: `L_0, …, L_3`','أربعة: `L_0, …, L_3`'],
+    ['t^{3/2} = s^3,   s = t^{1/2}', ['A cubic in s needs `L_0^{λ}, …, L_3^{λ}`, and the coefficients with n > 3 vanish.','كثيرة حدود تكعيبية في s تحتاج `L_0^{λ}, …, L_3^{λ}` والمعاملات بعد n = 3 أصفار.']],
+    [['Infinitely many','عدد لا نهائي'],['Two: `L_0, L_1`','اثنان: `L_0, L_1`'],['Three: `L_0, L_1, L_2`','ثلاثة: `L_0, L_1, L_2`']]),
+]);
+
+lesson('501',30,[
+  ['If the exact solution is a sum of powers `t^{β_1}, t^{β_2}, …` (plus integer powers), the paper takes λ as their greatest common divisor:','إذا كان الحل المضبوط مجموع قوى `t^{β_1}, t^{β_2}, …` (مع قوى صحيحة) يأخذ البحث λ القاسم المشترك الأكبر لها:'],
+  'λ = gcd(β_1, β_2, …),   β_k = m_k λ,   y = Σ_k b_k s^{m_k},   s = t^{λ}',
+  ['Then y is a polynomial in s, its expansion in `L_n^{λ}` is finite, and the method can give the exact solution up to rounding. When the powers are not known in advance, the singular behaviour of the equation (for example `t^{α}` for an equation of order α) suggests λ.',
+   'فتكون y كثيرة حدود في s، ومفكوكها بـ `L_n^{λ}` منتهياً، ويمكن أن تعطي الطريقة الحل المضبوط حتى أخطاء التقريب. وإذا لم تُعرف القوى مسبقاً فإن السلوك الشاذ للمعادلة (مثل `t^{α}` لمعادلة من الرتبة α) يقترح λ.'],
+],[
+  Q('Choose λ for `y = t^{1/3} + t^{1/2}`.','اختر λ للدالة `y = t^{1/3} + t^{1/2}`.','λ = #f{1}{6}',
+    ['#f{1}{3} = #f{2}{6},   #f{1}{2} = #f{3}{6}', 'λ = gcd(#f{1}{3}, #f{1}{2}) = #f{1}{6}'], ['λ = #f{1}{3}','λ = #f{1}{2}','λ = #f{5}{6}']),
+  Q('Choose λ for `y = 1 + t^{0.4} + t^{1.2}`, and give the degree in s.','اختر λ للدالة `y = 1 + t^{0.4} + t^{1.2}` واذكر الدرجة في s.',['`λ = 0.4`, degree 3','`λ = 0.4` والدرجة 3'],
+    ['0.4 = 1·0.4,   1.2 = 3·0.4', 'y = 1 + s + s^3,   s = t^{0.4}'],
+    [['`λ = 0.2`, degree 6','`λ = 0.2` والدرجة 6'],['`λ = 1.2`, degree 1','`λ = 1.2` والدرجة 1'],['`λ = 0.4`, degree 2','`λ = 0.4` والدرجة 2']]),
+  Q('Choose λ for `y = t^{1/2} + t + t^{3/2}`.','اختر λ للدالة `y = t^{1/2} + t + t^{3/2}`.','λ = #f{1}{2}',
+    ['#f{1}{2} = 1·#f{1}{2},   1 = 2·#f{1}{2},   #f{3}{2} = 3·#f{1}{2}', 'y = s + s^2 + s^3,   s = t^{1/2}'],
+    ['λ = 1','λ = #f{3}{2}','λ = #f{1}{4}']),
+  Q('Why is `λ = 1/4` also correct for `y = t^{1/2} + t`, and why is `λ = 1/2` better?','لماذا تصلح `λ = 1/4` أيضاً للدالة `y = t^{1/2} + t`، ولماذا `λ = 1/2` أفضل؟',['Both divide the powers; 1/2 needs a lower degree (2 instead of 4)','كلتاهما تقسم القوى؛ و 1/2 تحتاج درجة أقل (2 بدل 4)'],
+    ['λ = #f{1}{4}:  y = s^2 + s^4,     λ = #f{1}{2}:  y = s + s^2', ['The greatest common divisor gives the smallest system.','القاسم المشترك الأكبر يعطي أصغر نظام.']],
+    [['Only `λ = 1/4` works','لا تصلح إلا `λ = 1/4`'],['They give the same degree','تعطيان الدرجة نفسها']]),
 ]);
 
 export const MS501 = true;
