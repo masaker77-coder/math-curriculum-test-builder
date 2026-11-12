@@ -1460,4 +1460,120 @@ lesson('502',90,[
   Q('Which basis gives a diagonal stiffness matrix for `−y″`?','أي أساس يعطي مصفوفة جساءة قطرية لـ `−y″`؟',['Legendre, through Shen’s combinations','ليجندر، عبر تراكيب شين'],['(φ_k′, φ_j′) = (4k + 6)δ_{jk}'],[['Bernstein','بيرنشتاين'],['Chebyshev','تشيبيشيف']]),
 ]);
 
+/* ---- 502 · Unit 10 (lessons 91–100): generalizations and research ---- */
+lesson('502',91,[
+  ['The Bernstein–Kantorovich operator replaces the point values `f(k/n)` by local averages, so it also works for integrable (even discontinuous) functions:','مؤثر بيرنشتاين–كانتوروفيتش يستبدل بالقيم النقطية `f(k/n)` متوسطات محلية، فيعمل أيضاً للدوال القابلة للتكامل (حتى غير المتصلة):'],
+  '(K_n f)(x) = (n + 1) Σ_{k=0}^{n} B_{k,n}(x) ∫_{k/(n+1)}^{(k+1)/(n+1)} f(t) dt',
+  ['It is positive and linear, `K_n 1 = 1` and `K_n x = (nx + 1/2)/(n + 1) → x`, so Korovkin’s theorem gives `K_n f → f` for continuous f; it also converges in `L^p` for every `f ∈ L^p`. Moreover `K_n f = (B_{n+1} F)′` where F is an antiderivative of f.','وهو إيجابي وخطي، و `K_n 1 = 1` و `K_n x = (nx + 1/2)/(n + 1) → x`، فنظرية كوروفكين تعطي `K_n f → f` للدوال المتصلة، ويتقارب أيضاً في `L^p` لكل `f ∈ L^p`. وفوق ذلك `K_n f = (B_{n+1} F)′` حيث F دالة أصلية لـ f.'],
+],[
+  Q('Compute `K_1 x`.','احسب `K_1 x`.','K_1 x = #f{1}{4} + #f{x}{2}',['2[B_{0,1}∫_0^{1/2} t dt + B_{1,1}∫_{1/2}^{1} t dt] = 2[#f{1 − x}{8} + #f{3x}{8}]'],['K_1 x = x','K_1 x = #f{x}{2}','K_1 x = #f{1}{2} + #f{x}{4}']),
+  Q('Check `K_1 x` with the formula `(nx + 1/2)/(n + 1)`.','تحقق من `K_1 x` بالصيغة `(nx + 1/2)/(n + 1)`.','#f{x + 1/2}{2}',['n = 1:   #f{x + 1/2}{2} = #f{x}{2} + #f{1}{4}'],['#f{x}{2}','x + #f{1}{2}','#f{2x + 1}{3}']),
+  Q('Compute `K_n 1`.','احسب `K_n 1`.','1',['(n + 1)·#f{1}{n + 1}·Σ_k B_{k,n} = 1'],['n + 1','#f{1}{n + 1}','0']),
+  Q('Why can `K_n` be applied to a function with a jump, while `B_n` behaves badly at the jump point?','لماذا يمكن تطبيق `K_n` على دالة ذات قفزة بينما يسلك `B_n` سلوكاً سيئاً عند نقطة القفزة؟',['`K_n` uses integrals over small intervals, which are defined and stable for integrable f','`K_n` يستخدم تكاملات على مجالات صغيرة، وهي معرّفة ومستقرة للدوال القابلة للتكامل'],
+    [['A point value at the jump is arbitrary; an average is not.','القيمة النقطية عند القفزة اعتباطية، أما المتوسط فلا.']], [['It cannot','لا يمكن'],['Because `K_n` interpolates f','لأن `K_n` يستكمل f']]),
+]);
+
+lesson('502',92,[
+  ['The Bernstein–Durrmeyer operator uses the basis itself as weights:','مؤثر بيرنشتاين–دورماير يستخدم الأساس نفسه أوزاناً:'],
+  '(M_n f)(x) = (n + 1) Σ_{k=0}^{n} B_{k,n}(x) ∫_0^1 B_{k,n}(t) f(t) dt',
+  ['It is self-adjoint in `L^2(0, 1)`, and its eigenfunctions are exactly the shifted Legendre polynomials: `M_n P_k^* = λ_k P_k^*` with `λ_k = n!(n + 1)!/((n − k)!(n + k + 1)!)`. Simple values: `M_n 1 = 1`, `M_n x = (nx + 1)/(n + 2)`.','وهو مترافق ذاتياً في `L^2(0, 1)`، ودواله الذاتية هي كثيرات ليجندر المزاحة بالضبط: `M_n P_k^* = λ_k P_k^*` حيث `λ_k = n!(n + 1)!/((n − k)!(n + k + 1)!)`. وقيم بسيطة: `M_n 1 = 1` و `M_n x = (nx + 1)/(n + 2)`.'],
+],[
+  Q('Compute `M_1 x`.','احسب `M_1 x`.','#f{x + 1}{3}',['2[B_{0,1}∫_0^1 (1 − t)t dt + B_{1,1}∫_0^1 t^2 dt] = 2[#f{1 − x}{6} + #f{x}{3}]'],['x','#f{x}{3}','#f{2x + 1}{4}']),
+  Q('Find the eigenvalue `λ_1` of `M_n` for n = 2.','أوجد القيمة الذاتية `λ_1` لـ `M_n` عند n = 2.','#f{1}{2}',['#f{2!·3!}{1!·4!} = #f{12}{24} = #f{1}{2}'],['#f{3}{4}','1','#f{1}{4}']),
+  Q('Check `λ_1` for n = 2 directly: `M_2 P_1^*` with `P_1^* = 2x − 1`.','تحقق من `λ_1` عند n = 2 مباشرة: `M_2 P_1^*` مع `P_1^* = 2x − 1`.','M_2(2x − 1) = #f{1}{2}(2x − 1)',['M_2 x = #f{2x + 1}{4}  ⇒  M_2(2x − 1) = #f{2x + 1}{2} − 1 = #f{2x − 1}{2}'],['M_2(2x − 1) = 2x − 1','M_2(2x − 1) = #f{3}{4}(2x − 1)','M_2(2x − 1) = 0']),
+  Q('Which functions are eigenfunctions of `M_n`?','أي الدوال دوال ذاتية لـ `M_n`؟',['The shifted Legendre polynomials `P_k^*`, k ≤ n','كثيرات ليجندر المزاحة `P_k^*` حيث k ≤ n'],[['This links Bernstein operators with the orthogonal bases of Course 501.','وهذا يربط مؤثرات بيرنشتاين بالأسس المتعامدة في المقرر 501.']],[['The Bernstein polynomials','كثيرات بيرنشتاين'],['Powers of x','قوى x']]),
+]);
+
+lesson('502',93,[
+  ['On the half line `[0, ∞)` the binomial weights are replaced by Poisson weights (Szász–Mirakyan) or negative-binomial weights (Baskakov):','على نصف المستقيم `[0, ∞)` تُستبدل بالأوزان ذات الحدين أوزان بواسون (ساس–ميراكيان) أو أوزان ذات الحدين السالبة (باسكاكوف):'],
+  '(S_n f)(x) = e^{−nx} Σ_{k=0}^{∞} f(#f{k}{n}) #f{(nx)^k}{k!},     (V_n f)(x) = Σ_{k=0}^{∞} f(#f{k}{n}) C(n + k − 1, k) #f{x^k}{(1 + x)^{n+k}}',
+  ['Both reproduce 1 and x, and `S_n x^2 = x^2 + x/n`, so they converge on compact sets by Korovkin’s theorem. They are the infinite-interval relatives of `B_n`.','وكلاهما يعيد 1 و x، و `S_n x^2 = x^2 + x/n`، فيتقاربان على المجموعات المتراصة بنظرية كوروفكين. وهما قريبا `B_n` على المجال اللانهائي.'],
+],[
+  Q('Compute `S_n 1`.','احسب `S_n 1`.','1',['e^{−nx} Σ_k #f{(nx)^k}{k!} = e^{−nx} e^{nx}'],['e^{nx}','n','0']),
+  Q('Use `S_n x^2 = x^2 + x/n` to find the error of `S_{100}x^2` at x = 2.','استخدم `S_n x^2 = x^2 + x/n` لإيجاد خطأ `S_{100}x^2` عند x = 2.','0.02',['#f{x}{n} = #f{2}{100}'],['0.04','0.0004','0.2']),
+  Q('What are the weights of `S_n` at a point x in probabilistic terms?','ما أوزان `S_n` عند نقطة x بلغة الاحتمالات؟',['Poisson probabilities with mean nx','احتمالات بواسون بمتوسط nx'],['P(N = k) = e^{−nx}#f{(nx)^k}{k!}'],[['Binomial probabilities','احتمالات ذي الحدين'],['Uniform weights','أوزان منتظمة']]),
+  Q('Why can `B_n` not be used directly on `[0, ∞)`?','لماذا لا يمكن استخدام `B_n` مباشرة على `[0, ∞)`؟',['Its nodes `k/n` and weights live on [0, 1]','عقده `k/n` وأوزانه تعيش على [0, 1]'],[['On a bounded interval it can be rescaled; on an infinite one infinitely many nodes are needed.','على مجال محدود يمكن تغيير مقياسه، أما على اللانهائي فيلزم عدد لا نهائي من العقد.']],[['Because f is not continuous','لأن f غير متصلة'],['It can','يمكن']]),
+]);
+
+lesson('502',94,[
+  ['The Bernstein–Stancu operators shift the nodes with two parameters `0 ≤ α ≤ β`:','مؤثرات بيرنشتاين–ستانكو تزيح العقد بمعاملين `0 ≤ α ≤ β`:'],
+  '(S_n^{α,β} f)(x) = Σ_{k=0}^{n} f(#f{k + α}{n + β}) B_{k,n}(x)',
+  ['With α = β = 0 they are the Bernstein operators. They are positive and linear, `S_n^{α,β} x = (nx + α)/(n + β) → x`, so they converge for every continuous f; the parameters move the error around and are used to improve end behaviour or approximate on shifted grids.','ومع α = β = 0 تكون مؤثرات بيرنشتاين. وهي إيجابية وخطية، و `S_n^{α,β} x = (nx + α)/(n + β) → x` فتتقارب لكل دالة متصلة، والمعاملان يحرّكان الخطأ ويُستخدمان لتحسين السلوك عند الطرفين أو للتقريب على شبكات مزاحة.'],
+],[
+  Q('Compute `S_n^{α,β} x`.','احسب `S_n^{α,β} x`.','#f{nx + α}{n + β}',['Σ_k #f{k + α}{n + β}B_{k,n} = #f{nx + α}{n + β}'],['x','#f{x + α}{1 + β}','#f{nx}{n + β}']),
+  Q('Compute `S_{10}^{1,2} x` at x = 0.5.','احسب `S_{10}^{1,2} x` عند x = 0.5.','0.5',['#f{10·0.5 + 1}{12} = #f{6}{12}'],['0.4583','0.5417','0.6']),
+  Q('Compute `S_{10}^{1,2} x` at x = 0.','احسب `S_{10}^{1,2} x` عند x = 0.','#f{1}{12}',['#f{0 + 1}{12}',['Unlike `B_n`, the Stancu operator does not keep the end value.','وخلافاً لـ `B_n` لا يحتفظ مؤثر ستانكو بقيمة الطرف.']],['0','#f{1}{10}','#f{1}{2}']),
+  Q('Which values of α, β give back `B_n`?','أي قيم α و β تعيد `B_n`؟','α = β = 0',['f(#f{k}{n})'],['α = β = 1','α = 0,   β = 1','α = 1,   β = 0']),
+]);
+
+lesson('502',95,[
+  ['Phillips’ q-Bernstein polynomials replace integers by q-integers `[k]_q = 1 + q + ⋯ + q^{k−1} = (1 − q^k)/(1 − q)`:','كثيرات بيرنشتاين من النوع q عند فيليبس تستبدل بالأعداد الصحيحة أعداداً q-صحيحة `[k]_q = 1 + q + ⋯ + q^{k−1} = (1 − q^k)/(1 − q)`:'],
+  '(B_n^q f)(x) = Σ_{k=0}^{n} f(#f{[k]_q}{[n]_q}) [n, k]_q x^k Π_{s=0}^{n−k−1}(1 − q^s x)',
+  ['For q = 1 they are the classical polynomials. They reproduce 1 and x, and `B_n^q x^2 = x^2 + x(1 − x)/[n]_q`. For a fixed q < 1, `[n]_q → 1/(1 − q)`, so they do not converge; convergence needs `q = q_n → 1`.','وعند q = 1 تكون الكثيرات الكلاسيكية. وهي تعيد 1 و x، و `B_n^q x^2 = x^2 + x(1 − x)/[n]_q`. ومع q < 1 ثابتة يكون `[n]_q → 1/(1 − q)` فلا تتقارب، والتقارب يحتاج `q = q_n → 1`.'],
+],[
+  Q('Compute `[3]_q` for q = 1/2.','احسب `[3]_q` عند q = 1/2.','#f{7}{4}',['1 + #f{1}{2} + #f{1}{4}'],['3','#f{3}{2}','#f{7}{8}']),
+  Q('Compute the error `x(1 − x)/[n]_q` of `B_n^q x^2` at x = 1/2 for n = 3, q = 1/2.','احسب الخطأ `x(1 − x)/[n]_q` لـ `B_n^q x^2` عند x = 1/2 مع n = 3 و q = 1/2.','#f{1}{7}',['#f{1/4}{7/4}'],['#f{1}{12}','#f{1}{4}','#f{1}{3}']),
+  Q('What is `lim_{n→∞} [n]_q` for q = 1/2?','ما `lim_{n→∞} [n]_q` عند q = 1/2؟','2',['#f{1}{1 − q}'],['∞','1','#f{1}{2}']),
+  Q('Does `B_n^q x^2 → x^2` for fixed q = 1/2?','هل `B_n^q x^2 → x^2` مع q = 1/2 ثابتة؟',['No: the error tends to `x(1 − x)/2`','لا: الخطأ يقترب من `x(1 − x)/2`'],['#f{x(1 − x)}{[n]_q} → #f{x(1 − x)}{2}'],[['Yes','نعم'],['Yes, faster than B_n','نعم، وأسرع من B_n']]),
+]);
+
+lesson('502',96,[
+  ['The name «Bernstein function» has a second, unrelated meaning in analysis and probability: a function `f: (0, ∞) → [0, ∞)` is a Bernstein function if it is smooth and its derivative is completely monotone:','لاسم «دالة بيرنشتاين» معنى ثانٍ لا علاقة له بالأول في التحليل والاحتمالات: الدالة `f: (0, ∞) → [0, ∞)` دالة بيرنشتاين إذا كانت ملساء ومشتقتها مطّردة تماماً:'],
+  '(−1)^k f^{(k+1)}(x) ≥ 0,   k = 0, 1, 2, …',
+  ['Examples: `x^{α}` with 0 < α ≤ 1, `log(1 + x)`, `1 − e^{−x}`. They are exactly the Laplace exponents of subordinators (Lévy–Khintchine), and they appear in fractional calculus: `λ^{α}` is the Laplace symbol of the fractional derivative.','أمثلة: `x^{α}` مع 0 < α ≤ 1 و `log(1 + x)` و `1 − e^{−x}`. وهي تماماً أسس لابلاس للعمليات التابعة (ليفي–خينتشين)، وتظهر في التفاضل الكسري: `λ^{α}` رمز لابلاس للمشتقة الكسرية.'],
+],[
+  Q('Is `f(x) = #r{x}` a Bernstein function?','هل `f(x) = #r{x}` دالة بيرنشتاين؟',['Yes','نعم'],['f′ = #f{1}{2}x^{−1/2},   f″ = −#f{1}{4}x^{−3/2},   f‴ = #f{3}{8}x^{−5/2},   …',['The signs alternate as required.','الإشارات تتناوب كما يجب.']],[['No','لا']]),
+  Q('Is `f(x) = x^2` a Bernstein function?','هل `f(x) = x^2` دالة بيرنشتاين؟',['No: `f″ = 2 > 0` violates `−f″ ≥ 0`','لا: `f″ = 2 > 0` يخالف `−f″ ≥ 0`'],['k = 1:   (−1) f″ = −2 < 0'],[['Yes','نعم']]),
+  Q('Check `log(1 + x)`: is its derivative completely monotone?','تحقق من `log(1 + x)`: هل مشتقتها مطّردة تماماً؟',['Yes: `1/(1 + x)` has derivatives of alternating sign','نعم: `1/(1 + x)` مشتقاتها متناوبة الإشارة'],['#f{d^k}{dx^k} #f{1}{1 + x} = #f{(−1)^k k!}{(1 + x)^{k+1}}'],[['No','لا']]),
+  Q('Which Bernstein function is the Laplace symbol of the Caputo derivative of order α?','أي دالة بيرنشتاين رمز لابلاس لمشتقة كابوتو من الرتبة α؟','λ^{α}',[['`L{^CD^{α} y} = λ^{α} Y(λ) − λ^{α−1} y(0)` for 0 < α < 1.','`L{^CD^{α} y} = λ^{α} Y(λ) − λ^{α−1} y(0)` عند 0 < α < 1.']],['e^{−λ}','λ^2','log λ']),
+]);
+
+lesson('502',97,[
+  ['Bernstein’s inequality bounds the derivative of a polynomial of degree n by its maximum on `[−1, 1]`; Markov’s inequality gives the bound at the ends:','متباينة برنشتاين تحد مشتقة كثيرة حدود من الدرجة n بقيمتها العظمى على `[−1, 1]`، ومتباينة ماركوف تعطي الحد عند الطرفين:'],
+  '|p′(x)| ≤ #f{n}{#r{1 − x^2}} ‖p‖_∞   (−1 < x < 1),     ‖p′‖_∞ ≤ n^2 ‖p‖_∞',
+  ['Both are sharp: Chebyshev’s `T_n` attains Markov’s bound, `T_n′(1) = n^2`. These inequalities explain the `n^2` growth of differentiation matrices (Course 501) and are basic tools in proving convergence rates.','وكلتاهما حادة: `T_n` لتشيبيشيف تبلغ حد ماركوف، `T_n′(1) = n^2`. وتفسر هاتان المتباينتان نمو مصفوفات التفاضل مثل `n^2` (المقرر 501)، وهما أداتان أساسيتان في براهين معدلات التقارب.'],
+],[
+  Q('Bound `|p′(0)|` for a polynomial of degree 5 with `‖p‖_∞ = 1`.','أوجد حداً لـ `|p′(0)|` لكثيرة حدود من الدرجة 5 مع `‖p‖_∞ = 1`.','5',['#f{5}{#r{1 − 0}}'],['25','1','#f{5}{2}']),
+  Q('Bound `‖p′‖_∞` for degree 3 and `‖p‖_∞ = 1`.','أوجد حداً لـ `‖p′‖_∞` للدرجة 3 مع `‖p‖_∞ = 1`.','9',['n^2 = 9'],['3','6','27']),
+  Q('Check that `T_3` attains Markov’s bound.','تحقق أن `T_3` تبلغ حد ماركوف.','T_3′(1) = 9',['T_3 = 4x^3 − 3x  ⇒  T_3′ = 12x^2 − 3'],['T_3′(1) = 3','T_3′(1) = 12','T_3′(1) = 1']),
+  Q('Check Markov’s inequality for `P_n′(1) = n(n + 1)/2`.','تحقق من متباينة ماركوف للمقدار `P_n′(1) = n(n + 1)/2`.',['It holds: `n(n + 1)/2 ≤ n^2`','تتحقق: `n(n + 1)/2 ≤ n^2`'],['#f{n(n + 1)}{2} ≤ n^2  ⇔  n + 1 ≤ 2n'],[['It fails for large n','تفشل عند n كبير']]),
+]);
+
+lesson('502',98,[
+  ['Ready-made tools for Bernstein computations:','أدوات جاهزة لحسابات بيرنشتاين:'],
+  '$# Python (SciPy)\nfrom scipy.interpolate import BPoly\np = BPoly([[0], [0], [1]], [0, 1])     # x^2 on [0, 1]\np(0.5)                                  # 0.25\np.derivative()                          # 2x, again a BPoly\n\n% MATLAB:  nchoosek(n, i) * x.^i .* (1 - x).^(n - i)\n(* Mathematica *)  BernsteinBasis[n, i, x],  BezierCurve[pts]',
+  ['``BPoly`` stores piecewise Bernstein coefficients (one column per interval) and evaluates with de Casteljau. Whatever the language, test every function on cases with known answers: partition of unity, `B_n x = x`, and the derivative of `x^n`.','و ``BPoly`` تخزّن معاملات بيرنشتاين القطعية (عمود لكل مجال) وتحسب بدي كاستلجو. وفي أي لغة اختبر كل دالة على حالات معلومة الجواب: تجزئة الواحد و `B_n x = x` ومشتقة `x^n`.'],
+],[
+  Q('Which SciPy class holds polynomials in Bernstein form?','أي صنف في SciPy يحمل كثيرات الحدود بصيغة بيرنشتاين؟','$scipy.interpolate.BPoly',[['It also supports derivatives, antiderivatives and piecewise curves.','ويدعم كذلك المشتقات والدوال الأصلية والمنحنيات القطعية.']],['$numpy.polyfit','$scipy.special.comb','$numpy.poly1d']),
+  Q('What does `BPoly([[0], [0], [1]], [0, 1])` represent?','ماذا يمثل `BPoly([[0], [0], [1]], [0, 1])`؟','x^2  on  [0, 1]',['0·B_{0,2} + 0·B_{1,2} + 1·B_{2,2}'],['x  on  [0, 1]','1  on  [0, 1]','2x(1 − x)']),
+  Q('Write the MATLAB expression for `B_{i,n}(x)` on a vector x.','اكتب تعبير MATLAB لـ `B_{i,n}(x)` على متجه x.','$nchoosek(n, i) * x.^i .* (1 - x).^(n - i)',[['The dots make the operations element by element.','النقاط تجعل العمليات عنصراً بعنصر.']],['$nchoosek(n, i) * x^i * (1 - x)^(n - i)','$binomial(n, i) * x.^i','$bernstein(n, i, x)']),
+  Q('Which Mathematica function draws a Bézier curve from control points?','أي دالة في Mathematica ترسم منحنى بيزييه من نقاط التحكم؟','$BezierCurve[pts]',[['Used inside ``Graphics``.','وتُستخدم داخل ``Graphics``.']],['$BSplineCurve[pts]','$ListLinePlot[pts]','$Interpolation[pts]']),
+]);
+
+lesson('502',99,[
+  ['Many papers propose Bernstein operational-matrix methods. To read one critically: (1) rebuild each matrix and test it on functions with known results (constants, x, `x^n`, `t^{α}`); (2) check whether integration or fractional matrices are exact or projected, and with which inner product; (3) count equations and unknowns; (4) reproduce one table with a manufactured solution; (5) compare with a Legendre or Chebyshev solver on the same space.',
+   'تقترح بحوث كثيرة طرقاً بمصفوفات بيرنشتاين التشغيلية. ولقراءة أحدها قراءة ناقدة: (1) أعد بناء كل مصفوفة واختبرها على دوال معلومة النتائج (الثوابت و x و `x^n` و `t^{α}`)، (2) تحقق هل مصفوفات التكامل أو الكسرية مضبوطة أم مُسقطة، وبأي ضرب داخلي، (3) عدّ المعادلات والمجاهيل، (4) أعد إنتاج جدول بحل مصنّع، (5) قارن بحلّال ليجندر أو تشيبيشيف على الفضاء نفسه.'],
+  ['A frequent weakness: claimed «exact» operational matrices for integrals that in fact leave `Π_n`. Another: test problems whose exact solution lies in the space, which cannot reveal the convergence rate.','ومن نقاط الضعف الشائعة: ادعاء أن مصفوفات التكامل «مضبوطة» بينما هي تخرج فعلاً من `Π_n`. ومنها: مسائل اختبار حلها المضبوط داخل الفضاء، فلا تكشف معدل التقارب.'],
+],[
+  Q('A paper claims its integration matrix of size `(n + 1) × (n + 1)` is exact. What do you check?','بحث يدعي أن مصفوفة التكامل لديه بحجم `(n + 1) × (n + 1)` مضبوطة. ماذا تفحص؟',['Integrate `B_{n,n} = x^n`: the exact result has degree n + 1, so a square matrix must truncate','كامل `B_{n,n} = x^n`: النتيجة المضبوطة درجتها n + 1، فالمصفوفة المربعة لا بد أن تقطع'],
+    ['∫_0^x t^n dt = #f{x^{n+1}}{n + 1} ∉ Π_n'], [['Nothing: the claim is always true','لا شيء: الادعاء صحيح دائماً']]),
+  Q('Why is a test problem with exact solution `1 + x^2` weak for n = 4?','لماذا تكون مسألة اختبار حلها المضبوط `1 + x^2` ضعيفة عند n = 4؟',['It lies in `Π_4`, so any correct method gives rounding-level error','تقع في `Π_4`، فأي طريقة صحيحة تعطي خطأً بمستوى التقريب'],
+    [['It shows the code is correct, but not how fast it converges.','تبيّن صحة البرنامج لكن لا تبيّن سرعة التقارب.']], [['Because it is too hard','لأنها صعبة جداً']]),
+  Q('Which test checks a Bernstein differentiation matrix most simply?','أي اختبار يفحص مصفوفة تفاضل بيرنشتاين بأبسط طريقة؟',['Apply it to the constant 1: all columns must sum to 0','طبّقها على الثابت 1: يجب أن يكون مجموع كل عمود 0'],['(1, …, 1)·D = 0'],[['Compute its determinant','احسب محددها']]),
+  Q('After reproducing a table you find errors 10 times larger. What is the first thing to check?','بعد إعادة إنتاج جدول وجدت أخطاء أكبر 10 مرات. ما أول ما تفحصه؟',['How the right-hand side and initial terms are represented (projected or interpolated)','كيف يُمثَّل الطرف الأيمن والحدود الابتدائية (بالإسقاط أم بالاستكمال)'],
+    [['As in Course 501, such details often explain a constant factor.','كما في المقرر 501، كثيراً ما تفسر هذه التفاصيل عاملاً ثابتاً.']], [['The computer','الحاسوب'],['Nothing; differences are normal','لا شيء؛ الفروق طبيعية']]),
+]);
+
+lesson('502',100,[
+  ['Capstone project: solve the fractional Riccati equation with the Bernstein basis and report as a short paper:','المشروع الختامي: حل معادلة ريكاتي الكسرية بأساس بيرنشتاين وكتابتها في صورة بحث قصير:'],
+  '^CD^{α} y = −y^2 + 1,   y(0) = 0,   0 < α ≤ 1,   y = tanh t  (α = 1)',
+  ['Steps: write the integrated form `y = D^{−α}(1 − y^2)`; choose λ = α and the basis `B_{i,n}(t^{λ})`; build `I_{(−α)}` by projection; treat `y^2` with the product formula; solve with Newton; validate with α = 1 against `tanh t`; then report `y(1)` for α = 0.5, 0.75, 1 and n = 4, 8, 16, with an error estimate from successive n.',
+   'الخطوات: اكتب الصيغة التكاملية `y = D^{−α}(1 − y^2)`، واختر λ = α والأساس `B_{i,n}(t^{λ})`، وابنِ `I_{(−α)}` بالإسقاط، وعالج `y^2` بصيغة الضرب، وحل بنيوتن، وتحقق مع α = 1 مقابل `tanh t`، ثم اكتب `y(1)` عند α = 0.5 و 0.75 و 1 و n = 4 و 8 و 16 مع تقدير الخطأ من قيم n المتتالية.'],
+],[
+  Q('Write the integrated form of the Riccati problem.','اكتب الصيغة التكاملية لمسألة ريكاتي.','y = D^{−α}(1 − y^2)',['y(0) = 0,   D^{−α} ^CD^{α} y = y'],['y = 1 − D^{−α} y^2','y = D^{α}(1 − y^2)','y = D^{−α} y^2']),
+  Q('What is `y(1)` for α = 1?','ما `y(1)` عند α = 1؟','tanh 1 ≈ 0.7616',['y′ = 1 − y^2,   y(0) = 0  ⇒  y = tanh t'],['1','0.5','e^{−1}']),
+  Q('Which nonlinear term needs the product formula, and what degree does it produce?','أي حد غير خطي يحتاج صيغة الضرب، وأي درجة ينتج؟',['`y^2`, of degree 2n','`y^2` بالدرجة 2n'],['B_{i,n}B_{j,n} ∈ Π_{2n}'],[['`1`, of degree 0','`1` بالدرجة 0'],['`D^{−α}`, of degree n + 1','`D^{−α}` بالدرجة n + 1']]),
+  Q('Suppose a run gives `y(1)` = 0.7612, 0.76159, 0.761594 for n = 4, 8, 16 (α = 1). Estimate the error at n = 8.','افرض أن تشغيلاً أعطى `y(1)` = 0.7612 و 0.76159 و 0.761594 عند n = 4 و 8 و 16 (α = 1). قدّر الخطأ عند n = 8.','≈ 4 × 10^{−6}',['|0.76159 − 0.761594| ≈ 4 × 10^{−6}'],['≈ 4 × 10^{−4}','≈ 0','≈ 10^{−2}']),
+]);
+
 export const MS502 = true;
