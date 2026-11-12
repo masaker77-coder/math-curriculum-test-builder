@@ -776,4 +776,189 @@ lesson('501',30,[
     [['Only `λ = 1/4` works','لا تصلح إلا `λ = 1/4`'],['They give the same degree','تعطيان الدرجة نفسها']]),
 ]);
 
+/* ---- 501 · Unit 4 (lessons 31–40): numerical quadrature ---- */
+lesson('501',31,[
+  ['A quadrature rule replaces an integral by a weighted sum of values at chosen nodes:','قاعدة التربيع تستبدل بالتكامل مجموعاً موزوناً لقيم عند عقد مختارة:'],
+  '∫_{−1}^{1} f(x) dx ≈ Σ_{i=1}^{n} w_i f(x_i)',
+  ['The degree of exactness is the largest d such that the rule is exact for every polynomial of degree ≤ d. Exactness for `1, x, …, x^d` gives linear equations for the weights; in particular `Σ w_i = 2`, the length of the interval. Simpson’s rule on `[−1, 1]` is `(f(−1) + 4f(0) + f(1))/3`, exact up to degree 3.',
+   'ودرجة الدقة هي أكبر d بحيث تكون القاعدة مضبوطة لكل كثيرة حدود درجتها ≤ d. والضبط للقوى `1, x, …, x^d` يعطي معادلات خطية للأوزان، ومنها `Σ w_i = 2` وهو طول المجال. وقاعدة سمبسون على `[−1, 1]` هي `(f(−1) + 4f(0) + f(1))/3` ومضبوطة حتى الدرجة 3.'],
+],[
+  Q('Find the weights of the rule with nodes −1, 0, 1 that is exact for `1, x, x^2`.','أوجد أوزان القاعدة ذات العقد −1 و 0 و 1 المضبوطة للقوى `1, x, x^2`.','w = #f{1}{3},  #f{4}{3},  #f{1}{3}',
+    ['1:  w_1 + w_2 + w_3 = 2,     x:  −w_1 + w_3 = 0,     x^2:  w_1 + w_3 = #f{2}{3}', 'w_1 = w_3 = #f{1}{3},   w_2 = 2 − #f{2}{3} = #f{4}{3}', ['This is Simpson’s rule.','وهذه قاعدة سمبسون.']],
+    ['w = #f{1}{2},  1,  #f{1}{2}','w = #f{2}{3},  #f{2}{3},  #f{2}{3}','w = #f{1}{6},  #f{2}{3},  #f{1}{6}']),
+  Q('Apply Simpson’s rule to `∫_{−1}^{1} x^4 dx` and find the error.','طبّق قاعدة سمبسون على `∫_{−1}^{1} x^4 dx` وأوجد الخطأ.','#f{4}{15}',
+    [['The rule gives `(1 + 0 + 1)/3 = 2/3`, and the exact value is `2/5`:','القاعدة تعطي `(1 + 0 + 1)/3 = 2/3` والقيمة المضبوطة `2/5`:'], '#f{2}{3} − #f{2}{5} = #f{4}{15}', ['So the degree of exactness of Simpson’s rule is exactly 3.','إذن درجة دقة سمبسون 3 تماماً.']],
+    ['0','#f{8}{45}','#f{14}{15}']),
+  Q('Apply the midpoint rule `2f(0)` to `∫_{−1}^{1} x^2 dx` and find the error.','طبّق قاعدة نقطة المنتصف `2f(0)` على `∫_{−1}^{1} x^2 dx` وأوجد الخطأ.','#f{2}{3}',
+    [['The rule gives `2·0^2 = 0`, and the exact value is `2/3`.','القاعدة تعطي `2·0^2 = 0` والقيمة المضبوطة `2/3`.'], ['The midpoint rule is exact for degree 1 only.','قاعدة المنتصف مضبوطة للدرجة 1 فقط.']],
+    ['0','#f{4}{3}','#f{1}{3}']),
+  Q('What is the sum of the weights of any rule on `[0, 5]` that is exact for constants?','ما مجموع أوزان أي قاعدة على `[0, 5]` مضبوطة للثوابت؟','5',
+    ['f = 1:   Σ w_i = ∫_0^5 1 dt = 5'], ['2','1','10']),
+]);
+
+lesson('501',32,[
+  ['Interpolating f at the nodes by `p = Σ f(x_i) ℓ_i(x)` and integrating p gives an interpolatory rule, whose weights are the integrals of the Lagrange functions:','باستكمال f عند العقد بـ `p = Σ f(x_i) ℓ_i(x)` ثم تكامل p نحصل على قاعدة استكمالية، أوزانها تكاملات دوال لاجرانج:'],
+  'w_i = ∫_{−1}^{1} ℓ_i(x) dx,   ℓ_i(x) = Π_{j≠i} #f{x − x_j}{x_i − x_j}',
+  ['Any n distinct nodes give a rule exact for degree n − 1. The art of quadrature is choosing the nodes so that the rule is exact for much more; Gauss’s choice doubles the degree.','أي n عقدة مختلفة تعطي قاعدة مضبوطة للدرجة n − 1، وفن التربيع في اختيار العقد لتكون القاعدة مضبوطة لأكثر من ذلك بكثير، واختيار جاوس يضاعف الدرجة.'],
+],[
+  Q('Find the weights for the nodes 0 and 1 on `[−1, 1]`.','أوجد الأوزان للعقدتين 0 و 1 على `[−1, 1]`.','w_0 = 2,   w_1 = 0',
+    ['ℓ_0 = #f{x − 1}{0 − 1} = 1 − x,   ∫_{−1}^{1}(1 − x) dx = 2', 'ℓ_1 = #f{x − 0}{1 − 0} = x,   ∫_{−1}^{1} x dx = 0', ['The rule is `2f(0)`: the node at 1 gets no weight.','القاعدة هي `2f(0)`: العقدة عند 1 لا وزن لها.']],
+    ['w_0 = 1,   w_1 = 1','w_0 = #f{3}{2},   w_1 = #f{1}{2}','w_0 = 0,   w_1 = 2']),
+  Q('Find the weights for the nodes −1, 1/3, 1.','أوجد الأوزان للعقد −1 و 1/3 و 1.','w = #f{1}{2},  #f{3}{2},  0',
+    ['ℓ_{−1} = #f{(x − 1/3)(x − 1)}{8/3}  ⇒  w = #f{4/3}{8/3} = #f{1}{2}', 'ℓ_{1/3} = #f{(x + 1)(x − 1)}{−8/9}  ⇒  w = #f{−4/3}{−8/9} = #f{3}{2}', 'ℓ_1 = #f{(x + 1)(x − 1/3)}{4/3}  ⇒  w = #f{0}{4/3} = 0',
+     ['This is the two-point Gauss–Radau rule (Lesson 37).','وهذه قاعدة جاوس–رادو ذات النقطتين (الدرس 37).']],
+    ['w = #f{1}{3},  #f{4}{3},  #f{1}{3}','w = #f{2}{3},  #f{2}{3},  #f{2}{3}','w = #f{1}{2},  1,  #f{1}{2}']),
+  Q('By symmetry, find the weights for the nodes `±1/2`.','بالتماثل أوجد الأوزان للعقدتين `±1/2`.','w = 1,  1',
+    [['The nodes are symmetric, so the weights are equal, and they add up to 2.','العقد متماثلة فالأوزان متساوية ومجموعها 2.'], 'w_1 = w_2 = 1'],
+    ['w = #f{1}{2},  #f{1}{2}','w = 2,  2','w = #f{2}{3},  #f{4}{3}']),
+  Q('What degree of exactness is guaranteed for an interpolatory rule with 6 distinct nodes?','ما درجة الدقة المضمونة لقاعدة استكمالية بست عقد مختلفة؟','5',
+    [['The interpolating polynomial of degree ≤ 5 is exact for every f of degree ≤ 5.','كثيرة الاستكمال من الدرجة ≤ 5 تطابق كل f درجتها ≤ 5.'], 'n − 1 = 5'],
+    ['6','11','3']),
+]);
+
+lesson('501',33,[
+  ['Gauss–Legendre takes the n zeros of `P_n` as nodes, with the weights from Lesson 12:','قاعدة جاوس–ليجندر تأخذ جذور `P_n` الـ n عقداً، بالأوزان من الدرس 12:'],
+  'x_i:  P_n(x_i) = 0,   w_i = #f{2}{(1 − x_i^2) P_n′(x_i)^2}',
+  'n = 2:  ±#f{1}{#r{3}};  1, 1          n = 3:  0, ±#r{#f{3}{5}};  #f{8}{9}, #f{5}{9}, #f{5}{9}',
+  ['All weights are positive, so the rule is stable, and the error falls spectrally for smooth f.','وكل الأوزان موجبة فالقاعدة مستقرة، والخطأ يتناقص طيفياً للدوال الملساء.'],
+],[
+  Q('Compute the three-point weight at the node x = 0.','احسب وزن القاعدة ذات النقاط الثلاث عند العقدة x = 0.','#f{8}{9}',
+    ['P_3′ = #f{15x^2 − 3}{2}  ⇒  P_3′(0) = −#f{3}{2}', 'w = #f{2}{(1 − 0)·#f{9}{4}} = #f{8}{9}'], ['#f{5}{9}','#f{4}{3}','1']),
+  Q('Compute the three-point weight at `x = #r{3/5}`.','احسب وزن القاعدة ذات النقاط الثلاث عند `x = #r{3/5}`.','#f{5}{9}',
+    ['P_3′(#r{0.6}) = #f{15·0.6 − 3}{2} = 3,   1 − x^2 = 0.4', 'w = #f{2}{0.4·9} = #f{5}{9}', ['Check: `8/9 + 2·5/9 = 2`.','تحقق: `8/9 + 2·5/9 = 2`.']],
+    ['#f{8}{9}','#f{1}{3}','#f{2}{9}']),
+  Q('Apply the two-point Gauss rule to `∫_{−1}^{1} e^x dx`.','طبّق قاعدة جاوس ذات النقطتين على `∫_{−1}^{1} e^x dx`.','≈ 2.3427',
+    ['e^{0.5774} + e^{−0.5774} = 1.7813 + 0.5614 = 2.3427', ['Exact: `e − e^{−1} = 2.3504`; the error 0.0077 comes from two values only.','المضبوط: `e − e^{−1} = 2.3504`، والخطأ 0.0077 من قيمتين فقط.']],
+    ['≈ 2.3504','≈ 3.0862','≈ 2.0000']),
+  Q('Apply the three-point Gauss rule to `∫_{−1}^{1} x^4 dx`.','طبّق قاعدة جاوس ذات النقاط الثلاث على `∫_{−1}^{1} x^4 dx`.','#f{2}{5}',
+    ['#f{8}{9}·0 + #f{5}{9}·0.36 + #f{5}{9}·0.36 = #f{3.6}{9} = 0.4', ['Exact, as degree 4 ≤ 2·3 − 1 = 5.','مضبوطة لأن الدرجة 4 ≤ 2·3 − 1 = 5.']],
+    ['#f{2}{9}','#f{2}{3}','#f{4}{9}']),
+]);
+
+lesson('501',34,[
+  ['The n-point Gauss rule is exact for every polynomial of degree ≤ 2n − 1, and no n-point rule can do better.','قاعدة جاوس ذات n نقطة مضبوطة لكل كثيرة حدود درجتها ≤ 2n − 1، ولا توجد قاعدة بـ n نقطة أفضل منها.'],
+  'deg p ≤ 2n − 1:   p = q P_n + r,   deg q, deg r ≤ n − 1',
+  ['Proof: `∫ q P_n dx = 0` by orthogonality, and the rule also gives 0 for it because `P_n(x_i) = 0`; the remainder r is integrated exactly because the rule is interpolatory. For the limit, `f = Π (x − x_i)^2` has degree 2n and a positive integral, but the rule gives 0.',
+   'البرهان: `∫ q P_n dx = 0` من التعامد، والقاعدة تعطيه 0 أيضاً لأن `P_n(x_i) = 0`، والباقي r يُكامل بدقة لأن القاعدة استكمالية. وللحد الأعلى: `f = Π (x − x_i)^2` درجتها 2n وتكاملها موجب، لكن القاعدة تعطيها 0.'],
+],[
+  Q('Up to which degree is the three-point Gauss rule exact?','حتى أي درجة تكون قاعدة جاوس ذات النقاط الثلاث مضبوطة؟','5',
+    ['2n − 1 = 2·3 − 1 = 5'], ['3','6','2']),
+  Q('Apply the two-point Gauss rule to `∫_{−1}^{1} x^4 dx`.','طبّق قاعدة جاوس ذات النقطتين على `∫_{−1}^{1} x^4 dx`.','#f{2}{9}',
+    ['(#f{1}{#r{3}})^4 + (−#f{1}{#r{3}})^4 = #f{2}{9}', ['Exact is 2/5: degree 4 > 2·2 − 1 = 3.','المضبوط 2/5: الدرجة 4 > 2·2 − 1 = 3.']],
+    ['#f{2}{5}','#f{1}{9}','#f{2}{3}']),
+  Q('How many Gauss points are needed to integrate any polynomial of degree 9 exactly?','كم نقطة جاوس تلزم لتكامل أي كثيرة حدود من الدرجة 9 تكاملاً مضبوطاً؟','5',
+    ['2n − 1 ≥ 9  ⇒  n ≥ 5'], ['9','10','4']),
+  Q('For the two-point rule, compute the rule’s value and the exact value of `∫_{−1}^{1} (x^2 − 1/3)^2 dx`.','لقاعدة النقطتين احسب قيمة القاعدة والقيمة المضبوطة لـ `∫_{−1}^{1} (x^2 − 1/3)^2 dx`.',['The rule gives 0; the exact value is `8/45`','القاعدة تعطي 0 والقيمة المضبوطة `8/45`'],
+    ['(x^2 − #f{1}{3})^2 = (x − x_1)^2(x − x_2)^2', ['It vanishes at both nodes, so the rule gives 0.','تنعدم عند العقدتين فالقاعدة تعطي 0.'], '∫_{−1}^{1}(x^4 − #f{2}{3}x^2 + #f{1}{9}) dx = #f{2}{5} − #f{4}{9} + #f{2}{9} = #f{8}{45}'],
+    [['Both are `8/45`','كلتاهما `8/45`'],['Both are 0','كلتاهما 0'],['The rule gives `2/9`; the exact value is `8/45`','القاعدة تعطي `2/9` والقيمة المضبوطة `8/45`']]),
+]);
+
+lesson('501',35,[
+  ['For a smooth f the error of the n-point Gauss rule on `[−1, 1]` is','للدالة الملساء يكون خطأ قاعدة جاوس ذات n نقطة على `[−1, 1]`'],
+  'E_n(f) = #f{2^{2n+1} (n!)^4}{(2n + 1)[(2n)!]^3} f^{(2n)}(ξ),   −1 < ξ < 1',
+  ['The constants fall extremely fast: 1/3 for n = 1, 1/135 for n = 2, 1/15750 for n = 3. On an interval `[a, b]` multiply by `((b − a)/2)^{2n+1}`. For analytic f the error falls like `ρ^{−2n}`, twice the rate of the Legendre coefficients.',
+   'والثوابت تتناقص بسرعة كبيرة: 1/3 عند n = 1 و 1/135 عند n = 2 و 1/15750 عند n = 3. وعلى مجال `[a, b]` نضرب في `((b − a)/2)^{2n+1}`. وللدوال التحليلية يتناقص الخطأ مثل `ρ^{−2n}`، أي ضعف معدل معاملات ليجندر.'],
+],[
+  Q('Compute the error constant for n = 2.','احسب ثابت الخطأ عند n = 2.','#f{1}{135}',
+    ['#f{2^5 (2!)^4}{5 (4!)^3} = #f{32·16}{5·13824} = #f{512}{69120} = #f{1}{135}'], ['#f{1}{3}','#f{1}{90}','#f{1}{15750}']),
+  Q('Check the error law for n = 2 with `f = x^4`.','تحقق من قانون الخطأ عند n = 2 مع `f = x^4`.','#f{8}{45}',
+    [['Exact value minus the rule:','القيمة المضبوطة ناقص القاعدة:'], '#f{2}{5} − #f{2}{9} = #f{8}{45}', ['The law with `f^{(4)} = 24`:','والقانون مع `f^{(4)} = 24`:'], '#f{24}{135} = #f{8}{45}'], ['#f{4}{15}','#f{2}{9}','0']),
+  Q('Bound the error of the three-point Gauss rule for `∫_{−1}^{1} e^x dx`.','أوجد حداً لخطأ قاعدة جاوس ذات النقاط الثلاث لـ `∫_{−1}^{1} e^x dx`.','≤ #f{e}{15750} ≈ 1.7 × 10^{−4}',
+    ['|E_3| ≤ #f{1}{15750} max |f^{(6)}| = #f{e}{15750} ≈ 1.73 × 10^{−4}', ['The true error is `6.5 × 10^{−5}`, within the bound.','والخطأ الحقيقي `6.5 × 10^{−5}` داخل الحد.']],
+    ['≤ #f{e}{135} ≈ 0.020','≤ #f{1}{15750} ≈ 6.3 × 10^{−5}','= 0']),
+  Q('The one-point Gauss rule (midpoint) is used on `[0, 0.2]`. What is its error constant there?','تُستخدم قاعدة جاوس ذات النقطة الواحدة (المنتصف) على `[0, 0.2]`. ما ثابت خطئها هناك؟','#f{1}{3}·0.1^3 = #f{1}{3000}',
+    ['#f{1}{3}·(#f{b − a}{2})^{3} = #f{1}{3}·0.1^3 = #f{1}{3000}', ['This is the familiar `(b − a)^3 f″(ξ)/24`.','وهذا هو الحد المألوف `(b − a)^3 f″(ξ)/24`.']],
+    ['#f{1}{3}·0.2^3 = #f{1}{375}','#f{1}{3}','#f{1}{24}']),
+]);
+
+lesson('501',36,[
+  ['Gauss–Lobatto rules include both ends ±1 as nodes; the other n − 2 nodes are the zeros of `P_{n−1}′`:','قواعد جاوس–لوباتو تضم الطرفين ±1 عقدتين، والعقد الأخرى n − 2 هي جذور `P_{n−1}′`:'],
+  'w_i = #f{2}{n(n − 1) P_{n−1}(x_i)^2},   w_{±1} = #f{2}{n(n − 1)}',
+  ['Fixing two nodes costs two degrees: the rule is exact up to degree 2n − 3. Lobatto nodes are the natural collocation points when boundary values are imposed, since the ends are nodes. With n = 3 it is Simpson’s rule; with n = 4 the nodes are `±1, ±1/#r{5}` with weights `1/6, 5/6`.',
+   'وتثبيت عقدتين يكلّف درجتين: القاعدة مضبوطة حتى الدرجة 2n − 3. وعقد لوباتو هي نقاط التجميع الطبيعية عند فرض قيم حدية لأن الطرفين عقدتان. وعند n = 3 هي قاعدة سمبسون، وعند n = 4 العقد `±1, ±1/#r{5}` بالأوزان `1/6, 5/6`.'],
+],[
+  Q('Compute the four-point Lobatto weight at `x = 1/#r{5}`.','احسب وزن لوباتو ذي النقاط الأربع عند `x = 1/#r{5}`.','#f{5}{6}',
+    ['P_3(#f{1}{#r{5}}) = #f{1}{2}(#f{5}{5#r{5}} − #f{3}{#r{5}}) = −#f{1}{#r{5}}', 'w = #f{2}{12·#f{1}{5}} = #f{5}{6}'], ['#f{1}{6}','#f{2}{3}','#f{5}{12}']),
+  Q('Up to which degree is the four-point Lobatto rule exact?','حتى أي درجة تكون قاعدة لوباتو ذات النقاط الأربع مضبوطة؟','5',
+    ['2n − 3 = 5'], ['7','3','4']),
+  Q('Find the end weight of the five-point Lobatto rule.','أوجد وزن الطرف في قاعدة لوباتو ذات النقاط الخمس.','#f{1}{10}',
+    ['w_{±1} = #f{2}{5·4} = #f{1}{10}'], ['#f{1}{6}','#f{2}{5}','#f{1}{20}']),
+  Q('Apply the four-point Lobatto rule to `∫_{−1}^{1} x^4 dx`.','طبّق قاعدة لوباتو ذات النقاط الأربع على `∫_{−1}^{1} x^4 dx`.','#f{2}{5}',
+    ['2·#f{1}{6}·1 + 2·#f{5}{6}·#f{1}{25} = #f{1}{3} + #f{1}{15} = #f{2}{5}', ['Exact, since 4 ≤ 5.','مضبوطة لأن 4 ≤ 5.']],
+    ['#f{2}{3}','#f{1}{3}','#f{7}{15}']),
+]);
+
+lesson('501',37,[
+  ['Gauss–Radau rules fix one end, say −1, and choose the other n − 1 nodes optimally: they are the zeros of `(P_{n−1} + P_n)/(1 + x)`. Exactness drops by one, to degree 2n − 2, and the fixed end has the weight `2/n^2`.',
+   'قواعد جاوس–رادو تثبت طرفاً واحداً، وليكن −1، وتختار العقد الأخرى n − 1 اختياراً أمثل: إنها جذور `(P_{n−1} + P_n)/(1 + x)`. وتنقص الدقة درجة واحدة إلى 2n − 2، ووزن الطرف الثابت `2/n^2`.'],
+  'n = 2:   x = −1, #f{1}{3};   w = #f{1}{2}, #f{3}{2}',
+  ['Radau points suit time-dependent and fractional problems: the initial point t = 0 is a node where the initial condition is imposed, while the final time is free.','نقاط رادو تناسب المسائل الزمنية والكسرية: النقطة الابتدائية t = 0 عقدة يُفرض عندها الشرط الابتدائي، والزمن النهائي حر.'],
+],[
+  Q('Check that the two-point Radau rule is exact for `x^2`.','تحقق أن قاعدة رادو ذات النقطتين مضبوطة لـ `x^2`.','#f{2}{3}',
+    ['#f{1}{2}(−1)^2 + #f{3}{2}(#f{1}{3})^2 = #f{1}{2} + #f{1}{6} = #f{2}{3}', '∫_{−1}^{1} x^2 dx = #f{2}{3}'], ['#f{1}{2}','#f{5}{9}','1']),
+  Q('Find the node of the two-point Radau rule from `(P_1 + P_2)/(1 + x) = 0`.','أوجد عقدة قاعدة رادو ذات النقطتين من `(P_1 + P_2)/(1 + x) = 0`.','x = #f{1}{3}',
+    ['P_1 + P_2 = x + #f{3x^2 − 1}{2} = #f{3x^2 + 2x − 1}{2} = #f{(3x − 1)(x + 1)}{2}', '#f{3x − 1}{2} = 0  ⇒  x = #f{1}{3}'], ['x = −#f{1}{3}','x = #f{1}{#r{3}}','x = #f{1}{2}']),
+  Q('What is the weight of the fixed end in the three-point Radau rule?','ما وزن الطرف الثابت في قاعدة رادو ذات النقاط الثلاث؟','#f{2}{9}',
+    ['w_{−1} = #f{2}{n^2} = #f{2}{9}'], ['#f{1}{3}','#f{2}{3}','#f{1}{9}']),
+  Q('Up to which degree is the three-point Radau rule exact?','حتى أي درجة تكون قاعدة رادو ذات النقاط الثلاث مضبوطة؟','4',
+    ['2n − 2 = 4'], ['5','3','6']),
+]);
+
+lesson('501',38,[
+  ['Golub and Welsch showed that Gauss nodes and weights come from an eigenvalue problem. The three-term recurrence of the orthonormal polynomials is written as a symmetric tridiagonal (Jacobi) matrix; for Legendre:','بيّن جولب وويلش أن عقد جاوس وأوزانها تأتي من مسألة قيم ذاتية. فعلاقة التكرار الثلاثية للكثيرات المعيارية المتعامدة تُكتب مصفوفةً ثلاثية قطرية متماثلة (مصفوفة جاكوبي)، ولليجندر:'],
+  'J_n = #m{0, β_1, ;; β_1, 0, ⋱ ;; , ⋱, 0},   β_k = #f{k}{#r{4k^2 − 1}},   k = 1, …, n − 1',
+  ['The nodes are the eigenvalues of `J_n`, and the weights are `w_i = 2 v_{1i}^2`, where `v_{1i}` is the first component of the normalised eigenvector. This costs `O(n^2)` and is how libraries compute rules with hundreds of points.',
+   'العقد هي القيم الذاتية لـ `J_n`، والأوزان `w_i = 2 v_{1i}^2` حيث `v_{1i}` المركبة الأولى للمتجه الذاتي المعياري. وتكلفتها `O(n^2)`، وبها تحسب المكتبات قواعد بمئات النقاط.'],
+],[
+  Q('Write `J_2` and find its eigenvalues.','اكتب `J_2` وأوجد قيمها الذاتية.','±#f{1}{#r{3}}',
+    ['β_1 = #f{1}{#r{3}}:   J_2 = #m{0, 1/#r{3} ;; 1/#r{3}, 0}', 'λ^2 = #f{1}{3}  ⇒  λ = ±#f{1}{#r{3}}', ['These are the two Gauss nodes.','وهما عقدتا جاوس.']],
+    ['±#f{1}{3}','±1','0, #f{1}{#r{3}}']),
+  Q('Compute `β_2`.','احسب `β_2`.','#f{2}{#r{15}} ≈ 0.5164',
+    ['β_2 = #f{2}{#r{16 − 1}} = #f{2}{#r{15}} ≈ 0.5164'], ['#f{2}{#r{3}}','#f{1}{#r{15}}','#f{1}{2}']),
+  Q('The normalised eigenvectors of `J_2` are `(1, ±1)/#r{2}`. Find the weights.','المتجهات الذاتية المعيارية لـ `J_2` هي `(1, ±1)/#r{2}`. أوجد الأوزان.','w = 1,  1',
+    ['w_i = 2v_{1i}^2 = 2·#f{1}{2} = 1'], ['w = #f{1}{2},  #f{1}{2}','w = 2,  2','w = #f{1}{#r{2}},  #f{1}{#r{2}}']),
+  Q('Find the eigenvalues of `J_3` from `β_1 = 1/#r{3}` and `β_2 = 2/#r{15}`.','أوجد القيم الذاتية لـ `J_3` من `β_1 = 1/#r{3}` و `β_2 = 2/#r{15}`.','0,  ±#r{#f{3}{5}}',
+    ['det(J_3 − λI) = −λ(λ^2 − β_1^2 − β_2^2) = 0', 'β_1^2 + β_2^2 = #f{1}{3} + #f{4}{15} = #f{9}{15} = #f{3}{5}', 'λ = 0,  ±#r{0.6} ≈ ±0.7746'],
+    ['0,  ±#f{3}{5}','±#f{1}{#r{3}},  0','0,  ±#r{#f{1}{3}}']),
+]);
+
+lesson('501',39,[
+  ['Integrals with the weight of the fractional basis become ordinary integrals after `s = t^{λ}`:','التكاملات بوزن الأساس الكسري تصبح تكاملات عادية بعد `s = t^{λ}`:'],
+  '∫_0^1 f(t) λt^{λ−1} dt = ∫_0^1 f(s^{1/λ}) ds ≈ Σ_i w_i^* f(t_i),   t_i = (s_i)^{1/λ}',
+  ['Here `s_i`, `w_i^*` is a Gauss rule on `[0, 1]` (nodes `(x_i + 1)/2`, weights `w_i/2`). The mapped nodes `t_i` crowd towards t = 0, where fractional solutions change fastest, and the rule is exact whenever `f(s^{1/λ})` is a polynomial in s of degree ≤ 2n − 1.',
+   'و `s_i` و `w_i^*` قاعدة جاوس على `[0, 1]` (العقد `(x_i + 1)/2` والأوزان `w_i/2`). والعقد المحوّلة `t_i` تتكاثف نحو t = 0 حيث يتغير الحل الكسري أسرع، والقاعدة مضبوطة متى كانت `f(s^{1/λ})` كثيرة حدود في s درجتها ≤ 2n − 1.'],
+],[
+  Q('Find the two-point mapped nodes for `λ = 1/2`.','أوجد العقدتين المحوّلتين لقاعدة النقطتين عند `λ = 1/2`.','t = 0.0447,  0.6220',
+    ['s = #f{1 ∓ 1/#r{3}}{2} = 0.2113,  0.7887', 't = s^2 = 0.0447,  0.6220', ['The first node moved much closer to 0.','العقدة الأولى اقتربت كثيراً من 0.']],
+    ['t = 0.2113,  0.7887','t = 0.4597,  0.8881','t = 0.0447,  0.7887']),
+  Q('Use these nodes (weights 1/2 each) to compute `∫_0^1 #r{t} dt`.','استخدم هاتين العقدتين (وزن كل منهما 1/2) لحساب `∫_0^1 #r{t} dt`.','#f{2}{3}',
+    [['Write `#r{t} = f(t)·(1/2)t^{−1/2}` with `f = 2t`:','نكتب `#r{t} = f(t)·(1/2)t^{−1/2}` مع `f = 2t`:'], '#f{1}{2}·2(0.0447) + #f{1}{2}·2(0.6220) = 0.6667', ['Exact, because `f = 2s^2` is a polynomial of degree 2 in s.','مضبوطة لأن `f = 2s^2` كثيرة حدود درجتها 2 في s.']],
+    ['0.5','0.6220','0.7071']),
+  Q('Compute `∫_0^1 t^{1/2}·(1/2)t^{−1/2} dt` by the rule.','احسب `∫_0^1 t^{1/2}·(1/2)t^{−1/2} dt` بالقاعدة.','#f{1}{2}',
+    ['f = t^{1/2} = s:   #f{1}{2}(0.2113 + 0.7887) = #f{1}{2}', ['The exact value is `∫_0^1 s ds = 1/2`.','والقيمة المضبوطة `∫_0^1 s ds = 1/2`.']],
+    ['#f{2}{3}','1','0.3333']),
+  Q('An ordinary two-point Gauss rule on `[0, 1]` is used for `∫_0^1 #r{t} dt`. Find the result and its error.','تُستخدم قاعدة جاوس العادية ذات النقطتين على `[0, 1]` لحساب `∫_0^1 #r{t} dt`. أوجد النتيجة وخطأها.',['`≈ 0.6739`, with an error of `≈ 0.0072`','`≈ 0.6739` بخطأ `≈ 0.0072`'],
+    ['#f{1}{2}(#r{0.2113} + #r{0.7887}) = #f{1}{2}(0.4597 + 0.8881) = 0.6739', ['Error ≈ 0.0072: the singular derivative at 0 spoils the plain rule, while the mapped rule was exact.','الخطأ ≈ 0.0072: المشتقة الشاذة عند 0 تفسد القاعدة العادية، بينما القاعدة المحوّلة مضبوطة.']],
+    [['`0.6667`, with no error','`0.6667` دون خطأ'],['`≈ 0.5`, with an error of `≈ 0.1667`','`≈ 0.5` بخطأ `≈ 0.1667`'],['`≈ 0.7071`, with an error of `≈ 0.0404`','`≈ 0.7071` بخطأ `≈ 0.0404`']]),
+]);
+
+lesson('501',40,[
+  ['With n nodes the three Gaussian families trade exactness for fixed end points:','مع n عقدة تتبادل العائلات الثلاث لجاوس الدقةَ مقابلَ تثبيت الأطراف:'],
+  ['Gauss: `2n − 1`.   Radau (one end fixed): `2n − 2`.   Lobatto (both ends fixed): `2n − 3`.','جاوس: `2n − 1`.   رادو (طرف واحد ثابت): `2n − 2`.   لوباتو (الطرفان ثابتان): `2n − 3`.'],
+  ['All have positive weights and converge spectrally. Choose Gauss for plain integrals, Radau when an initial value sits at one end, and Lobatto when boundary values are given at both ends. Simpson’s rule is the three-point Lobatto rule, which is why it is so much less accurate than three-point Gauss.',
+   'وكلها أوزانها موجبة وتتقارب طيفياً. نختار جاوس للتكاملات العادية، ورادو عند وجود قيمة ابتدائية عند طرف، ولوباتو عند إعطاء قيم حدية عند الطرفين. وقاعدة سمبسون هي لوباتو ذات النقاط الثلاث، ولهذا هي أقل دقة بكثير من جاوس ذات النقاط الثلاث.'],
+],[
+  Q('Give the degree of exactness of the five-point Gauss, Radau and Lobatto rules.','أعط درجة دقة قواعد جاوس ورادو ولوباتو ذات النقاط الخمس.','9,  8,  7',
+    ['2n − 1 = 9,   2n − 2 = 8,   2n − 3 = 7'], ['5,  5,  5','10,  9,  8','9,  7,  5']),
+  Q('Which family should be used for collocation of `u″ = f` with `u(−1) = a`, `u(1) = b`?','أي العائلات تُستخدم لتجميع `u″ = f` مع `u(−1) = a` و `u(1) = b`؟',['Gauss–Lobatto','جاوس–لوباتو'],
+    [['Both ends are nodes, so both boundary conditions can be imposed there.','الطرفان عقدتان فيُفرض الشرطان الحديان عندهما.']],
+    [['Gauss–Legendre','جاوس–ليجندر'],['Gauss–Radau','جاوس–رادو']]),
+  Q('Which family suits an initial value problem `y′ = f(t, y)`, `y(0) = y_0` on `[0, T]`?','أي العائلات تناسب مسألة القيمة الابتدائية `y′ = f(t, y)` و `y(0) = y_0` على `[0, T]`؟',['Gauss–Radau, with the node at t = 0','جاوس–رادو بعقدة عند t = 0'],
+    [['Only the initial end is fixed; the rest of the nodes stay free and optimal.','يثبت الطرف الابتدائي فقط، والعقد الأخرى حرة ومثلى.']],
+    [['Gauss–Lobatto','جاوس–لوباتو'],['Equally spaced points','نقاط متساوية التباعد']]),
+  Q('Compare three-point Gauss (2.350337) and Simpson (2.362054) for `∫_{−1}^{1} e^x dx = 2.350402`.','قارن جاوس ذات النقاط الثلاث (2.350337) وسمبسون (2.362054) لـ `∫_{−1}^{1} e^x dx = 2.350402`.','6.5 × 10^{−5}  vs  1.2 × 10^{−2}',
+    ['|2.350402 − 2.350337| = 6.5 × 10^{−5}', '|2.350402 − 2.362054| = 1.17 × 10^{−2}', ['Same number of values, about 180 times more accurate.','عدد القيم نفسه ودقة أكبر بنحو 180 مرة.']],
+    ['1.2 × 10^{−2}  vs  6.5 × 10^{−5}',['The errors are equal','الخطآن متساويان'],'6.5 × 10^{−3}  vs  1.2 × 10^{−4}']),
+]);
+
 export const MS501 = true;
