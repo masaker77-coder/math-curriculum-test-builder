@@ -213,4 +213,172 @@ lesson('503',5,[
     [['Chebyshev of the first kind, `α = β = −1/2`; mass `π`','تشيبيشيف من النوع الأول، `α = β = −1/2`، والكتلة `π`'],['Legendre, `α = β = 0`; mass 2','ليجندر، `α = β = 0`، والكتلة 2'],['Chebyshev of the second kind, `α = β = 1/2`; mass `π`','تشيبيشيف من النوع الثاني، `α = β = 1/2`، والكتلة `π`']]),
 ]);
 
+/* ---- 503 · Unit 1 (lessons 6–10) and Unit 2 (lessons 11–20): first polynomials and the basic laws ---- */
+lesson('503',6,[
+  ['The first Jacobi polynomials, written in powers of `(x − 1)`:','كثيرات حدود جاكوبي الأولى مكتوبة بقوى `(x − 1)`:'],
+  'P_0^{(α,β)} = 1,     P_1^{(α,β)} = (α + 1) + (α + β + 2)#f{x − 1}{2}',
+  'P_2^{(α,β)} = #f{(α + 1)(α + 2)}{2} + (α + 2)(α + β + 3)#f{x − 1}{2} + (α + β + 3)(α + β + 4)#f{(x − 1)^2}{8}',
+  ['At x = 1 only the first term survives, which gives the end value `C(n + α, n)` directly. With α = β = 0 these are `1, x, (3x^2 − 1)/2`.','وعند x = 1 لا يبقى إلا الحد الأول، فنحصل مباشرة على القيمة الطرفية `C(n + α, n)`. ومع α = β = 0 تكون `1, x, (3x^2 − 1)/2`.'],
+],[
+  Q('Find `P_1^{(0,1)}(x)`.','أوجد `P_1^{(0,1)}(x)`.','P_1^{(0,1)} = #f{3x − 1}{2}',['1 + 3·#f{x − 1}{2} = #f{3x − 1}{2}'],['P_1^{(0,1)} = #f{3x + 1}{2}','P_1^{(0,1)} = x','P_1^{(0,1)} = 3x − 1']),
+  Q('Find `P_2^{(1,1)}(x)`.','أوجد `P_2^{(1,1)}(x)`.','P_2^{(1,1)} = #f{15x^2 − 3}{4}',['3 + 15·#f{x − 1}{2} + 30·#f{(x − 1)^2}{8}', '= 3 + 7.5x − 7.5 + 3.75x^2 − 7.5x + 3.75 = 3.75x^2 − 0.75'],['P_2^{(1,1)} = #f{3x^2 − 1}{2}','P_2^{(1,1)} = #f{15x^2 + 3}{4}','P_2^{(1,1)} = 15x^2 − 3']),
+  Q('Find `P_2^{(1,0)}(x)`.','أوجد `P_2^{(1,0)}(x)`.','P_2^{(1,0)} = #f{5x^2}{2} + x − #f{1}{2}',['3 + 3·4·#f{x − 1}{2} + 4·5·#f{(x − 1)^2}{8} = 3 + 6(x − 1) + 2.5(x − 1)^2'],['P_2^{(1,0)} = #f{5x^2}{2} − x − #f{1}{2}','P_2^{(1,0)} = #f{3x^2 − 1}{2}','P_2^{(1,0)} = #f{5x^2}{2} + x + #f{1}{2}']),
+  Q('Use the formula to check `P_2^{(0,0)} = (3x^2 − 1)/2`.','استخدم الصيغة للتحقق من `P_2^{(0,0)} = (3x^2 − 1)/2`.',['Verified','تحقق'],['1 + 2·3·#f{x − 1}{2} + 3·4·#f{(x − 1)^2}{8} = 1 + 3(x − 1) + 1.5(x − 1)^2','= 1.5x^2 − 0.5']),
+]);
+
+lesson('503',7,[
+  ['Collecting the powers of `(x − 1)/2` and `(x + 1)/2` gives a symmetric explicit formula:','بجمع قوى `(x − 1)/2` و `(x + 1)/2` نحصل على صيغة صريحة متماثلة:'],
+  'P_n^{(α,β)}(x) = Σ_{s=0}^{n} C(n + α, n − s) C(n + β, s) (#f{x − 1}{2})^s (#f{x + 1}{2})^{n−s}',
+  ['At x = 1 only s = 0 survives, at x = −1 only s = n: the two end values `C(n + α, n)` and `(−1)^n C(n + β, n)` can be read off at once. For integer parameters every coefficient is an ordinary binomial coefficient.','وعند x = 1 لا يبقى إلا s = 0، وعند x = −1 لا يبقى إلا s = n: فتُقرأ القيمتان الطرفيتان `C(n + α, n)` و `(−1)^n C(n + β, n)` مباشرة. وللوسائط الصحيحة كل معامل معامل ذو حدين عادي.'],
+],[
+  Q('Use the explicit formula to find `P_1^{(α,β)}`.','استخدم الصيغة الصريحة لإيجاد `P_1^{(α,β)}`.','#f{(α + β + 2)x + α − β}{2}',['s = 0:  (1 + α)#f{x + 1}{2},     s = 1:  (1 + β)#f{x − 1}{2}'],['#f{(α + β)x + α − β}{2}','(α + 1)x','#f{(α + β + 2)x − α + β}{2}']),
+  Q('Find `P_2^{(1,0)}(1)`.','أوجد `P_2^{(1,0)}(1)`.','3',['C(n + α, n) = C(3, 2) = 3'],['1','2','6']),
+  Q('Find `P_2^{(1,1)}(0)`.','أوجد `P_2^{(1,1)}(0)`.','−#f{3}{4}',['s = 0:  C(3, 2)C(3, 0)(#f{1}{2})^2 = #f{3}{4}','s = 1:  C(3, 1)C(3, 1)(−#f{1}{2})(#f{1}{2}) = −#f{9}{4},   s = 2:  C(3, 0)C(3, 2)·#f{1}{4} = #f{3}{4}', '#f{3}{4} − #f{9}{4} + #f{3}{4} = −#f{3}{4}'],['#f{3}{4}','0','−#f{3}{2}']),
+  Q('Find `P_3^{(0,2)}(−1)`.','أوجد `P_3^{(0,2)}(−1)`.','−10',['(−1)^3 C(3 + 2, 3) = −10'],['10','−1','−5']),
+]);
+
+lesson('503',8,[
+  ['The Gauss hypergeometric function is the series','الدالة فوق الهندسية لجاوس هي المتسلسلة'],
+  '₂F₁(a, b; c; z) = Σ_{k=0}^{∞} #f{(a)_k (b)_k}{(c)_k k!} z^k,   |z| < 1',
+  ['Many functions are special cases: `₂F₁(a, b; b; z) = (1 − z)^{−a}` and `z·₂F₁(1, 1; 2; z) = −ln(1 − z)`. If a = −m is a negative integer, `(−m)_k = 0` for k > m and the series stops: it is a polynomial of degree m.','وكثير من الدوال حالات خاصة: `₂F₁(a, b; b; z) = (1 − z)^{−a}` و `z·₂F₁(1, 1; 2; z) = −ln(1 − z)`. وإذا كان a = −m عدداً صحيحاً سالباً فإن `(−m)_k = 0` عند k > m فتتوقف المتسلسلة: إنها كثيرة حدود من الدرجة m.'],
+],[
+  Q('Write `₂F₁(−1, b; c; z)`.','اكتب `₂F₁(−1, b; c; z)`.','1 − #f{bz}{c}',['k = 0:  1,     k = 1:  #f{(−1)b}{c}z,     k ≥ 2:  0'],['1 + #f{bz}{c}','1 − bz','(1 − z)^b']),
+  Q('Simplify `₂F₁(2, b; b; z)`.','بسّط `₂F₁(2, b; b; z)`.','(1 − z)^{−2}',['#f{(2)_k}{k!} z^k = (k + 1)z^k   ⇒   Σ (k + 1)z^k = #f{1}{(1 − z)^2}'],['(1 − z)^2','e^{2z}','#f{1}{1 − z}']),
+  Q('What is the degree of `₂F₁(−3, 5; 2; z)` as a polynomial in z?','ما درجة `₂F₁(−3, 5; 2; z)` بوصفها كثيرة حدود في z؟','3',['(−3)_k = 0  for  k ≥ 4'],['5','2','∞']),
+  Q('Compute the coefficient of `z^2` in `₂F₁(−2, 3; 1; z)`.','احسب معامل `z^2` في `₂F₁(−2, 3; 1; z)`.','6',['#f{(−2)(−1)·3·4}{1·2·2!} = #f{24}{4}'],['−6','12','3']),
+]);
+
+lesson('503',9,[
+  ['Jacobi polynomials are terminating hypergeometric series in `z = (1 − x)/2`:','كثيرات حدود جاكوبي متسلسلات فوق هندسية منتهية في `z = (1 − x)/2`:'],
+  'P_n^{(α,β)}(x) = C(n + α, n) ₂F₁(−n, n + α + β + 1; α + 1; #f{1 − x}{2})',
+  ['This one formula contains everything: at x = 1, z = 0 and the value is `C(n + α, n)`; the expansion in powers of `(1 − x)` is the series itself; and identities for ₂F₁ become identities for Jacobi polynomials. For Legendre, `P_n(x) = ₂F₁(−n, n + 1; 1; (1 − x)/2)`.','وهذه الصيغة الواحدة تحوي كل شيء: عند x = 1 يكون z = 0 والقيمة `C(n + α, n)`، والنشر بقوى `(1 − x)` هو المتسلسلة نفسها، ومتطابقات ₂F₁ تصبح متطابقات لكثيرات جاكوبي. ولليجندر `P_n(x) = ₂F₁(−n, n + 1; 1; (1 − x)/2)`.'],
+],[
+  Q('Use the ₂F₁ form to find `P_1^{(α,β)}`.','استخدم صيغة ₂F₁ لإيجاد `P_1^{(α,β)}`.','(α + 1) − (α + β + 2)#f{1 − x}{2}',['(α + 1)[1 − #f{(α + β + 2)}{α + 1}·#f{1 − x}{2}]'],['(α + 1) + (α + β + 2)#f{1 − x}{2}','(α + 1)x','1 − (α + β + 2)x']),
+  Q('Use `P_2(x) = ₂F₁(−2, 3; 1; (1 − x)/2)` to compute `P_2(0)`.','استخدم `P_2(x) = ₂F₁(−2, 3; 1; (1 − x)/2)` لحساب `P_2(0)`.','−#f{1}{2}',['z = #f{1}{2}:   1 + #f{(−2)(3)}{1}·#f{1}{2} + 6·#f{1}{4} = 1 − 3 + 1.5'],['#f{1}{2}','1','−1']),
+  Q('What is `z` at x = −1, and why is the series still finite there?','ما قيمة `z` عند x = −1، ولماذا تبقى المتسلسلة منتهية هناك؟',['z = 1; the series is a polynomial, so it converges everywhere','z = 1، والمتسلسلة كثيرة حدود فتتقارب في كل مكان'],['z = #f{1 − (−1)}{2} = 1'],[['z = 0; the series vanishes','z = 0، والمتسلسلة تنعدم'],['z = −1; it diverges','z = −1، وتتباعد']]),
+  Q('Which parameter of ₂F₁ makes the series a polynomial of degree n?','أي وسيط في ₂F₁ يجعل المتسلسلة كثيرة حدود من الدرجة n؟','a = −n',['(−n)_k = 0,   k > n'],['b = n + α + β + 1','c = α + 1','z = 1']),
+]);
+
+lesson('503',10,[
+  ['The coefficient of `x^n` in `P_n^{(α,β)}` is','معامل `x^n` في `P_n^{(α,β)}` هو'],
+  'k_n = #f{Γ(2n + α + β + 1)}{2^n n! Γ(n + α + β + 1)} = #f{(n + α + β + 1)_n}{2^n n!}',
+  ['It is needed for the normalization of the polynomials, for the weights of Gauss–Jacobi rules and for comparing different normalizations of Chebyshev and Gegenbauer polynomials (Unit 3).','وهو لازم لتطبيع الكثيرات ولأوزان قواعد جاوس–جاكوبي ولمقارنة التطبيعات المختلفة لكثيرات تشيبيشيف وجيجنباور (الوحدة 3).'],
+],[
+  Q('Find `k_1`.','أوجد `k_1`.','#f{α + β + 2}{2}',['#f{(α + β + 2)_1}{2·1!}'],['α + β + 2','#f{α + 1}{2}','1']),
+  Q('Check `k_2` for Legendre.','تحقق من `k_2` لليجندر.','#f{3}{2}',['#f{(3)_2}{4·2!} = #f{3·4}{8}'],['3','#f{3}{4}','#f{5}{2}']),
+  Q('Find `k_2` for α = β = 1.','أوجد `k_2` عند α = β = 1.','#f{15}{4}',['#f{(5)_2}{8} = #f{30}{8}'],['#f{15}{2}','#f{3}{2}','#f{5}{4}']),
+  Q('Find `k_2` for α = β = −1/2 and compare with `T_2 = 2x^2 − 1`.','أوجد `k_2` عند α = β = −1/2 وقارن بـ `T_2 = 2x^2 − 1`.','#f{3}{4};   P_2^{(−1/2,−1/2)} = #f{3}{8}T_2',['#f{(2)_2}{8} = #f{6}{8}', ['The leading coefficients differ by the factor `3/8 = (1/2)_2/2!`.','المعاملان الرئيسان يختلفان بالعامل `3/8 = (1/2)_2/2!`.']],['2;   P_2^{(−1/2,−1/2)} = T_2','#f{3}{2};   P_2^{(−1/2,−1/2)} = #f{3}{4}T_2','#f{3}{4};   P_2^{(−1/2,−1/2)} = #f{3}{4}T_2']),
+]);
+
+lesson('503',11,[
+  ['Every family of orthogonal polynomials satisfies a three-term recurrence. For Jacobi polynomials, with `c = 2n + α + β`:','كل عائلة من الكثيرات المتعامدة تحقق علاقة تكرار ثلاثية. ولكثيرات جاكوبي مع `c = 2n + α + β`:'],
+  '2n(n + α + β)(c − 2) P_n = (c − 1)[c(c − 2)x + α^2 − β^2] P_{n−1} − 2(n + α − 1)(n + β − 1)c P_{n−2}',
+  ['Written as `P_n = (A_n x + B_n)P_{n−1} − C_n P_{n−2}`, it computes every polynomial from `P_0 = 1` and `P_1`. With α = β the term `α^2 − β^2` disappears and the polynomials keep their parity; with α = β = 0 it is Bonnet’s recurrence.','وبكتابتها `P_n = (A_n x + B_n)P_{n−1} − C_n P_{n−2}` تحسب كل كثيرة من `P_0 = 1` و `P_1`. ومع α = β يختفي الحد `α^2 − β^2` وتحتفظ الكثيرات بزوجيتها، ومع α = β = 0 تكون علاقة بونيه.'],
+],[
+  Q('Use the recurrence with n = 2, α = β = 1 to find `P_2^{(1,1)}` from `P_1^{(1,1)} = 2x`.','استخدم علاقة التكرار مع n = 2 و α = β = 1 لإيجاد `P_2^{(1,1)}` من `P_1^{(1,1)} = 2x`.','#f{15x^2 − 3}{4}',['c = 6:   2·2·4·4 P_2 = 5[24x]·2x − 2·2·2·6','64P_2 = 240x^2 − 48'],['#f{15x^2 − 1}{4}','#f{3x^2 − 1}{2}','#f{15x^2 − 3}{2}']),
+  Q('Reduce the recurrence to Bonnet’s for α = β = 0.','اختصر علاقة التكرار إلى علاقة بونيه عند α = β = 0.','n P_n = (2n − 1)x P_{n−1} − (n − 1)P_{n−2}',['c = 2n:   2n·n·(2n − 2)P_n = (2n − 1)·2n(2n − 2)x P_{n−1} − 2(n − 1)^2·2n P_{n−2}', ['Divide by `2n(2n − 2)`.','نقسم على `2n(2n − 2)`.']],['n P_n = (2n + 1)x P_{n−1} − n P_{n−2}','P_n = 2x P_{n−1} − P_{n−2}','n P_n = x P_{n−1} − P_{n−2}']),
+  Q('Use the recurrence to compute `P_2^{(1,0)}(0.5)` from `P_1^{(1,0)}(0.5) = 1.25`.','استخدم علاقة التكرار لحساب `P_2^{(1,0)}(0.5)` من `P_1^{(1,0)}(0.5) = 1.25`.','0.625',['c = 5:   2·2·3·3 P_2 = 4[15·0.5 + 1]·1.25 − 2·2·1·5', '36P_2 = 42.5 − 20  ⇒  P_2 = 0.625'],['1.25','0.5','0.875']),
+  Q('When is `B_n = 0` in `P_n = (A_n x + B_n)P_{n−1} − C_n P_{n−2}`?','متى يكون `B_n = 0` في `P_n = (A_n x + B_n)P_{n−1} − C_n P_{n−2}`؟',['When α = β','عندما α = β'],['B_n ∝ α^2 − β^2'],[['When n is even','عندما n زوجي'],['Never','أبداً']]),
+]);
+
+lesson('503',12,[
+  ['To evaluate `P_n^{(α,β)}(x)` for large n, run the recurrence with numbers, never expand into powers of x. The power coefficients are huge and alternate in sign (as for Legendre in Course 501), while the values stay moderate and the recurrence keeps full precision on `[−1, 1]`.',
+   'لحساب `P_n^{(α,β)}(x)` عند n كبير شغّل علاقة التكرار بالأعداد، ولا تنشر أبداً بقوى x. فمعاملات القوى ضخمة ومتناوبة الإشارة (كما لليجندر في المقرر 501)، بينما القيم معتدلة وعلاقة التكرار تحافظ على الدقة كاملة على `[−1, 1]`.'],
+  'P_0 = 1,   P_1 = #f{(α + β + 2)x + α − β}{2},   P_n = (A_n x + B_n)P_{n−1} − C_n P_{n−2}',
+  ['Derivatives come from the derivative law of Lesson 19, and for many points at once the recurrence is vectorised over x.','والمشتقات تأتي من قانون المشتقة في الدرس 19، ولنقاط كثيرة معاً تُطبَّق علاقة التكرار على متجه x دفعة واحدة.'],
+],[
+  Q('Compute `P_1^{(1,0)}(0.5)`.','احسب `P_1^{(1,0)}(0.5)`.','1.25',['#f{3·0.5 + 1}{2}'],['0.75','1','1.5']),
+  Q('Compute `P_1^{(2,2)}(0.3)`.','احسب `P_1^{(2,2)}(0.3)`.','0.9',['#f{6·0.3 + 0}{2}'],['1.8','0.3','0.6']),
+  Q('Why is the recurrence preferred to the explicit formula for n = 50?','لماذا تُفضَّل علاقة التكرار على الصيغة الصريحة عند n = 50؟',['The explicit coefficients cancel catastrophically; the recurrence works with values of moderate size','المعاملات الصريحة تتلاشى تلاشياً كارثياً، وعلاقة التكرار تعمل بقيم معتدلة الحجم'],[['Its cost is also only `O(n)` per point.','وتكلفتها أيضاً `O(n)` فقط لكل نقطة.']],[['Because it is exact','لأنها مضبوطة'],['They are equally good','هما متساويتان']]),
+  Q('How many recurrence steps give `P_{10}` from `P_0` and `P_1`?','كم خطوة تكرار تعطي `P_{10}` من `P_0` و `P_1`؟','9',['n = 2, 3, …, 10'],['10','11','8']),
+]);
+
+lesson('503',13,[
+  ['`P_n^{(α,β)}` is the polynomial solution of the Jacobi differential equation:','`P_n^{(α,β)}` هي الحل كثير الحدود لمعادلة جاكوبي التفاضلية:'],
+  '(1 − x^2) y″ + [β − α − (α + β + 2)x] y′ + n(n + α + β + 1) y = 0',
+  ['The eigenvalue `λ_n = n(n + α + β + 1)` grows like `n^2`. With α = β = 0 it is Legendre’s equation, with α = β = −1/2 Chebyshev’s `(1 − x^2)y″ − xy′ + n^2 y = 0`.','والقيمة الذاتية `λ_n = n(n + α + β + 1)` تنمو مثل `n^2`. ومع α = β = 0 هي معادلة ليجندر، ومع α = β = −1/2 معادلة تشيبيشيف `(1 − x^2)y″ − xy′ + n^2 y = 0`.'],
+],[
+  Q('Verify that `y = 2x` solves the equation for α = β = 1, n = 1.','تحقق أن `y = 2x` تحل المعادلة عند α = β = 1 و n = 1.',['Verified: `−4x·2 + 4·2x = 0`','تحقق: `−4x·2 + 4·2x = 0`'],['β − α − (α + β + 2)x = −4x,   λ_1 = 1·4 = 4'],[['It fails','لا تحققها']]),
+  Q('Find the eigenvalue for n = 2, α = β = 1.','أوجد القيمة الذاتية عند n = 2 و α = β = 1.','10',['2(2 + 1 + 1 + 1) = 10'],['6','8','12']),
+  Q('Reduce the equation to Chebyshev’s for α = β = −1/2.','اختصر المعادلة إلى معادلة تشيبيشيف عند α = β = −1/2.','(1 − x^2)y″ − xy′ + n^2 y = 0',['β − α = 0,   α + β + 2 = 1,   n(n + 0) = n^2'],['(1 − x^2)y″ − 2xy′ + n(n + 1)y = 0','(1 − x^2)y″ + xy′ + n^2 y = 0','y″ + n^2 y = 0']),
+  Q('Find the coefficient of `y′` for α = 1, β = 0.','أوجد معامل `y′` عند α = 1 و β = 0.','−1 − 3x',['β − α − (α + β + 2)x = −1 − 3x'],['1 − 3x','−3x','−1 + 3x']),
+]);
+
+lesson('503',14,[
+  ['Multiplying the Jacobi equation by the weight `w = (1 − x)^α(1 + x)^β` puts it in Sturm–Liouville form:','بضرب معادلة جاكوبي في الوزن `w = (1 − x)^α(1 + x)^β` نضعها في صيغة شتورم–ليوفيل:'],
+  '#f{d}{dx}[(1 − x)^{α+1}(1 + x)^{β+1} y′] + n(n + α + β + 1)(1 − x)^α(1 + x)^β y = 0',
+  ['The coefficient `p(x) = (1 − x)^{α+1}(1 + x)^{β+1}` vanishes at both ends (because α, β > −1), so the boundary terms in Green’s formula drop out and eigenfunctions with different eigenvalues are orthogonal with the weight w. This is the second proof of orthogonality.','والمعامل `p(x) = (1 − x)^{α+1}(1 + x)^{β+1}` ينعدم عند الطرفين (لأن α, β > −1)، فتسقط الحدود الطرفية في صيغة جرين وتتعامد الدوال الذاتية ذات القيم الذاتية المختلفة بالوزن w. وهذا البرهان الثاني للتعامد.'],
+],[
+  Q('Write `p(x)` for α = β = 0.','اكتب `p(x)` عند α = β = 0.','1 − x^2',['(1 − x)(1 + x)'],['1','(1 − x^2)^2','x^2 − 1']),
+  Q('Write the weight for α = 1, β = 0.','اكتب الوزن عند α = 1 و β = 0.','w = 1 − x',['(1 − x)^1(1 + x)^0'],['w = 1 + x','w = 1 − x^2','w = 1']),
+  Q('Why does `p(±1) = 0` matter?','لماذا يهم أن `p(±1) = 0`؟',['It removes the boundary terms, so orthogonality needs no boundary conditions','لأنه يزيل الحدود الطرفية، فلا يحتاج التعامد شروطاً حدية'],['[p(y_m′y_n − y_m y_n′)]_{−1}^{1} = 0'],[['It makes the weight positive','يجعل الوزن موجباً'],['It does not matter','لا يهم']]),
+  Q('For α = β = −1/2, what is `p(x)`?','عند α = β = −1/2 ما `p(x)`؟','#r{1 − x^2}',['(1 − x)^{1/2}(1 + x)^{1/2}'],['#f{1}{#r{1 − x^2}}','1 − x^2','1']),
+]);
+
+lesson('503',15,[
+  ['Rodrigues’ formula for Jacobi polynomials carries the weight:','صيغة رودريغز لكثيرات جاكوبي تحمل الوزن:'],
+  '(1 − x)^α(1 + x)^β P_n^{(α,β)}(x) = #f{(−1)^n}{2^n n!} #f{d^n}{dx^n}[(1 − x)^{n+α}(1 + x)^{n+β}]',
+  ['To prove `∫ w P_n q dx = 0` for every polynomial q of degree < n, replace `w P_n` by the n-th derivative and integrate by parts n times. Each boundary term contains a factor `(1 − x)^{k+α+1}(1 + x)^{k+β+1}` that vanishes at ±1, and the final integrand contains `q^{(n)} = 0`.','ولإثبات `∫ w P_n q dx = 0` لكل كثيرة حدود q درجتها < n نستبدل بـ `w P_n` المشتقة ذات الرتبة n ونكامل بالتجزئة n مرة. كل حد طرفي يحتوي عاملاً `(1 − x)^{k+α+1}(1 + x)^{k+β+1}` ينعدم عند ±1، والدالة المكامَلة الأخيرة تحتوي `q^{(n)} = 0`.'],
+],[
+  Q('Use Rodrigues’ formula with n = 1 to find `P_1^{(1,0)}`.','استخدم صيغة رودريغز مع n = 1 لإيجاد `P_1^{(1,0)}`.','P_1^{(1,0)} = #f{3x + 1}{2}',['(1 − x)P_1 = −#f{1}{2}#f{d}{dx}[(1 − x)^2(1 + x)]', '#f{d}{dx}[(1 − x)^2(1 + x)] = (1 − x)(−2(1 + x) + (1 − x)) = (1 − x)(−1 − 3x)'],['P_1^{(1,0)} = #f{3x − 1}{2}','P_1^{(1,0)} = 2x','P_1^{(1,0)} = #f{1 + x}{2}']),
+  Q('In the proof, why do the boundary terms vanish?','في البرهان لماذا تنعدم الحدود الطرفية؟',['Each contains `(1 − x)^{α+1+k}(1 + x)^{β+1+k}`, which is 0 at ±1 since α, β > −1','كل منها يحتوي `(1 − x)^{α+1+k}(1 + x)^{β+1+k}` وهو صفر عند ±1 لأن α, β > −1'],[['The factors come from fewer than n derivatives of `(1 − x)^{n+α}(1 + x)^{n+β}`.','العوامل تأتي من أقل من n مشتقة للدالة `(1 − x)^{n+α}(1 + x)^{n+β}`.']],[['Because q(±1) = 0','لأن q(±1) = 0']]),
+  Q('Which property of q finishes the proof?','أي خاصية لـ q تُنهي البرهان؟','q^{(n)} = 0',['deg q < n'],['q(0) = 0','q > 0','q′ = 0']),
+  Q('What does Rodrigues’ formula give for α = β = 0?','ماذا تعطي صيغة رودريغز عند α = β = 0؟','P_n = #f{(−1)^n}{2^n n!}#f{d^n}{dx^n}(1 − x^2)^n',['(1 − x)^n(1 + x)^n = (1 − x^2)^n',['The same as `(1/(2^n n!)) d^n(x^2 − 1)^n/dx^n`.','وهي نفسها `(1/(2^n n!)) d^n(x^2 − 1)^n/dx^n`.']],['P_n = #f{d^n}{dx^n}x^n','P_n = (1 − x^2)^n','P_n = #f{1}{n!}#f{d^n}{dx^n}(1 + x)^n']),
+]);
+
+lesson('503',16,[
+  ['The squared norm of `P_n^{(α,β)}` with the Jacobi weight is','مربع معيار `P_n^{(α,β)}` بوزن جاكوبي هو'],
+  'h_n = ∫_{−1}^{1} w [P_n^{(α,β)}]^2 dx = #f{2^{α+β+1}}{2n + α + β + 1}·#f{Γ(n + α + 1) Γ(n + β + 1)}{n! Γ(n + α + β + 1)}',
+  ['It gives the expansion coefficients `c_n = ⟨f, P_n⟩_w/h_n`. For n = 0 it is the total mass of the weight, `2^{α+β+1}Γ(α + 1)Γ(β + 1)/Γ(α + β + 2)`; for α = β = 0 it is `2/(2n + 1)`.','وهو يعطي معاملات المفكوك `c_n = ⟨f, P_n⟩_w/h_n`. وعند n = 0 هو الكتلة الكلية للوزن `2^{α+β+1}Γ(α + 1)Γ(β + 1)/Γ(α + β + 2)`، وعند α = β = 0 هو `2/(2n + 1)`.'],
+],[
+  Q('Compute `h_1` for α = β = 1, and check it directly.','احسب `h_1` عند α = β = 1 وتحقق منه مباشرة.','#f{16}{15}',['#f{2^3}{5}·#f{Γ(3)Γ(3)}{1!·Γ(4)} = #f{8}{5}·#f{4}{6}','∫_{−1}^{1}(1 − x^2)(2x)^2 dx = 4(#f{2}{3} − #f{2}{5}) = #f{16}{15}'],['#f{8}{15}','#f{2}{3}','#f{4}{5}']),
+  Q('Reduce `h_n` to the Legendre norm.','اختصر `h_n` إلى معيار ليجندر.','#f{2}{2n + 1}',['α = β = 0:   #f{2}{2n + 1}·#f{n! n!}{n! n!}'],['#f{1}{2n + 1}','2','#f{2}{n + 1}']),
+  Q('Compute `h_0` for α = 1, β = 0.','احسب `h_0` عند α = 1 و β = 0.','2',['∫_{−1}^{1}(1 − x) dx = 2'],['1','4','#f{4}{3}']),
+  Q('Compute `h_0` for α = β = −1/2.','احسب `h_0` عند α = β = −1/2.','π',['∫_{−1}^{1} #f{dx}{#r{1 − x^2}} = π'],['2','#f{π}{2}','1']),
+]);
+
+lesson('503',17,[
+  ['The end values are generalized binomial coefficients:','القيم الطرفية معاملات ذات حدين معممة:'],
+  'P_n^{(α,β)}(1) = C(n + α, n) = #f{(α + 1)_n}{n!},     P_n^{(α,β)}(−1) = (−1)^n C(n + β, n)',
+  ['For α > 0 they grow with n like `n^{α}/Γ(α + 1)`; for α < 0 they decay. This growth is the price paid for a weight that vanishes at the end: the polynomial is pushed to be large where the weight is small.','وعند α > 0 تنمو مع n مثل `n^{α}/Γ(α + 1)`، وعند α < 0 تتناقص. وهذا النمو ثمن الوزن الذي ينعدم عند الطرف: تُدفع الكثيرة لتكون كبيرة حيث يكون الوزن صغيراً.'],
+],[
+  Q('Find `P_3^{(2,0)}(1)`.','أوجد `P_3^{(2,0)}(1)`.','10',['C(5, 3)'],['3','6','20']),
+  Q('Find `P_2^{(1/2,0)}(1)`.','أوجد `P_2^{(1/2,0)}(1)`.','#f{15}{8}',['#f{(3/2)_2}{2!} = #f{(3/2)(5/2)}{2}'],['#f{3}{2}','#f{5}{2}','1']),
+  Q('Find `P_4^{(0,1)}(−1)`.','أوجد `P_4^{(0,1)}(−1)`.','5',['(−1)^4 C(5, 4)'],['−5','1','4']),
+  Q('Find `P_n^{(−1/2,−1/2)}(1)` for n = 2.','أوجد `P_n^{(−1/2,−1/2)}(1)` عند n = 2.','#f{3}{8}',['#f{(1/2)_2}{2!} = #f{(1/2)(3/2)}{2}',['It matches `P_2^{(−1/2,−1/2)} = (3/8)T_2` and `T_2(1) = 1`.','وتطابق `P_2^{(−1/2,−1/2)} = (3/8)T_2` و `T_2(1) = 1`.']],['1','#f{1}{2}','#f{3}{4}']),
+]);
+
+lesson('503',18,[
+  ['Replacing x by −x swaps the roles of the two ends:','استبدال x بـ −x يبادل دوري الطرفين:'],
+  'P_n^{(α,β)}(−x) = (−1)^n P_n^{(β,α)}(x)',
+  ['So every statement about the end x = 1 and the parameter α has a mirror statement about x = −1 and β. When α = β the polynomials have the parity of n, like Legendre and Chebyshev.','فكل عبارة عن الطرف x = 1 والوسيط α لها عبارة مرآة عن x = −1 و β. وعندما α = β تكون للكثيرات زوجية n، مثل ليجندر وتشيبيشيف.'],
+],[
+  Q('Use the symmetry to find `P_2^{(1,0)}(−1)`.','استخدم التماثل لإيجاد `P_2^{(1,0)}(−1)`.','1',['P_2^{(1,0)}(−1) = (−1)^2 P_2^{(0,1)}(1) = C(2, 2)',['Check with `5x^2/2 + x − 1/2` at −1: `2.5 − 1 − 0.5 = 1`.','تحقق بـ `5x^2/2 + x − 1/2` عند −1: `2.5 − 1 − 0.5 = 1`.']],['3','−1','0']),
+  Q('Write `P_1^{(0,1)}(x)` from `P_1^{(1,0)}(x) = (3x + 1)/2`.','اكتب `P_1^{(0,1)}(x)` من `P_1^{(1,0)}(x) = (3x + 1)/2`.','#f{3x − 1}{2}',['P_1^{(0,1)}(x) = −P_1^{(1,0)}(−x) = −#f{−3x + 1}{2}'],['#f{3x + 1}{2}','#f{1 − 3x}{2}','3x − 1']),
+  Q('For α = β, is `P_5^{(α,α)}` even or odd?','عند α = β هل `P_5^{(α,α)}` زوجية أم فردية؟',['Odd','فردية'],['P_5(−x) = (−1)^5 P_5(x)'],[['Even','زوجية'],['Neither','لا هذا ولا ذاك']]),
+  Q('Compute `P_3^{(1,1)}(0)`.','احسب `P_3^{(1,1)}(0)`.','0',[['`P_3^{(1,1)}` is odd, so it vanishes at 0.','`P_3^{(1,1)}` فردية فتنعدم عند 0.']],['1','4','−1']),
+]);
+
+lesson('503',19,[
+  ['Differentiating a Jacobi polynomial raises both parameters by one:','اشتقاق كثيرة جاكوبي يرفع الوسيطين بواحد:'],
+  '#f{d}{dx} P_n^{(α,β)}(x) = #f{n + α + β + 1}{2} P_{n−1}^{(α+1,β+1)}(x)',
+  ['This is why the derivatives of Legendre polynomials are Gegenbauer (α = β = 1) polynomials, and why spectral methods with Jacobi polynomials differentiate without leaving the family.','ولهذا مشتقات كثيرات ليجندر كثيرات جيجنباور (α = β = 1)، ولهذا تشتق الطرق الطيفية بكثيرات جاكوبي دون الخروج من العائلة.'],
+],[
+  Q('Check the law for `P_1^{(α,β)}`.','تحقق من القانون لـ `P_1^{(α,β)}`.','#f{α + β + 2}{2}',['#f{d}{dx}#f{(α + β + 2)x + α − β}{2} = #f{α + β + 2}{2} P_0'],['α + β + 2','1','#f{α + 1}{2}']),
+  Q('Use the law to find `P_2′` for Legendre.','استخدم القانون لإيجاد `P_2′` لليجندر.','3x',['#f{3}{2}P_1^{(1,1)} = #f{3}{2}·2x'],['#f{3}{2}x','6x','x']),
+  Q('Find `#f{d}{dx}P_2^{(1,1)}`.','أوجد `#f{d}{dx}P_2^{(1,1)}`.','#f{15}{2}x',['#f{5}{2}P_1^{(2,2)} = #f{5}{2}·3x'],['#f{15}{4}x','5x','15x']),
+  Q('Which family do the derivatives of `P_n^{(0,0)}` belong to?','إلى أي عائلة تنتمي مشتقات `P_n^{(0,0)}`؟','P_{n−1}^{(1,1)}',[['Gegenbauer polynomials with λ = 3/2.','كثيرات جيجنباور مع λ = 3/2.']],['P_{n−1}^{(0,0)}','P_{n−1}^{(−1,−1)}','P_n^{(1,0)}']),
+]);
+
+lesson('503',20,[
+  ['Repeating the derivative law k times:','بتكرار قانون المشتقة k مرة:'],
+  '#f{d^k}{dx^k} P_n^{(α,β)} = #f{Γ(n + α + β + 1 + k)}{2^k Γ(n + α + β + 1)} P_{n−k}^{(α+k,β+k)}',
+  ['So high derivatives of Jacobi polynomials are again Jacobi polynomials with larger parameters. Combined with the end values this gives `P_n^{(k)}(1)` in closed form, used in boundary conditions of high-order problems.','فالمشتقات العليا لكثيرات جاكوبي كثيرات جاكوبي بوسائط أكبر. ومع القيم الطرفية يعطي هذا `P_n^{(k)}(1)` بصيغة مغلقة، وتُستخدم في الشروط الحدية للمسائل عالية الرتبة.'],
+],[
+  Q('Use the formula to find `P_2″` for Legendre.','استخدم الصيغة لإيجاد `P_2″` لليجندر.','3',['#f{Γ(5)}{4Γ(3)}P_0^{(2,2)} = #f{24}{8}'],['6','#f{3}{2}','1']),
+  Q('Find `P_3″` for Legendre.','أوجد `P_3″` لليجندر.','15x',['#f{Γ(6)}{4Γ(4)}P_1^{(2,2)} = #f{120}{24}·3x'],['5x','30x','15']),
+  Q('Find `P_n″(1)` for Legendre, n = 3.','أوجد `P_n″(1)` لليجندر عند n = 3.','15',['15x  at  x = 1'],['6','30','3']),
+  Q('What are the parameters of `d^3/dx^3 P_n^{(0,0)}`?','ما وسيطا `d^3/dx^3 P_n^{(0,0)}`؟','(3, 3)',['α + k = 3,   β + k = 3'],['(0, 0)','(1, 1)','(3, 0)']),
+]);
+
 export const MS503 = true;
