@@ -593,4 +593,225 @@ lesson('505',40,[
   Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 5.6',[['The fitted slope is about −0.748, so `ρ = 10^{0.748} ≈ 5.6`.','الميل الملاءم نحو −0.748 فيكون `ρ = 10^{0.748} ≈ 5.6`.']],['$ 0.75','$ 10.0','$ 1.78'],'import numpy as np\nN = np.array([4, 8, 12, 16])\nerr = np.array([1.2e-3, 1.1e-6, 1.3e-9, 1.2e-12])\nslope = np.polyfit(N, np.log10(err), 1)[0]\nprint(round(10**(-slope), 2))'),
 ]);
 
+/* ---- 505 · Unit 5 (lessons 41–50): linear algebra;  Unit 6 (lessons 51–60): SymPy ---- */
+lesson('505',41,[
+  ['In NumPy ``@`` is the matrix product and ``*`` multiplies element by element:','في NumPy تكون ``@`` الضرب المصفوفي و ``*`` الضرب عنصراً بعنصر:'],
+  '$ A = np.array([[1, 2], [3, 4]])\nv = np.array([1, 1])\nA @ A          # [[ 7 10] [15 22]]\nA * A          # [[ 1  4] [ 9 16]]\nA @ v          # [3 7]\nv @ v          # 2   (dot product)',
+  ['A 1-D array acts as a column on the right of ``@`` and as a row on the left. Use ``A.T`` for the transpose.','والمصفوفة الأحادية تعمل عموداً على يمين ``@`` وصفاً على يسارها. واستخدم ``A.T`` للمنقولة.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[7, 10], [15, 22]] [[1, 4], [9, 16]]',[['Matrix product, then element-wise product.','الضرب المصفوفي ثم الضرب عنصراً بعنصر.']],['$ [[1, 4], [9, 16]] [[7, 10], [15, 22]]','$ [[7, 10], [15, 22]] [[7, 10], [15, 22]]','$ [[2, 4], [6, 8]] [[1, 4], [9, 16]]'],'import numpy as np\nA = np.array([[1, 2], [3, 4]])\nprint((A @ A).tolist(), (A * A).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [3, 7] [4, 6]',[['Column sums and row sums appear depending on the side.','تظهر مجاميع الصفوف أو الأعمدة حسب الجهة.']],['$ [4, 6] [3, 7]','$ [3, 7] [3, 7]','$ 10 10'],'import numpy as np\nA = np.array([[1, 2], [3, 4]])\nv = np.array([1, 1])\nprint((A @ v).tolist(), (v @ A).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 32',['4 + 10 + 18'],['$ [4, 10, 18]','$ 15','$ 21'],'import numpy as np\nprint(np.array([1, 2, 3]) @ np.array([4, 5, 6]))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ ValueError',[['A (2, 3) matrix cannot multiply a vector of length 2.','مصفوفة (2, 3) لا تضرب متجهاً طوله 2.']],['$ [5, 14]','$ [1, 2]','$ None'],'import numpy as np\nA = np.arange(6).reshape(2, 3)\ntry:\n    A @ np.array([1, 2])\nexcept ValueError:\n    print("ValueError")'),
+]);
+
+lesson('505',42,[
+  ['``np.linalg.solve(A, b)`` solves `Ax = b` by LU factorization with pivoting. Always check the residual `‖Ax − b‖`:','``np.linalg.solve(A, b)`` تحل `Ax = b` بتحليل LU مع المحورة. وافحص دائماً الباقي `‖Ax − b‖`:'],
+  '$ A = np.array([[2.0, 1.0], [1.0, 3.0]])\nb = np.array([3.0, 5.0])\nx = np.linalg.solve(A, b)        # [0.8 1.4]\nnp.linalg.norm(A @ x - b)        # about 1e-16',
+  ['``b`` can also be a matrix: then each column is a right-hand side. A singular matrix raises ``LinAlgError``.','ويمكن أن تكون ``b`` مصفوفة فيكون كل عمود طرفاً أيمن. والمصفوفة الشاذة تسبب ``LinAlgError``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0.8, 1.4]',['2x + y = 3,   x + 3y = 5'],['$ [1.4, 0.8]','$ [1.0, 1.0]','$ [3.0, 5.0]'],'import numpy as np\nA = np.array([[2.0, 1.0], [1.0, 3.0]])\nprint(np.linalg.solve(A, [3.0, 5.0]).round(12).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ LinAlgError',[['The rows are equal: the matrix is singular.','الصفان متساويان: المصفوفة شاذة.']],['$ [inf, inf]','$ [0.5, 0.5]','$ None'],'import numpy as np\ntry:\n    np.linalg.solve(np.ones((2, 2)), [1.0, 2.0])\nexcept np.linalg.LinAlgError:\n    print("LinAlgError")'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['The residual is at the level of rounding error.','الباقي في مستوى خطأ التقريب.']],['$ False','$ 0.0','$ 1e-16'],'import numpy as np\nrng = np.random.default_rng(0)\nA = rng.standard_normal((50, 50))\nb = rng.standard_normal(50)\nx = np.linalg.solve(A, b)\nprint(np.linalg.norm(A @ x - b) < 1e-10)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (2, 3)',[['Three right-hand sides solved at once.','ثلاثة أطراف يمنى تُحل معاً.']],['$ (3, 2)','$ (2,)','$ (2, 2)'],'import numpy as np\nA = np.array([[2.0, 1.0], [1.0, 3.0]])\nB = np.ones((2, 3))\nprint(np.linalg.solve(A, B).shape)'),
+]);
+
+lesson('505',43,[
+  ['``np.linalg.det`` and ``np.linalg.inv`` exist, but in numerical work they are rarely needed:','``np.linalg.det`` و ``np.linalg.inv`` موجودتان لكنهما نادراً ما تُحتاجان في العمل العددي:'],
+  '$ np.linalg.det([[1, 2], [3, 4]])     # -2.0000000000000004\nnp.linalg.inv([[1, 2], [3, 4]])     # [[-2.   1. ] [ 1.5 -0.5]]',
+  ['To solve a system, ``solve`` is about three times cheaper than forming the inverse and more accurate. The determinant is a poor test of near-singularity: ``det(0.1 I_{50}) = 10^{−50}`` for a perfectly conditioned matrix; use the condition number instead.','ولحل نظام تكون ``solve`` أرخص من تكوين المعكوس بنحو ثلاث مرات وأدق. والمحدد اختبار سيئ لقرب الشذوذ: ``det(0.1 I_{50}) = 10^{−50}`` لمصفوفة شرطها مثالي، فاستخدم عدد الشرط بدلاً منه.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -2.0',[['Rounded; the raw value carries a rounding error in the last digit.','بعد التقريب، والقيمة الخام فيها خطأ تقريب في آخر رقم.']],['$ 2.0','$ -2','$ 10.0'],'import numpy as np\nprint(round(np.linalg.det(np.array([[1, 2], [3, 4]])), 10))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1e-50 1.0',[['A tiny determinant, yet condition number 1.','محدد صغير جداً لكن عدد الشرط 1.']],['$ 0.0 inf','$ 1e-50 1e50','$ 0.1 1.0'],'import numpy as np\nA = 0.1 * np.eye(50)\nprint(f"{np.linalg.det(A):.0e}", np.linalg.cond(A))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[-2.0, 1.0], [1.5, -0.5]]',['#f{1}{−2}#m{4, −2 ;; −3, 1}'],['$ [[4.0, -2.0], [-3.0, 1.0]]','$ [[1.0, 0.5], [0.3333, 0.25]]','$ [[-2.0, 1.5], [1.0, -0.5]]'],'import numpy as np\nprint(np.linalg.inv(np.array([[1.0, 2.0], [3.0, 4.0]])).round(10).tolist())'),
+  Q('Why prefer ``solve(A, b)`` to ``inv(A) @ b``?','لماذا نفضّل ``solve(A, b)`` على ``inv(A) @ b``؟',['Less work and smaller rounding errors','عمل أقل وأخطاء تقريب أصغر'],[['Forming the inverse costs about three times as much.','تكوين المعكوس يكلف نحو ثلاثة أضعاف.']],[['They are identical','متطابقتان'],['inv is exact','inv مضبوطة']]),
+]);
+
+lesson('505',44,[
+  ['``np.linalg.eig`` computes eigenvalues and eigenvectors of a general matrix; for symmetric matrices use ``eigh``, which is faster, returns real values in increasing order and orthonormal vectors:','``np.linalg.eig`` تحسب القيم والمتجهات الذاتية لمصفوفة عامة، وللمصفوفات المتماثلة استخدم ``eigh`` الأسرع التي تعيد قيماً حقيقية تصاعدية ومتجهات متعامدة معيارية:'],
+  '$ S = np.array([[2.0, 1.0], [1.0, 2.0]])\nvals, vecs = np.linalg.eigh(S)     # vals = [1. 3.]\nvecs[:, 1]                         # eigenvector for 3: ±[0.707 0.707]',
+  ['The columns of ``vecs`` are the eigenvectors. Golub–Welsch (Lesson 73) applies ``eigh`` to the symmetric Jacobi matrix: the eigenvalues are the Gauss nodes.','وأعمدة ``vecs`` هي المتجهات الذاتية. وطريقة Golub–Welsch (الدرس 73) تطبق ``eigh`` على مصفوفة جاكوبي المتماثلة فتكون القيم الذاتية عقد جاوس.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1.0, 3.0]',[['Increasing order.','ترتيب تصاعدي.']],['$ [3.0, 1.0]','$ [2.0, 2.0]','$ [0.0, 4.0]'],'import numpy as np\nvals, vecs = np.linalg.eigh(np.array([[2.0, 1.0], [1.0, 2.0]]))\nprint(vals.round(12).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [-0.57735, 0.57735]',['λ^2 = #f{1}{3}',['The 2-point Gauss–Legendre nodes.','عقد جاوس–ليجندر ذات النقطتين.']],['$ [-0.5, 0.5]','$ [0.0, 0.57735]','$ [-1.0, 1.0]'],'import numpy as np\nb = 1 / np.sqrt(3)\nprint(np.linalg.eigh(np.array([[0, b], [b, 0]]))[0].round(5).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['`Sv = λv` for each column.','`Sv = λv` لكل عمود.']],['$ False','$ 3.0','$ None'],'import numpy as np\nS = np.array([[2.0, 1.0], [1.0, 2.0]])\nvals, vecs = np.linalg.eigh(S)\nprint(np.allclose(S @ vecs, vecs * vals))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1j, -1j]',[['A rotation matrix has complex eigenvalues ±i.','مصفوفة الدوران لها قيم ذاتية مركبة ±i.']],['$ [1.0, -1.0]','$ [0.0, 0.0]','$ [1, 1]'],'import numpy as np\nvals = np.linalg.eig(np.array([[0.0, -1.0], [1.0, 0.0]]))[0]\nprint([complex(round(v.real, 12), round(v.imag, 12)) for v in vals])'),
+]);
+
+lesson('505',45,[
+  ['``np.linalg.norm`` computes vector and matrix norms; ``np.linalg.cond`` the condition number `κ = ‖A‖‖A^{−1}‖`:','``np.linalg.norm`` تحسب معايير المتجهات والمصفوفات، و ``np.linalg.cond`` عدد الشرط `κ = ‖A‖‖A^{−1}‖`:'],
+  '$ v = np.array([1.0, -2.0, 2.0])\nnp.linalg.norm(v)            # 3.0\nnp.linalg.norm(v, np.inf)    # 2.0\nnp.linalg.norm(v, 1)         # 5.0\nfrom scipy.linalg import hilbert\nnp.linalg.cond(hilbert(8))       # about 1.5e10',
+  ['A solve loses roughly `log_{10} κ` digits. Spectral collocation matrices grow like `N^{2}` per derivative, so check κ when results stop improving.','والحل يفقد نحو `log_{10} κ` رقماً. ومصفوفات التجميع الطيفي تنمو مثل `N^{2}` لكل مشتقة، فافحص κ حين تتوقف النتائج عن التحسن.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3.0 2.0 5.0',['#r{1 + 4 + 4},   max |v_i|,   Σ |v_i|'],['$ 5.0 2.0 3.0','$ 3.0 5.0 2.0','$ 9.0 2.0 5.0'],'import numpy as np\nv = np.array([1.0, -2.0, 2.0])\nprint(np.linalg.norm(v), np.linalg.norm(v, np.inf), np.linalg.norm(v, 1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 10',[['The exponent of κ for the 8 × 8 Hilbert matrix.','أس κ لمصفوفة هيلبرت 8 × 8.']],['$ 8','$ 16','$ 4'],'import numpy as np\nfrom scipy.linalg import hilbert\nprint(int(np.log10(np.linalg.cond(hilbert(8)))))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1000000.0',['#f{1}{10^{−6}}'],['$ 1e-06','$ 1.0','$ 1000.0'],'import numpy as np\nprint(round(np.linalg.cond(np.diag([1.0, 1e-6])), 6))'),
+  Q('With `κ ≈ 10^{10}`, about how many correct digits does a double-precision solve keep?','مع `κ ≈ 10^{10}` كم رقماً صحيحاً تقريباً يبقى في حل بدقة مزدوجة؟','≈ 6',['16 − 10'],['≈ 16','≈ 10','≈ 1']),
+]);
+
+lesson('505',46,[
+  ['SciPy exposes the factorizations, which can be reused for many right-hand sides:','تكشف SciPy عن التحليلات التي يمكن إعادة استخدامها لأطراف يمنى كثيرة:'],
+  '$ from scipy.linalg import lu_factor, lu_solve, qr, cholesky\nlu, piv = lu_factor(A);  x = lu_solve((lu, piv), b)\nQ, R = qr(A)                 # Q orthogonal, R upper triangular\nL = np.linalg.cholesky(S)    # S = L L^T for symmetric positive definite S',
+  ['Factor once and solve many times, for example in time stepping with a fixed matrix. Cholesky is twice as cheap as LU but needs a symmetric positive definite matrix, such as a Galerkin mass or stiffness matrix.','حلّل مرة وحلّ مرات، مثلاً في الخطوات الزمنية بمصفوفة ثابتة. و Cholesky أرخص من LU بمرتين لكنها تحتاج مصفوفة متماثلة موجبة التعريف مثل مصفوفة الكتلة أو الجساءة في جاليركن.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True True',[['Q is orthogonal and QR reproduces A.','Q متعامدة و QR تعيد A.']],['$ True False','$ False True','$ False False'],'import numpy as np\nfrom scipy.linalg import qr\nA = np.array([[1.0, 2.0], [3.0, 4.0]])\nQ, R = qr(A)\nprint(np.allclose(Q.T @ Q, np.eye(2)), np.allclose(Q @ R, A))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[2.0, 0.0], [1.0, 1.4142]]',['L_{11} = #r{4},   L_{21} = #f{2}{2},   L_{22} = #r{3 − 1}'],['$ [[2.0, 1.0], [0.0, 1.4142]]','$ [[4.0, 0.0], [2.0, 2.0]]','$ [[1.0, 0.0], [0.5, 1.0]]'],'import numpy as np\nS = np.array([[4.0, 2.0], [2.0, 3.0]])\nprint(np.linalg.cholesky(S).round(4).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ LinAlgError',[['The matrix is not positive definite.','المصفوفة ليست موجبة التعريف.']],['$ [[1.0, 0.0], [2.0, nan]]','$ None','$ [[1.0, 2.0], [2.0, 1.0]]'],'import numpy as np\ntry:\n    np.linalg.cholesky(np.array([[1.0, 2.0], [2.0, 1.0]]))\nexcept np.linalg.LinAlgError:\n    print("LinAlgError")'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0.8, 1.4] [1.0, 1.0]',[['One factorization, two solves.','تحليل واحد وحلان.']],['$ [0.8, 1.4] [0.8, 1.4]','$ [1.0, 1.0] [0.8, 1.4]','$ [3.0, 5.0] [3.0, 4.0]'],'import numpy as np\nfrom scipy.linalg import lu_factor, lu_solve\nA = np.array([[2.0, 1.0], [1.0, 3.0]])\nf = lu_factor(A)\nx1 = lu_solve(f, [3.0, 5.0]).round(12)\nx2 = lu_solve(f, [3.0, 4.0]).round(12)\nprint(x1.tolist(), x2.tolist())'),
+]);
+
+lesson('505',47,[
+  ['When there are more equations than unknowns, ``np.linalg.lstsq`` finds the x that minimizes `‖Ax − b‖_2`. Fitting a line or a polynomial is the classic case:','حين تكون المعادلات أكثر من المجاهيل تجد ``np.linalg.lstsq`` قيمة x التي تصغّر `‖Ax − b‖_2`. وملاءمة خط أو كثيرة حدود هي الحالة الكلاسيكية:'],
+  '$ t = np.array([0.0, 1.0, 2.0, 3.0])\ny = np.array([1.0, 2.9, 5.1, 7.0])\nA = np.column_stack([np.ones_like(t), t])\ncoef, res, rank, sv = np.linalg.lstsq(A, y, rcond=None)\nnp.polyfit(t, y, 1)          # the same line, highest power first',
+  ['Least squares on the logarithm of the errors gives the observed convergence rate, as in Lesson 40.','والمربعات الصغرى على لوغاريتم الأخطاء تعطي معدل التقارب الملاحظ كما في الدرس 40.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1.0, 2.0]',[['The data lie exactly on `y = 1 + 2t`.','البيانات تقع بالضبط على `y = 1 + 2t`.']],['$ [2.0, 1.0]','$ [0.0, 2.0]','$ [1.0, 1.0]'],'import numpy as np\nt = np.arange(4.0)\ny = 1 + 2 * t\nA = np.column_stack([np.ones_like(t), t])\nprint(np.linalg.lstsq(A, y, rcond=None)[0].round(10).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [2.0, 1.0]',[['polyfit returns the highest power first.','polyfit تعيد أعلى قوة أولاً.']],['$ [1.0, 2.0]','$ [2.0]','$ [0.0, 2.0, 1.0]'],'import numpy as np\nt = np.arange(4.0)\nprint(np.polyfit(t, 1 + 2 * t, 1).round(10).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2.02 0.97',['m = #f{Σ(t_i − t̄)(y_i − ȳ)}{Σ(t_i − t̄)^2} = #f{10.1}{5},   c = ȳ − m t̄ = 4 − 2.02·1.5'],['$ 2.0 1.0','$ 1.0 2.0','$ 0.97 2.02'],'import numpy as np\nt = np.array([0.0, 1.0, 2.0, 3.0])\ny = np.array([1.0, 2.9, 5.1, 7.0])\nm, c = np.polyfit(t, y, 1)\nprint(round(m, 2), round(c, 2))'),
+  Q('What does ``lstsq`` minimize?','ماذا تصغّر ``lstsq``؟','‖Ax − b‖_2',[['The Euclidean norm of the residual.','المعيار الإقليدي للباقي.']],['‖x‖_2','‖Ax − b‖_∞','‖A‖_2']),
+]);
+
+lesson('505',48,[
+  ['``scipy.sparse`` stores only the nonzero entries; ``spsolve`` solves sparse systems:','``scipy.sparse`` تخزن العناصر غير الصفرية فقط، و ``spsolve`` تحل الأنظمة المتفرقة:'],
+  '$ import scipy.sparse as sp\nfrom scipy.sparse.linalg import spsolve\nn = 1000;  h = 1 / (n + 1)\nT = sp.diags([-1, 2, -1], [-1, 0, 1], shape=(n, n), format="csr") / h**2\nu = spsolve(T, np.ones(n))',
+  ['A dense 1000 × 1000 matrix stores `10^6` numbers; the tridiagonal one about `3 × 10^3`. Use the ``csr`` format for arithmetic and solving.','المصفوفة الكثيفة 1000 × 1000 تخزن `10^6` عدد، وثلاثية القطر نحو `3 × 10^3`. واستخدم صيغة ``csr`` للحساب والحل.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2998',['1000 + 999 + 999'],['$ 3000','$ 1000000','$ 1000'],'import scipy.sparse as sp\nT = sp.diags([-1, 2, -1], [-1, 0, 1], shape=(1000, 1000), format="csr")\nprint(T.nnz)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.125',[['`−u″ = 1`, `u(0) = u(1) = 0` gives `u = x(1 − x)/2`; at x = 1/2 this is 1/8, reproduced exactly.','`−u″ = 1` مع `u(0) = u(1) = 0` تعطي `u = x(1 − x)/2`، وعند x = 1/2 تساوي 1/8 وتُعاد بالضبط.']],['$ 0.25','$ 0.5','$ 0.0625'],'import numpy as np\nimport scipy.sparse as sp\nfrom scipy.sparse.linalg import spsolve\nn = 999\nh = 1 / (n + 1)\nT = sp.diags([-1, 2, -1], [-1, 0, 1], shape=(n, n), format="csr") / h**2\nu = spsolve(T, np.ones(n))\nprint(round(u[n // 2], 10))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[2.0, -1.0, 0.0], [-1.0, 2.0, -1.0], [0.0, -1.0, 2.0]]',[['``toarray`` converts to a dense array.','``toarray`` تحول إلى مصفوفة كثيفة.']],['$ [[2.0, 1.0, 0.0], [1.0, 2.0, 1.0], [0.0, 1.0, 2.0]]','$ [2.0, -1.0, 2.0]','$ [[-1.0, 2.0, -1.0]]'],'import scipy.sparse as sp\nT = sp.diags([-1.0, 2.0, -1.0], [-1, 0, 1], shape=(3, 3))\nprint(T.toarray().tolist())'),
+  Q('Which sparse format is best for solving and products?','أي صيغة متفرقة أفضل للحل والضرب؟','$ csr',[['Compressed sparse rows; ``lil`` or ``coo`` are for building.','الصفوف المتفرقة المضغوطة، و ``lil`` أو ``coo`` للبناء.']],['$ dense','$ lil','$ dok']),
+]);
+
+lesson('505',49,[
+  ['``np.kron(A, B)`` is the Kronecker product. With column stacking, a matrix equation becomes a linear system:','``np.kron(A, B)`` هي ضرب كرونيكر. ومع رص الأعمدة تصبح المعادلة المصفوفية نظاماً خطياً:'],
+  '$ vec = lambda Y: Y.ravel(order="F")\nnp.allclose(vec(A @ Y @ B), np.kron(B.T, A) @ vec(Y))     # True\n# solve  A Y + Y B = C\nfrom scipy.linalg import solve_sylvester\nY = solve_sylvester(A, B, C)',
+  ['The Kronecker system has `n^2` unknowns for n × n factors, so it is built only for small problems; ``solve_sylvester`` solves `AY + YB = C` in `O(n^3)` without forming it.','ونظام كرونيكر فيه `n^2` مجهولاً لعاملين n × n فلا يُبنى إلا للمسائل الصغيرة، و ``solve_sylvester`` تحل `AY + YB = C` بتكلفة `O(n^3)` دون تكوينه.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['The identity `vec(AYB) = (B^T ⊗ A) vec(Y)`.','المتطابقة `vec(AYB) = (B^T ⊗ A) vec(Y)`.']],['$ False','$ (4, 4)','$ None'],'import numpy as np\nrng = np.random.default_rng(1)\nA, Y, B = (rng.standard_normal((3, 3)) for _ in range(3))\nvec = lambda M: M.ravel(order="F")\nprint(np.allclose(vec(A @ Y @ B), np.kron(B.T, A) @ vec(Y)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (12, 12)',['3·4 = 12'],['$ (7, 7)','$ (3, 4)','$ (9, 16)'],'import numpy as np\nprint(np.kron(np.eye(3), np.eye(4)).shape)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[1.0, 1.0, 0.0, 0.0], [0.0, 0.0, 2.0, 2.0]]',[['Each entry of the first factor multiplies the block (1, 1).','كل عنصر في العامل الأول يضرب الكتلة (1, 1).']],['$ [[1.0, 0.0, 1.0, 0.0], [0.0, 2.0, 0.0, 2.0]]','$ [[1.0, 1.0], [2.0, 2.0]]','$ [[2.0, 2.0, 0.0, 0.0], [0.0, 0.0, 1.0, 1.0]]'],'import numpy as np\nprint(np.kron(np.diag([1.0, 2.0]), np.ones((1, 2))).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['solve_sylvester agrees with the Kronecker solve.','solve_sylvester تتفق مع حل كرونيكر.']],['$ False','$ (9,)','$ LinAlgError'],'import numpy as np\nfrom scipy.linalg import solve_sylvester\nrng = np.random.default_rng(2)\nA = rng.standard_normal((3, 3)) + 5 * np.eye(3)\nB = rng.standard_normal((3, 3)) + 5 * np.eye(3)\nC = rng.standard_normal((3, 3))\nY = solve_sylvester(A, B, C)\nK = np.kron(np.eye(3), A) + np.kron(B.T, np.eye(3))\ny = np.linalg.solve(K, C.ravel(order="F"))\nprint(np.allclose(Y.ravel(order="F"), y))'),
+]);
+
+lesson('505',50,[
+  ['Matrices defined by formulas are built without loops from index grids:','المصفوفات المعرّفة بقوانين تُبنى دون حلقات من شبكات الأدلة:'],
+  '$ r, j = np.meshgrid(np.arange(N + 1), np.arange(N + 1), indexing="ij")\nmask = (r > j) & ((r - j) % 2 == 0)\nentry = 4 / gam**2 * (r - j) / 2 * (2 * j + 1) * (r + j + 1)\nD2 = np.where(mask, entry, 0.0)',
+  ['``indexing="ij"`` makes the first array vary along rows, as matrix indices do. This builds Theorem 3.1 in three lines; ``np.fromfunction`` is an alternative.','و ``indexing="ij"`` تجعل المصفوفة الأولى تتغير على الصفوف كما تفعل أدلة المصفوفات. وهذا يبني النظرية 3.1 في ثلاثة أسطر، و ``np.fromfunction`` بديل.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 12.0 60.0 40.0',[['`d_{2,0}`, `d_{3,1}`, `d_{4,0}` for γ = 1.','`d_{2,0}` و `d_{3,1}` و `d_{4,0}` عند γ = 1.']],['$ 6.0 30.0 20.0','$ 12.0 0.0 40.0','$ 3.0 15.0 10.0'],'import numpy as np\nN, gam = 4, 1.0\nr, j = np.meshgrid(np.arange(N + 1), np.arange(N + 1), indexing="ij")\nmask = (r > j) & ((r - j) % 2 == 0)\nentry = 4 / gam**2 * (r - j) / 2 * (2 * j + 1) * (r + j + 1)\nD2 = np.where(mask, entry, 0.0)\nprint(D2[2, 0], D2[3, 1], D2[4, 0])'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[2, 3], [3, 4]]',[['``fromfunction`` passes the index arrays.','``fromfunction`` تمرر مصفوفات الأدلة.']],['$ [[0, 1], [1, 2]]','$ [[1, 2], [2, 3]]','$ [2, 3, 3, 4]'],'import numpy as np\nprint(np.fromfunction(lambda i, j: i + j + 2, (2, 2), dtype=int).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[1.0, 0.5], [0.5, 0.3333]]',['#f{1}{i + j + 1}'],['$ [[1.0, 0.5], [0.3333, 0.25]]','$ [[0.5, 0.3333], [0.3333, 0.25]]','$ [[1.0, 1.0], [1.0, 1.0]]'],'import numpy as np\ni, j = np.meshgrid(np.arange(2), np.arange(2), indexing="ij")\nprint((1 / (i + j + 1)).round(4).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [[0, 0], [1, 1]] [[0, 1], [0, 1]]',[['With ``"ij"`` the first array follows the rows.','مع ``"ij"`` تتبع المصفوفة الأولى الصفوف.']],['$ [[0, 1], [0, 1]] [[0, 0], [1, 1]]','$ [[0, 0], [0, 0]] [[1, 1], [1, 1]]','$ [0, 1] [0, 1]'],'import numpy as np\ni, j = np.meshgrid(np.arange(2), np.arange(2), indexing="ij")\nprint(i.tolist(), j.tolist())'),
+]);
+
+lesson('505',51,[
+  ['SymPy computes with symbols exactly. Symbols are created explicitly and expressions are built with ordinary operators:','SymPy تحسب بالرموز بالضبط. تُنشأ الرموز صراحة وتُبنى المقادير بالعمليات العادية:'],
+  '$ import sympy as sp\nx, t = sp.symbols("x t")\nexpr = (x + 1)**2\nsp.expand(expr)          # x**2 + 2*x + 1\nexpr.subs(x, 3)          # 16',
+  ['SymPy prints with ``**`` and ``*``; ``sp.pprint`` or ``sp.latex(expr)`` give nicer forms. ``subs`` replaces a symbol without changing the expression itself.','وتطبع SymPy بـ ``**`` و ``*``، و ``sp.pprint`` أو ``sp.latex(expr)`` تعطيان صوراً أجمل. و ``subs`` تستبدل رمزاً دون تغيير المقدار نفسه.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ x**2 + 2*x + 1',[['SymPy writes powers with ``**``.','SymPy تكتب القوى بـ ``**``.']],['$ (x + 1)**2','$ x^2 + 2x + 1','$ 1 + 2*x + x**2'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.expand((x + 1)**2))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 16 (x + 1)**2',[['subs returns a new expression; the original is unchanged.','subs تعيد مقداراً جديداً والأصل لا يتغير.']],['$ 16 16','$ (x + 1)**2 16','$ 16 x'],'import sympy as sp\nx = sp.symbols("x")\ne = (x + 1)**2\nprint(e.subs(x, 3), e)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ \\frac{3 x^{2}}{2} - \\frac{1}{2}',[['``latex`` gives the LaTeX source.','``latex`` تعطي مصدر LaTeX.']],['$ 3*x**2/2 - 1/2','$ \\frac{3x^2 - 1}{2}','$ (3x^2-1)/2'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.latex(sp.legendre(2, x)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['A symbol with ``positive=True`` lets SymPy simplify `#r{t^2}`.','الرمز مع ``positive=True`` يسمح لـ SymPy بتبسيط `#r{t^2}`.']],['$ False','$ t','$ Abs(t)'],'import sympy as sp\nt = sp.symbols("t", positive=True)\nprint(sp.sqrt(t**2) == t)'),
+]);
+
+lesson('505',52,[
+  ['Exact numbers: ``sp.Rational(1, 3)``, ``sp.sqrt(2)``, ``sp.pi``. A Python expression such as ``1/3`` is a float before SymPy sees it:','الأعداد المضبوطة: ``sp.Rational(1, 3)`` و ``sp.sqrt(2)`` و ``sp.pi``. والمقدار ``1/3`` في بايثون عدد عشري قبل أن تراه SymPy:'],
+  '$ sp.Rational(1, 3) + sp.Rational(1, 6)     # 1/2\nsp.sqrt(8)                                # 2*sqrt(2)\nx / 3, x * (1/3)                          # x/3, 0.333333333333333*x\nsp.N(sp.pi, 30)                           # 30 digits',
+  ['Write fractions with ``sp.Rational`` or ``sp.S(1)/3``, or divide a symbol by an integer; otherwise the float silently destroys exactness.','واكتب الكسور بـ ``sp.Rational`` أو ``sp.S(1)/3``، أو اقسم رمزاً على عدد صحيح، وإلا فإن العدد العشري يفسد الضبط دون أن يُلاحظ.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1/2',['#f{1}{3} + #f{1}{6} = #f{1}{2}'],['$ 0.5','$ 0.500000000000000','$ 2/6'],'import sympy as sp\nprint(sp.Rational(1, 3) + sp.Rational(1, 6))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.333333333333333*x',[['``1/3`` is computed by Python as a float first.','``1/3`` يحسبها بايثون عدداً عشرياً أولاً.']],['$ x/3','$ 1/3*x','$ x*0.33'],'import sympy as sp\nx = sp.symbols("x")\nprint(x * (1/3))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2*sqrt(2)',['#r{8} = 2#r{2}'],['$ 2.82842712474619','$ sqrt(8)','$ 2.83'],'import sympy as sp\nprint(sp.sqrt(8))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3.14159265358979323846264338328',[['``N`` with 30 significant digits.','``N`` بـ 30 رقماً معنوياً.']],['$ 3.141592653589793','$ pi','$ 3.14'],'import sympy as sp\nprint(sp.N(sp.pi, 30))'),
+]);
+
+lesson('505',53,[
+  ['Algebraic simplification:','التبسيط الجبري:'],
+  '$ sp.expand((x - 1)*(x + 2))          # x**2 + x - 2\nsp.factor(x**2 - 3*x + 2)            # (x - 2)*(x - 1)\nsp.simplify(sp.sin(x)**2 + sp.cos(x)**2)   # 1\nsp.apart(1/(x**2 - 1)), sp.together(1/x + 1/(x + 1))',
+  ['``simplify`` tries many strategies and can be slow; the specific functions (``expand``, ``factor``, ``cancel``, ``apart``, ``trigsimp``) are faster and predictable.','و ``simplify`` تجرب استراتيجيات كثيرة وقد تكون بطيئة، والدوال المحددة (``expand`` و ``factor`` و ``cancel`` و ``apart`` و ``trigsimp``) أسرع ونتائجها متوقعة.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ (x - 2)*(x - 1)',['x^2 − 3x + 2'],['$ (x - 1)*(x - 2)','$ x**2 - 3*x + 2','$ (x + 1)*(x + 2)'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.factor(x**2 - 3*x + 2))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -1/(2*(x + 1)) + 1/(2*(x - 1))',['#f{1}{x^2 − 1} = #f{1}{2}(#f{1}{x − 1} − #f{1}{x + 1})'],['$ 1/(x - 1) - 1/(x + 1)','$ 1/((x - 1)*(x + 1))','$ 1/(2*(x - 1)) + 1/(2*(x + 1))'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.apart(1/(x**2 - 1)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The Pythagorean identity.','متطابقة فيثاغورس.']],['$ sin(x)**2 + cos(x)**2','$ 0','$ 2'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.simplify(sp.sin(x)**2 + sp.cos(x)**2))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0',[['Bonnet’s recurrence for n = 2 expands to zero.','علاقة بونيه عند n = 2 تُنشر إلى الصفر.']],['$ x','$ 3*x**3','$ None'],'import sympy as sp\nx = sp.symbols("x")\nP = lambda n: sp.legendre(n, x)\nprint(sp.expand(3*P(3) - 5*x*P(2) + 2*P(1)))'),
+]);
+
+lesson('505',54,[
+  ['``sp.diff`` differentiates and ``sp.integrate`` integrates, exactly:','``sp.diff`` تشتق و ``sp.integrate`` تكامل بالضبط:'],
+  '$ sp.diff(x**3, x)                                  # 3*x**2\nsp.diff(sp.sin(x), x, 2)                           # -sin(x)\nsp.integrate(x**2, (x, 0, 1))                      # 1/3\nsp.integrate(sp.legendre(2, x)**2, (x, -1, 1))     # 2/5',
+  ['With positive symbols, integrals with fractional powers come out in closed form, for example `∫_0^1 t^{μ}(1 − t) dt = 1/((μ + 1)(μ + 2))`.','ومع الرموز الموجبة تخرج التكاملات ذات القوى الكسرية بصيغة مغلقة، مثل `∫_0^1 t^{μ}(1 − t) dt = 1/((μ + 1)(μ + 2))`.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2/5',['#f{2}{2n + 1},   n = 2'],['$ 2/3','$ 0.4','$ 1/5'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.integrate(sp.legendre(2, x)**2, (x, -1, 1)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2/3',['∫_0^1 t^{1/2} dt'],['$ 1/2','$ 0.666666666666667','$ 3/2'],'import sympy as sp\nt = sp.symbols("t", positive=True)\nprint(sp.integrate(sp.sqrt(t), (t, 0, 1)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3*x',['#f{d}{dx}#f{3x^2 − 1}{2}'],['$ 6*x','$ 3*x**2/2','$ x'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.diff(sp.legendre(2, x), x))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1/(mu**2 + 3*mu + 2)',['#f{1}{μ + 1} − #f{1}{μ + 2}'],['$ 1/(mu + 1)','$ 1/((mu + 1)*(mu + 2))','$ mu/(mu + 2)'],'import sympy as sp\nt, mu = sp.symbols("t mu", positive=True)\nprint(sp.simplify(sp.integrate(t**mu * (1 - t), (t, 0, 1))))'),
+]);
+
+lesson('505',55,[
+  ['``sp.solve`` solves equations (given as expressions equal to zero, or with ``sp.Eq``); ``sp.linsolve`` solves linear systems:','``sp.solve`` تحل المعادلات (معطاة مقادير تساوي الصفر أو بـ ``sp.Eq``)، و ``sp.linsolve`` تحل الأنظمة الخطية:'],
+  '$ sp.solve(x**2 - 5*x + 6, x)                     # [2, 3]\nsp.solve(sp.Eq(sp.legendre(2, x), 0), x)        # [-sqrt(3)/3, sqrt(3)/3]\nsp.linsolve([a + 2*b - 3, 3*a - b - 1], [a, b])  # {(5/7, 8/7)}',
+  ['For high-degree polynomials there are no closed formulas; use ``sp.nroots`` or numerical methods.','ولكثيرات الحدود عالية الدرجة لا توجد صيغ مغلقة، فاستخدم ``sp.nroots`` أو الطرق العددية.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [2, 3]',['(x − 2)(x − 3) = 0'],['$ [-2, -3]','$ {2, 3}','$ [x - 2, x - 3]'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.solve(x**2 - 5*x + 6, x))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [-sqrt(3)/3, sqrt(3)/3]',['x^2 = #f{1}{3}'],['$ [-1/3, 1/3]','$ [-0.577, 0.577]','$ [sqrt(3)]'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.solve(sp.legendre(2, x), x))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ {(5/7, 8/7)}',['a = 3 − 2b,   3(3 − 2b) − b = 1'],['$ {(8/7, 5/7)}','$ [5/7, 8/7]','$ {(1, 1)}'],'import sympy as sp\na, b = sp.symbols("a b")\nprint(sp.linsolve([a + 2*b - 3, 3*a - b - 1], [a, b]))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [-0.861136, -0.339981, 0.339981, 0.861136]',[['The 4-point Gauss–Legendre nodes.','عقد جاوس–ليجندر الأربع.']],['$ [-0.774597, 0.0, 0.774597]','$ [-1.0, -0.5, 0.5, 1.0]','$ [-0.57735, 0.57735]'],'import sympy as sp\nx = sp.symbols("x")\nprint([round(float(r), 6) for r in sp.nroots(sp.legendre(4, x))])'),
+]);
+
+lesson('505',56,[
+  ['Series expansions and limits:','مفكوكات المتسلسلات والنهايات:'],
+  '$ sp.series(sp.exp(x), x, 0, 4)        # 1 + x + x**2/2 + x**3/6 + O(x**4)\nsp.series(sp.gamma(1 + x), x, 0, 2)    # 1 - EulerGamma*x + O(x**2)\nsp.limit(sp.sin(x)/x, x, 0)            # 1\nsp.limit((1 + 1/n)**n, n, sp.oo)       # E',
+  ['``.removeO()`` drops the order term. ``sp.oo`` is infinity; one-sided limits use ``dir="+"`` or ``dir="-"``.','و ``.removeO()`` تحذف حد الرتبة. و ``sp.oo`` اللانهاية، والنهايات من جهة واحدة تستخدم ``dir="+"`` أو ``dir="-"``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1 - x**2/6 + x**4/120 + O(x**6)',['#f{sin x}{x} = 1 − #f{x^2}{6} + #f{x^4}{120} − …'],['$ x - x**3/6 + O(x**6)','$ 1 - x**2/2 + x**4/24 + O(x**6)','$ 1 + O(x**6)'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.series(sp.sin(x)/x, x, 0, 6))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ E',[['The limit defining e.','النهاية التي تعرّف e.']],['$ 1','$ oo','$ 2.71828182845905'],'import sympy as sp\nn = sp.symbols("n", positive=True)\nprint(sp.limit((1 + 1/n)**n, n, sp.oo))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -oo oo',[['One-sided limits of `1/x` at 0.','النهايتان من جهة واحدة لـ `1/x` عند 0.']],['$ oo oo','$ 0 0','$ oo -oo'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.limit(1/x, x, 0, dir="-"), sp.limit(1/x, x, 0, dir="+"))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 4/3',['#f{2^3}{3!}'],['$ 8','$ 1/6','$ 2/3'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.series(sp.exp(2*x), x, 0, 4).removeO().coeff(x, 3))'),
+]);
+
+lesson('505',57,[
+  ['SymPy knows the special functions of the programme, exactly:','SymPy تعرف الدوال الخاصة في البرنامج بالضبط:'],
+  '$ sp.gamma(sp.Rational(5, 2))      # 3*sqrt(pi)/4\nsp.beta(2, 3)                     # 1/12\nsp.legendre(3, x)                 # 5*x**3/2 - 3*x/2\nsp.jacobi(1, 1, 0, x)             # 3*x/2 + 1/2\nsp.chebyshevt(3, x)               # 4*x**3 - 3*x',
+  ['These exact forms are the reference against which numerical code is tested. For general symbolic n they stay unevaluated: ``sp.legendre(n, x)``.','وهذه الصيغ المضبوطة هي المرجع الذي يُختبر عليه الكود العددي. وعند n رمزي تبقى دون حساب: ``sp.legendre(n, x)``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3*sqrt(pi)/4',['Γ(#f{5}{2}) = #f{3}{2}·#f{1}{2}#r{π}'],['$ 1.32934038817914','$ sqrt(pi)/2','$ 3/4'],'import sympy as sp\nprint(sp.gamma(sp.Rational(5, 2)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3*x/2 + 1/2',['P_1^{(1,0)}(x) = #f{3x + 1}{2}'],['$ x','$ 2*x + 1','$ 3*x + 1'],'import sympy as sp\nx = sp.symbols("x")\nprint(sp.jacobi(1, 1, 0, x))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 6*t**2 - 6*t + 1',['P_2^*(t) = P_2(2t − 1)'],['$ 3*t**2 - 1','$ 6*t**2 + 6*t + 1','$ 2*t - 1'],'import sympy as sp\nt = sp.symbols("t")\nprint(sp.expand(sp.legendre(2, 2*t - 1)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1/12',['#f{Γ(2)Γ(3)}{Γ(5)} = #f{2}{24}'],['$ 1/6','$ 2/24','$ 0.0833'],'import sympy as sp\nprint(sp.beta(2, 3))'),
+]);
+
+lesson('505',58,[
+  ['``sp.Matrix`` holds exact entries and supports exact linear algebra:','``sp.Matrix`` تحمل عناصر مضبوطة وتدعم الجبر الخطي المضبوط:'],
+  '$ M = sp.Matrix([[2, 1], [1, 2]])\nM.det(), M.inv()            # 3, Matrix([[2/3, -1/3], [-1/3, 2/3]])\nM.eigenvals()               # {3: 1, 1: 1}  (value: multiplicity)\nM * M, M.T',
+  ['In SymPy ``*`` is the matrix product. Exact matrices are slow beyond a few dozen rows, but they verify small cases without rounding error.','في SymPy تكون ``*`` الضرب المصفوفي. والمصفوفات المضبوطة بطيئة بعد بضع عشرات من الصفوف، لكنها تتحقق من الحالات الصغيرة دون خطأ تقريب.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3 Matrix([[2/3, -1/3], [-1/3, 2/3]])',[['Exact fractions.','كسور مضبوطة.']],['$ 3.0 Matrix([[0.667, -0.333], [-0.333, 0.667]])','$ 3 Matrix([[2, -1], [-1, 2]])','$ -3 Matrix([[2/3, 1/3], [1/3, 2/3]])'],'import sympy as sp\nM = sp.Matrix([[2, 1], [1, 2]])\nprint(M.det(), M.inv())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ {3: 1, 1: 1}',[['Each eigenvalue with its multiplicity.','كل قيمة ذاتية مع تكرارها.']],['$ [1, 3]','$ {1: 3}','$ (3, 1)'],'import sympy as sp\nprint(sp.Matrix([[2, 1], [1, 2]]).eigenvals())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ Matrix([[7, 10], [15, 22]])',[['``*`` is the matrix product for SymPy matrices.','``*`` هي الضرب المصفوفي لمصفوفات SymPy.']],['$ Matrix([[1, 4], [9, 16]])','$ Matrix([[2, 4], [6, 8]])','$ [[7, 10], [15, 22]]'],'import sympy as sp\nM = sp.Matrix([[1, 2], [3, 4]])\nprint(M * M)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ Matrix([[1], [1]])',['2x + y = 3,   x + 2y = 3'],['$ Matrix([[1/2], [1/2]])','$ Matrix([[3], [3]])','$ [1, 1]'],'import sympy as sp\nM = sp.Matrix([[2, 1], [1, 2]])\nprint(M.LUsolve(sp.Matrix([3, 3])))'),
+]);
+
+lesson('505',59,[
+  ['``sp.lambdify`` turns a SymPy expression into a fast NumPy function, the bridge from exact derivation to numerical computation:','``sp.lambdify`` تحول مقدار SymPy إلى دالة NumPy سريعة، وهي الجسر من الاشتقاق المضبوط إلى الحساب العددي:'],
+  '$ expr = sp.legendre(5, x)\nf = sp.lambdify(x, expr, "numpy")\nxs = np.linspace(-1, 1, 1001)\nvals = f(xs)                     # an array, computed at NumPy speed',
+  ['Derive once with SymPy (a source term f, a Jacobian, an exact solution), then lambdify and evaluate on grids. Calling ``expr.subs`` in a loop is thousands of times slower.','اشتق مرة بـ SymPy (حد مصدر f أو جاكوبي أو حل مضبوط) ثم استخدم lambdify واحسب على الشبكات. واستدعاء ``expr.subs`` في حلقة أبطأ بآلاف المرات.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1.0, -0.125, 1.0]',['P_2(−1) = 1,   P_2(0.5) = −0.125,   P_2(1) = 1'],['$ [1.0, 0.125, 1.0]','$ [-1.0, -0.125, 1.0]','$ [0.0, 0.5, 1.0]'],'import numpy as np\nimport sympy as sp\nx = sp.symbols("x")\nf = sp.lambdify(x, sp.legendre(2, x), "numpy")\nprint(f(np.array([-1.0, 0.5, 1.0])).tolist())'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.375',[['The derivative `3x` at 0.125, lambdified.','المشتقة `3x` عند 0.125 بعد lambdify.']],['$ 3.0','$ 0.125','$ -0.4765625'],'import sympy as sp\nx = sp.symbols("x")\nd = sp.lambdify(x, sp.diff(sp.legendre(2, x), x))\nprint(d(0.125))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.4142',[['A two-variable expression becomes a two-argument function.','مقدار بمتغيرين يصبح دالة بمتغيرين.']],['$ 2.0','$ 1.0','$ 0.7071'],'import sympy as sp\nx, t = sp.symbols("x t")\nu = sp.lambdify((x, t), t**sp.Rational(3, 2) * sp.sin(sp.pi * x))\nprint(round(u(0.5, 2.0**(1/3)), 4))'),
+  Q('Why lambdify instead of calling ``subs`` at each grid point?','لماذا نستخدم lambdify بدل استدعاء ``subs`` عند كل نقطة شبكة؟',['subs works symbolically and is thousands of times slower than a NumPy function','subs تعمل رمزياً وهي أبطأ بآلاف المرات من دالة NumPy'],[['lambdify evaluates whole arrays at once.','lambdify تحسب مصفوفات كاملة دفعة واحدة.']],[['subs is inexact','subs غير مضبوطة'],['There is no difference','لا فرق']]),
+]);
+
+lesson('505',60,[
+  ['Before coding a formula, check it exactly on small cases. For Theorem 3.1, compare the formula with direct differentiation of the shifted Legendre polynomials:','قبل برمجة صيغة تحقق منها بالضبط على حالات صغيرة. فللنظرية 3.1 قارن الصيغة بالاشتقاق المباشر لكثيرات ليجندر المزاحة:'],
+  '$ g = sp.Symbol("gamma", positive=True)\nL = lambda i: sp.legendre(i, 2*x/g - 1)\ndef d(r, j):\n    if r > j and (r - j) % 2 == 0:\n        return 4/g**2 * sp.Rational(r - j, 2) * (2*j + 1) * (r + j + 1)\n    return 0\nres = [sp.simplify(sp.diff(L(r), x, 2)\n                   - sum(d(r, j) * L(j) for j in range(r)))\n       for r in range(7)]\nok = all(e == 0 for e in res)',
+  ['An exact check with symbolic γ proves the formula for these r once and for all; a numerical check at random points is the quick complement for larger r. Only then translate the formula into NumPy.','والتحقق المضبوط مع γ رمزية يثبت الصيغة لقيم r هذه مرة واحدة، والفحص العددي عند نقاط عشوائية مكمّل سريع لقيم r الأكبر. وبعدها فقط تُترجم الصيغة إلى NumPy.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ True',[['The formula matches exact differentiation for r = 0, …, 6 and any γ.','الصيغة تطابق الاشتقاق المضبوط عند r = 0, …, 6 ولأي γ.']],['$ False','$ 0','$ [True]'],'import sympy as sp\nx = sp.symbols("x")\ng = sp.Symbol("gamma", positive=True)\nL = lambda i: sp.legendre(i, 2*x/g - 1)\ndef d(r, j):\n    if r > j and (r - j) % 2 == 0:\n        return 4/g**2 * sp.Rational(r - j, 2) * (2*j + 1) * (r + j + 1)\n    return 0\nres = [sp.simplify(sp.diff(L(r), x, 2)\n                   - sum(d(r, j) * L(j) for j in range(r)))\n       for r in range(7)]\nprint(all(e == 0 for e in res))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 60/gamma**2',['d_{3,1} = #f{4}{γ^2}·1·3·5'],['$ 15/gamma**2','$ 60','$ 4/gamma**2'],'import sympy as sp\ng = sp.Symbol("gamma", positive=True)\nd = lambda r, j: 4/g**2 * sp.Rational(r - j, 2) * (2*j + 1) * (r + j + 1)\nprint(d(3, 1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0',[['Fractional orthogonality for λ = 1/2: the weight is `λt^{λ−1}`.','التعامد الكسري عند λ = 1/2: الوزن `λt^{λ−1}`.']],['$ 1/3','$ 1/5','$ 1/2'],'import sympy as sp\nt = sp.symbols("t", positive=True)\nlam = sp.Rational(1, 2)\nfL = lambda k: sp.legendre(k, 2*t**lam - 1)\nprint(sp.integrate(lam * t**(lam - 1) * fL(1) * fL(2), (t, 0, 1)))'),
+  Q('Why check with a symbolic γ instead of γ = 1?','لماذا التحقق مع γ رمزية بدل γ = 1؟',['A factor such as `4/γ^2` cannot be seen at γ = 1','العامل مثل `4/γ^2` لا يظهر عند γ = 1'],[['A wrong power of γ would pass a test at γ = 1.','قوة خاطئة لـ γ تنجح في اختبار عند γ = 1.']],[['It is faster','أسرع'],['γ = 1 is not allowed','γ = 1 غير مسموح']]),
+]);
+
 export const MS505 = true;
