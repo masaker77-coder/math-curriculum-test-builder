@@ -1031,4 +1031,225 @@ lesson('506',80,[
   Q('Why use ``max(E(:))`` rather than ``max(E)``?','لماذا نستخدم ``max(E(:))`` بدل ``max(E)``؟',['``max(E)`` gives the maximum of each column; ``E(:)`` gives one overall maximum','``max(E)`` تعطي أكبر قيمة لكل عمود، و ``E(:)`` تعطي أكبر قيمة كلية'],[['Or ``max(E, [], "all")`` in recent releases.','أو ``max(E, [], "all")`` في الإصدارات الحديثة.']],[['They are the same','متطابقتان'],['E(:) is faster','E(:) أسرع']]),
 ]);
 
+/* ---- 506 · Unit 9 (lessons 81–90): spectral and fractional computing;  Unit 10 (lessons 91–100): mastery ---- */
+lesson('506',81,[
+  ['The Gauss–Legendre nodes are the eigenvalues of the symmetric tridiagonal Jacobi matrix, and the weights are twice the squared first components of its normalized eigenvectors (Golub–Welsch):','عقد جاوس–ليجندر هي القيم الذاتية لمصفوفة جاكوبي المتماثلة ثلاثية القطر، والأوزان ضعف مربعات المركبات الأولى لمتجهاتها الذاتية المطبّعة (Golub–Welsch):'],
+  '$ function [x, w] = gauss_legendre(n)\n    k = 1:n-1;  beta = k./sqrt(4*k.^2 - 1);\n    [V, D] = eig(diag(beta, 1) + diag(beta, -1));\n    [x, i] = sort(diag(D));\n    w = 2*V(1, i)\'.^2;\nend',
+  ['On `[0, 1]` use ``t = (x + 1)/2`` and ``w/2``; for the fractional rule map ``t = s.^(1/lam)`` and keep the weights.','وعلى `[0, 1]` استخدم ``t = (x + 1)/2`` و ``w/2``، وللقاعدة الكسرية حوّل ``t = s.^(1/lam)`` واحتفظ بالأوزان.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2.000000 0.666667',[['The weights sum to 2, and `∫ x^2 = 2/3` exactly.','الأوزان مجموعها 2، و `∫ x^2 = 2/3` بالضبط.']],['$ 1.000000 0.666667','$ 2.000000 0.333333','$ 2.000000 2.000000'],'n = 5;  k = 1:n-1;  beta = k./sqrt(4*k.^2 - 1);\n[V, D] = eig(diag(beta, 1) + diag(beta, -1));\n[x, i] = sort(diag(D));  w = 2*V(1, i)\'.^2;\nfprintf("%.6f %.6f\\n", sum(w), w\'*x.^2)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.861136',[['The largest node for n = 4.','أكبر عقدة عند n = 4.']],['$ 0.339981','$ 0.774597','$ 0.906180'],'n = 4;  k = 1:n-1;  beta = k./sqrt(4*k.^2 - 1);\nx = sort(eig(diag(beta, 1) + diag(beta, -1)));\nfprintf("%.6f\\n", x(end))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.718282',['∫_0^1 e^t dt = e − 1'],['$ 2.718282','$ 1.000000','$ 0.718282'],'n = 6;  k = 1:n-1;  beta = k./sqrt(4*k.^2 - 1);\n[V, D] = eig(diag(beta, 1) + diag(beta, -1));\n[x, i] = sort(diag(D));  w = 2*V(1, i)\'.^2;\nt = (x + 1)/2;  wt = w/2;\nfprintf("%.6f\\n", wt\'*exp(t))'),
+  Q('Why sort the eigenvalues and reorder V with the same index?','لماذا تُرتب القيم الذاتية ويُعاد ترتيب V بالفهرس نفسه؟',['Each weight must stay with its node','يجب أن يبقى كل وزن مع عقدته'],[['eig does not promise an order for every matrix type.','eig لا تضمن ترتيباً لكل نوع من المصفوفات.']],[['To normalize the weights','لتطبيع الأوزان'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('506',82,[
+  ['Differentiation matrix at nodes x from the barycentric weights:','مصفوفة التفاضل عند العقد x من الأوزان الباريسنترية:'],
+  '$ n = numel(x);  x = x(:);\ndx = x - x.\' + eye(n);              % x_i - x_j, with ones on the diagonal\nlam = 1./prod(dx, 2);               % barycentric weights\nD = (lam.\'./lam)./dx;\nD(1:n+1:end) = 0;\nD(1:n+1:end) = -sum(D, 2);           % rows sum to zero',
+  ['Implicit expansion (``x - x.\'``, R2016b and later) builds the matrix of differences; ``D(1:n+1:end)`` addresses the diagonal. ``D*u`` differentiates the interpolant exactly.','والتوسع الضمني (``x - x.\'`` من R2016b) يبني مصفوفة الفروق، و ``D(1:n+1:end)`` تعنون القطر. و ``D*u`` تشتق كثيرة الاستكمال بالضبط.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [-1.5 2 -0.5;-0.5 0 0.5;0.5 -2 1.5]',[['The classical 3-point matrix.','المصفوفة الكلاسيكية للنقاط الثلاث.']],['$ [-0.5 0 0.5;-0.5 0 0.5;-0.5 0 0.5]','$ [1 -2 1;1 -2 1;1 -2 1]','$ [0 0.5 0;-0.5 0 0.5;0 -0.5 0]'],'x = [-1; 0; 1];  n = 3;\ndx = x - x.\' + eye(n);\nlam = 1./prod(dx, 2);\nD = (lam.\'./lam)./dx;\nD(1:n+1:end) = 0;  D(1:n+1:end) = -sum(D, 2);\ndisp(mat2str(D + 0))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['Exact for `x^9` with 12 Chebyshev points.','مضبوطة لـ `x^9` مع 12 نقطة تشيبيشيف.']],['$ 0','$ 9','$ -1'],'n = 12;  x = cos(pi*(0:n-1)\'/(n-1));\ndx = x - x.\' + eye(n);\nlam = 1./prod(dx, 2);\nD = (lam.\'./lam)./dx;\nD(1:n+1:end) = 0;  D(1:n+1:end) = -sum(D, 2);\ndisp(norm(D*x.^9 - 9*x.^8, Inf) < 1e-9)'),
+  Q('Which entries does ``D(1:n+1:end)`` address?','أي عناصر تعنونها ``D(1:n+1:end)``؟',['The diagonal: in column-major order the diagonal entries are n + 1 apart','القطر: في ترتيب الأعمدة تبعد العناصر القطرية n + 1 بعضها عن بعض'],[['Linear indices 1, n + 2, 2n + 3, …','الفهارس الخطية 1 و n + 2 و 2n + 3 و …']],[['The first row','الصف الأول'],['Every other entry','عنصراً بعد عنصر']]),
+  Q('What is ``D*ones(n, 1)``?','ما ``D*ones(n, 1)``؟','$ zeros(n, 1)',[['The derivative of a constant.','مشتقة الثابت.']],['$ ones(n, 1)','$ x','$ n']),
+]);
+
+lesson('506',83,[
+  ['Chebyshev collocation for `u″ = f`, `u(±1) = 0`: square D, keep the interior rows and columns, solve:','تجميع تشيبيشيف لـ `u″ = f` مع `u(±1) = 0`: ربّع D وأبقِ الصفوف والأعمدة الداخلية وحلّ:'],
+  '$ N = 16;  x = cos(pi*(0:N)\'/N);\nD = diffmat(x);  D2 = D^2;\nu = zeros(N + 1, 1);\nu(2:N) = D2(2:N, 2:N) \\ exp(x(2:N));\nexact = exp(x) - x*sinh(1) - cosh(1);',
+  ['The boundary values are zero, so their columns are dropped. For smooth f the error falls exponentially until rounding (`κ ~ N^4`) stops it near `10^{−13}`.','والقيم الحدية أصفار فتُحذف أعمدتها. وللدوال الملساء f يتناقص الخطأ أسياً حتى يوقفه التقريب (`κ ~ N^4`) قرب `10^{−13}`.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['N = 16 gives about 12 digits.','N = 16 تعطي نحو 12 رقماً.']],['$ 0','$ 16','$ 1e-3'],'N = 16;  x = cos(pi*(0:N)\'/N);  n = N + 1;\ndx = x - x.\' + eye(n);  lam = 1./prod(dx, 2);\nD = (lam.\'./lam)./dx;  D(1:n+1:end) = 0;  D(1:n+1:end) = -sum(D, 2);\nD2 = D^2;  u = zeros(n, 1);\nu(2:N) = D2(2:N, 2:N) \\ exp(x(2:N));\ndisp(norm(u - (exp(x) - x*sinh(1) - cosh(1)), Inf) < 1e-10)'),
+  Q('With nodes `{−1, 0, 1}` and `f = 2`, what is `u(0)`?','مع العقد `{−1, 0, 1}` و `f = 2` ما `u(0)`؟','−1',['u_0 − 2u_1 + u_2 = 2,   u_0 = u_2 = 0',['Exact: `u = x^2 − 1`.','مضبوط: `u = x^2 − 1`.']],['1','0','−2']),
+  Q('How many interior unknowns are there for N = 16?','كم مجهولاً داخلياً عند N = 16؟','15',['N − 1'],['17','16','14']),
+  Q('How should non-zero boundary values `u(1) = a`, `u(−1) = b` be handled?','كيف تُعالج القيم الحدية غير الصفرية `u(1) = a` و `u(−1) = b`؟',['Move their columns to the right-hand side: subtract ``D2(2:N, [1 N+1])*[a; b]``','انقل أعمدتها إلى الطرف الأيمن: اطرح ``D2(2:N, [1 N+1])*[a; b]``'],[['x(1) = 1 and x(N+1) = −1 for these points.','x(1) = 1 و x(N+1) = −1 لهذه النقاط.']],[['Ignore them','تجاهلها'],['Add them to the diagonal','أضفها إلى القطر']]),
+]);
+
+lesson('506',84,[
+  ['Galerkin with `φ_k = P_k − P_{k+2}` for `−u″ = f`, `u(±1) = 0`: the stiffness matrix is ``diag(4*(0:N) + 6)``, and the right-hand side comes from Gauss quadrature:','جاليركن بالأساس `φ_k = P_k − P_{k+2}` لـ `−u″ = f` مع `u(±1) = 0`: مصفوفة الجساءة ``diag(4*(0:N) + 6)``، والطرف الأيمن من تربيع جاوس:'],
+  '$ [xq, wq] = gauss_legendre(N + 10);\nP = legendre_table(N + 2, xq);          % P(:, k+1) = P_k(xq)\nPhi = P(:, 1:N+1) - P(:, 3:N+3);\nb = Phi.\' * (wq .* f(xq));\nc = b ./ (4*(0:N)\' + 6);',
+  ['The solve is a division. The error decays spectrally for smooth f; this is the Legendre–Galerkin method of Course 501, Unit 5.','والحل قسمة. والخطأ يتناقص طيفياً للدوال الملساء، وهذه طريقة ليجندر–جاليركن في المقرر 501، الوحدة 5.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.333333',[['For `f = 1`: `⟨1, φ_0⟩ = 2` and `c_0 = 2/6`.','لـ `f = 1`: `⟨1, φ_0⟩ = 2` و `c_0 = 2/6`.']],['$ 0.5','$ 0.666667','$ 0.166667'],'x = [-1; 1]/sqrt(3);  w = [1; 1];\nphi0 = 1 - (3*x.^2 - 1)/2;\nfprintf("%.6f\\n", (w.\'*phi0)/6)'),
+  Q('What is the stiffness entry for k = 3?','ما عنصر الجساءة عند k = 3؟','18',['4·3 + 6'],['10','14','22']),
+  Q('Which function is `c_0φ_0` for `f = 1`?','ما الدالة `c_0φ_0` عند `f = 1`؟','#f{1 − x^2}{2}',['#f{1}{3}(1 − P_2) = #f{1}{3}·#f{3}{2}(1 − x^2)'],['1 − x^2','#f{1 − x^2}{3}','#f{x^2}{2}']),
+  Q('Why use N + 10 quadrature points?','لماذا تُستخدم N + 10 نقطة تربيع؟',['So that the integrals `⟨f, φ_k⟩` are accurate and do not limit the error','حتى تكون التكاملات `⟨f, φ_k⟩` دقيقة ولا تحد الخطأ'],[['`fφ_k` has higher degree than φ_k.','درجة `fφ_k` أعلى من φ_k.']],[['To make the system square','لجعل النظام مربعاً'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('506',85,[
+  ['The coefficients `E_{n,r} = (−1)^{n−r}(n + r)!/((n − r)!(r!)^2)` of the fractional Legendre functions `L_n^{λ}(t) = Σ_r E_{n,r}t^{rλ}`:','المعاملات `E_{n,r} = (−1)^{n−r}(n + r)!/((n − r)!(r!)^2)` لدوال ليجندر الكسرية `L_n^{λ}(t) = Σ_r E_{n,r}t^{rλ}`:'],
+  '$ E = zeros(M + 1);\nfor n = 0:M\n    for r = 0:n\n        E(n+1, r+1) = (-1)^(n-r)*factorial(n+r) ...\n                      / (factorial(n-r)*factorial(r)^2);\n    end\nend\nL = (t(:).^((0:M)*lam)) * E.\';      % L(i, n+1) = L_n^lam(t_i)',
+  ['Row n + 1 holds the powers of `P_n^*`. The name ``E`` is fine in MATLAB (it is ``exp(1)`` that gives e), but the entries grow fast: `E_{20,20} ≈ 1.4 × 10^{11}`.','والصف n + 1 يحمل قوى `P_n^*`. والاسم ``E`` مقبول في MATLAB (فالعدد e هو ``exp(1)``)، لكن العناصر تكبر بسرعة: `E_{20,20} ≈ 1.4 × 10^{11}`.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1 -6 6]',['P_2^*(t) = 1 − 6t + 6t^2'],['$ [6 -6 1]','$ [-1 3 0]','$ [1 6 6]'],'n = 2;  e = zeros(1, 3);\nfor r = 0:n\n    e(r+1) = (-1)^(n-r)*factorial(n+r)/(factorial(n-r)*factorial(r)^2);\nend\ndisp(mat2str(e))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.38e+11',['#f{40!}{(20!)^2}'],['$ 2.00e+01','$ 4.00e+01','$ 1.00e+00'],'fprintf("%.2e\\n", factorial(40)/factorial(20)^2)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['Every row of E sums to `P_n^*(1) = 1`.','كل صف في E مجموعه `P_n^*(1) = 1`.']],['$ 0','$ -1','$ 5'],'n = 4;  s = 0;\nfor r = 0:n\n    s = s + (-1)^(n-r)*factorial(n+r)/(factorial(n-r)*factorial(r)^2);\nend\ndisp(s)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The table reproduces `L_2^{1/2}(t) = P_2(2#r{t} − 1)` on a grid.','الجدول يعيد `L_2^{1/2}(t) = P_2(2#r{t} − 1)` على شبكة.']],['$ 0','$ 3','$ Error'],'t = linspace(0, 1, 7)\';  lam = 0.5;  e = [1 -6 6];\nL2 = (t.^((0:2)*lam))*e.\';\nz = 2*t.^lam - 1;\ndisp(norm(L2 - (3*z.^2 - 1)/2) < 1e-12)'),
+]);
+
+lesson('506',86,[
+  ['Theorem 3.1 in MATLAB, and an exact check through the power coefficients of `L_i^{γ}`:','النظرية 3.1 في MATLAB، وتحقق مضبوط عبر معاملات القوى لـ `L_i^{γ}`:'],
+  '$ [r, j] = ndgrid(0:N, 0:N);\nmask = r > j & mod(r - j, 2) == 0;\nD2 = mask .* (4/gam^2*(r - j)/2.*(2*j + 1).*(r + j + 1));\n% check: C(i+1, :) = powers of L_i (from E with 1/gam^p); then\n% second derivative of each row  ==  D2 * C',
+  ['Comparing coefficient arrays checks the theorem exactly for every row at once, without sampling points.','ومقارنة مصفوفات المعاملات تتحقق من النظرية بالضبط لكل الصفوف دفعة واحدة دون أخذ نقاط.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['`D^{(2)}C` equals the second derivatives of the rows of C for N = 6, γ = 3.','`D^{(2)}C` تساوي المشتقات الثانية لصفوف C عند N = 6 و γ = 3.']],['$ 0','$ 6','$ Error'],'N = 6;  gam = 3;\nC = zeros(N + 1);\nfor i = 0:N\n    for p = 0:i\n        C(i+1, p+1) = (-1)^(i-p)*factorial(i+p) ...\n                      / (factorial(i-p)*factorial(p)^2*gam^p);\n    end\nend\nC2 = zeros(N + 1);  p = 0:N-2;\nC2(:, 1:N-1) = C(:, 3:N+1) .* ((p + 2).*(p + 1));\n[r, j] = ndgrid(0:N, 0:N);\nmask = r > j & mod(r - j, 2) == 0;\nD2 = mask .* (4/gam^2*(r - j)/2.*(2*j + 1).*(r + j + 1));\ndisp(norm(D2*C - C2) < 1e-9*norm(C2))'),
+  Q('With γ = 1, what is `d_{4,2}`?','مع γ = 1 ما `d_{4,2}`؟','140',['4·1·5·7'],['35','70','0']),
+  Q('In the check, why are the power coefficients divided by `γ^p`?','في الفحص لماذا تُقسم معاملات القوى على `γ^p`؟',['`L_i^{γ}(x) = P_i^*(x/γ)`, so each power `x^p` gets `γ^{−p}`','`L_i^{γ}(x) = P_i^*(x/γ)` فتأخذ كل قوة `x^p` العامل `γ^{−p}`'],[['The guide’s formula for `L_i^{γ}`.','صيغة الدليل لـ `L_i^{γ}`.']],[['To normalize','للتطبيع'],['By mistake','خطأً']]),
+  Q('Which entry of D2 holds `d_{r,j}`?','أي عنصر في D2 يحمل `d_{r,j}`؟','$ D2(r + 1, j + 1)',[['Indices from 1.','الفهارس من 1.']],['$ D2(r, j)','$ D2(j + 1, r + 1)','$ D2(r - 1, j - 1)']),
+]);
+
+lesson('506',87,[
+  ['Theorem 3.2 vectorized, and the hand example of the guide as the first test:','النظرية 3.2 بصورة متجهية، والمثال اليدوي في الدليل أول اختبار:'],
+  '$ k = 0:M;\ng = gamma(k*lam + 1)./gamma(k*lam + mu + 1);\n[K, S] = ndgrid(k, k);\nW = 1./(1 + K + S + mu/lam);\nchi = (E.*g)*W*E.\' .* (2*k + 1);     % D^{-mu} Phi ≈ chi Phi\n% M = 1, lam = 1/2, mu = 3/2:  [0.18806 0.33851; -0.01082 0.01598]',
+  ['``E.*g`` scales column k of E by `g_k` (implicit expansion), and the final ``.* (2*k + 1)`` scales column j by `2j + 1`.','و ``E.*g`` تحجّم العمود k من E بـ `g_k` (توسع ضمني)، و ``.* (2*k + 1)`` الأخيرة تحجّم العمود j بـ `2j + 1`.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0.18806 0.33851;-0.01082 0.01598]',[['The guide’s hand example.','المثال اليدوي في الدليل.']],['$ [0.25 0.45;0 0]','$ [0.18806 -0.01082;0.33851 0.01598]','$ [1 0;0 1]'],'M = 1;  lam = 0.5;  mu = 1.5;\nE = [1 0; -1 2];  k = 0:M;\ng = gamma(k*lam + 1)./gamma(k*lam + mu + 1);\n[K, S] = ndgrid(k, k);\nW = 1./(1 + K + S + mu/lam);\nchi = (E.*g)*W*E.\' .* (2*k + 1);\ndisp(mat2str(round(chi*1e5)/1e5))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0.5 0.5;-0.1667 0]',[['For λ = μ = 1, χ is the Legendre integration matrix with the last term dropped.','عند λ = μ = 1 تكون χ مصفوفة تكامل ليجندر مع حذف الحد الأخير.']],['$ [1 0;0 1]','$ [0.5 0;0.5 0]','$ [0.5 0.5;0.1667 0]'],'M = 1;  lam = 1;  mu = 1;\nE = [1 0; -1 2];  k = 0:M;\ng = gamma(k*lam + 1)./gamma(k*lam + mu + 1);\n[K, S] = ndgrid(k, k);\nW = 1./(1 + K + S + mu/lam);\nchi = (E.*g)*W*E.\' .* (2*k + 1);\ndisp(mat2str(round(chi*1e4)/1e4 + 0))'),
+  Q('Compute `χ_{0,0}` for λ = 1/2, μ = 3/2.','احسب `χ_{0,0}` عند λ = 1/2 و μ = 3/2.','#f{1}{4Γ(5/2)} ≈ 0.18806',['#f{Γ(1)}{Γ(5/2)(1 + 3)}'],['#f{1}{Γ(5/2)} ≈ 0.7523','#f{1}{4}','#f{1}{3Γ(5/2)} ≈ 0.2508']),
+  Q('Why does ``E.*g`` scale columns, not rows?','لماذا تحجّم ``E.*g`` الأعمدة لا الصفوف؟',['g is a row vector, so implicit expansion repeats it down the rows','g متجه صفي فيكرره التوسع الضمني نزولاً على الصفوف'],[['Each column k is multiplied by `g_k`.','كل عمود k يُضرب في `g_k`.']],[['It scales rows','بل تحجّم الصفوف'],['It is a matrix product','ضرب مصفوفي']]),
+]);
+
+lesson('506',88,[
+  ['Solve `D^{α}y = −y`, `y(0) = 1` in integrated form, `y = 1 − D^{−α}y`, i.e. `(I + χ^T)c = e_0`:','حل `D^{α}y = −y` مع `y(0) = 1` بالصيغة التكاملية `y = 1 − D^{−α}y` أي `(I + χ^T)c = e_0`:'],
+  '$ chi = chi_matrix(M, lam, alpha);\nc = (eye(M + 1) + chi.\') \\ [1; zeros(M, 1)];\ny1 = sum(c);                       % y(1), since L_n(1) = 1\nerr = abs(y1 - erfcx(1))           % E_{1/2}(-1) = e*erfc(1)',
+  ['With α = λ = 1/2 the error falls quickly up to M ≈ 10, then grows: the power form of `χ` loses digits as the E coefficients grow. Variable precision (``vpa``) removes the floor.','ومع α = λ = 1/2 يتناقص الخطأ بسرعة حتى M ≈ 10 ثم يكبر: صيغة القوى لـ `χ` تفقد الأرقام مع كبر معاملات E. والدقة المتغيرة (``vpa``) تزيل هذه الأرضية.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2.8e-04 5.7e-08',[['Errors at t = 1 for M = 4 and M = 8.','الأخطاء عند t = 1 لـ M = 4 و M = 8.']],['$ 1.2e-02 2.8e-04','$ 1.0e-04 1.0e-08','$ 2.8e-04 2.8e-04'],'lam = 0.5;  mu = 0.5;  out = zeros(1, 2);  Ms = [4 8];\nfor q = 1:2\n    M = Ms(q);  E = zeros(M + 1);\n    for n = 0:M\n        for r = 0:n\n            E(n+1, r+1) = (-1)^(n-r)*factorial(n+r) ...\n                      / (factorial(n-r)*factorial(r)^2);\n        end\n    end\n    k = 0:M;  g = gamma(k*lam + 1)./gamma(k*lam + mu + 1);\n    [K, S] = ndgrid(k, k);  W = 1./(1 + K + S + mu/lam);\n    chi = (E.*g)*W*E.\' .* (2*k + 1);\n    c = (eye(M + 1) + chi.\') \\ [1; zeros(M, 1)];\n    out(q) = abs(sum(c) - erfcx(1));\nend\nfprintf("%.1e %.1e\\n", out)'),
+  Q('Why is `y(1) = Σ c_n`?','لماذا يكون `y(1) = Σ c_n`؟',['Every `L_n^{λ}(1) = P_n^*(1) = 1`','كل `L_n^{λ}(1) = P_n^*(1) = 1`'],[['So the value at t = 1 is the sum of the coefficients.','فالقيمة عند t = 1 مجموع المعاملات.']],[['By definition of c','بتعريف c'],['Only for M = 1','فقط عند M = 1']]),
+  Q('Why is the matrix `I + χ^T` and not `I + χ`?','لماذا تكون المصفوفة `I + χ^T` لا `I + χ`؟','c^TΦ + c^TχΦ = e_0^TΦ',['(I + χ)^T c = e_0'],['χc = e_0','c^TΦ = c^TχΦ','(I − χ)c = e_0']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.427584',['E_{1/2}(−1) = e·erfc(1)'],['$ 0.367879','$ 0.5','$ 1'],'fprintf("%.6f\\n", erfcx(1))'),
+]);
+
+lesson('506',89,[
+  ['A time-fractional diffusion problem with a manufactured solution, the test problem for the full method:','مسألة انتشار كسرية زمنية بحل مُصنَّع، وهي مسألة اختبار الطريقة كاملة:'],
+  'D_t^{1/2}u = u_{xx} + f,   0 < x < 1,     u = t^{3/2} sin(πx),     f = (#f{3#r{π}}{4} t + π^2 t^{3/2}) sin(πx)',
+  ['The ingredients: fractional Legendre functions in t with λ = 1/2 (then `t^{3/2} = s^3`), shifted Legendre in x, χ for `D_t^{−1/2}`, `D^{(2)}` for `u_{xx}`, collocation points in both variables, and one linear solve.','والمكونات: دوال ليجندر الكسرية في t مع λ = 1/2 (فتكون `t^{3/2} = s^3`)، وليجندر المزاحة في x، و χ لـ `D_t^{−1/2}`، و `D^{(2)}` لـ `u_{xx}`، ونقاط التجميع في المتغيرين، وحل خطي واحد.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 11.198945',['f(#f{1}{2}, 1) = #f{3#r{π}}{4} + π^2'],['$ 9.869604','$ 1.329340','$ 0.000000'],'f = @(x, t) (gamma(2.5)*t + pi^2*t.^1.5).*sin(pi*x);\nfprintf("%.6f\\n", f(0.5, 1))'),
+  Q('Which M makes the time part exact with λ = 1/2?','أي M يجعل الجزء الزمني مضبوطاً مع λ = 1/2؟','M = 3',['t^{3/2} = s^3'],['M = 1','M = 2','M = 6']),
+  Q('How many unknowns are there for N = 8 in x and M = 4 in t?','كم مجهولاً عند N = 8 في x و M = 4 في t؟','45',['(N + 1)(M + 1) = 9·5'],['32','40','36']),
+  Q('Write the integrated form, with `u(x, 0) = 0`.','اكتب الصيغة التكاملية مع `u(x, 0) = 0`.','u = D_t^{−1/2}(u_{xx} + f)',['D_t^{−1/2}D_t^{1/2}u = u − u(x, 0)'],['u = D_t^{1/2}(u_{xx} + f)','u = u_{xx} + f','u = 1 + D_t^{−1/2}u']),
+]);
+
+lesson('506',90,[
+  ['With `u ≈ Φ(t)^T𝒴Ψ(x)` the integrated equation becomes `𝒴 − χ^T𝒴D^{(2)} = ℋ`. In Kronecker form, with ``Y(:)`` column stacking:','مع `u ≈ Φ(t)^T𝒴Ψ(x)` تصبح المعادلة التكاملية `𝒴 − χ^T𝒴D^{(2)} = ℋ`. وبصيغة كرونيكر مع رص الأعمدة ``Y(:)``:'],
+  '$ n = (M + 1)*(N + 1);\nK = eye(n) - kron(D2.\', chi.\');\ny = K \\ H(:);\nY = reshape(y, M + 1, N + 1);\n% then replace the boundary rows of K by\n% the conditions u(0, t) = u(1, t) = 0',
+  ['Time operators act on the left of 𝒴 (rows), space operators on the right (columns). The boundary conditions are imposed by replacing equations; Kronecker products keep the assembly short.','ومؤثرات الزمن تعمل على يسار 𝒴 (الصفوف) ومؤثرات المكان على يمينها (الأعمدة). وتُفرض الشروط الحدية باستبدال معادلات، وضروب كرونيكر تبقي التجميع قصيراً.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The Kronecker form agrees with the matrix form.','صيغة كرونيكر تتفق مع الصيغة المصفوفية.']],['$ 0','$ 20','$ Error'],'M = 3;  N = 4;\nchi = magic(M + 1)/10;  D2 = hilb(N + 1);\nY = reshape(1:(M+1)*(N+1), M + 1, N + 1)/7;\nlhs = Y - chi.\'*Y*D2;\nK = eye((M+1)*(N+1)) - kron(D2.\', chi.\');\ndisp(norm(lhs(:) - K*Y(:)) < 1e-10)'),
+  Q('How many unknowns for M = 6, N = 10?','كم مجهولاً عند M = 6 و N = 10؟','77',['7·11'],['60','66','70']),
+  Q('Why is it ``kron(D2.\', chi.\')`` and not ``kron(chi.\', D2)``?','لماذا هي ``kron(D2.\', chi.\')`` لا ``kron(chi.\', D2)``؟','vec(AYB) = (B^T ⊗ A) vec(Y)',['A = χ^T,   B = D^{(2)}'],['vec(AYB) = (A ⊗ B) vec(Y)','vec(AYB) = (A^T ⊗ B) vec(Y)','vec(AYB) = (B ⊗ A^T) vec(Y)']),
+  Q('After the solve, how is the coefficient matrix 𝒴 recovered?','بعد الحل كيف تُستعاد مصفوفة المعاملات 𝒴؟','$ Y = reshape(y, M + 1, N + 1);',[['The inverse of ``Y(:)``.','معكوس ``Y(:)``.']],['$ Y = reshape(y, N + 1, M + 1);','$ Y = y\';','$ Y = y(:);']),
+]);
+
+lesson('506',91,[
+  ['Measure before optimizing. ``tic``/``toc`` time a block, ``timeit`` times a function reliably, and the Profiler shows where the time goes line by line:','قِس قبل التحسين. ``tic``/``toc`` تقيس كتلة، و ``timeit`` تقيس دالة بموثوقية، و Profiler يبيّن أين يذهب الوقت سطراً سطراً:'],
+  '$ tic;  chi = chi_matrix(20, 0.5, 1.9);  toc\nt = timeit(@() chi_matrix(20, 0.5, 1.9))\nprofile on;  solve_problem(p, 12, 12);  profile viewer',
+  ['``timeit`` runs the function several times and returns a typical time, so it is better than one ``tic``/``toc`` for short computations. In spectral codes, building matrices or evaluating symbolic expressions usually dominates, not the solve.','و ``timeit`` تشغّل الدالة عدة مرات وتعيد زمناً نموذجياً، فهي أفضل من ``tic``/``toc`` واحدة للحسابات القصيرة. وفي الأكواد الطيفية يسيطر عادة بناء المصفوفات أو حساب المقادير الرمزية لا الحل.'],
+],[
+  Q('Which tool shows the time spent in each line of a function?','أي أداة تُظهر الزمن المستغرق في كل سطر من دالة؟','$ profile on ... profile viewer',[['The Profiler report links to each line.','تقرير Profiler يربط كل سطر.']],['$ tic ... toc','$ timeit','$ clock']),
+  Q('Why is ``timeit`` preferred to a single ``tic``/``toc`` for a short function?','لماذا تُفضَّل ``timeit`` على ``tic``/``toc`` واحدة لدالة قصيرة؟',['It repeats the call and returns a typical time, reducing noise','تكرر الاستدعاء وتعيد زمناً نموذجياً فتقلل التشويش'],[['The first call may include loading and compiling.','الاستدعاء الأول قد يتضمن التحميل والترجمة.']],[['It is exact','مضبوطة'],['It is required','إلزامية']]),
+  Q('The solve takes 1 ms and the matrix assembly 2 s. What should be optimized?','الحل يستغرق 1 ms وتجميع المصفوفة 2 s. ماذا يجب تحسينه؟',['The assembly','التجميع'],[['Vectorize it or reuse precomputed tables.','حوّله إلى متجهي أو أعد استخدام جداول محسوبة مسبقاً.']],[['The solve','الحل'],['Nothing','لا شيء']]),
+  Q('What does ``toc`` return when called as ``t = toc``?','ماذا تعيد ``toc`` عند استدعائها ``t = toc``؟',['The elapsed time in seconds since the last ``tic``','الزمن المنقضي بالثواني منذ آخر ``tic``'],[['Without an output it prints the time instead.','ودون مخرج تطبع الزمن بدلاً من ذلك.']],[['The CPU time of the session','زمن المعالج للجلسة'],['Nothing','لا شيء']]),
+]);
+
+lesson('506',92,[
+  ['Rules for fast MATLAB code:','قواعد كود MATLAB السريع:'],
+  '$ % 1. preallocate           e = zeros(1, nN);\n% 2. vectorize             s = sum(w .* f(x));\n% 3. use sparse matrices   A = spdiags(...);\n% 4. factor once           dA = decomposition(A);  x = dA \\ b;\n% 5. leave symbolic code   f = matlabFunction(expr);\n% 6. avoid growing strings and cell arrays in loops',
+  ['Modern MATLAB compiles loops efficiently, so the biggest gains usually come from algorithms (sparse instead of dense, one factorization instead of many) and from keeping symbolic computations out of numerical loops.','و MATLAB الحديث يترجم الحلقات بكفاءة، فالمكاسب الكبرى تأتي غالباً من الخوارزميات (المتفرق بدل الكثيف، وتحليل واحد بدل كثير) ومن إبقاء الحسابات الرمزية خارج الحلقات العددية.'],
+],[
+  Q('A loop calls ``subs`` on a symbolic expression 10 000 times. What is the fix?','حلقة تستدعي ``subs`` على مقدار رمزي 10 000 مرة. ما الإصلاح؟','$ f = matlabFunction(expr);  values = f(x);',[['One conversion, then fast numeric evaluation on the whole vector.','تحويل واحد ثم حساب عددي سريع على المتجه كله.']],['$ subs(expr, x, values) inside parfor','$ vpa(expr)','$ simplify(expr) first']),
+  Q('The same matrix is solved with 500 right-hand sides one at a time. What is the fix?','المصفوفة نفسها تُحل مع 500 طرف أيمن واحداً واحداً. ما الإصلاح؟',['Factor once (``decomposition`` or ``lu``), or solve all columns at once with ``A \\ B``','حلّل مرة واحدة (``decomposition`` أو ``lu``) أو حلّ كل الأعمدة معاً بـ ``A \\ B``'],[['The factorization is the expensive part.','التحليل هو الجزء المكلف.']],[['Use inv(A)','استخدم inv(A)'],['Use a for loop','استخدم حلقة for']]),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['Solving all right-hand sides at once gives the same result.','حل كل الأطراف اليمنى معاً يعطي النتيجة نفسها.']],['$ 0','$ 500','$ Error'],'A = magic(5) + 5*eye(5);  B = reshape(1:25, 5, 5);\nX1 = A \\ B;  X2 = zeros(5);\nfor k = 1:5, X2(:, k) = A \\ B(:, k); end\ndisp(norm(X1 - X2) < 1e-12)'),
+  Q('Which matrix type makes a 10 000 × 10 000 tridiagonal solve fast?','أي نوع مصفوفة يجعل حل نظام ثلاثي القطر 10 000 × 10 000 سريعاً؟','$ sparse',[['The backslash then uses a banded solver.','فتستخدم الشرطة العكسية حلّالاً شريطياً.']],['$ full','$ single','$ symbolic']),
+]);
+
+lesson('506',93,[
+  ['A project is a folder of functions with a clear layout, put on the path once:','المشروع مجلد دوال بتخطيط واضح يُضاف إلى المسار مرة واحدة:'],
+  '$ mapped_legendre/\n    +ml/                 % package: call as ml.chi_matrix(...)\n        e_table.m  d2_matrix.m  chi_matrix.m  solve.m\n    tests/   test_matrices.m\n    scripts/ convergence_table.m\n% at the start of a session\naddpath(genpath("mapped_legendre"))',
+  ['A package folder ``+ml`` puts the functions in a namespace, so they cannot clash with other functions of the same name. One function per file, named like the file.','ومجلد الحزمة ``+ml`` يضع الدوال في فضاء أسماء فلا تتصادم مع دوال أخرى بالاسم نفسه. ودالة واحدة لكل ملف باسم الملف نفسه.'],
+],[
+  Q('How is ``chi_matrix.m`` inside the package folder ``+ml`` called?','كيف تُستدعى ``chi_matrix.m`` داخل مجلد الحزمة ``+ml``؟','$ ml.chi_matrix(M, lam, mu)',[['The package name comes first.','اسم الحزمة يأتي أولاً.']],['$ chi_matrix(M, lam, mu)','$ +ml/chi_matrix(M, lam, mu)','$ ml_chi_matrix(M, lam, mu)']),
+  Q('What does ``addpath(genpath("mapped_legendre"))`` do?','ماذا تفعل ``addpath(genpath("mapped_legendre"))``؟',['Adds the folder and all its subfolders to the search path','تضيف المجلد وكل مجلداته الفرعية إلى مسار البحث'],[['Package folders themselves are found through their parent.','ومجلدات الحزم نفسها تُعثر عليها عبر مجلدها الأب.']],[['Copies the files','تنسخ الملفات'],['Runs every script','تشغّل كل ملف']]),
+  Q('Why one function per file, named like the file?','لماذا دالة واحدة لكل ملف باسم الملف؟',['MATLAB finds a function by its file name on the path','MATLAB يجد الدالة باسم ملفها على المسار'],[['Local helper functions may follow inside the same file.','ويمكن أن تتبعها دوال مساعدة محلية في الملف نفسه.']],[['It is faster','أسرع'],['There is no reason','لا سبب']]),
+  Q('Where should the convergence study go?','أين يجب أن توضع دراسة التقارب؟',['In ``scripts/``, separate from the library functions','في ``scripts/`` منفصلة عن دوال المكتبة'],[['The library stays reusable and testable.','تبقى المكتبة قابلة لإعادة الاستخدام والاختبار.']],[['Inside solve.m','داخل solve.m'],['In the Command Window only','في نافذة الأوامر فقط']]),
+]);
+
+lesson('506',94,[
+  ['A Live Script (``.mlx``) mixes formatted text, equations, code and results in one document, like a notebook:','الملف الحي (``.mlx``) يخلط النص المنسق والمعادلات والكود والنتائج في مستند واحد مثل الدفتر:'],
+  '$ %% Convergence of the mapped Legendre method\n% Text cells explain; equations are typed with the equation editor (LaTeX).\nN = 4:2:16;\ne = arrayfun(@(n) run_error(n), N);\nsemilogy(N, e, "o-")       % the figure appears next to the code\n% Live controls: a slider for lam, a drop-down for the example',
+  ['Live Scripts can be exported to PDF, HTML or LaTeX, which makes them good reports. For version control, plain ``.m`` files are easier to compare; recent releases can also save Live Scripts as ``.m``.','ويمكن تصدير الملفات الحية إلى PDF أو HTML أو LaTeX فتصلح تقارير. ولإدارة النسخ تكون ملفات ``.m`` العادية أسهل في المقارنة، والإصدارات الحديثة تحفظ الملفات الحية بصيغة ``.m`` أيضاً.'],
+],[
+  Q('What is the file extension of a Live Script?','ما امتداد ملف الملف الحي؟','$ .mlx',[['Plain scripts and functions use .m.','الملفات النصية والدوال العادية تستخدم .m.']],['$ .m','$ .mat','$ .fig']),
+  Q('What does ``arrayfun(@(n) run_error(n), N)`` do?','ماذا تفعل ``arrayfun(@(n) run_error(n), N)``؟',['Calls run_error for each element of N and collects the results in an array','تستدعي run_error لكل عنصر في N وتجمع النتائج في مصفوفة'],[['A compact loop.','حلقة مختصرة.']],[['Runs in parallel','تعمل بالتوازي'],['Plots the errors','ترسم الأخطاء']]),
+  Q('Which format is easier to compare in Git: .mlx or .m?','أي صيغة أسهل للمقارنة في Git: ‏.mlx أم .m؟','$ .m',[['.m is plain text; .mlx is a zipped document.','.m نص عادي و .mlx مستند مضغوط.']],['$ .mlx','$ both equally','$ neither']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1 4 9]',[['arrayfun applies the function to each element.','arrayfun تطبق الدالة على كل عنصر.']],['$ [1 2 3]','$ 14','$ [2 4 6]'],'disp(mat2str(arrayfun(@(n) n^2, 1:3)))'),
+]);
+
+lesson('506',95,[
+  ['Unit tests check known results automatically. A function-based test file:','اختبارات الوحدة تتحقق من نتائج معروفة تلقائياً. ملف اختبار قائم على الدوال:'],
+  '$ % file tests/test_matrices.m\nfunction tests = test_matrices\n    tests = functiontests(localfunctions);\nend\nfunction test_hand_example(tc)\n    C = ml.chi_matrix(1, 0.5, 1.5);\n    verifyEqual(tc, C(1, 1), 0.18806, "AbsTol", 1e-5);\nend\n% run with:  results = runtests("tests")',
+  ['``verifyEqual`` with a tolerance compares floats; ``assert(cond, msg)`` is the simplest check and also works in scripts and in GNU Octave.','و ``verifyEqual`` مع سماحية تقارن الأعداد العشرية، و ``assert(cond, msg)`` أبسط فحص ويعمل في الملفات النصية و GNU Octave أيضاً.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ failed: d2(2,0) should be 12',[['The assertion fails because the value is wrong on purpose.','يفشل التأكيد لأن القيمة خاطئة عمداً.']],['$ 12','$ passed','$ 1'],'d = 6;\ntry\n    assert(d == 12, "d2(2,0) should be 12");\n    disp("passed")\ncatch err\n    disp([\'failed: \' err.message])\nend'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ passed',[['The value is within the tolerance.','القيمة ضمن السماحية.']],['$ failed','$ 0.18806','$ 1'],'c = 0.188063;\ntry\n    assert(abs(c - 0.18806) < 1e-5);\n    disp("passed")\ncatch\n    disp("failed")\nend'),
+  Q('Which command runs all tests in the folder ``tests``?','أي أمر يشغّل كل الاختبارات في المجلد ``tests``؟','$ runtests("tests")',[['It returns a results array with Passed/Failed flags.','تعيد مصفوفة نتائج فيها علامات النجاح والفشل.']],['$ run tests','$ test all','$ assert("tests")']),
+  Q('Why compare with ``"AbsTol"`` rather than exact equality?','لماذا المقارنة مع ``"AbsTol"`` بدل المساواة الدقيقة؟',['Computed floats differ from printed reference values by rounding','الأعداد المحسوبة تختلف عن القيم المرجعية المطبوعة بالتقريب'],[['The hand example is known to 5 digits.','المثال اليدوي معروف حتى 5 أرقام.']],[['It is faster','أسرع'],['verifyEqual requires it','verifyEqual تتطلبه']]),
+]);
+
+lesson('506',96,[
+  ['Data files: ``save``/``load`` for MATLAB’s own .mat format, ``writematrix``/``readmatrix`` and ``writetable``/``readtable`` for text and spreadsheets:','ملفات البيانات: ``save``/``load`` لصيغة .mat الخاصة بـ MATLAB، و ``writematrix``/``readmatrix`` و ``writetable``/``readtable`` للنصوص وجداول البيانات:'],
+  '$ save("run12.mat", "Y", "err", "p")      % variables, with full precision\nS = load("run12.mat");  S.err\nwritematrix([N(:) e(:)], "errors.csv")\nA = readmatrix("errors.csv");\nfid = fopen("log.txt", "a");  fprintf(fid, "%d %.3e\\n", N, e);  fclose(fid);',
+  ['``.mat`` keeps all digits and types; CSV is for exchange with Python, Mathematica or a spreadsheet. ``load`` into a structure (``S = load(...)``) keeps the workspace clean.','و ``.mat`` تحفظ كل الأرقام والأنواع، و CSV للتبادل مع Python أو Mathematica أو جداول البيانات. والتحميل إلى هيكل (``S = load(...)``) يبقي مساحة العمل نظيفة.'],
+],[
+  Q('Which format keeps the full precision of a matrix and its variable name?','أي صيغة تحفظ الدقة الكاملة للمصفوفة واسم متغيرها؟','$ .mat',[['Written by save, read by load.','تكتبها save وتقرؤها load.']],['$ .csv','$ .txt','$ .png']),
+  Q('Why ``S = load("run12.mat")`` instead of ``load("run12.mat")``?','لماذا ``S = load("run12.mat")`` بدل ``load("run12.mat")``؟',['The variables go into the structure S instead of overwriting workspace variables','تذهب المتغيرات إلى الهيكل S بدل الكتابة فوق متغيرات مساحة العمل'],[['Access them as ``S.err``.','وصول إليها بـ ``S.err``.']],[['It is faster','أسرع'],['load needs an output','load تحتاج مخرجاً']]),
+  Q('Why is ``fclose(fid)`` needed after writing?','لماذا نحتاج ``fclose(fid)`` بعد الكتابة؟',['To flush the data to disk and release the file','لدفع البيانات إلى القرص وتحرير الملف'],[['Unclosed files may lose their last lines.','الملفات غير المغلقة قد تفقد أسطرها الأخيرة.']],[['To delete the file','لحذف الملف'],['It is not needed','لا حاجة']]),
+  Q('Which format do you use to pass an error table to Python?','أي صيغة تستخدم لنقل جدول أخطاء إلى Python؟','$ CSV',[['``numpy.loadtxt`` reads it directly.','``numpy.loadtxt`` تقرؤه مباشرة.']],['$ .fig','$ .mlx','$ .p']),
+]);
+
+lesson('506',97,[
+  ['Translating a Mathematica notebook into MATLAB, the main correspondences:','ترجمة دفتر Mathematica إلى MATLAB، والمقابلات الأساسية:'],
+  '$ Table[f[k], {k, 0, n}]     →  arrayfun(@f, 0:n)   or a vectorized f(0:n)\nLegendreP[n, x]             →  legendreP(n, x)  or the recurrence\nNIntegrate[f, {x, a, b}]    →  integral(f, a, b)\nLinearSolve[A, b]           →  A \\ b\nKroneckerProduct[A, B]      →  kron(A, B)\nFlatten[Transpose[Y]]       →  Y(:)\nm[[i, j]]                   →  m(i, j)        (both from 1)',
+  ['Both languages index from 1, so indices carry over unchanged. The traps: ``1/3`` is exact in Mathematica and a double in MATLAB; Mathematica’s rules (``/.``) become function handles or ``subs``; and MATLAB stores matrices column by column, which is exactly the `vec` of the Kronecker identity.','واللغتان تفهرسان من 1 فتنتقل الفهارس دون تغيير. والفخاخ: ``1/3`` مضبوط في Mathematica وعدد مزدوج في MATLAB، وقواعد Mathematica (``/.``) تصبح مقابض دوال أو ``subs``، و MATLAB يخزن المصفوفات عموداً عموداً وهذا هو `vec` في متطابقة كرونيكر بالضبط.'],
+],[
+  Q('Translate ``Table[k^2, {k, 1, 4}]``.','ترجم ``Table[k^2, {k, 1, 4}]``.','$ (1:4).^2',[['Vectorized; the dot is needed.','متجهية، والنقطة لازمة.']],['$ (1:4)^2','$ table(k^2, 1, 4)','$ [k^2 for k = 1:4]']),
+  Q('The Mathematica entry ``m[[3, 2]]`` becomes what in MATLAB?','العنصر ``m[[3, 2]]`` في Mathematica يصبح ماذا في MATLAB؟','$ m(3, 2)',[['Both index from 1.','الاثنتان تفهرسان من 1.']],['$ m(2, 1)','$ m[3, 2]','$ m{3, 2}']),
+  Q('Translate ``Flatten[Transpose[Y]]``.','ترجم ``Flatten[Transpose[Y]]``.','$ Y(:)',[['Column stacking is MATLAB’s natural order.','رص الأعمدة هو الترتيب الطبيعي في MATLAB.']],['$ Y.\'(:)','$ reshape(Y\', 1, [])','$ flatten(Y)']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1 3 2 4]',[['``Y(:)`` stacks the columns, as ``Flatten[Transpose[Y]]`` does.','``Y(:)`` ترص الأعمدة كما تفعل ``Flatten[Transpose[Y]]``.']],['$ [1 2 3 4]','$ [4 3 2 1]','$ [1 3;2 4]'],'Y = [1 2; 3 4];\ndisp(mat2str(Y(:).\'))'),
+]);
+
+lesson('506',98,[
+  ['GNU Octave is a free program that runs most MATLAB code unchanged. Writing code that runs in both:','GNU Octave برنامج مجاني يشغّل معظم كود MATLAB دون تغيير. ولكتابة كود يعمل في الاثنين:'],
+  '$ % portable                   % Octave only (avoid)\nfprintf("%d\\n", n)          % printf("%d\\n", n)\n% comment                   # comment\nend                         % endfunction, endif, endfor\nx = x + 1;                  % x += 1;\n% functions in a script file need the line  1;  at the top in Octave',
+  ['The numerical core (matrices, backslash, eig, ode45, integral, sparse) works in both. Missing or different in Octave: some toolboxes (Symbolic needs the ``symbolic`` package), ``tiledlayout``, ``bvp4c``, ``pdepe``, and parts of the graphics. Every numerical answer in this course was checked in Octave.','والنواة العددية (المصفوفات والشرطة العكسية و eig و ode45 و integral والمتفرقة) تعمل في الاثنين. والناقص أو المختلف في Octave: بعض الصناديق (الرمزي يحتاج حزمة ``symbolic``)، و ``tiledlayout`` و ``bvp4c`` و ``pdepe`` وأجزاء من الرسم. وكل جواب عددي في هذا المقرر فُحص في Octave.'],
+],[
+  Q('Which comment character works in both MATLAB and Octave?','أي حرف تعليق يعمل في MATLAB و Octave معاً؟','$ %',[['``#`` is Octave only.','``#`` خاص بـ Octave.']],['$ #','$ //','$ --']),
+  Q('Which block ending works in both?','أي نهاية كتلة تعمل في الاثنين؟','$ end',[['``endif``, ``endfor``, ``endfunction`` are Octave only.','``endif`` و ``endfor`` و ``endfunction`` خاصة بـ Octave.']],['$ endif','$ endfunction','$ fi']),
+  Q('Is ``x += 1`` portable MATLAB?','هل ``x += 1`` كود MATLAB محمول؟',['No: write ``x = x + 1``','لا: اكتب ``x = x + 1``'],[['Octave accepts both.','Octave يقبل الاثنين.']],[['Yes','نعم'],['Only in scripts','في الملفات النصية فقط']]),
+  Q('What does this program display, in both MATLAB and Octave?','ماذا يعرض هذا البرنامج في MATLAB و Octave معاً؟','$ 0.8 1.4',[['The numerical core is the same.','النواة العددية واحدة.']],['$ 1.4 0.8','$ 3 5','$ Error'],'A = [2 1; 1 3];\nfprintf("%g %g\\n", A \\ [3; 5])'),
+]);
+
+lesson('506',99,[
+  ['Reproducing a table: run with the paper’s parameters, print in the same format, and compare digit by digit. For Example 1 (exact solution `t^3x^2(1 − x)^2e^x`, ν = 1.9, λ = 1/2) the notebook rerun gives `2.5865 × 10^{−9}` at N = M = 10, Table 1 prints `2.59 × 10^{−9}`:','إعادة إنتاج جدول: شغّل بوسائط البحث واطبع بالصيغة نفسها وقارن رقماً برقم. للمثال 1 (الحل المضبوط `t^3x^2(1 − x)^2e^x` و ν = 1.9 و λ = 1/2) تعطي إعادة تشغيل الدفتر `2.5865 × 10^{−9}` عند N = M = 10، ويطبع الجدول 1 القيمة `2.59 × 10^{−9}`:'],
+  '$ fprintf("%% MATLAB %s, lam = %g, nu = %g\\n", version, lam, nu);\nfprintf("%4s %10s %9s\\n", "N", "error", "time");\nfor N = 4:2:12\n    tic;  e = run_error(N);  dt = toc;\n    fprintf("%4d %10.2e %9.3f\\n", N, e, dt);\nend',
+  ['A difference in the last printed digit is rounding; a constant factor points to a different detail of the scheme, for example h evaluated at the points instead of projected.','والاختلاف في آخر رقم مطبوع تقريب، والعامل الثابت يدل على تفصيل مختلف في الطريقة، مثل حساب h عند النقاط بدل إسقاطها.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 10   2.59e-09',[['Width 4 for N, scientific format with 2 decimals for the error.','عرض 4 لـ N والصيغة العلمية برقمين عشريين للخطأ.']],['$ 10 2.5865e-09','$ 10   0.00','$ 10 2.6e-9'],'fprintf("%4d %10.2e\\n", 10, 2.5865e-9)'),
+  Q('Why is Example 1 exact in time for M ≥ 6 with λ = 1/2?','لماذا يكون المثال 1 مضبوطاً في الزمن عند M ≥ 6 مع λ = 1/2؟','t^3 = s^6',['s = t^{1/2}'],['t^3 = s^3','t^3 = s^{3/2}','t^3 = s^{12}']),
+  Q('Your error is `3.55 × 10^{−11}` and the paper’s `2.50 × 10^{−12}`. What is the factor?','خطؤك `3.55 × 10^{−11}` وخطأ البحث `2.50 × 10^{−12}`. ما العامل؟','≈ 14',['#f{35.5}{2.5}'],['≈ 1.4','≈ 140','≈ 10']),
+  Q('Why print the version and the parameters at the top?','لماذا تُطبع الإصدارة والوسائط في الأعلى؟',['So that the run can be repeated exactly','حتى يمكن تكرار التشغيل بالضبط'],[['The output documents itself.','المخرج يوثق نفسه.']],[['For decoration','للزينة'],['MATLAB requires it','يتطلبه MATLAB']]),
+]);
+
+lesson('506',100,[
+  ['Capstone project: a MATLAB package ``+ml`` for the mapped Legendre method. Requirements: (1) functions ``e_table``, ``d2_matrix``, ``chi_matrix``, ``h_function`` and ``solve`` with help text; (2) tests for the E table, Theorem 3.1 by coefficients, the hand example of Theorem 3.2 and a full solve; (3) the three examples of the paper as structures; (4) a script producing the convergence table and a semilogy figure exported to PDF; (5) a short study of λ, and of double versus ``vpa``, run also in GNU Octave where possible.','المشروع الختامي: حزمة MATLAB باسم ``+ml`` لطريقة ليجندر المحوّلة. المتطلبات: (1) الدوال ``e_table`` و ``d2_matrix`` و ``chi_matrix`` و ``h_function`` و ``solve`` مع نص المساعدة، (2) اختبارات لجدول E والنظرية 3.1 بالمعاملات والمثال اليدوي للنظرية 3.2 وحل كامل، (3) أمثلة البحث الثلاثة هياكلَ، (4) ملف ينتج جدول التقارب وشكل semilogy مصدَّراً إلى PDF، (5) دراسة قصيرة لـ λ وللدقة المزدوجة مقابل ``vpa``، تُشغَّل أيضاً في GNU Octave حيث أمكن.'],
+  'y = t^{1+ν_1+ν_2} sin x,     ν_1 + ν_2 = 2.9   ⇒   y = t^{3.9} sin x',
+  ['This is Example 2 of the paper, the hardest test: with λ = 1/2, `t^{3.9} = s^{7.8}` is not a polynomial in s. Report how the error depends on λ and M and explain what you see.','وهذا هو المثال 2 في البحث، أصعب اختبار: مع λ = 1/2 تكون `t^{3.9} = s^{7.8}` ليست كثيرة حدود في s. قدّم كيف يعتمد الخطأ على λ و M وفسّر ما تراه.'],
+],[
+  Q('Which λ ≤ 1 makes `t^{3.9}` equal to `s^4`?','أي λ ≤ 1 تجعل `t^{3.9}` تساوي `s^4`؟','λ = 0.975',['#f{3.9}{4}'],['λ = 0.5','λ = 0.39','λ = 1']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 7.8 4',[['The power of s for λ = 0.5 and λ = 0.975.','قوة s عند λ = 0.5 و λ = 0.975.']],['$ 3.9 3.9','$ 4 7.8','$ 1.95 3.8'],'fprintf("%g %g\\n", 3.9/0.5, round(3.9/0.975*1e10)/1e10)'),
+  Q('How should the three examples be stored for the solver?','كيف تُخزَّن الأمثلة الثلاثة للحلّال؟',['As structures with fields such as exact, orders, gam and lam','هياكلَ بحقول مثل exact و orders و gam و lam'],[['The solver then stays the same for every example.','فيبقى الحلّال كما هو لكل مثال.']],[['As separate copies of the solver','نسخاً منفصلة من الحلّال'],['As global variables','متغيرات عامة']]),
+  Q('Why run the tests in GNU Octave as well?','لماذا تُشغَّل الاختبارات في GNU Octave أيضاً؟',['It shows that the numerical core is portable and lets others reproduce it without a licence','تُظهر أن النواة العددية محمولة وتسمح للآخرين بإعادة الإنتاج دون ترخيص'],[['Symbolic parts may need the Octave symbolic package.','الأجزاء الرمزية قد تحتاج حزمة symbolic في Octave.']],[['Octave is faster','Octave أسرع'],['MATLAB cannot run tests','MATLAB لا يشغّل الاختبارات']]),
+]);
+
 export const MS506 = true;
