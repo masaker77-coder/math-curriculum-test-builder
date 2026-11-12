@@ -548,8 +548,9 @@ function paginateBook(){
     if(!b.classList.contains('bk-ex') || b.querySelector('.bk-fig svg, table, .mat, .plot')) return false;
     bd.appendChild(b); const hFull=b.offsetHeight, w=Math.floor(bd.clientWidth*0.47);
     b.style.cssText=`position:absolute;visibility:hidden;width:${w}px`; const hHalf=b.offsetHeight, sw=b.scrollWidth;
+    const codeWide=[...b.querySelectorAll('.ms-code')].some(c=>c.scrollWidth>c.clientWidth+2);   // a code block scrolls inside itself, so check it separately
     bd.removeChild(b); b.style.cssText='';
-    return sw<=w+2 && hHalf<=hFull*1.45;                    // fits half the width without growing much taller
+    return sw<=w+2 && !codeWide && hHalf<=hFull*1.45;       // fits half the width without growing much taller
   };
   const tryPut=(bd,b)=>{                                   // place b on this page if it fits (the first block always does)
     if(narrow(bd,b)){

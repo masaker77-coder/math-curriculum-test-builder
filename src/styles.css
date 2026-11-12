@@ -404,7 +404,7 @@
   .bk-page .bk-ans::before{content:"✓";display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#0a7a4b;color:#fff;font:700 12px var(--font-ui)}
   .bk-page table.stbl{font-size:13px}
   .bk-page .bk-intro{font-size:15px;line-height:1.75}
-  .bk-pair{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:0 0 12px}
+  .bk-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin:0 0 12px}
   .bk-pair>.bk-ex{margin:0}
   .bk-pair>.bk-ex+.bk-ex{border-inline-start:1px dashed var(--th-line);padding-inline-start:16px}
   .bk-run{display:flex;justify-content:space-between;gap:10px}
