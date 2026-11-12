@@ -1035,4 +1035,115 @@ lesson('509',80,[
   Q('Soft-threshold the details `(0.5, −4, 12)` with T = 3.','طبّق العتبة اللينة على التفاصيل `(0.5, −4, 12)` مع T = 3.','(0, −1, 9)',['sign(x)(|x| − 3)_+'],['(0, −4, 12)','(0, 1, 9)','(−2.5, −1, 9)']),
 ]);
 
+/* ---- 509 · Unit 9 (lessons 81–90): wavelet methods for equations ---- */
+lesson('509',81,[
+  ['For solving equations on [0, 1], the m = `2^J` Haar functions are numbered `h_1 = φ`, then `h_i = ψ_{j,k}` (without the factor `2^{j/2}`) with `i = 2^j + k + 1`. They are sampled at the collocation points `t_l = (l − 1/2)/m`, giving the Haar matrix:','لحل المعادلات على [0, 1] تُرقّم دوال هار وعددها m = `2^J`: `h_1 = φ` ثم `h_i = ψ_{j,k}` (دون العامل `2^{j/2}`) مع `i = 2^j + k + 1`. وتُعايَن عند نقاط التجميع `t_l = (l − 1/2)/m` فنحصل على مصفوفة هار:'],
+  'H_4 = #m{1, 1, 1, 1 ;; 1, 1, −1, −1 ;; 1, −1, 0, 0 ;; 0, 0, 1, −1},     H_4H_4^T = diag(4, 4, 2, 2)',
+  ['A function is approximated by `y ≈ c^TH` at the points; since the rows are orthogonal, `H^{−1} = H^T diag(1/4, 1/4, 1/2, 1/2)` for m = 4 and the coefficients cost no linear solve.','وتُقرَّب الدالة بـ `y ≈ c^TH` عند النقاط، ولأن الصفوف متعامدة يكون `H^{−1} = H^T diag(1/4, 1/4, 1/2, 1/2)` عند m = 4 فلا تكلف المعاملات حل نظام خطي.'],
+],[
+  Q('Give the collocation points for m = 4.','أعط نقاط التجميع عند m = 4.','#f{1}{8},   #f{3}{8},   #f{5}{8},   #f{7}{8}',['t_l = #f{l − 1/2}{4}'],['0,   #f{1}{4},   #f{1}{2},   #f{3}{4}','#f{1}{4},   #f{1}{2},   #f{3}{4},   1','#f{1}{5},   #f{2}{5},   #f{3}{5},   #f{4}{5}']),
+  Q('Which index i does `ψ_{2,3}` get?','أي دليل i تأخذه `ψ_{2,3}`؟','i = 8',['2^2 + 3 + 1'],['i = 6','i = 7','i = 5']),
+  Q('Find c with `c^TH_4 = (1, 1, 1, 1)`.','أوجد c بحيث `c^TH_4 = (1, 1, 1, 1)`.','c = (1, 0, 0, 0)',['h_1 = 1'],['c = (#f{1}{4}, #f{1}{4}, #f{1}{4}, #f{1}{4})','c = (1, 1, 1, 1)','c = (0, 0, 0, 1)']),
+  Q('Find c with `c^TH_4 = (2, 2, 0, 0)`.','أوجد c بحيث `c^TH_4 = (2, 2, 0, 0)`.','c = (1, 1, 0, 0)',['h_1 + h_2 = (2, 2, 0, 0)'],['c = (2, 2, 0, 0)','c = (1, −1, 0, 0)','c = (0, 2, 0, 0)']),
+]);
+
+lesson('509',82,[
+  ['The operational matrix of integration P expresses the integrals of the Haar functions in the same basis, `∫_0^th(s) ds ≈ Ph(t)` (exact at the collocation points). Chen and Hsiao’s recursion:','مصفوفة التكامل التشغيلية P تعبّر عن تكاملات دوال هار بالأساس نفسه، `∫_0^th(s) ds ≈ Ph(t)` (مضبوطة عند نقاط التجميع). وعلاقة تشن وهسياو التكرارية:'],
+  'P_1 = #f{1}{2},     P_{2m} = #f{1}{4m}#m{4mP_m, −H_m ;; H_m^{−1}, 0},     P_2 = #m{#f{1}{2}, −#f{1}{4} ;; #f{1}{4}, 0}',
+  ['With P, an integral becomes a matrix product: if `y′ = c^Th` then `y = y(0) + c^TPh`. Integrating twice uses `P^2`. This is the Haar analogue of the matrices `I_{(−μ)}` of course 508.','ومع P يصبح التكامل ضرب مصفوفات: إذا كان `y′ = c^Th` فإن `y = y(0) + c^TPh`. والتكامل مرتين يستخدم `P^2`. وهذا نظير هار لمصفوفات `I_{(−μ)}` في المقرر 508.'],
+],[
+  Q('Check row 2 of `P_2`: integrate `h_2 = ψ` and compare at t = 1/4 and 3/4.','تحقق من الصف 2 من `P_2`: كامل `h_2 = ψ` وقارن عند t = 1/4 و 3/4.','∫_0^tψ = #f{1}{4},   #f{1}{4}   =   #f{1}{4}h_1(t)',['∫_0^{1/4}1 = #f{1}{4},   ∫_0^{3/4}ψ = #f{1}{2} − #f{1}{4}'],['#f{1}{4},   #f{3}{4}','0,   0','#f{1}{2},   −#f{1}{4}']),
+  Q('Check row 1 of `P_2`: `∫_0^t 1 ds = t` at t = 1/4, 3/4.','تحقق من الصف 1 من `P_2`: `∫_0^t 1 ds = t` عند t = 1/4 و 3/4.','#f{1}{2}h_1 − #f{1}{4}h_2 = (#f{1}{4}, #f{3}{4})',['h_1 = (1, 1),   h_2 = (1, −1)'],['(#f{1}{2}, #f{1}{2})','(#f{3}{4}, #f{1}{4})','(0, 1)']),
+  Q('Build `P_4` from `P_2` with the recursion: give its top-left block.','ابنِ `P_4` من `P_2` بالعلاقة التكرارية: أعط كتلتها العليا اليسرى.','P_2 = #m{#f{1}{2}, −#f{1}{4} ;; #f{1}{4}, 0}',['#f{1}{8}·8P_2'],['#f{1}{8}P_2','2P_2','H_2']),
+  Q('How do you integrate twice with Haar wavelets?','كيف تكامل مرتين بمويجات هار؟','c^TP^2h',[['Apply the integration matrix twice.','طبّق مصفوفة التكامل مرتين.']],['c^T2Ph','c^TH^2h','c^TP^{−2}h']),
+]);
+
+lesson('509',83,[
+  ['To solve `y′ = −y`, `y(0) = 1`, expand the derivative, integrate with P, and require the equation at the collocation points:','لحل `y′ = −y` مع `y(0) = 1` انشر المشتقة وكامل بـ P واطلب المعادلة عند نقاط التجميع:'],
+  'y′ = c^TH,     y = 1 + c^TPH     ⇒     c^T(H + PH) = −(1, …, 1)',
+  ['One linear solve gives c. The maximum error at the points is 2.1, 0.64, 0.18, 0.046, 0.012, `0.0030 × 10^{−2}` for m = 2, 4, …, 64: second order, the error falling by 4 when m doubles. The same steps solve linear systems of ODEs and, with Newton’s method, nonlinear ones.','وحل خطي واحد يعطي c. وأكبر خطأ عند النقاط 2.1 و 0.64 و 0.18 و 0.046 و 0.012 و `0.0030 × 10^{−2}` لـ m = 2 و 4 حتى 64: رتبة ثانية، والخطأ يتناقص بعامل 4 عند مضاعفة m. والخطوات نفسها تحل النظم الخطية للمعادلات العادية، ومع طريقة نيوتن غير الخطية منها.'],
+],[
+  Q('Solve the m = 1 version: `y′ ≈ c`, `y = 1 + c/2` at t = 1/2.','حل نسخة m = 1: `y′ ≈ c` و `y = 1 + c/2` عند t = 1/2.','c = −#f{2}{3},   y(#f{1}{2}) ≈ #f{2}{3}',['c = −(1 + #f{c}{2})'],['c = −1,   y = #f{1}{2}','c = −2,   y = 0','c = #f{2}{3},   y = #f{4}{3}']),
+  Q('Compare that value with the exact `e^{−1/2}`.','قارن تلك القيمة بالقيمة المضبوطة `e^{−1/2}`.','|0.6667 − 0.6065| ≈ 0.060',[['The method is the implicit midpoint rule in disguise.','الطريقة قاعدة المنتصف الضمنية متنكرة.']],['≈ 0','≈ 0.6','≈ 0.0060']),
+  Q('What is the observed order from the errors above?','ما الرتبة الملاحظة من الأخطاء أعلاه؟','2',['#f{0.046}{0.012} ≈ 4 = 2^2'],['1','4','0.5']),
+  Q('Write the system for `y″ = −y`, `y(0) = 0`, `y′(0) = 1`, with `y″ = c^TH`.','اكتب النظام لـ `y″ = −y` مع `y(0) = 0` و `y′(0) = 1` و `y″ = c^TH`.','c^T(H + P^2H) = −t^T',['y = t + c^TP^2H'],['c^T(H + PH) = −t^T','c^TH = t^T','c^T(H − P^2H) = t^T']),
+]);
+
+lesson('509',84,[
+  ['Legendre wavelets combine the localization of Haar with polynomial accuracy: on each of `2^{k−1}` subintervals, the shifted Legendre polynomials of degree below M:','مويجات ليجندر تجمع تموضع هار مع دقة كثيرات الحدود: على كل من المجالات الجزئية وعددها `2^{k−1}` تُستخدم كثيرات ليجندر المزاحة ذات الدرجة الأقل من M:'],
+  'ψ_{n,m}(t) = 2^{k/2}#r{m + #f{1}{2}}P_m(2^kt − 2n + 1),     #f{n − 1}{2^{k−1}} ≤ t < #f{n}{2^{k−1}},     m = 0, …, M − 1',
+  ['They are orthonormal on [0, 1], there are `2^{k−1}M` of them, and for a smooth function the error falls like `h^{M}` with `h = 2^{1−k}`, or exponentially in M on a fixed mesh. Their operational matrices are block matrices with the Legendre integration rules inside each block.','وهي متعامدة معيارية على [0, 1] وعددها `2^{k−1}M`، وللدالة الملساء يتناقص الخطأ مثل `h^{M}` مع `h = 2^{1−k}`، أو أسياً في M على شبكة ثابتة. ومصفوفاتها التشغيلية مصفوفات كتلية فيها قواعد تكامل ليجندر داخل كل كتلة.'],
+],[
+  Q('How many Legendre wavelets are there for k = 2, M = 3?','كم مويجة ليجندر عند k = 2 و M = 3؟','6',['2^{k−1}M = 2·3'],['5','8','12']),
+  Q('Write `ψ_{1,0}` for k = 1.','اكتب `ψ_{1,0}` عند k = 1.','ψ_{1,0}(t) = 1,     0 ≤ t < 1',['2^{1/2}#r{#f{1}{2}}P_0'],['ψ_{1,0}(t) = #r{2}','ψ_{1,0}(t) = 2t − 1','ψ_{1,0}(t) = #f{1}{#r{2}}']),
+  Q('Write `ψ_{1,1}` for k = 1.','اكتب `ψ_{1,1}` عند k = 1.','ψ_{1,1}(t) = #r{3}(2t − 1)',['2^{1/2}#r{#f{3}{2}}P_1(2t − 1)'],['ψ_{1,1}(t) = 2t − 1','ψ_{1,1}(t) = #r{3}t','ψ_{1,1}(t) = 3(2t − 1)']),
+  Q('With k = 1, which Legendre wavelets reduce to Haar functions?','عند k = 1 أي مويجات ليجندر تؤول إلى دوال هار؟',['Those with M = 1 (constants on each subinterval); with M = 1 and any k they span the Haar space `V_{k−1}`','ذات M = 1 (ثوابت على كل مجال جزئي)؛ ومع M = 1 وأي k تولّد فضاء هار `V_{k−1}`'],[['Degree 0 on dyadic intervals.','الدرجة 0 على المجالات الثنائية.']],[['None','لا شيء'],['All','كلها']]),
+]);
+
+lesson('509',85,[
+  ['Chebyshev wavelets use Chebyshev polynomials on each subinterval, orthonormal with the weight `w_n(t) = w(2^kt − 2n + 1)`, `w(x) = 1/#r{1 − x^2}`:','مويجات تشيبيشيف تستخدم كثيرات تشيبيشيف على كل مجال جزئي، متعامدة معيارياً بالوزن `w_n(t) = w(2^kt − 2n + 1)` مع `w(x) = 1/#r{1 − x^2}`:'],
+  'ψ_{n,m}(t) = 2^{k/2}T̃_m(2^kt − 2n + 1),     T̃_0 = #f{1}{#r{π}},   T̃_m = #r{#f{2}{π}}T_m   (m ≥ 1)',
+  ['Their collocation points, the Chebyshev points of each subinterval, cluster at the ends of every subinterval, and their coefficients can be computed with the fast cosine transform. Accuracy is like that of Legendre wavelets.','ونقاط تجميعها، نقاط تشيبيشيف لكل مجال جزئي، تتكثف عند طرفي كل مجال جزئي، ومعاملاتها تُحسب بتحويل جيب التمام السريع. والدقة مثل دقة مويجات ليجندر.'],
+],[
+  Q('Check `∫_{−1}^{1}T̃_0^2 w dx = 1`.','تحقق من `∫_{−1}^{1}T̃_0^2 w dx = 1`.','#f{1}{π}·π = 1',['∫_{−1}^{1}#f{dx}{#r{1 − x^2}} = π'],['#f{1}{π}','2','#f{π}{2}']),
+  Q('Check `∫_{−1}^{1}T̃_1^2 w dx = 1`.','تحقق من `∫_{−1}^{1}T̃_1^2 w dx = 1`.','#f{2}{π}·#f{π}{2} = 1',['∫_{−1}^{1}#f{x^2}{#r{1 − x^2}}dx = #f{π}{2}'],['#f{2}{π}','π','#f{1}{2}']),
+  Q('Where do the Chebyshev points of `[0, 1]` cluster?','أين تتكثف نقاط تشيبيشيف على `[0, 1]`؟',['Near both ends, 0 and 1','قرب الطرفين 0 و 1'],['t = #f{1 + cos θ}{2}'],[['Near the middle','قرب المنتصف'],['Uniformly','بانتظام']]),
+  Q('Give the M = 3 Chebyshev points `cos((2i − 1)π/6)` on [−1, 1].','أعط نقاط تشيبيشيف عند M = 3 `cos((2i − 1)π/6)` على [−1, 1].','#f{#r{3}}{2},   0,   −#f{#r{3}}{2}',['cos#f{π}{6},   cos#f{π}{2},   cos#f{5π}{6}'],['1,   0,   −1','#f{1}{2},   0,   −#f{1}{2}','#f{#r{2}}{2},   0,   −#f{#r{2}}{2}']),
+]);
+
+lesson('509',86,[
+  ['For fractional integrals, the block-pulse functions (indicators of the m subintervals) have an explicit operational matrix, and the Haar matrix converts it:','للتكاملات الكسرية لدوال النبضات الكتلية (مؤشرات المجالات الجزئية وعددها m) مصفوفة تشغيلية صريحة، ومصفوفة هار تحوّلها:'],
+  'F^{α} = #f{1}{m^{α}Γ(α + 2)}#m{1, ξ_1, ξ_2, ⋯ ;; 0, 1, ξ_1, ⋯ ;; 0, 0, 1, ⋯},     ξ_k = (k + 1)^{α+1} − 2k^{α+1} + (k − 1)^{α+1},     P^{α} = HF^{α}H^{−1}',
+  ['For m = 2, α = 1/2: `F^{1/2} = #m{0.5319, 0.4407 ;; 0, 0.5319}`. For α = 1 the construction gives back the integration matrix P of Lesson 82, which is a good check of an implementation.','وعند m = 2 و α = 1/2: `F^{1/2} = #m{0.5319, 0.4407 ;; 0, 0.5319}`. وعند α = 1 يعطي البناء مصفوفة التكامل P في الدرس 82، وهذا فحص جيد لأي تنفيذ.'],
+],[
+  Q('Compute the diagonal entry of `F^{1/2}` for m = 2.','احسب العنصر القطري لـ `F^{1/2}` عند m = 2.','#f{1}{#r{2}Γ(5/2)} ≈ 0.5319',['Γ(#f{5}{2}) ≈ 1.3293'],['0.5','0.7071','0.4407']),
+  Q('Compute `ξ_1` for α = 1/2.','احسب `ξ_1` عند α = 1/2.','2^{3/2} − 2 ≈ 0.828',['(1 + 1)^{3/2} − 2·1 + 0'],['1','2^{3/2}','0.4407']),
+  Q('Compute `F^1` for m = 2.','احسب `F^1` عند m = 2.','#m{#f{1}{4}, #f{1}{2} ;; 0, #f{1}{4}}',['ξ_k = 2,   #f{1}{2·2}'],['#m{#f{1}{2}, 1 ;; 0, #f{1}{2}}','#m{1, 2 ;; 0, 1}','#m{#f{1}{4}, 0 ;; #f{1}{2}, #f{1}{4}}']),
+  Q('Check `HF^1H^{−1} = P_2` for m = 2.','تحقق من `HF^1H^{−1} = P_2` عند m = 2.','#m{#f{1}{2}, −#f{1}{4} ;; #f{1}{4}, 0}',['H^{−1} = #f{1}{2}H,   H = #m{1, 1 ;; 1, −1}'],['#m{#f{1}{4}, #f{1}{2} ;; 0, #f{1}{4}}','#m{1, 0 ;; 0, 1}','#m{#f{1}{2}, #f{1}{4} ;; −#f{1}{4}, 0}']),
+]);
+
+lesson('509',87,[
+  ['A fractional equation in integrated form becomes a linear system with `P^{α}`. For `^CD^{1/2}y + y = 0`, `y(0) = 1`, the integrated form `y + D^{−1/2}y = 1` gives:','المعادلة الكسرية بالصيغة التكاملية تصبح نظاماً خطياً مع `P^{α}`. ولـ `^CD^{1/2}y + y = 0` مع `y(0) = 1` تعطي الصيغة التكاملية `y + D^{−1/2}y = 1`:'],
+  'y = c^TH,     c^T(H + P^{1/2}H) = (1, …, 1)',
+  ['The maximum error at the points against `E_{1/2}(−t^{1/2}) = e^{t}erfc(#r{t})` is 2.7, 1.4, 0.65, `0.31 × 10^{−2}` for m = 4, 16, 64, 256: the error halves when m is multiplied by 4, order 1/2. The singular behaviour `t^{1/2}` at 0 limits every method built on a uniform mesh of piecewise constants.','وأكبر خطأ عند النقاط مقابل `E_{1/2}(−t^{1/2}) = e^{t}erfc(#r{t})` هو 2.7 و 1.4 و 0.65 و `0.31 × 10^{−2}` لـ m = 4 و 16 و 64 و 256: الخطأ ينتصف عندما تُضرب m في 4، أي رتبة 1/2. والسلوك الشاذ `t^{1/2}` عند 0 يحد كل طريقة مبنية على شبكة منتظمة من الثوابت القطعية.'],
+],[
+  Q('What is the observed order in m?','ما الرتبة الملاحظة في m؟','#f{1}{2}',['#f{log 2}{log 4}'],['1','2','#f{1}{4}']),
+  Q('How large must m be for an error of `10^{−4}` at that rate?','كم يجب أن تكون m لخطأ `10^{−4}` بذلك المعدل؟','≈ 2.5 × 10^5',['0.0031·(#f{256}{m})^{1/2} = 10^{−4}   ⇒   m = 256·31^2'],['≈ 1000','≈ 10^4','≈ 10^8']),
+  Q('Write the system for `^CD^{α}y = −y + 1`, `y(0) = 0`.','اكتب النظام لـ `^CD^{α}y = −y + 1` مع `y(0) = 0`.','c^T(H + P^{α}H) = e_1^TP^{α}H',['y + D^{−α}y = D^{−α}1,   1 = e_1^TH'],['c^T(H + P^{α}H) = 0','c^TH = 1','c^TP^{α}H = 1']),
+  Q('Why is a uniform mesh poor here?','لماذا تكون الشبكة المنتظمة ضعيفة هنا؟',['The solution behaves like `1 − 2t^{1/2}/#r{π}` near 0, which piecewise constants on equal intervals resolve badly','الحل يسلك مثل `1 − 2t^{1/2}/#r{π}` قرب 0، والثوابت القطعية على مجالات متساوية تحله حلاً سيئاً'],[['Course 508, Units 6–7.','المقرر 508، الوحدتان 6–7.']],[['`P^{α}` is wrong','`P^{α}` خاطئة'],['Rounding','التقريب']]),
+]);
+
+lesson('509',88,[
+  ['Integral equations are natural for wavelets. For a Volterra equation, integrals become powers of P; for example','المعادلات التكاملية طبيعية للمويجات. ولمعادلة فولتيرا تصبح التكاملات قوى لـ P، مثلاً'],
+  'y(t) = t − ∫_0^t (t − s)y(s) ds   ⇒   y = sin t,     c^T(H + P^2H) = t^T',
+  ['The kernel `t − s` is the double integral `D^{−2}`. The Haar errors are `8.8 × 10^{−3}`, `5.8 × 10^{−4}`, `3.7 × 10^{−5}` for m = 4, 16, 64: second order. For a Fredholm equation `y = f + λ∫_0^1K(t, s)y(s) ds` the matrix of K in the wavelet basis is needed, and it is nearly sparse for smooth K (Lesson 79).','والنواة `t − s` هي التكامل المزدوج `D^{−2}`. وأخطاء هار `8.8 × 10^{−3}` و `5.8 × 10^{−4}` و `3.7 × 10^{−5}` لـ m = 4 و 16 و 64: رتبة ثانية. ولمعادلة فريدهولم `y = f + λ∫_0^1K(t, s)y(s) ds` تلزم مصفوفة K في أساس المويجات، وهي شبه متفرقة لـ K الملساء (الدرس 79).'],
+],[
+  Q('Why is `∫_0^t(t − s)y(s) ds = D^{−2}y`?','لماذا `∫_0^t(t − s)y(s) ds = D^{−2}y`؟',['It is the Riemann–Liouville integral of order 2: `(t − s)^{2−1}/Γ(2)`','إنه تكامل ريمان–ليوفيل من الرتبة 2: `(t − s)^{2−1}/Γ(2)`'],[['Cauchy’s formula for repeated integration.','صيغة كوشي للتكامل المتكرر.']],[['It is `D^{−1}y`','إنه `D^{−1}y`'],['It is not','ليس كذلك']]),
+  Q('Differentiate `y = t − ∫_0^t(t − s)y(s) ds` twice.','اشتق `y = t − ∫_0^t(t − s)y(s) ds` مرتين.','y″ = −y,   y(0) = 0,   y′(0) = 1',['y′ = 1 − ∫_0^ty(s) ds'],['y″ = y','y′ = −y','y″ = 1']),
+  Q('What order do the errors `8.8 × 10^{−3}`, `5.8 × 10^{−4}`, `3.7 × 10^{−5}` show for m multiplied by 4?','أي رتبة تُظهرها الأخطاء `8.8 × 10^{−3}` و `5.8 × 10^{−4}` و `3.7 × 10^{−5}` عند ضرب m في 4؟','2',['#f{5.8 × 10^{−4}}{3.7 × 10^{−5}} ≈ 16 = 4^2'],['1','4','16']),
+  Q('Write the Haar system for `y = 1 + ∫_0^ty(s) ds`.','اكتب نظام هار لـ `y = 1 + ∫_0^ty(s) ds`.','c^T(H − PH) = (1, …, 1)',['y = c^TH,   ∫_0^ty = c^TPH'],['c^T(H + PH) = 1','c^TPH = 1','c^T(H − P^2H) = 1']),
+]);
+
+lesson('509',89,[
+  ['Two ways to turn an equation `Lu = f` into a system for the coefficients. Galerkin tests the residual against the basis; collocation requires it at points:','طريقتان لتحويل المعادلة `Lu = f` إلى نظام للمعاملات. جاليركن يختبر الباقي مقابل الأساس، والتجميع يطلبه عند نقاط:'],
+  '⟨Lu_N − f, ψ_λ⟩ = 0     ↔     (Lu_N − f)(t_l) = 0',
+  ['Galerkin (left) gives symmetric positive definite matrices for symmetric elliptic L, optimal error in the energy norm and a natural framework for adaptivity and preconditioning (Lesson 78), but needs integrals. Collocation (right) is cheaper and simple for nonlinear and variable-coefficient problems, but the matrices are not symmetric and stability must be checked.','وجاليركن (يساراً) يعطي مصفوفات متماثلة موجبة التعريف لـ L الإهليلجي المتماثل، وخطأً أمثل في معيار الطاقة وإطاراً طبيعياً للتكيف وتحسين الشرط (الدرس 78)، لكنه يحتاج تكاملات. والتجميع (يميناً) أرخص وبسيط للمسائل غير الخطية وذات المعاملات المتغيرة، لكن مصفوفاته غير متماثلة ويجب فحص الاستقرار.'],
+],[
+  Q('For `−u″ = f` with zero boundary values, write the Galerkin matrix entry.','لـ `−u″ = f` مع قيم حدية صفرية اكتب عنصر مصفوفة جاليركن.','A_{λμ} = ∫ψ_λ′ψ_μ′ dt',['⟨−u″, ψ⟩ = ⟨u′, ψ′⟩'],['A_{λμ} = ∫ψ_λψ_μ dt','A_{λμ} = ψ_λ″(t_μ)','A_{λμ} = ∫ψ_λ″ dt']),
+  Q('Is that matrix symmetric?','هل تلك المصفوفة متماثلة؟',['Yes','نعم'],['A_{λμ} = A_{μλ}'],[['No','لا'],['Only for Haar','فقط لهار']]),
+  Q('Which method did Lessons 83–88 use?','أي طريقة استخدمتها الدروس 83–88؟',['Collocation at `t_l = (l − 1/2)/m`','التجميع عند `t_l = (l − 1/2)/m`'],[['No integrals of the data were needed.','لم تلزم تكاملات للمعطيات.']],[['Galerkin','جاليركن'],['Least squares','المربعات الصغرى']]),
+  Q('Why is Galerkin preferred for adaptive wavelet methods?','لماذا يُفضّل جاليركن لطرق المويجات التكيفية؟',['Its error is controlled by the coefficients of the residual in the wavelet basis, which tell where to refine','خطؤه يُضبط بمعاملات الباقي في أساس المويجات وهي تقول أين نُنقّح'],[['Lesson 91.','الدرس 91.']],[['It is cheaper','أرخص'],['It needs no basis','لا يحتاج أساساً']]),
+]);
+
+lesson('509',90,[
+  ['Compare the Haar method of Lesson 87 with the mapped Legendre method of course 508 (Lesson 66) on the same equation `^CD^{1/2}y + y = 0`:','قارن طريقة هار في الدرس 87 بطريقة ليجندر المحوَّلة في المقرر 508 (الدرس 66) على المعادلة نفسها `^CD^{1/2}y + y = 0`:'],
+  'm = 256:   3.1 × 10^{−3}     ↔     M = 8:   5.7 × 10^{−8}',
+  ['With 256 unknowns Haar (left) reaches 3 digits; with 9 unknowns the mapped basis (right) reaches 7, because the solution is a smooth function of `u = t^{1/2}`. Wavelets win when the solution has localized features at unknown places (shocks, layers, jumps), where adaptivity pays; mapped spectral bases win when the singular behaviour is known in advance.','بـ 256 مجهولاً تبلغ هار (يساراً) 3 أرقام، وبـ 9 مجاهيل يبلغ الأساس المحوّل (يميناً) 7 أرقام لأن الحل دالة ملساء في `u = t^{1/2}`. والمويجات تفوز عندما يكون للحل ملامح موضعية في أماكن مجهولة (صدمات وطبقات وقفزات) حيث يجدي التكيف، والأسس الطيفية المحوّلة تفوز عندما يكون السلوك الشاذ معلوماً مسبقاً.'],
+],[
+  Q('How many correct digits per unknown, roughly, does each method give?','كم رقماً صحيحاً لكل مجهول يعطي كل منهما تقريباً؟',['Haar about 0.01, mapped Legendre about 0.8','هار نحو 0.01 وليجندر المحوّلة نحو 0.8'],['#f{2.5}{256},   #f{7.2}{9}'],[['Both about 1','كلاهما نحو 1'],['Haar is better','هار أفضل']]),
+  Q('Which method suits a solution with a moving steep front at an unknown place?','أي طريقة تناسب حلاً بجبهة حادة متحركة في مكان مجهول؟',['An adaptive wavelet method','طريقة مويجات تكيفية'],[['It refines only where the coefficients are large.','تنقّح فقط حيث المعاملات كبيرة.']],[['A global spectral method','طريقة طيفية شاملة'],['Neither','لا شيء منهما']]),
+  Q('How could the Haar method be improved for `t^{1/2}` behaviour?','كيف يمكن تحسين طريقة هار لسلوك `t^{1/2}`؟',['Refine near t = 0 (non-uniform or adaptive levels), or change variable to `u = t^{1/2}`','التنقيح قرب t = 0 (مستويات غير منتظمة أو تكيفية) أو تغيير المتغير إلى `u = t^{1/2}`'],[['The same ideas as graded meshes in course 508.','الأفكار نفسها للشبكات المتدرجة في المقرر 508.']],[['Use more digits','استخدام أرقام أكثر'],['Nothing helps','لا شيء يفيد']]),
+  Q('Why does the mapped basis need so few unknowns?','لماذا يحتاج الأساس المحوّل مجاهيل قليلة جداً؟',['`E_{1/2}(−u)` is entire in u, so its Legendre coefficients decay faster than exponentially','`E_{1/2}(−u)` دالة صحيحة في u فتتناقص معاملات ليجندر لها أسرع من الأسي'],[['Course 508, Lesson 70.','المقرر 508، الدرس 70.']],[['Because it is a wavelet','لأنه مويجة'],['By chance','مصادفة']]),
+]);
+
 export const MS509 = true;
