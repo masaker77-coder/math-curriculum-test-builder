@@ -11,7 +11,7 @@ const AR = /[؀-ۿ]/;
 const ticks = s => (String(s).match(/`/g) || []).length % 2 === 0;
 const pairs = x => Array.isArray(x) && x.length === 2 && typeof x[0] === 'string' && typeof x[1] === 'string';
 // lessons written so far in each course: the count may only grow
-const WRITTEN = { 501: 100, 502: 5, 503: 5, 504: 5, 505: 5, 506: 5, 507: 100, 508: 5, 509: 5 };
+const WRITTEN = { 501: 100, 502: 100, 503: 5, 504: 5, 505: 5, 506: 5, 507: 100, 508: 5, 509: 5 };
 
 test('nine courses, each a road map of 10 units and 100 lessons, listed in the curriculum', () => {
   assert.deepEqual(MS_COURSES.map(c => c.code),
@@ -69,6 +69,15 @@ test('lesson content: bilingual text, balanced math marks, answers, steps and di
         assert.ok(!q.w.some(x => key2(x) === key2(q.a)), `${where}: a wrong answer equals the answer`);
       }
     }
+  }
+});
+
+test('the course files hold lesson data only, not computed strings', async () => {
+  const fs = await import('node:fs');
+  for (const f of fs.readdirSync(new URL('../src/', import.meta.url)).filter(f => /^ms\d{3}\.js$/.test(f))) {
+    const src = fs.readFileSync(new URL(`../src/${f}`, import.meta.url), 'utf8');
+    const m = src.match(/'\s*\.(replace|map|length|concat|slice)\b/);
+    assert.ok(!m, `${f}: a lesson string is computed (${m && m[0]}): write the text out`);
   }
 });
 
