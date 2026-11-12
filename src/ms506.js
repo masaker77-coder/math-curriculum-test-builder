@@ -589,4 +589,225 @@ lesson('506',40,[
   Q('Which line style draws the black dashed reference line?','أي نمط خط يرسم الخط المرجعي الأسود المتقطع؟','$ "k--"',[['k is black.','k هو الأسود.']],['$ "b--"','$ "k-"','$ "black:"']),
 ]);
 
+/* ---- 506 · Unit 5 (lessons 41–50): linear algebra;  Unit 6 (lessons 51–60): calculus and special functions ---- */
+lesson('506',41,[
+  ['``x = A\\b`` solves `Ax = b`. MATLAB chooses the method from the matrix: triangular substitution, Cholesky, LU with pivoting, or least squares for a rectangular A:','``x = A\\b`` تحل `Ax = b`، ويختار MATLAB الطريقة حسب المصفوفة: التعويض المثلثي أو Cholesky أو LU مع المحورة أو المربعات الصغرى لمصفوفة مستطيلة:'],
+  '$ A = [2 1; 1 3];  b = [3; 5];\nx = A\\b              % [0.8; 1.4]\nnorm(A*x - b)        % about 1e-16\nX = A\\[b, 2*b]       % several right-hand sides at once',
+  ['``b`` must be a column with as many rows as A. Always check the residual, and look at ``cond(A)`` when it is not small.','ويجب أن تكون ``b`` عموداً بعدد صفوف A. وافحص الباقي دائماً، وانظر إلى ``cond(A)`` حين لا يكون صغيراً.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.8 1.4',['2x + y = 3,   x + 3y = 5'],['$ 1.4 0.8','$ 1 1','$ 3 5'],'A = [2 1; 1 3];  b = [3; 5];\nx = A\\b;\nfprintf("%g %g\\n", x)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The residual is at the level of rounding error.','الباقي في مستوى خطأ التقريب.']],['$ 0','$ 1e-16','$ Error'],'A = magic(4) + eye(4);  b = (1:4)\';\nx = A\\b;\ndisp(norm(A*x - b) < 1e-10)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [2 2]',[['Two right-hand sides give a 2 × 2 solution.','طرفان أيمنان يعطيان حلاً 2 × 2.']],['$ [2 1]','$ [1 2]','$ [4 1]'],'A = [2 1; 1 3];  b = [3; 5];\ndisp(mat2str(size(A\\[b, 2*b])))'),
+  Q('Why is ``A\\b`` written and not ``b/A``?','لماذا تُكتب ``A\\b`` لا ``b/A``؟',['``A\\b`` solves `Ax = b`; ``b/A`` solves `xA = b` for a row x','``A\\b`` تحل `Ax = b` و ``b/A`` تحل `xA = b` لصف x'],[['The slash puts the matrix on the side it multiplies.','الشرطة تضع المصفوفة في الجهة التي تضرب منها.']],[['They are the same','متطابقتان'],['``b/A`` is faster','``b/A`` أسرع']]),
+]);
+
+lesson('506',42,[
+  ['``inv(A)`` and ``det(A)`` exist, but numerical work rarely needs them:','``inv(A)`` و ``det(A)`` موجودتان لكن العمل العددي نادراً ما يحتاجهما:'],
+  '$ det([1 2; 3 4])        % -2.0000\ninv([1 2; 3 4])        % [-2 1; 1.5 -0.5]\ndet(0.1*eye(50))       % 1.0000e-50, although cond = 1',
+  ['``A\\b`` is cheaper and more accurate than ``inv(A)*b``; the Editor even warns about ``inv``. The determinant does not measure near-singularity: use ``cond`` or ``rcond``.','و ``A\\b`` أرخص وأدق من ``inv(A)*b``، والمحرر يحذّر من ``inv``. والمحدد لا يقيس قرب الشذوذ، فاستخدم ``cond`` أو ``rcond``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [-2 1;1.5 -0.5]',['#f{1}{−2}#m{4, −2 ;; −3, 1}'],['$ [4 -2;-3 1]','$ [1 0.5;0.3333 0.25]','$ [-2 1.5;1 -0.5]'],'disp(mat2str(round(inv([1 2; 3 4])*1e10)/1e10))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1e-50 1',[['A tiny determinant and a perfect condition number.','محدد صغير جداً وعدد شرط مثالي.']],['$ 0 Inf','$ 1e-50 1e+50','$ 0.1 1'],'A = 0.1*eye(50);\nfprintf("%g %g\\n", det(A), cond(A))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -2',[['Rounded, since the computed value has a rounding error.','بعد التقريب لأن القيمة المحسوبة فيها خطأ تقريب.']],['$ 2','$ 10','$ -2.5'],'disp(round(det([1 2; 3 4])))'),
+  Q('Why does the Editor warn about ``x = inv(A)*b``?','لماذا يحذّر المحرر من ``x = inv(A)*b``؟',['``A\\b`` is faster and more accurate','``A\\b`` أسرع وأدق'],[['Forming the inverse costs about three times more.','تكوين المعكوس يكلف نحو ثلاثة أضعاف.']],[['inv is deprecated','inv ملغاة'],['inv only works for 2 × 2 matrices','inv تعمل فقط لمصفوفات 2 × 2']]),
+]);
+
+lesson('506',43,[
+  ['The factorizations behind the backslash, useful when one matrix is used many times:','التحليلات وراء الشرطة العكسية، المفيدة حين تُستخدم مصفوفة واحدة مرات كثيرة:'],
+  '$ [L, U, P] = lu(A);        % P*A = L*U\nx = U\\(L\\(P*b));\nR = chol(S);               % S = R\'*R for symmetric positive definite S\n[Q, R] = qr(A);            % A = Q*R, Q orthogonal',
+  ['Factor once outside a time loop and reuse ``L``, ``U``, ``P`` inside it. ``decomposition(A)`` (R2017b and later) stores the factorization and is used with ``\\`` like a matrix.','حلّل مرة خارج حلقة الزمن وأعد استخدام ``L`` و ``U`` و ``P`` داخلها. و ``decomposition(A)`` (من R2017b) تخزن التحليل وتُستخدم مع ``\\`` كمصفوفة.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [2 1;0 1.4142]',[['MATLAB’s chol returns the upper factor R with `S = R^TR`.','chol في MATLAB تعيد العامل العلوي R مع `S = R^TR`.']],['$ [2 0;1 1.4142]','$ [4 2;2 3]','$ [1 0.5;0 1]'],'S = [4 2; 2 3];\ndisp(mat2str(round(chol(S)*1e4)/1e4))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1 1',[['Q is orthogonal and QR reproduces A.','Q متعامدة و QR تعيد A.']],['$ 1 0','$ 0 1','$ 0 0'],'A = [1 2; 3 4];\n[Q, R] = qr(A);\nfprintf("%d %d\\n", norm(Q\'*Q - eye(2)) < 1e-12, norm(Q*R - A) < 1e-12)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.8 1.4',[['Solving with the stored LU factors.','الحل بعوامل LU المخزنة.']],['$ 1.4 0.8','$ 3 5','$ 1 1'],'A = [2 1; 1 3];  b = [3; 5];\n[L, U, P] = lu(A);\nx = U\\(L\\(P*b));\nfprintf("%g %g\\n", round(x*1e12)/1e12)'),
+  Q('What happens with ``chol([1 2; 2 1])``?','ماذا يحدث مع ``chol([1 2; 2 1])``؟',['An error: the matrix is not positive definite','خطأ: المصفوفة ليست موجبة التعريف'],[['Its eigenvalues are 3 and −1.','قيمها الذاتية 3 و −1.']],[['It returns a complex factor','تعيد عاملاً مركباً'],['It returns the identity','تعيد المحايدة']]),
+]);
+
+lesson('506',44,[
+  ['``eig(A)`` returns the eigenvalues; ``[V, D] = eig(A)`` also the eigenvectors, with ``A*V = V*D``:','``eig(A)`` تعيد القيم الذاتية، و ``[V, D] = eig(A)`` تعيد المتجهات الذاتية أيضاً مع ``A*V = V*D``:'],
+  '$ eig([2 1; 1 2])          % [1; 3]\n[V, D] = eig([2 1; 1 2]);\ndiag(D)                   % the eigenvalues\neig([0 -1; 1 0])          % [0 + 1i; 0 - 1i]',
+  ['For symmetric matrices the eigenvalues are real, sorted in increasing order, and V is orthogonal. Golub–Welsch (Lesson 81) uses exactly this on the Jacobi matrix.','وللمصفوفات المتماثلة تكون القيم الذاتية حقيقية مرتبة تصاعدياً و V متعامدة. وطريقة Golub–Welsch (الدرس 81) تستخدم هذا بالضبط على مصفوفة جاكوبي.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1;3]',[['Increasing order for a symmetric matrix.','ترتيب تصاعدي لمصفوفة متماثلة.']],['$ [3;1]','$ [2;2]','$ [1 3]'],'disp(mat2str(eig([2 1; 1 2])))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['`AV = VD` holds.','`AV = VD` صحيحة.']],['$ 0','$ 3','$ Error'],'A = [2 1; 1 2];\n[V, D] = eig(A);\ndisp(norm(A*V - V*D) < 1e-12)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -0.57735 0.57735',['λ^2 = #f{1}{3}',['The 2-point Gauss–Legendre nodes.','عقد جاوس–ليجندر ذات النقطتين.']],['$ -0.5 0.5','$ 0 0.57735','$ -1 1'],'b = 1/sqrt(3);\nfprintf("%.5f %.5f\\n", eig([0 b; b 0]))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0 1',[['A rotation by 90°: eigenvalues ±i; the first has imaginary part ±1.','دوران بزاوية 90°: القيم الذاتية ±i، والأولى جزؤها التخيلي ±1.']],['$ 1 0','$ 0 0','$ 1 1'],'e = eig([0 -1; 1 0]);\nfprintf("%g %g\\n", abs(real(e(1))), abs(imag(e(1))))'),
+]);
+
+lesson('506',45,[
+  ['Norms and condition numbers:','المعايير وأعداد الشرط:'],
+  '$ v = [1 -2 2];\nnorm(v), norm(v, Inf), norm(v, 1)    % 3, 2, 5\nnorm(A)          % largest singular value\ncond(hilb(8))    % about 1.5e10\nrcond(A)         % cheap estimate of 1/cond in the 1-norm',
+  ['A solve loses about ``log10(cond(A))`` digits. MATLAB warns «Matrix is close to singular or badly scaled» when ``rcond`` is below about ``eps``.','والحل يفقد نحو ``log10(cond(A))`` رقماً. ويحذّر MATLAB بالرسالة «Matrix is close to singular or badly scaled» حين تكون ``rcond`` أقل من نحو ``eps``.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 3 2 5',['#r{1 + 4 + 4},   max |v_i|,   Σ |v_i|'],['$ 5 2 3','$ 3 5 2','$ 9 2 5'],'v = [1 -2 2];\nfprintf("%g %g %g\\n", norm(v), norm(v, Inf), norm(v, 1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 10',[['The exponent of `κ(H_8) ≈ 1.5 × 10^{10}`.','أس `κ(H_8) ≈ 1.5 × 10^{10}`.']],['$ 8','$ 16','$ 4'],'disp(floor(log10(cond(hilb(8)))))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1000000',['#f{1}{10^{−6}}'],['$ 1e-06','$ 1','$ 1000'],'disp(round(cond(diag([1 1e-6]))))'),
+  Q('With `κ ≈ 10^{12}`, about how many correct digits does a double-precision solve keep?','مع `κ ≈ 10^{12}` كم رقماً صحيحاً تقريباً يبقى في حل بدقة مزدوجة؟','≈ 4',['16 − 12'],['≈ 16','≈ 12','≈ 0']),
+]);
+
+lesson('506',46,[
+  ['For an overdetermined system the backslash returns the least-squares solution; ``polyfit`` fits polynomials:','للنظام فوق المحدد تعيد الشرطة العكسية حل المربعات الصغرى، و ``polyfit`` تلائم كثيرات الحدود:'],
+  '$ t = (0:3)\';  y = [1.0; 2.9; 5.1; 7.0];\nc = [ones(4, 1), t] \\ y        % [0.97; 2.02]  intercept, slope\np = polyfit(t, y, 1)            % [2.02 0.97]   highest power first\npolyval(p, 1.5)',
+  ['Note the order: the backslash returns the coefficients in the order of the columns, ``polyfit`` highest power first. Fitting ``log10`` of errors gives convergence rates.','وانتبه للترتيب: الشرطة العكسية تعيد المعاملات بترتيب الأعمدة، و ``polyfit`` أعلى قوة أولاً. وملاءمة ``log10`` للأخطاء تعطي معدلات التقارب.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2.02 0.97',['m = #f{10.1}{5},   c = 4 − 2.02·1.5'],['$ 0.97 2.02','$ 2 1','$ 1.99 0.96'],'t = (0:3)\';  y = [1.0; 2.9; 5.1; 7.0];\np = polyfit(t, y, 1);\nfprintf("%.2f %.2f\\n", p)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.97 2.02',[['Column order: ones first, then t.','ترتيب الأعمدة: الآحاد أولاً ثم t.']],['$ 2.02 0.97','$ 1 2','$ 4 1.5'],'t = (0:3)\';  y = [1.0; 2.9; 5.1; 7.0];\nc = [ones(4, 1), t] \\ y;\nfprintf("%.2f %.2f\\n", c)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 4',[['The fitted line at t = 1.5 passes through the mean of the data.','الخط الملاءم عند t = 1.5 يمر بمتوسط البيانات.']],['$ 3.5','$ 4.5','$ 2.02'],'t = (0:3)\';  y = [1.0; 2.9; 5.1; 7.0];\np = polyfit(t, y, 1);\ndisp(round(polyval(p, 1.5)*1e10)/1e10)'),
+  Q('What does the backslash minimize for a tall matrix A?','ماذا تصغّر الشرطة العكسية لمصفوفة طويلة A؟','‖Ax − b‖_2',[['The least-squares residual.','باقي المربعات الصغرى.']],['‖x‖_2','‖Ax − b‖_∞','‖A‖']),
+]);
+
+lesson('506',47,[
+  ['Sparse matrices store only the nonzero entries. Build them with ``sparse``, ``spdiags`` or ``speye``; the backslash then uses sparse solvers:','المصفوفات المتفرقة تخزن العناصر غير الصفرية فقط. ابنها بـ ``sparse`` أو ``spdiags`` أو ``speye``، وعندها تستخدم الشرطة العكسية حلّالات متفرقة:'],
+  '$ n = 1000;  e = ones(n, 1);\nT = spdiags([-e 2*e -e], -1:1, n, n);\nnnz(T)                      % 2998\nu = T\\ones(n, 1);            % fast: tridiagonal solve\nfull(T(1:3, 1:3))           % [2 -1 0; -1 2 -1; 0 -1 2]',
+  ['``whos`` shows the memory: a full 1000 × 1000 double needs 8 MB, the sparse tridiagonal about 50 KB. ``kron`` of sparse matrices stays sparse.','و ``whos`` تُظهر الذاكرة: المصفوفة الكاملة 1000 × 1000 تحتاج 8 ميغابايت، وثلاثية القطر المتفرقة نحو 50 كيلوبايت. و ``kron`` لمصفوفات متفرقة تبقى متفرقة.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2998',['1000 + 999 + 999'],['$ 3000','$ 1000000','$ 1000'],'n = 1000;  e = ones(n, 1);\nT = spdiags([-e 2*e -e], -1:1, n, n);\ndisp(nnz(T))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [2 -1 0;-1 2 -1;0 -1 2]',[['``full`` converts to an ordinary matrix.','``full`` تحوّل إلى مصفوفة عادية.']],['$ [2 1 0;1 2 1;0 1 2]','$ [-1 2 -1]','$ [2 0 0;0 2 0;0 0 2]'],'e = ones(5, 1);\nT = spdiags([-e 2*e -e], -1:1, 5, 5);\ndisp(mat2str(full(T(1:3, 1:3))))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.1250',[['`−u″ = 1` with `u(0) = u(1) = 0` gives `u(1/2) = 1/8`, reproduced exactly by finite differences; disp shows 4 decimals.','`−u″ = 1` مع `u(0) = u(1) = 0` تعطي `u(1/2) = 1/8` وتعيدها الفروق المحدودة بالضبط، و disp تعرض 4 أرقام عشرية.']],['$ 0.2500','$ 0.5000','$ 0.0625'],'n = 999;  h = 1/(n + 1);  e = ones(n, 1);\nT = spdiags([-e 2*e -e], -1:1, n, n)/h^2;\nu = T\\ones(n, 1);\ndisp(round(u(500)*1e10)/1e10)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['kron of sparse matrices is sparse.','kron لمصفوفات متفرقة متفرقة.']],['$ 0','$ 9','$ Error'],'T = speye(3);\ndisp(issparse(kron(speye(3), T)))'),
+]);
+
+lesson('506',48,[
+  ['A matrix equation `AX + XB = C` is a Sylvester equation; ``sylvester(A, B, C)`` solves it in `O(n^3)`. The same equation in Kronecker form has `n^2` unknowns:','المعادلة المصفوفية `AX + XB = C` معادلة سيلفستر، و ``sylvester(A, B, C)`` تحلها بتكلفة `O(n^3)`. والمعادلة نفسها بصيغة كرونيكر فيها `n^2` مجهولاً:'],
+  '$ X = sylvester(A, B, C);\n% Kronecker form:  (I ⊗ A + B.\' ⊗ I) vec(X) = vec(C)\nK = kron(eye(n), A) + kron(B.\', eye(n));\nx = K \\ C(:);   X2 = reshape(x, n, n);',
+  ['The mapped Legendre system `𝒴 − χ^T𝒴D^{(2)} = ℋ` is of the generalized form `A𝒴 + B𝒴C = ℋ`, so it is solved with the Kronecker form, or by diagonalizing one factor.','ونظام ليجندر المحوّل `𝒴 − χ^T𝒴D^{(2)} = ℋ` من الصورة المعممة `A𝒴 + B𝒴C = ℋ`، فيُحل بصيغة كرونيكر أو بتقطير أحد العاملين.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['sylvester agrees with the Kronecker solve.','sylvester تتفق مع حل كرونيكر.']],['$ 0','$ 9','$ Error'],'A = [4 1 0; 1 4 1; 0 1 4];  B = [3 1 0; 0 3 1; 1 0 3];  C = magic(3);\nX = sylvester(A, B, C);\nK = kron(eye(3), A) + kron(B.\', eye(3));\nX2 = reshape(K \\ C(:), 3, 3);\ndisp(norm(X - X2) < 1e-10)'),
+  Q('How many unknowns does the Kronecker form have for n = 30?','كم مجهولاً في صيغة كرونيكر عند n = 30؟','900',['n^2'],['60','30','27 000']),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The residual of the Sylvester equation is tiny.','باقي معادلة سيلفستر صغير جداً.']],['$ 0','$ 3','$ Error'],'A = [4 1; 1 4];  B = [3 0; 1 3];  C = [1 2; 3 4];\nX = sylvester(A, B, C);\ndisp(norm(A*X + X*B - C) < 1e-12)'),
+  Q('Why is ``B.\'`` used in the Kronecker form?','لماذا تُستخدم ``B.\'`` في صيغة كرونيكر؟',['`vec(XB) = (B^T ⊗ I)vec(X)`, with a plain transpose','`vec(XB) = (B^T ⊗ I)vec(X)` مع نقل عادي'],[['``.\'`` avoids conjugation for complex B.','``.\'`` تتجنب الترافق لـ B المركبة.']],[['By convention','اصطلاحاً'],['It is a typo','خطأ مطبعي']]),
+]);
+
+lesson('506',49,[
+  ['Doubles have 53 binary digits. ``eps`` is the spacing of numbers near 1; ``eps(x)`` near x:','الأعداد المزدوجة فيها 53 رقماً ثنائياً. و ``eps`` المسافة بين الأعداد قرب 1، و ``eps(x)`` قرب x:'],
+  '$ eps                 % 2.2204e-16\neps(1000)           % 1.1369e-13\n0.1 + 0.2 == 0.3     % false\nabs(0.1 + 0.2 - 0.3) < 10*eps   % true\nrealmax, realmin',
+  ['Compare floats with a tolerance relative to their size. Cancellation in differences of nearly equal numbers loses digits, so rewrite formulas such as `1 − cos x` as `2 sin^2(x/2)`.','قارن الأعداد العشرية بسماحية نسبية لحجمها. والإلغاء في فروق الأعداد المتقاربة يفقد الأرقام، فأعد كتابة صيغ مثل `1 − cos x` بالصورة `2 sin^2(x/2)`.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0 1',[['Exact equality fails; a tolerance works.','المساواة الدقيقة تفشل والسماحية تنجح.']],['$ 1 1','$ 0 0','$ 1 0'],'fprintf("%d %d\\n", 0.1 + 0.2 == 0.3, abs(0.1 + 0.2 - 0.3) < 10*eps)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2.2204e-16',[['`2^{−52}`.','`2^{−52}`.']],['$ 1e-16','$ 1.1102e-16','$ 2.2204e-15'],'fprintf("%.4e\\n", eps)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0 0.5',[['Cancellation destroys the direct formula; the rewritten one is accurate.','الإلغاء يدمر الصيغة المباشرة، والمعاد كتابتها دقيقة.']],['$ 0.5 0.5','$ 0 0','$ 1 0.5'],'x = 1e-8;\na = (1 - cos(x))/x^2;\nb = 2*sin(x/2)^2/x^2;\nfprintf("%g %g\\n", a, round(b*1e10)/1e10)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['eps grows with the size of the number.','eps تكبر مع حجم العدد.']],['$ 0','$ 1000','$ eps'],'disp(eps(1000) > eps)'),
+]);
+
+lesson('506',50,[
+  ['Matrices defined by formulas are built without loops from index grids:','المصفوفات المعرّفة بقوانين تُبنى دون حلقات من شبكات الأدلة:'],
+  '$ [r, j] = ndgrid(0:N, 0:N);            % r varies down the rows\nmask = r > j & mod(r - j, 2) == 0;\nD2 = mask .* (4/gam^2*(r - j)/2.*(2*j + 1).*(r + j + 1));\nH = 1./(r + j + 1);                      % = hilb(N + 1)',
+  ['``ndgrid`` gives matrix-style indices (first argument down the rows); ``meshgrid`` gives plotting-style grids (first argument along the columns). Adding 1 to the zero-based r and j is not needed: the formula uses them as numbers.','و ``ndgrid`` تعطي أدلة بأسلوب المصفوفات (المتغير الأول على الصفوف)، و ``meshgrid`` تعطي شبكات بأسلوب الرسم (المتغير الأول على الأعمدة). ولا حاجة لإضافة 1 إلى r و j المبدوءين من الصفر لأن الصيغة تستخدمهما أعداداً.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 12 60 40',[['`d_{2,0}`, `d_{3,1}`, `d_{4,0}` for γ = 1; MATLAB entry (r + 1, j + 1).','`d_{2,0}` و `d_{3,1}` و `d_{4,0}` عند γ = 1، والعنصر في MATLAB هو (r + 1, j + 1).']],['$ 6 30 20','$ 12 0 40','$ 3 15 10'],'N = 4;  gam = 1;\n[r, j] = ndgrid(0:N, 0:N);\nmask = r > j & mod(r - j, 2) == 0;\nD2 = mask .* (4/gam^2*(r - j)/2.*(2*j + 1).*(r + j + 1));\nfprintf("%g %g %g\\n", D2(3, 1), D2(4, 2), D2(5, 1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The formula reproduces hilb.','الصيغة تعيد hilb.']],['$ 0','$ 4','$ Error'],'N = 3;\n[r, j] = ndgrid(0:N, 0:N);\ndisp(isequal(1./(r + j + 1), hilb(N + 1)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [0 0;1 1] [0 1;0 1]',[['With ndgrid the first output varies down the rows.','مع ndgrid يتغير المخرج الأول على الصفوف.']],['$ [0 1;0 1] [0 0;1 1]','$ [0 0;0 0] [1 1;1 1]','$ [0 1] [0 1]'],'[r, j] = ndgrid(0:1, 0:1);\nfprintf("%s %s\\n", mat2str(r), mat2str(j))'),
+  Q('Why is D2 entry `d_{r,j}` stored at ``D2(r + 1, j + 1)``?','لماذا يُخزن العنصر `d_{r,j}` في ``D2(r + 1, j + 1)``؟',['MATLAB indices start at 1 while the degrees start at 0','فهارس MATLAB تبدأ من 1 بينما الدرجات تبدأ من 0'],[['A constant source of off-by-one errors.','مصدر دائم لأخطاء الإزاحة بواحد.']],[['By convention of the paper','باصطلاح البحث'],['It is not','ليس كذلك']]),
+]);
+
+lesson('506',51,[
+  ['``integral(f, a, b)`` integrates adaptively; f must accept vectors. Infinite limits and integrable end singularities are allowed:','``integral(f, a, b)`` تكامل تكيفياً، ويجب أن تقبل f المتجهات. والحدود اللانهائية والانفرادات الطرفية القابلة للتكامل مسموحة:'],
+  '$ integral(@(x) exp(-x.^2), 0, 1)           % 0.7468\nintegral(@(x) 1./sqrt(x), 0, 1)            % 2\nintegral(@(x) exp(-x), 0, Inf)             % 1\nintegral(f, a, b, "AbsTol", 1e-14, "RelTol", 1e-12)',
+  ['The default tolerances are about `10^{−10}` absolute and `10^{−6}` relative; tighten them for reference values. ``integral2`` and ``integral3`` handle double and triple integrals.','والسماحيات الافتراضية نحو `10^{−10}` مطلقة و `10^{−6}` نسبية، فشددها للقيم المرجعية. و ``integral2`` و ``integral3`` تعالجان التكاملات الثنائية والثلاثية.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.746824',['∫_0^1 e^{−x^2} dx'],['$ 0.886227','$ 1.000000','$ 0.500000'],'fprintf("%.6f\\n", integral(@(x) exp(-x.^2), 0, 1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2.000000',['∫_0^1 x^{−1/2} dx = 2'],['$ Inf','$ 1.000000','$ 0.500000'],'fprintf("%.6f\\n", integral(@(x) 1./sqrt(x), 0, 1))'),
+  Q('Compute `D^{−1/2}1` at t = 1 as `(1/Γ(1/2))∫_0^1 (1 − s)^{−1/2} ds`.','احسب `D^{−1/2}1` عند t = 1 بالصورة `(1/Γ(1/2))∫_0^1 (1 − s)^{−1/2} ds`.','$ 1.128379',['#f{2}{#r{π}}'],['$ 2.000000','$ 0.564190','$ 1.772454'],'fprintf("%.6f\\n", integral(@(s) (1 - s).^(-0.5), 0, 1)/gamma(0.5))'),
+  Q('Why does ``integral(@(x) x^2, 0, 1)`` fail?','لماذا تفشل ``integral(@(x) x^2, 0, 1)``؟',['integral passes a vector of points, and ``x^2`` is a matrix power','integral تمرر متجهاً من النقاط و ``x^2`` أس مصفوفي'],[['Write ``x.^2``.','اكتب ``x.^2``.']],[['The interval is too small','المجال صغير جداً'],['It does not fail','لا تفشل']]),
+]);
+
+lesson('506',52,[
+  ['``trapz(x, y)`` integrates sampled data by the trapezoidal rule; ``cumtrapz`` gives the running integral:','``trapz(x, y)`` تكامل البيانات المأخوذة بقاعدة شبه المنحرف، و ``cumtrapz`` تعطي التكامل التراكمي:'],
+  '$ x = linspace(0, 1, 101);  y = x.^2;\ntrapz(x, y)              % 0.33335   (error h^2/6)\nY = cumtrapz(x, y);       % Y(end) = trapz(x, y)',
+  ['The error is `O(h^2)` for smooth data; for periodic functions over a full period it is spectrally accurate. For tabulated data at Gauss points use the Gauss weights instead.','والخطأ `O(h^2)` للبيانات الملساء، وللدوال الدورية على دورة كاملة يكون دقيقاً طيفياً. وللبيانات المجدولة عند نقاط جاوس استخدم أوزان جاوس بدلاً منه.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.333350',[['Error `h^2/6` with h = 0.01.','الخطأ `h^2/6` مع h = 0.01.']],['$ 0.333333','$ 0.333000','$ 0.340000'],'x = linspace(0, 1, 101);\nfprintf("%.6f\\n", trapz(x, x.^2))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 4.0',[['Halving h divides the error by 4.','تنصيف h يقسم الخطأ على 4.']],['$ 2.0','$ 8.0','$ 16.0'],'f = @(x) exp(x);  ex = exp(1) - 1;\ne1 = abs(trapz(linspace(0, 1, 11), f(linspace(0, 1, 11))) - ex);\ne2 = abs(trapz(linspace(0, 1, 21), f(linspace(0, 1, 21))) - ex);\nfprintf("%.1f\\n", e1/e2)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The last value of cumtrapz equals trapz.','آخر قيمة لـ cumtrapz تساوي trapz.']],['$ 0','$ 101','$ Error'],'x = linspace(0, 1, 101);  y = sin(x);\nY = cumtrapz(x, y);\ndisp(abs(Y(end) - trapz(x, y)) < 1e-15)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['For a smooth periodic function over a period, the trapezoidal rule is spectrally accurate.','لدالة دورية ملساء على دورة يكون شبه المنحرف دقيقاً طيفياً.']],['$ 0','$ 0.5','$ 2'],'x = linspace(0, 2*pi, 21);\nI = trapz(x, exp(cos(x)));\ndisp(abs(I - 2*pi*besseli(0, 1)) < 1e-12)'),
+]);
+
+lesson('506',53,[
+  ['``diff`` gives differences, so ``diff(y)./diff(x)`` is a one-sided difference quotient; ``gradient`` gives central differences of the same length as y:','``diff`` تعطي الفروق، فـ ``diff(y)./diff(x)`` خارج قسمة فروق أحادي الجانب، و ``gradient`` تعطي فروقاً مركزية بطول y نفسه:'],
+  '$ x = linspace(0, 1, 11);  y = x.^3;  h = x(2) - x(1);\nd1 = diff(y)./diff(x);        % 10 values, first order\nd2 = gradient(y, h);          % 11 values, second order inside\nd2y = diff(y, 2)/h^2;          % second differences',
+  ['Finite differences lose accuracy when h is too small (cancellation) and when it is too large (truncation); spectral differentiation matrices (Lesson 82) avoid this trade-off for smooth functions.','والفروق المحدودة تفقد الدقة حين تكون h صغيرة جداً (الإلغاء) وحين تكون كبيرة جداً (القطع)، ومصفوفات التفاضل الطيفية (الدرس 82) تتجنب هذه المقايضة للدوال الملساء.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 10 11',[['diff shortens by one, gradient keeps the length.','diff تقصّر بواحد و gradient تحفظ الطول.']],['$ 11 11','$ 10 10','$ 11 10'],'x = linspace(0, 1, 11);  y = x.^3;  h = x(2) - x(1);\nfprintf("%d %d\\n", numel(diff(y)./diff(x)), numel(gradient(y, h)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.76',[['The central difference at x = 0.5 of `x^3`: exact 0.75, error `h^2 = 0.01`.','الفرق المركزي عند x = 0.5 لـ `x^3`: المضبوط 0.75 والخطأ `h^2 = 0.01`.']],['$ 0.75','$ 0.8','$ 0.5'],'x = linspace(0, 1, 11);  h = x(2) - x(1);\ng = gradient(x.^3, h);\nfprintf("%.2f\\n", g(6))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2',[['Second differences of `x^2` divided by `h^2` are exactly 2.','الفروق الثانية لـ `x^2` مقسومة على `h^2` تساوي 2 بالضبط.']],['$ 1','$ 0','$ 4'],'x = linspace(0, 1, 11);  h = x(2) - x(1);\nd = diff(x.^2, 2)/h^2;\ndisp(round(d(3)*1e8)/1e8)'),
+  Q('Why does a forward difference with `h = 10^{−12}` give a poor derivative?','لماذا يعطي الفرق الأمامي مع `h = 10^{−12}` مشتقة سيئة؟',['Cancellation: `f(x + h) − f(x)` keeps only about 4 correct digits, then is divided by h','الإلغاء: `f(x + h) − f(x)` تحتفظ بنحو 4 أرقام صحيحة فقط ثم تُقسم على h'],[['The best h for a forward difference is about `#r{ε} ≈ 10^{−8}`.','وأفضل h للفرق الأمامي نحو `#r{ε} ≈ 10^{−8}`.']],[['h is too large','h كبيرة جداً'],['It gives an exact result','تعطي نتيجة مضبوطة']]),
+]);
+
+lesson('506',54,[
+  ['``fzero(f, x0)`` finds a root of a scalar function near x0 or inside a bracket ``[a b]``; ``roots(p)`` returns all roots of a polynomial from its coefficients:','``fzero(f, x0)`` تجد جذراً لدالة قياسية قرب x0 أو داخل مجال ``[a b]``، و ``roots(p)`` تعيد كل جذور كثيرة حدود من معاملاتها:'],
+  '$ fzero(@(x) x.^3 - 2*x - 5, 2)        % 2.0946\nfzero(@(x) cos(x) - x, [0 1])         % 0.7391\nroots([1 0 -2 -5])                    % 2.0946 and two complex roots',
+  ['A bracket with a sign change is the safest input. ``roots`` uses the eigenvalues of the companion matrix; for high-degree orthogonal polynomials Golub–Welsch is more accurate.','والمجال الذي تتغير فيه الإشارة أأمن مدخل. و ``roots`` تستخدم القيم الذاتية لمصفوفة المرافق، ولكثيرات الحدود المتعامدة عالية الدرجة تكون Golub–Welsch أدق.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2.094551',[['The real root of `x^3 − 2x − 5`.','الجذر الحقيقي لـ `x^3 − 2x − 5`.']],['$ 2.000000','$ 3.000000','$ -1.047276'],'fprintf("%.6f\\n", fzero(@(x) x.^3 - 2*x - 5, [2 3]))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.739085',[['The fixed point of cos.','النقطة الثابتة لـ cos.']],['$ 0.5','$ 1','$ 0.707107'],'fprintf("%.6f\\n", fzero(@(x) cos(x) - x, [0 1]))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['Exactly one real root.','جذر حقيقي واحد بالضبط.']],['$ 3','$ 2','$ 0'],'r = roots([1 0 -2 -5]);\ndisp(sum(abs(imag(r)) < 1e-12))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -0.57735 0.57735',['P_2(x) = #f{3x^2 − 1}{2}'],['$ -0.5 0.5','$ -1 1','$ 0 0.57735'],'r = sort(roots([3 0 -1]/2));\nfprintf("%.5f %.5f\\n", r)'),
+]);
+
+lesson('506',55,[
+  ['Polynomials are row vectors of coefficients, highest power first:','كثيرات الحدود متجهات صفية من المعاملات، أعلى قوة أولاً:'],
+  '$ p2 = [3 0 -1]/2;            % P_2(x) = (3x^2 - 1)/2\npolyval(p2, 0.5)             % -0.125\npolyder(p2)                  % [3 0]      = 3x\npolyint(p2)                  % [0.5 0 -0.5 0]\nconv([1 1], [1 -1])          % [1 0 -1]   product of polynomials',
+  ['``conv`` multiplies polynomials, ``deconv`` divides. Bonnet’s recurrence can be run on coefficient vectors with ``conv([1 0], p)`` for the multiplication by x.','و ``conv`` تضرب كثيرات الحدود و ``deconv`` تقسمها. ويمكن تشغيل علاقة بونيه على متجهات المعاملات مع ``conv([1 0], p)`` للضرب في x.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -0.125 [3 0]',['P_2(0.5) = −0.125,   P_2′(x) = 3x'],['$ 0.125 [3 0]','$ -0.125 [1.5 0]','$ -0.5 [3]'],'p2 = [3 0 -1]/2;\nfprintf("%g %s\\n", polyval(p2, 0.5), mat2str(polyder(p2)))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1 0 -1]',['(x + 1)(x − 1) = x^2 − 1'],['$ [1 -1]','$ [1 0 1]','$ [0 1 -1]'],'disp(mat2str(conv([1 1], [1 -1])))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.4000',[['`∫_{−1}^{1} P_2^2 dx = 2/5`, via polyint and conv.','`∫_{−1}^{1} P_2^2 dx = 2/5` عبر polyint و conv.']],['$ 0.6667','$ 2','$ 0'],'p2 = [3 0 -1]/2;\nq = polyint(conv(p2, p2));\ndisp(round((polyval(q, 1) - polyval(q, -1))*1e12)/1e12)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [2.5 0 -1.5 0]',[['Bonnet: `P_3 = (5xP_2 − 2P_1)/3` on coefficient vectors.','بونيه: `P_3 = (5xP_2 − 2P_1)/3` على متجهات المعاملات.']],['$ [5 0 -3]','$ [2.5 -1.5]','$ [1.5 0 -0.5 0]'],'p1 = [1 0];  p2 = [3 0 -1]/2;\np3 = (5*conv([1 0], p2) - 2*[0 0 p1])/3;\ndisp(mat2str(p3))'),
+]);
+
+lesson('506',56,[
+  ['``interp1`` interpolates tabulated data (linear by default, also ``"spline"``, ``"pchip"``); ``spline`` builds a cubic spline:','``interp1`` تستكمل البيانات المجدولة (خطياً افتراضياً، وأيضاً ``"spline"`` و ``"pchip"``)، و ``spline`` تبني شريحة تكعيبية:'],
+  '$ x = [0 1 2];  y = [1 3 7];\ninterp1(x, y, 0.5)               % 2   (linear)\ninterp1(x, y, 0.5, "spline")\npp = spline(x, y);  ppval(pp, 0.5)\npolyfit(x, y, 2)                  % [1 1 1]: the interpolating quadratic',
+  ['For one global polynomial through n + 1 points use ``polyfit(x, y, n)`` (only for small n) or the barycentric formula; equally spaced points with large n give Runge’s phenomenon.','ولكثيرة حدود شاملة واحدة عبر n + 1 نقطة استخدم ``polyfit(x, y, n)`` (لـ n صغير فقط) أو الصيغة الباريسنترية، والنقاط المتساوية التباعد مع n كبير تعطي ظاهرة رونغه.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2',[['Linear interpolation between (0, 1) and (1, 3).','استكمال خطي بين (0, 1) و (1, 3).']],['$ 1.75','$ 2.5','$ 3'],'disp(interp1([0 1 2], [1 3 7], 0.5))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [1 1 1]',[['The quadratic through the three points is `x^2 + x + 1`.','كثيرة الحدود التربيعية عبر النقاط الثلاث هي `x^2 + x + 1`.']],['$ [1 2 1]','$ [2 1 1]','$ [1 0 1]'],'disp(mat2str(round(polyfit([0 1 2], [1 3 7], 2)*1e10)/1e10))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.7500',[['With three points the spline is the interpolating quadratic: `0.25 + 0.5 + 1`.','بثلاث نقاط تكون الشريحة هي كثيرة الحدود التربيعية: `0.25 + 0.5 + 1`.']],['$ 2','$ 1.5000','$ 2.2500'],'disp(interp1([0 1 2], [1 3 7], 0.5, "spline"))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 11',[['Outside the data interp1 extrapolates only with ``"extrap"``; the last segment has slope 4.','خارج البيانات لا تستقرئ interp1 إلا مع ``"extrap"``، والقطعة الأخيرة ميلها 4.']],['$ 7','$ 13','$ 10'],'disp(interp1([0 1 2], [1 3 7], 3, "linear", "extrap"))'),
+]);
+
+lesson('506',57,[
+  ['The special functions of fractional calculus:','الدوال الخاصة في التفاضل الكسري:'],
+  '$ gamma(2.5)            % 1.3293 = 3*sqrt(pi)/4\nbeta(2, 3)             % 0.0833 = 1/12\nfactorial(5)           % 120\ngammaln(200)           % 857.93: log Gamma without overflow\ngamma(k + 1)./gamma(k + 1 + mu)   % a whole table at once',
+  ['They work element by element on arrays. ``gamma(200)`` overflows to ``Inf``; differences of ``gammaln`` give ratios safely.','وهي تعمل عنصراً بعنصر على المصفوفات. و ``gamma(200)`` تفيض إلى ``Inf``، وفروق ``gammaln`` تعطي النسب بأمان.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.329340 0.083333',['Γ(#f{5}{2}) = #f{3#r{π}}{4},   B(2, 3) = #f{1}{12}'],['$ 1.772454 0.083333','$ 1.329340 0.166667','$ 0.886227 0.5'],'fprintf("%.6f %.6f\\n", gamma(2.5), beta(2, 3))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1.1284 0.7523 0.6018',['#f{Γ(k + 1)}{Γ(k + 3/2)},   k = 0, 1, 2'],['$ 1 1 1','$ 0.8862 1.3293 3.3234','$ 1.7725 0.8862 1.3293'],'k = 0:2;  mu = 0.5;\nfprintf("%.4f %.4f %.4f\\n", gamma(k + 1)./gamma(k + 1 + mu))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ Inf 1',[['Γ(200) overflows; the ratio through gammaln is fine.','Γ(200) تفيض والنسبة عبر gammaln سليمة.']],['$ Inf 0','$ 857.93 1','$ 0 1'],'r = exp(gammaln(200) - gammaln(201))*200;\nfprintf("%g %g\\n", gamma(200), round(r*1e10)/1e10)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['`Γ(1/2)^2 = π`.','`Γ(1/2)^2 = π`.']],['$ 0','$ 3.1416','$ 1.7725'],'disp(abs(gamma(0.5)^2 - pi) < 1e-14)'),
+]);
+
+lesson('506',58,[
+  ['Bonnet’s recurrence gives all `P_0, …, P_N` at all points at once. Note that MATLAB’s built-in ``legendre(n, x)`` returns the associated Legendre functions `P_n^m`, m = 0, …, n, one per row; its first row is `P_n`:','علاقة بونيه تعطي كل `P_0, …, P_N` عند كل النقاط دفعة واحدة. ولاحظ أن ``legendre(n, x)`` الجاهزة في MATLAB تعيد دوال ليجندر المرافقة `P_n^m` عند m = 0, …, n صفاً لكل منها، وصفها الأول هو `P_n`:'],
+  '$ P = zeros(numel(x), N + 1);  P(:, 1) = 1;  P(:, 2) = x(:);\nfor k = 1:N-1\n    P(:, k+2) = ((2*k + 1)*x(:).*P(:, k+1) - k*P(:, k))/(k + 1);\nend\nL = legendre(2, x);  L(1, :)      % P_2(x), the m = 0 row',
+  ['The table ``P(i, k + 1) = P_k(x_i)`` is the basis matrix of collocation and quadrature.','والجدول ``P(i, k + 1) = P_k(x_i)`` هو مصفوفة الأساس للتجميع والتربيع.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1 0.5 -0.125 -0.4375',['P_3(0.5) = #f{5·0.125 − 3·0.5}{2}'],['$ 1 0.5 0.125 0.4375','$ 0.5 -0.125 -0.4375','$ 1 0.5 -0.125 0.4375'],'x = 0.5;  N = 3;\nP = zeros(numel(x), N + 1);  P(:, 1) = 1;  P(:, 2) = x(:);\nfor k = 1:N-1\n    P(:, k+2) = ((2*k + 1)*x(:).*P(:, k+1) - k*P(:, k))/(k + 1);\nend\nfprintf("%g %g %g %g\\n", P)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ [3 2]',[['Rows m = 0, 1, 2 for two points.','الصفوف m = 0, 1, 2 لنقطتين.']],['$ [1 2]','$ [2 3]','$ [3 1]'],'disp(mat2str(size(legendre(2, [0 0.5]))))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -0.5 -0.125',[['The first row of legendre is `P_2` itself.','الصف الأول من legendre هو `P_2` نفسها.']],['$ 3 2.25','$ 0 -1.299','$ 0.5 0.125'],'L = legendre(2, [0 0.5]);\nfprintf("%g %g\\n", L(1, :))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',[['The recurrence agrees with the built-in function for degree 6.','العلاقة تتفق مع الدالة الجاهزة عند الدرجة 6.']],['$ 0','$ 7','$ Error'],'x = linspace(-1, 1, 21)\';  N = 6;\nP = zeros(numel(x), N + 1);  P(:, 1) = 1;  P(:, 2) = x;\nfor k = 1:N-1\n    P(:, k+2) = ((2*k + 1)*x.*P(:, k+1) - k*P(:, k))/(k + 1);\nend\nL = legendre(N, x);\ndisp(norm(P(:, N+1) - L(1, :)\') < 1e-12)'),
+]);
+
+lesson('506',59,[
+  ['Jacobi polynomials by their three-term recurrence (`c = 2n + α + β`):','كثيرات جاكوبي بعلاقة التكرار الثلاثية (`c = 2n + α + β`):'],
+  '$ % P_0 = 1,  P_1 = (a + 1) + (a + b + 2)(x - 1)/2\nfor n = 1:N-1\n    c = 2*n + a + b;\n    num = (c + 1)*((c + 2)*c*x + a^2 - b^2).*P(:, n+1) ...\n          - 2*(n + a)*(n + b)*(c + 2)*P(:, n);\n    P(:, n+2) = num / (2*(n + 1)*(n + a + b + 1)*c);\nend',
+  ['Check with known values: `P_n^{(α,β)}(1) = C(n + α, n)` and the Legendre case α = β = 0. The Symbolic Math Toolbox function ``jacobiP(n, a, b, x)`` gives exact references.','وتحقق بقيم معروفة: `P_n^{(α,β)}(1) = C(n + α, n)` وحالة ليجندر α = β = 0. ودالة ``jacobiP(n, a, b, x)`` في صندوق الرياضيات الرمزية تعطي مراجع مضبوطة.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 2 3',['P_1^{(1,0)}(1) = C(2, 1),   P_2^{(1,1)}(1) = C(3, 2)'],['$ 1 1','$ 2 6','$ 1 3'],'x = 1;\nP1 = @(a, b) (a + 1) + (a + b + 2)*(x - 1)/2;\na = 1;  b = 1;  n = 1;  c = 2*n + a + b;\nnum = (c + 1)*((c + 2)*c*x + a^2 - b^2)*P1(a, b) ...\n      - 2*(n + a)*(n + b)*(c + 2);\nP2 = num/(2*(n + 1)*(n + a + b + 1)*c);\nfprintf("%g %g\\n", P1(1, 0), P2)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ -0.296875',[['`P_3^{(1,0)}(0.5)` by the recurrence.','`P_3^{(1,0)}(0.5)` بعلاقة التكرار.']],['$ 0.296875','$ -0.4375','$ 0.5'],'x = 0.5;  a = 1;  b = 0;  N = 3;\nP = zeros(1, N + 1);  P(1) = 1;  P(2) = (a + 1) + (a + b + 2)*(x - 1)/2;\nfor n = 1:N-1\n    c = 2*n + a + b;\n    num = (c + 1)*((c + 2)*c*x + a^2 - b^2)*P(n+1) ...\n          - 2*(n + a)*(n + b)*(c + 2)*P(n);\n    P(n+2) = num / (2*(n + 1)*(n + a + b + 1)*c);\nend\nfprintf("%g\\n", P(N+1))'),
+  Q('Reduce the recurrence to α = β = 0.','اختصر علاقة التكرار إلى α = β = 0.','(n + 1)P_{n+1} = (2n + 1)xP_n − nP_{n−1}',['c = 2n:   2(n + 1)^2·2n P_{n+1} = (2n + 1)(2n + 2)2n x P_n − 2n^2(2n + 2)P_{n−1}'],['(n + 1)P_{n+1} = 2nxP_n − nP_{n−1}','nP_{n+1} = (2n + 1)xP_n − (n + 1)P_{n−1}','P_{n+1} = xP_n − P_{n−1}']),
+  Q('What is the value `P_3^{(2,0)}(1)`?','ما القيمة `P_3^{(2,0)}(1)`؟','10',['C(3 + 2, 3) = C(5, 3)'],['1','6','20']),
+]);
+
+lesson('506',60,[
+  ['MATLAB has no built-in Mittag-Leffler function. For moderate arguments the series is enough; for large ones use a dedicated algorithm such as Garrappa’s ``ml.m`` from the File Exchange:','لا توجد دالة ميتاج–ليفلر جاهزة في MATLAB. وللمتغيرات المعتدلة تكفي المتسلسلة، وللكبيرة استخدم خوارزمية مخصصة مثل ``ml.m`` لـ Garrappa من File Exchange:'],
+  '$ ml = @(a, z) sum(z.^(0:100) ./ gamma(a*(0:100) + 1));\nml(1, 1)          % e\nml(0.5, -1)       % 0.4276 = erfcx(1)\nml(2, -1.5^2)     % cos(1.5)',
+  ['The series terms are computed as a vector and summed. Check against the known cases `E_1(z) = e^z`, `E_2(−z^2) = cos z` and `E_{1/2}(−z) = e^{z^2}erfc(z)` before using it.','وحدود المتسلسلة تُحسب متجهاً وتُجمع. وتحقق منها مقابل الحالات المعروفة `E_1(z) = e^z` و `E_2(−z^2) = cos z` و `E_{1/2}(−z) = e^{z^2}erfc(z)` قبل استخدامها.'],
+],[
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',['E_1(1) = e'],['$ 0','$ 2.7183','$ Error'],'ml = @(a, z) sum(z.^(0:100) ./ gamma(a*(0:100) + 1));\ndisp(abs(ml(1, 1) - exp(1)) < 1e-12)'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 0.427584 0.427584',['E_{1/2}(−1) = e·erfc(1)'],['$ 0.367879 0.427584','$ 0.5 0.5','$ 0.427584 0.367879'],'ml = @(a, z) sum(z.^(0:100) ./ gamma(a*(0:100) + 1));\nfprintf("%.6f %.6f\\n", ml(0.5, -1), erfcx(1))'),
+  Q('What does this program display?','ماذا يعرض هذا البرنامج؟','$ 1',['E_2(−z^2) = cos z,   z = 1.5'],['$ 0','$ 0.0707','$ -1'],'ml = @(a, z) sum(z.^(0:100) ./ gamma(a*(0:100) + 1));\ndisp(abs(ml(2, -1.5^2) - cos(1.5)) < 1e-12)'),
+  Q('Which function solves `D^{α}y = −y`, `y(0) = 1`?','أي دالة تحل `D^{α}y = −y` مع `y(0) = 1`؟','y = E_{α}(−t^{α})',[['The fractional analogue of `e^{−t}`.','النظير الكسري لـ `e^{−t}`.']],['y = e^{−t^{α}}','y = E_{α}(−t)','y = t^{α}']),
+]);
+
 export const MS506 = true;
