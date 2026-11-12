@@ -817,4 +817,225 @@ lesson('504',60,[
   Q('Why is this faster than ``FindRoot`` on 400 linear equations?','لماذا يكون هذا أسرع من ``FindRoot`` على 400 معادلة خطية؟',['One direct solve, with no Newton iterations and no numerical Jacobian','حل مباشر واحد دون تكرارات نيوتن ودون جاكوبي عددي'],[['FindRoot treats the system as nonlinear.','FindRoot تعامل النظام على أنه غير خطي.']],[['FindRoot is exact','FindRoot مضبوطة'],['It is not faster','ليس أسرع']]),
 ]);
 
+/* ---- 504 · Unit 7 (lessons 61–70): differential equations;  Unit 8 (lessons 71–80): numerical methods ---- */
+lesson('504',61,[
+  ['``DSolve`` solves differential equations exactly. Derivatives are written ``y\'[x]``, ``y\'\'[x]``, and initial conditions are added to the list of equations:','``DSolve`` تحل المعادلات التفاضلية بالضبط. وتُكتب المشتقات ``y\'[x]`` و ``y\'\'[x]``، وتُضاف الشروط الابتدائية إلى قائمة المعادلات:'],
+  '$ DSolve[y\'[x] == y[x], y[x], x]                  (* {{y[x] -> E^x C[1]}} *)\nDSolve[{y\'[x] == -y[x], y[0] == 1}, y[x], x]     (* {{y[x] -> E^-x}} *)\nDSolve[y\'\'[x] + y[x] == 0, y[x], x]   (* {{y[x] -> C[1] Cos[x] + C[2] Sin[x]}} *)',
+  ['``C[1]``, ``C[2]`` are the free constants. Asking for ``y`` instead of ``y[x]`` returns a pure function, which can be substituted into derivatives and conditions to check the answer.','و ``C[1]`` و ``C[2]`` الثوابت الحرة. وطلب ``y`` بدل ``y[x]`` يعيد دالة صرفة يمكن تعويضها في المشتقات والشروط للتحقق من الجواب.'],
+],[
+  Q('What is the output of ``DSolve[{y\'[x] == 2 x, y[0] == 1}, y[x], x]``?','ما مخرج ``DSolve[{y\'[x] == 2 x, y[0] == 1}, y[x], x]``؟','$ {{y[x] -> 1 + x^2}}',['y = x^2 + C,   y(0) = 1'],['$ {{y[x] -> x^2}}','$ {{y[x] -> 2 x + 1}}','$ {{y[x] -> x^2 + C[1]}}']),
+  Q('How many free constants does the general solution of a third-order equation contain?','كم ثابتاً حراً في الحل العام لمعادلة من الرتبة الثالثة؟','3',[['``C[1]``, ``C[2]``, ``C[3]``.','``C[1]`` و ``C[2]`` و ``C[3]``.']],['1','2','0']),
+  Q('What is the output of the last line?','ما مخرج السطر الأخير؟','$ {True}',[['The pure-function solution is substituted into the equation.','حل الدالة الصرفة يُعوَّض في المعادلة.']],['$ {y\'\'[x] + y[x] == 0}','$ True','$ {0}'],'sol = DSolve[y\'\'[x] + y[x] == 0, y, x];\ny\'\'[x] + y[x] == 0 /. sol'),
+  Q('Solve `y′ = −2ty`, `y(0) = 1`.','حل `y′ = −2ty` مع `y(0) = 1`.','$ DSolve[{y\'[t] == -2 t y[t], y[0] == 1}, y[t], t]   (* {{y[t] -> E^-t^2}} *)',['y = e^{−t^2}'],['$ DSolve[y\'[t] == -2 t y[t], y[0] == 1, y[t], t]','$ DSolve[{y\'[t] = -2 t y[t], y[0] = 1}, y[t], t]','$ Solve[{y\'[t] == -2 t y[t], y[0] == 1}, y[t], t]']),
+]);
+
+lesson('504',62,[
+  ['``NDSolve`` integrates numerically and returns an ``InterpolatingFunction``, a numerical function that can be evaluated, differentiated and plotted:','``NDSolve`` تكامل عددياً وتعيد ``InterpolatingFunction``، أي دالة عددية يمكن حسابها واشتقاقها ورسمها:'],
+  '$ sol = NDSolve[{y\'[t] == -y[t]^2, y[0] == 1}, y, {t, 0, 5}];\ny[2] /. sol                          (* {0.333333} *)\nPlot[Evaluate[y[t] /. sol], {t, 0, 5}]',
+  ['The result is a list of solutions, so values come in a list; use ``First`` to take the number. The method and step size are chosen automatically to meet the default precision goals.','والنتيجة قائمة حلول فتأتي القيم في قائمة، فاستخدم ``First`` لأخذ العدد. وتُختار الطريقة وطول الخطوة تلقائياً لتحقيق أهداف الدقة الافتراضية.'],
+],[
+  Q('The exact solution is `1/(1 + t)`. What is ``First[y[4] /. sol]``?','الحل المضبوط `1/(1 + t)`. ما ``First[y[4] /. sol]``؟','$ 0.2',['#f{1}{1 + 4}'],['$ 0.25','$ 4.','$ {0.2}']),
+  Q('Why does ``y[2] /. sol`` give ``{0.333333}`` with braces?','لماذا يعطي ``y[2] /. sol`` القيمة ``{0.333333}`` بين قوسين؟',['NDSolve returns a list of solutions, and the rule is applied for each','NDSolve تعيد قائمة حلول وتُطبّق القاعدة لكل منها'],[['Use ``First`` or define ``ys = y /. First[sol]``.','استخدم ``First`` أو عرّف ``ys = y /. First[sol]``.']],[['Because the value is approximate','لأن القيمة تقريبية'],['It is an error','خطأ']]),
+  Q('How do you get the maximal error on [0, 5]?','كيف تحصل على أكبر خطأ على [0, 5]؟','$ ys = y /. First[sol];  NMaxValue[{Abs[ys[t] - 1/(1 + t)], 0 <= t <= 5}, t]',[['Or sample on a fine grid with Table and Max.','أو خذ عينات على شبكة دقيقة بـ Table و Max.']],['$ Max[ys - 1/(1 + t)]','$ Abs[sol - 1/(1 + t)]','$ NMaxValue[sol, t]']),
+  Q('What is ``ys\'[0]`` for the solution above?','ما ``ys\'[0]`` للحل أعلاه؟','$ -1.',['y′(0) = −y(0)^2'],['$ 1.','$ 0.','$ -2.']),
+]);
+
+lesson('504',63,[
+  ['Boundary-value problems are written like initial-value problems, with conditions at two points:','مسائل القيم الحدية تُكتب مثل مسائل القيم الابتدائية مع شروط عند نقطتين:'],
+  '$ sol = DSolve[{y\'\'[x] == -2, y[0] == 0, y[1] == 0}, y[x], x];\ny[x] /. First[sol] // Expand        (* x - x^2 *)\nNDSolve[{y\'\'[x] + y[x] == 0, y[0] == 0, y[1] == 1}, y, {x, 0, 1}]',
+  ['NDSolve uses shooting or finite-difference methods for linear boundary-value problems. These solutions are the reference values against which spectral methods are tested.','وتستخدم NDSolve طرق الإطلاق أو الفروق المحدودة لمسائل القيم الحدية الخطية. وهذه الحلول هي القيم المرجعية التي تُختبر عليها الطرق الطيفية.'],
+],[
+  Q('What is ``y[1/2]`` for the first problem?','ما ``y[1/2]`` للمسألة الأولى؟','$ 1/4',['#f{1}{2} − #f{1}{4}'],['$ 1/2','$ 0','$ -1/4']),
+  Q('The exact solution of the second problem is `sin x/sin 1`. What is `y(0.5)`?','الحل المضبوط للمسألة الثانية `sin x/sin 1`. ما `y(0.5)`؟','0.569747',['#f{0.479426}{0.841471}'],['0.5','0.479426','0.841471']),
+  Q('Write the problem `u″ = 6x`, `u(−1) = u(1) = 0` for DSolve.','اكتب المسألة `u″ = 6x` مع `u(−1) = u(1) = 0` لـ DSolve.','$ DSolve[{u\'\'[x] == 6 x, u[-1] == 0, u[1] == 0}, u[x], x]',['u = x^3 − x'],['$ DSolve[{u\'\'[x] == 6 x, u[0] == 0, u[1] == 0}, u[x], x]','$ DSolve[u\'\'[x] == 6 x, {u[-1], u[1]} == 0, x]','$ NDSolve[{u\'\'[x] == 6 x}, u, {x, -1, 1}]']),
+  Q('What happens with `y″ + π^2 y = 0`, `y(0) = 0`, `y(1) = 1`?','ماذا يحدث مع `y″ + π^2 y = 0` و `y(0) = 0` و `y(1) = 1`؟',['No solution: `sin(πx)` vanishes at both ends, so DSolve returns ``{}``','لا حل: `sin(πx)` تنعدم عند الطرفين فتعيد DSolve القائمة ``{}``'],['y = C sin(πx),   y(1) = 0 ≠ 1'],[['A unique solution','حل وحيد'],['Infinitely many solutions','عدد لانهائي من الحلول']]),
+]);
+
+lesson('504',64,[
+  ['Systems are lists of equations and lists of unknowns:','الأنظمة قوائم معادلات وقوائم مجاهيل:'],
+  '$ DSolve[{x\'[t] == y[t], y\'[t] == -x[t], x[0] == 1, y[0] == 0}, {x[t], y[t]}, t]\n(* {{x[t] -> Cos[t], y[t] -> -Sin[t]}} *)\nMatrixExp[{{0, 1}, {-1, 0}} t]   (* {{Cos[t], Sin[t]}, {-Sin[t], Cos[t]}} *)',
+  ['A linear system `X′ = AX` has the solution `X = e^{At}X(0)`, which ``MatrixExp`` computes exactly. Nonlinear systems, such as predator–prey models, are solved with NDSolve.','والنظام الخطي `X′ = AX` حله `X = e^{At}X(0)` التي تحسبها ``MatrixExp`` بالضبط. والأنظمة غير الخطية مثل نماذج المفترس والفريسة تُحل بـ NDSolve.'],
+],[
+  Q('For the system above, what is `x(π)`?','للنظام أعلاه ما `x(π)`؟','−1',['cos π'],['1','0','π']),
+  Q('What is ``MatrixExp[{{1, 0}, {0, 2}} t]``?','ما ``MatrixExp[{{1, 0}, {0, 2}} t]``؟','$ {{E^t, 0}, {0, E^(2 t)}}',[['For a diagonal matrix take the exponential of each entry.','للمصفوفة القطرية خذ أسية كل عنصر.']],['$ {{E, 0}, {0, E^2}} t','$ {{1, 0}, {0, 2}} E^t','$ {{t, 0}, {0, 2 t}}']),
+  Q('Write `x′ = −x + y`, `y′ = −y` with `x(0) = 0`, `y(0) = 1` for DSolve.','اكتب `x′ = −x + y` و `y′ = −y` مع `x(0) = 0` و `y(0) = 1` لـ DSolve.','$ DSolve[{x\'[t] == -x[t] + y[t], y\'[t] == -y[t], x[0] == 0, y[0] == 1}, {x[t], y[t]}, t]',['y = e^{−t},   x = te^{−t}'],['$ DSolve[{x\'[t] == -x[t] + y[t], y\'[t] == -y[t]}, {x[0] == 0, y[0] == 1}, t]','$ DSolve[{x\'[t] = -x[t] + y[t], y\'[t] = -y[t]}, {x, y}, t]','$ DSolve[{x\'[t] == -x[t] + y[t], y\'[t] == -y[t], x[0] == 0, y[0] == 1}, x[t], t]']),
+  Q('What is `x(1)` for that system?','ما `x(1)` لذلك النظام؟','e^{−1} ≈ 0.3679',['x = te^{−t}'],['0','1','e ≈ 2.718']),
+]);
+
+lesson('504',65,[
+  ['NDSolve also solves time-dependent partial differential equations by the method of lines: space is discretized, and the resulting system of ordinary equations is integrated in time:','و NDSolve تحل المعادلات التفاضلية الجزئية الزمنية بطريقة الخطوط: يُقطَّع المكان ثم يُكامل نظام المعادلات العادية الناتج في الزمن:'],
+  '$ sol = NDSolve[{D[u[x, t], t] == D[u[x, t], x, x],\n   u[x, 0] == Sin[Pi x], u[0, t] == 0, u[1, t] == 0}, u, {x, 0, 1}, {t, 0, 1}];\nu[0.5, 0.1] /. First[sol]        (* ≈ 0.3727 *)',
+  ['The initial and boundary conditions must agree at the corners; otherwise NDSolve warns with ``NDSolve::ibcinc``. NDSolve does not handle fractional time derivatives, which is one reason for writing your own spectral solver.','ويجب أن تتفق الشروط الابتدائية والحدية عند الأركان، وإلا تحذّر NDSolve بالرسالة ``NDSolve::ibcinc``. ولا تتعامل NDSolve مع المشتقات الزمنية الكسرية، وهذا أحد أسباب كتابة حلّال طيفي خاص.'],
+],[
+  Q('The exact solution is `e^{−π^2 t} sin(πx)`. What is `u(0.5, 0.1)`?','الحل المضبوط `e^{−π^2 t} sin(πx)`. ما `u(0.5, 0.1)`؟','≈ 0.3727',['e^{−0.98696}'],['≈ 0.9870','≈ 0.5','≈ 0.1']),
+  Q('Why is ``u[x, 0] == Sin[Pi x]`` consistent with the boundary conditions?','لماذا يتسق ``u[x, 0] == Sin[Pi x]`` مع الشروط الحدية؟',['`sin 0 = sin π = 0`, the boundary values at t = 0','`sin 0 = sin π = 0` وهما القيمتان الحديتان عند t = 0'],[['The corners agree.','الأركان متفقة.']],[['Because sin is smooth','لأن sin ملساء'],['It is not consistent','ليس متسقاً']]),
+  Q('Which initial condition would trigger ``NDSolve::ibcinc`` with `u(0, t) = u(1, t) = 0`?','أي شرط ابتدائي يسبب ``NDSolve::ibcinc`` مع `u(0, t) = u(1, t) = 0`؟','u(x, 0) = 1',['u(0, 0) = 1 ≠ 0'],['u(x, 0) = x(1 − x)','u(x, 0) = sin(2πx)','u(x, 0) = 0']),
+  Q('Can NDSolve solve `D_t^{1/2}u = u_{xx}` directly?','هل تستطيع NDSolve حل `D_t^{1/2}u = u_{xx}` مباشرة؟',['No: it integrates ordinary time derivatives only, so a fractional time derivative needs your own method','لا: تكامل المشتقات الزمنية العادية فقط، فالمشتقة الزمنية الكسرية تحتاج طريقة خاصة'],[['For example the mapped Legendre method of Unit 9.','مثل طريقة ليجندر المحوّلة في الوحدة 9.']],[['Yes, always','نعم دائماً'],['Only for x in [0, 1]','فقط لـ x في [0, 1]']]),
+]);
+
+lesson('504',66,[
+  ['The Laplace transform turns derivatives into multiplication by s:','تحويل لابلاس يحوّل الاشتقاق إلى ضرب في s:'],
+  '$ LaplaceTransform[t^2, t, s]               (* 2/s^3 *)\nLaplaceTransform[Exp[-a t], t, s]           (* 1/(a + s) *)\nLaplaceTransform[t^(1/2), t, s]             (* Sqrt[Pi]/(2 s^(3/2)) *)\nInverseLaplaceTransform[1/(s^2 + 1), s, t]  (* Sin[t] *)',
+  ['For the Caputo derivative `ℒ{D^{α}y} = s^{α}Y − s^{α−1}y(0)` (0 < α ≤ 1). This gives exact solutions of linear fractional equations in terms of Mittag-Leffler functions, for example `ℒ{E_{α}(−t^{α})} = s^{α−1}/(s^{α} + 1)`.','ولمشتقة كابوتو `ℒ{D^{α}y} = s^{α}Y − s^{α−1}y(0)` (0 < α ≤ 1). وهذا يعطي حلولاً مضبوطة للمعادلات الكسرية الخطية بدلالة دوال ميتاج–ليفلر، فمثلاً `ℒ{E_{α}(−t^{α})} = s^{α−1}/(s^{α} + 1)`.'],
+],[
+  Q('What is ``LaplaceTransform[t^3, t, s]``?','ما ``LaplaceTransform[t^3, t, s]``؟','$ 6/s^4',['#f{3!}{s^4}'],['$ 3/s^4','$ 6/s^3','$ 1/s^4']),
+  Q('What is ``InverseLaplaceTransform[1/(s + 2), s, t]``?','ما ``InverseLaplaceTransform[1/(s + 2), s, t]``؟','$ E^(-2 t)',['ℒ{e^{−2t}} = #f{1}{s + 2}'],['$ E^(2 t)','$ 1/(t + 2)','$ Sin[2 t]']),
+  Q('Transform `D^{1/2}y = −y`, `y(0) = 1`, and solve for Y.','حوّل `D^{1/2}y = −y` مع `y(0) = 1` وحل لـ Y.','Y = #f{s^{−1/2}}{s^{1/2} + 1}',['s^{1/2}Y − s^{−1/2} = −Y'],['Y = #f{1}{s^{1/2} + 1}','Y = #f{s^{1/2}}{s + 1}','Y = #f{1}{s + 1}']),
+  Q('Which function is that Y the transform of?','Y تلك تحويل أي دالة؟','E_{1/2}(−t^{1/2})',['#f{s^{α−1}}{s^{α} + 1},   α = #f{1}{2}'],['e^{−t}','E_{1/2}(−t)','t^{1/2}']),
+]);
+
+lesson('504',67,[
+  ['Recent versions of Mathematica (13.1 and later) have fractional derivatives built in: ``CaputoD[f, {x, α}]`` is the Caputo derivative and ``FractionalD[f, {x, α}]`` the Riemann–Liouville derivative; a negative order gives the fractional integral:','الإصدارات الحديثة من Mathematica (13.1 وما بعدها) فيها المشتقات الكسرية جاهزة: ``CaputoD[f, {x, α}]`` مشتقة كابوتو و ``FractionalD[f, {x, α}]`` مشتقة ريمان–ليوفيل، والرتبة السالبة تعطي التكامل الكسري:'],
+  '$ CaputoD[x^2, {x, 1/2}]          (* (8 x^(3/2))/(3 Sqrt[Pi]) *)\nCaputoD[1, {x, 1/2}]            (* 0 *)\nFractionalD[1, {x, 1/2}]        (* 1/(Sqrt[Pi] Sqrt[x]) *)\nFractionalD[x, {x, -1/2}]       (* (4 x^(3/2))/(3 Sqrt[Pi]) *)',
+  ['Both are based at 0. In older versions use the power rule `D^{α}t^k = Γ(k + 1)/Γ(k + 1 − α)·t^{k−α}` directly.','وكلاهما بدايته 0. وفي الإصدارات الأقدم استخدم قاعدة القوة `D^{α}t^k = Γ(k + 1)/Γ(k + 1 − α)·t^{k−α}` مباشرة.'],
+],[
+  Q('Why is ``CaputoD[1, {x, 1/2}]`` zero but ``FractionalD[1, {x, 1/2}]`` not?','لماذا يكون ``CaputoD[1, {x, 1/2}]`` صفراً و ``FractionalD[1, {x, 1/2}]`` ليس كذلك؟',['Caputo differentiates first, and the derivative of a constant is 0','كابوتو يشتق أولاً ومشتقة الثابت صفر'],['D_{RL}^{1/2}1 = #f{x^{−1/2}}{Γ(1/2)}'],[['They are equal','متساويتان'],['Because 1 is exact','لأن 1 مضبوط']]),
+  Q('Compute ``CaputoD[x, {x, 1/2}]``.','احسب ``CaputoD[x, {x, 1/2}]``.','$ (2 Sqrt[x])/Sqrt[Pi]',['#f{Γ(2)}{Γ(3/2)}x^{1/2} = #f{2}{#r{π}}x^{1/2}'],['$ Sqrt[x]/Sqrt[Pi]','$ 2 Sqrt[x]','$ x^(1/2)/Gamma[1/2]']),
+  Q('Write the fractional integral of order 3/2 of `t^2`.','اكتب التكامل الكسري من الرتبة 3/2 لـ `t^2`.','$ FractionalD[t^2, {t, -3/2}]',['#f{Γ(3)}{Γ(9/2)}t^{7/2}'],['$ CaputoD[t^2, {t, 3/2}]','$ FractionalD[t^2, {t, 3/2}]','$ Integrate[t^2, {t, 3/2}]']),
+  Q('In an older version without CaputoD, write the Caputo derivative of order α of `t^k` (k ≥ 1).','في إصدار أقدم دون CaputoD اكتب مشتقة كابوتو من الرتبة α لـ `t^k` (k ≥ 1).','$ Gamma[k + 1]/Gamma[k + 1 - alpha] t^(k - alpha)',[['The power rule.','قاعدة القوة.']],['$ Gamma[k + 1]/Gamma[k - alpha] t^(k - alpha)','$ Gamma[k]/Gamma[k + 1 - alpha] t^(k + alpha)','$ k!/(k - alpha)! t^k']),
+]);
+
+lesson('504',68,[
+  ['A manufactured solution tests a solver: choose u, compute the matching f exactly, and check the pair before using it:','الحل المُصنَّع يختبر الحلّال: اختر u واحسب f المقابلة بالضبط وتحقق من الزوج قبل استخدامه:'],
+  '$ u = t^(3/2) Sin[Pi x];\nf = Simplify[CaputoD[u, {t, 1/2}] - D[u, {x, 2}]]\nSimplify[CaputoD[u, {t, 1/2}] - D[u, {x, 2}] - f]     (* 0 *)\n{u /. t -> 0, u /. x -> 0, u /. x -> 1}               (* {0, 0, 0} *)',
+  ['Also check the initial and boundary data that the problem will use. A wrong f is the commonest reason why a correct solver seems not to converge.','وتحقق أيضاً من البيانات الابتدائية والحدية التي ستستخدمها المسألة. والـ f الخاطئة أشهر سبب لظهور حلّال صحيح كأنه لا يتقارب.'],
+],[
+  Q('Compute `D_t^{1/2} t^{3/2}`.','احسب `D_t^{1/2} t^{3/2}`.','#f{3#r{π}}{4} t',['#f{Γ(5/2)}{Γ(2)} t'],['#f{#r{π}}{2} t','#f{3}{4} t','#f{4}{3#r{π}} t']),
+  Q('Write f for `D_t^{1/2}u − u_{xx}` with `u = t^{3/2} sin(πx)`.','اكتب f لـ `D_t^{1/2}u − u_{xx}` مع `u = t^{3/2} sin(πx)`.','f = (#f{3#r{π}}{4} t + π^2 t^{3/2}) sin(πx)',['−u_{xx} = π^2 t^{3/2} sin(πx)'],['f = (#f{3#r{π}}{4} t − π^2 t^{3/2}) sin(πx)','f = #f{3#r{π}}{4} t sin(πx)','f = π^2 t^{3/2} sin(πx)']),
+  Q('Which λ makes this u polynomial in time?','أي λ تجعل u هذه كثيرة حدود في الزمن؟','λ = #f{1}{2}',['t^{3/2} = s^3,   s = t^{1/2}'],['λ = #f{3}{2}','λ = 1','λ = #f{1}{4}']),
+  Q('What does a nonzero result of the second Simplify mean?','ماذا تعني نتيجة غير صفرية لـ Simplify الثانية؟',['f does not match u: the test problem itself is wrong','f لا تطابق u: مسألة الاختبار نفسها خاطئة'],[['Fix f before testing the solver.','أصلح f قبل اختبار الحلّال.']],[['The solver is wrong','الحلّال خاطئ'],['Nothing','لا شيء']]),
+]);
+
+lesson('504',69,[
+  ['The maximum error is measured on a grid that includes the boundary:','يُقاس أكبر خطأ على شبكة تتضمن الحدود:'],
+  '$ grid = Range[0, 1, 1/10];\nerr = Max[Table[Abs[uN[x, t] - uExact[x, t]], {x, grid}, {t, grid}]]\nrel = err/Max[Table[Abs[uExact[x, t]], {x, grid}, {t, grid}]]',
+  ['Use exact grid points (``1/10``, not ``0.1``) so that they are reproducible, and evaluate the numerical solution with machine numbers (``N``) for speed. A grid finer than the polynomial degree is needed to see the error between the collocation points.','استخدم نقاط شبكة مضبوطة (``1/10`` لا ``0.1``) حتى تكون قابلة للتكرار، واحسب الحل العددي بأعداد الآلة (``N``) للسرعة. ونحتاج شبكة أدق من درجة كثيرة الحدود لرؤية الخطأ بين نقاط التجميع.'],
+],[
+  Q('How many points does the grid above contain in (x, t)?','كم نقطة تحوي الشبكة أعلاه في (x, t)؟','121',['11·11'],['100','110','21']),
+  Q('Why measure the error at points other than the collocation points?','لماذا نقيس الخطأ عند نقاط غير نقاط التجميع؟',['At the collocation points the residual is zero by construction, which can hide the error elsewhere','عند نقاط التجميع الباقي صفر بالبناء وقد يخفي ذلك الخطأ في مكان آخر'],[['Use a grid finer than the polynomial degree.','استخدم شبكة أدق من درجة كثيرة الحدود.']],[['To make it faster','لتسريعه'],['There is no reason','لا سبب']]),
+  Q('`max |u − u_N| = 2 × 10^{−6}` and `max |u| = 0.5`. What is the relative error?','`max |u − u_N| = 2 × 10^{−6}` و `max |u| = 0.5`. ما الخطأ النسبي؟','4 × 10^{−6}',['#f{2 × 10^{−6}}{0.5}'],['10^{−6}','2 × 10^{−6}','4 × 10^{−5}']),
+  Q('Write the L∞ error on a 1-D grid ``xs`` with ``Max`` and ``Abs``.','اكتب خطأ L∞ على شبكة أحادية ``xs`` بـ ``Max`` و ``Abs``.','$ Max[Abs[uN /@ xs - uExact /@ xs]]',[['Both functions are mapped over the grid.','الدالتان تُطبقان على الشبكة.']],['$ Max[uN - uExact]','$ Abs[Max[uN /@ xs] - Max[uExact /@ xs]]','$ Norm[uN - uExact, Infinity]']),
+]);
+
+lesson('504',70,[
+  ['A convergence table lists the error for increasing N with the observed order:','جدول التقارب يعرض الخطأ لقيم N متزايدة مع الرتبة الملاحظة:'],
+  '$ data = Table[{n, err[n]}, {n, {4, 8, 16, 32}}];\nrows = Table[{data[[k, 1]], data[[k, 2]],\n   Log[data[[k - 1, 2]]/data[[k, 2]]]/Log[data[[k, 1]]/data[[k - 1, 1]]]}, {k, 2, 4}];\nGrid[Prepend[rows, {"N", "error", "order"}], Frame -> All]',
+  ['For spectral methods the order keeps growing with N; then show the error on ``ListLogPlot`` against N, where a straight line confirms exponential convergence.','وللطرق الطيفية تستمر الرتبة في الكبر مع N، فاعرض الخطأ في ``ListLogPlot`` مقابل N حيث يؤكد الخط المستقيم التقارب الأسي.'],
+],[
+  Q('Errors `10^{−3}` at N = 8 and `6.25 × 10^{−5}` at N = 16. What is the order?','الأخطاء `10^{−3}` عند N = 8 و `6.25 × 10^{−5}` عند N = 16. ما الرتبة؟','4',['#f{log 16}{log 2}'],['16','2','8']),
+  Q('The orders in a table are 3.1, 5.8, 9.4, 14.2. What kind of convergence is this?','الرتب في جدول هي 3.1 و 5.8 و 9.4 و 14.2. أي نوع من التقارب هذا؟',['Spectral (exponential): the order keeps increasing','طيفي (أسي): الرتبة تستمر في الزيادة'],[['An algebraic rate gives a constant order.','المعدل الجبري يعطي رتبة ثابتة.']],[['Algebraic of order 3','جبري من الرتبة 3'],['Divergence','تباعد']]),
+  Q('What does ``Prepend[rows, {"N", "error", "order"}]`` do?','ماذا تفعل ``Prepend[rows, {"N", "error", "order"}]``؟',['It puts the header row in front of the rows','تضع صف العناوين أمام الصفوف'],[['``Append`` would put it at the end.','``Append`` تضعه في النهاية.']],[['It sorts the rows','ترتب الصفوف'],['It deletes the first row','تحذف الصف الأول']]),
+  Q('The error stops decreasing at about `10^{−14}`. Why?','الخطأ يتوقف عن التناقص عند نحو `10^{−14}`. لماذا؟',['Rounding error of machine numbers, amplified by the condition number','خطأ تقريب أعداد الآلة مضخماً بعدد الشرط'],[['More precision (``WorkingPrecision``) would move the floor down.','دقة أعلى (``WorkingPrecision``) تخفض هذا الحد.']],[['The method is wrong','الطريقة خاطئة'],['N is too small','N صغير جداً']]),
+]);
+
+lesson('504',71,[
+  ['``FindRoot`` uses Newton’s method from one starting value, or a secant-type method from two. It also solves systems:','``FindRoot`` تستخدم طريقة نيوتن من قيمة ابتدائية واحدة أو طريقة من نوع القاطع من قيمتين، وتحل الأنظمة أيضاً:'],
+  '$ FindRoot[x^3 - 2 x - 5, {x, 2}]                       (* {x -> 2.09455} *)\nFindRoot[x^3 - 2 x - 5, {x, 2, 3}]                    (* secant start *)\nFindRoot[{x^2 + y^2 == 1, x == y}, {{x, 1}, {y, 0}}]  (* {x -> 0.707107, y -> 0.707107} *)',
+  ['Good starting values matter: for the zeros of `P_n` use the Chebyshev approximations `cos((4k − 1)π/(4n + 2))`.','والقيم الابتدائية الجيدة مهمة: لجذور `P_n` استخدم تقريبات تشيبيشيف `cos((4k − 1)π/(4n + 2))`.'],
+],[
+  Q('Find the largest zero of `P_4` starting from 0.9.','أوجد أكبر جذر لـ `P_4` بدءاً من 0.9.','$ FindRoot[LegendreP[4, x], {x, 0.9}]   (* {x -> 0.861136} *)',[['The Gauss–Legendre node for n = 4.','عقدة جاوس–ليجندر عند n = 4.']],['$ FindRoot[LegendreP[4, x], {x, 0.9}]   (* {x -> 0.339981} *)','$ Solve[LegendreP[4, x], {x, 0.9}]','$ FindRoot[LegendreP[4, 0.9], x]']),
+  Q('Compute the Chebyshev starting value for k = 1, n = 4.','احسب القيمة الابتدائية لتشيبيشيف عند k = 1 و n = 4.','cos(#f{π}{6}) ≈ 0.866',['#f{(4 − 1)π}{18} = #f{π}{6}'],['cos(#f{π}{18}) ≈ 0.985','cos(#f{π}{4}) ≈ 0.707','0.9']),
+  Q('What does FindRoot return if Newton’s method fails to converge?','ماذا تعيد FindRoot إذا لم تتقارب طريقة نيوتن؟',['The last iterate, with a message such as ``FindRoot::lstol``','آخر تقريب مع رسالة مثل ``FindRoot::lstol``'],[['Always read the messages and check the residual.','اقرأ الرسائل دائماً وتحقق من الباقي.']],[['The exact root','الجذر المضبوط'],['Nothing','لا شيء']]),
+  Q('Check a FindRoot answer ``r``.','تحقق من جواب FindRoot ``r``.','$ x^3 - 2 x - 5 /. r',[['The residual should be close to zero.','يجب أن يكون الباقي قريباً من الصفر.']],['$ r == 0','$ FindRoot[r]','$ N[r]']),
+]);
+
+lesson('504',72,[
+  ['``InterpolatingPolynomial`` gives the polynomial through given points in Newton’s nested form; ``Interpolation`` gives a piecewise (cubic by default) interpolating function:','``InterpolatingPolynomial`` تعطي كثيرة الحدود المارة بنقاط معطاة بصيغة نيوتن المتداخلة، و ``Interpolation`` تعطي دالة استكمال مجزأة (تكعيبية افتراضياً):'],
+  '$ p = InterpolatingPolynomial[{{0, 1}, {1, 3}, {2, 7}}, x]   (* 1 + x (1 + x) *)\nExpand[p]                                                 (* 1 + x + x^2 *)\nf = Interpolation[{{0, 1}, {1, 3}, {2, 7}, {3, 13}}];  f[1.5]',
+  ['High-degree interpolation at equally spaced points oscillates (Runge’s phenomenon); at Chebyshev or Legendre points it converges for smooth functions.','والاستكمال عالي الدرجة عند نقاط متساوية التباعد يتذبذب (ظاهرة رونغه)، وعند نقاط تشيبيشيف أو ليجندر يتقارب للدوال الملساء.'],
+],[
+  Q('What is ``p /. x -> 3``?','ما ``p /. x -> 3``؟','$ 13',['1 + 3·4'],['$ 7','$ 10','$ 9']),
+  Q('What is ``InterpolatingPolynomial[{{0, 0}, {1, 1}}, x]``?','ما ``InterpolatingPolynomial[{{0, 0}, {1, 1}}, x]``؟','$ x',[['The line through (0, 0) and (1, 1).','الخط المار بـ (0, 0) و (1, 1).']],['$ 1 + x','$ x^2','$ 1']),
+  Q('Interpolate `1/(1 + 25x^2)` at 11 equally spaced points on [−1, 1]. What happens near ±1?','استكمل `1/(1 + 25x^2)` عند 11 نقطة متساوية التباعد على [−1, 1]. ماذا يحدث قرب ±1؟',['Large oscillations: Runge’s phenomenon','تذبذبات كبيرة: ظاهرة رونغه'],[['Use Chebyshev points instead.','استخدم نقاط تشيبيشيف بدلاً منها.']],[['Very small errors','أخطاء صغيرة جداً'],['The interpolant is 0','كثيرة الاستكمال صفر']]),
+  Q('Which option makes ``Interpolation`` piecewise linear?','أي خيار يجعل ``Interpolation`` خطية مجزأة؟','$ InterpolationOrder -> 1',[['The default is 3.','الافتراضي 3.']],['$ Method -> "Linear"','$ Order -> 1','$ PolynomialDegree -> 1']),
+]);
+
+lesson('504',73,[
+  ['The Gauss–Legendre nodes are the zeros of `P_n` and the weights are `w_i = 2/((1 − x_i^2)P_n′(x_i)^2)`:','عقد جاوس–ليجندر جذور `P_n` والأوزان `w_i = 2/((1 − x_i^2)P_n′(x_i)^2)`:'],
+  '$ gauss[n_] := Module[{x = Sort[x /. NSolve[LegendreP[n, x] == 0, x]]},\n  {x, 2/((1 - x^2) (D[LegendreP[n, y], y] /. y -> x)^2)}]\n{xs, ws} = gauss[3]     (* nodes -0.774597, 0., 0.774597; weights 0.555556, 0.888889, 0.555556 *)\nws . Exp[xs]            (* ≈ 2.35034 *)',
+  ['Arithmetic on lists is Listable, so the weight formula works on the whole vector of nodes at once. The rule `Σ w_i f(x_i)` is exact for polynomials of degree ≤ 2n − 1.','والحساب على القوائم Listable فتعمل صيغة الأوزان على متجه العقد كله دفعة واحدة. والقاعدة `Σ w_i f(x_i)` مضبوطة لكثيرات الحدود ذات الدرجة ≤ 2n − 1.'],
+],[
+  Q('What are the exact weights for n = 3?','ما الأوزان المضبوطة عند n = 3؟','#f{5}{9},  #f{8}{9},  #f{5}{9}',[['They sum to 2.','مجموعها 2.']],['#f{1}{3},  #f{4}{3},  #f{1}{3}','#f{2}{3},  #f{2}{3},  #f{2}{3}','1,  1,  1']),
+  Q('Compute `∫_{−1}^{1} x^4 dx` with the 3-point rule.','احسب `∫_{−1}^{1} x^4 dx` بقاعدة النقاط الثلاث.','#f{2}{5}',['2·#f{5}{9}·#f{9}{25} = #f{2}{5}',['Exact, since 4 ≤ 2·3 − 1.','مضبوط لأن 4 ≤ 2·3 − 1.']],['#f{2}{9}','#f{1}{5}','#f{18}{25}']),
+  Q('What does ``ws . Exp[xs]`` approximate?','ماذا تقرّب ``ws . Exp[xs]``؟','∫_{−1}^{1} e^x dx = e − e^{−1} ≈ 2.35040',[['The 3-point value 2.35034 has an error of about `6 × 10^{−5}`.','قيمة النقاط الثلاث 2.35034 خطؤها نحو `6 × 10^{−5}`.']],['e ≈ 2.71828','2','1']),
+  Q('Why use ``Sort`` on the NSolve results?','لماذا نستخدم ``Sort`` على نتائج NSolve؟',['NSolve does not promise an order, and the nodes should be increasing','NSolve لا تضمن ترتيباً ويجب أن تكون العقد تصاعدية'],[['Matrices built later depend on the order.','المصفوفات المبنية لاحقاً تعتمد على الترتيب.']],[['To make them exact','لجعلها مضبوطة'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('504',74,[
+  ['The Golub–Welsch method gets nodes and weights from the eigenvalues and eigenvectors of the symmetric tridiagonal Jacobi matrix. For Legendre the off-diagonal entries are `β_k = k/#r{4k^2 − 1}`:','طريقة Golub–Welsch تحصل على العقد والأوزان من القيم والمتجهات الذاتية لمصفوفة جاكوبي المتماثلة ثلاثية القطر. ولليجندر عناصر القطرين الجانبيين `β_k = k/#r{4k^2 − 1}`:'],
+  '$ gw[n_] := Module[{b, j, vals, vecs},\n  b = Table[k/Sqrt[4 k^2 - 1.], {k, n - 1}];\n  j = SparseArray[{Band[{1, 2}] -> b, Band[{2, 1}] -> b}, {n, n}];\n  {vals, vecs} = Eigensystem[Normal[j]];\n  Transpose[Sort[Transpose[{vals, 2 vecs[[All, 1]]^2}]]]]',
+  ['The weights are 2 times the squared first components of the normalized eigenvectors. This is stable for large n, unlike root-finding with the explicit polynomial.','والأوزان ضعف مربعات المركبات الأولى للمتجهات الذاتية المطبّعة. وهذا مستقر لـ n كبير بخلاف إيجاد الجذور بكثيرة الحدود الصريحة.'],
+],[
+  Q('Compute `β_1`.','احسب `β_1`.','#f{1}{#r{3}}',['#f{1}{#r{4 − 1}}'],['#f{1}{3}','#f{1}{2}','1']),
+  Q('For n = 2, what are the eigenvalues of `#m{0, β_1 ;; β_1, 0}`?','عند n = 2 ما القيم الذاتية لـ `#m{0, β_1 ;; β_1, 0}`؟','±#f{1}{#r{3}}',['λ^2 = β_1^2'],['0, β_1','±#f{1}{3}','±1']),
+  Q('Why does the code use ``4 k^2 - 1.`` with a decimal point?','لماذا يستخدم الكود ``4 k^2 - 1.`` بفاصلة عشرية؟',['To make the matrix numeric, so Eigensystem uses fast machine routines','لجعل المصفوفة عددية فتستخدم Eigensystem الإجراءات الآلية السريعة'],[['Exact input would ask for exact algebraic eigenvalues.','المدخل المضبوط يطلب قيماً ذاتية جبرية مضبوطة.']],[['It is a typo','خطأ مطبعي'],['To make it exact','لجعلها مضبوطة']]),
+  Q('Why is the pair list transposed, sorted and transposed back?','لماذا تُقلب قائمة الأزواج وتُرتب ثم تُقلب ثانية؟',['To sort the nodes and keep each weight with its node','لترتيب العقد مع إبقاء كل وزن مع عقدته'],[['Sort orders pairs by their first element.','Sort ترتب الأزواج حسب عنصرها الأول.']],[['To normalize the weights','لتطبيع الأوزان'],['To make it faster','لتسريعه']]),
+]);
+
+lesson('504',75,[
+  ['The differentiation matrix at nodes ``xs`` uses the barycentric weights `λ_j = 1/Π_{k≠j}(x_j − x_k)`:','مصفوفة التفاضل عند العقد ``xs`` تستخدم الأوزان الباريسنترية `λ_j = 1/Π_{k≠j}(x_j − x_k)`:'],
+  '$ diffMat[xs_] := Module[{n = Length[xs], lam, d},\n  lam = Table[1/Product[If[k == j, 1, xs[[j]] - xs[[k]]], {k, n}], {j, n}];\n  d = Table[If[i == j, 0, (lam[[j]]/lam[[i]])/(xs[[i]] - xs[[j]])], {i, n}, {j, n}];\n  d - DiagonalMatrix[Total[d, {2}]]]',
+  ['``Total[d, {2}]`` gives the row sums, and subtracting them on the diagonal makes every row sum to zero. The matrix is exact for polynomials of degree < n.','و ``Total[d, {2}]`` تعطي مجاميع الصفوف، وطرحها على القطر يجعل مجموع كل صف صفراً. والمصفوفة مضبوطة لكثيرات الحدود ذات الدرجة < n.'],
+],[
+  Q('What is ``diffMat[{-1, 1}]``?','ما ``diffMat[{-1, 1}]``؟','$ {{-1/2, 1/2}, {-1/2, 1/2}}',['#f{u_1 − u_0}{2}'],['$ {{1/2, -1/2}, {1/2, -1/2}}','$ {{-1, 1}, {-1, 1}}','$ {{0, 1/2}, {-1/2, 0}}']),
+  Q('With ``d = diffMat[{-1, 0, 1}]``, what is ``d . {1, 0, 1}``?','مع ``d = diffMat[{-1, 0, 1}]`` ما ``d . {1, 0, 1}``؟','$ {-2, 0, 2}',[['The values of `x^2` at the nodes; the result is `2x` there.','قيم `x^2` عند العقد، والنتيجة `2x` هناك.']],['$ {1, 0, 1}','$ {2, 0, 2}','$ {-1, 0, 1}']),
+  Q('Write the first row of ``diffMat[{-1, 0, 1}]``.','اكتب الصف الأول من ``diffMat[{-1, 0, 1}]``.','$ {-3/2, 2, -1/2}',['ℓ_0′(−1) = −#f{3}{2},   ℓ_1′(−1) = 2,   ℓ_2′(−1) = −#f{1}{2}'],['$ {-1/2, 0, 1/2}','$ {1, -2, 1}','$ {-3/2, 2, 1/2}']),
+  Q('What does ``Total[d, {2}]`` compute?','ماذا تحسب ``Total[d, {2}]``؟',['The sum of each row','مجموع كل صف'],[['Level 2 sums across the columns of each row.','المستوى 2 يجمع عبر أعمدة كل صف.']],[['The total of all entries','مجموع كل العناصر'],['The sum of each column','مجموع كل عمود']]),
+]);
+
+lesson('504',76,[
+  ['Finite differences for `−u″ = f`, `u(0) = u(1) = 0` with n interior points, `h = 1/(n + 1)`:','الفروق المحدودة لـ `−u″ = f` مع `u(0) = u(1) = 0` و n نقطة داخلية و `h = 1/(n + 1)`:'],
+  '$ fd[n_, f_] := Module[{h = 1/(n + 1), a, xs},\n  xs = h Range[n];\n  a = SparseArray[{Band[{1, 1}] -> 2, Band[{1, 2}] -> -1, Band[{2, 1}] -> -1}, {n, n}]/h^2;\n  {xs, LinearSolve[a, f /@ xs]}]',
+  ['The error is `O(h^2)`: halving h divides it by about 4. Quadratic solutions are reproduced exactly at the grid points, because the second difference of a quadratic is exact.','والخطأ `O(h^2)`: تنصيف h يقسمه على نحو 4. والحلول التربيعية تُعاد بالضبط عند نقاط الشبكة لأن الفرق الثاني لكثيرة تربيعية مضبوط.'],
+],[
+  Q('With n = 3 and `f = 2`, what is `u(1/2)`?','مع n = 3 و `f = 2` ما `u(1/2)`؟','#f{1}{4}',['u = x(1 − x),   #f{1}{2}·#f{1}{2}',['Exact, the solution is quadratic.','مضبوط لأن الحل تربيعي.']],['#f{1}{2}','#f{3}{16}','#f{1}{8}']),
+  Q('What is h for n = 9?','ما h عند n = 9؟','#f{1}{10}',['#f{1}{n + 1}'],['#f{1}{9}','#f{1}{8}','9']),
+  Q('The error for n = 9 is `4 × 10^{−4}`. Estimate it for n = 19.','الخطأ عند n = 9 هو `4 × 10^{−4}`. قدّره عند n = 19.','≈ 10^{−4}',[['Halving h divides the error by `2^2 = 4`.','تنصيف h يقسم الخطأ على `2^2 = 4`.']],['≈ 2 × 10^{−4}','≈ 10^{−8}','≈ 4 × 10^{−5}']),
+  Q('Why is the matrix divided by `h^2`?','لماذا تُقسم المصفوفة على `h^2`؟',['It is the second difference quotient: `−u″ ≈ (−u_{i−1} + 2u_i − u_{i+1})/h^2`','هو خارج قسمة الفرق الثاني: `−u″ ≈ (−u_{i−1} + 2u_i − u_{i+1})/h^2`'],[['The matrix holds only the pattern (−1, 2, −1).','المصفوفة تحمل النمط (−1, 2, −1) فقط.']],[['To normalize it','لتطبيعها'],['It is not needed','لا حاجة']]),
+]);
+
+lesson('504',77,[
+  ['Collocation for `u″ = f`, `u(±1) = 0`: square the differentiation matrix, impose the equation at interior nodes and replace the first and last rows by the boundary conditions:','التجميع لـ `u″ = f` مع `u(±1) = 0`: ربّع مصفوفة التفاضل، وافرض المعادلة عند العقد الداخلية، واستبدل الصفين الأول والأخير بالشروط الحدية:'],
+  '$ xs = N[-Cos[Pi Range[0, n]/n]];   (* Chebyshev–Lobatto points *)\nd2 = diffMat[xs] . diffMat[xs];\na = d2;  a[[1]] = UnitVector[n + 1, 1];  a[[-1]] = UnitVector[n + 1, n + 1];\nrhs = f /@ xs;  rhs[[{1, -1}]] = 0;\nu = LinearSolve[a, rhs]',
+  ['For smooth f the error decreases exponentially with n, until rounding error from the `n^4` conditioning takes over.','وللدوال الملساء f يتناقص الخطأ أسياً مع n حتى يغلب خطأ التقريب الناتج عن الشرط `n^4`.'],
+],[
+  Q('With nodes `{−1, 0, 1}` and `f = 2`, what is `u(0)`?','مع العقد `{−1, 0, 1}` و `f = 2` ما `u(0)`؟','−1',['u_0 − 2u_1 + u_2 = 2,   u_0 = u_2 = 0',['Exact: `u = x^2 − 1`.','مضبوط: `u = x^2 − 1`.']],['1','0','−2']),
+  Q('What does ``UnitVector[4, 1]`` give?','ماذا تعطي ``UnitVector[4, 1]``؟','$ {1, 0, 0, 0}',[['It replaces the first equation by `u_1 = 0`.','تستبدل المعادلة الأولى بـ `u_1 = 0`.']],['$ {0, 0, 0, 1}','$ {1, 1, 1, 1}','$ 1']),
+  Q('What is the middle row of `D^2` for the nodes `{−1, 0, 1}`?','ما الصف الأوسط من `D^2` للعقد `{−1, 0, 1}`؟','$ {1, -2, 1}',[['For three points `u″` is the second difference with h = 1.','لثلاث نقاط `u″` هي الفرق الثاني مع h = 1.']],['$ {-1, 2, -1}','$ {1, 0, -1}','$ {0, 1, 0}']),
+  Q('About how does the condition number of `D^2` grow with n?','كيف ينمو عدد شرط `D^2` تقريباً مع n؟','~ n^4',[['Each differentiation contributes `n^2`.','كل اشتقاق يساهم بـ `n^2`.']],['~ n^2','~ n','~ 2^n']),
+]);
+
+lesson('504',78,[
+  ['Galerkin with the basis `φ_k = P_k − P_{k+2}` for `−u″ = f`, `u(±1) = 0`: the stiffness matrix is diagonal, `⟨φ_j′, φ_k′⟩ = (4k + 6)δ_{jk}`:','جاليركن بالأساس `φ_k = P_k − P_{k+2}` لـ `−u″ = f` مع `u(±1) = 0`: مصفوفة الجساءة قطرية `⟨φ_j′, φ_k′⟩ = (4k + 6)δ_{jk}`:'],
+  '$ phi[k_, x_] := LegendreP[k, x] - LegendreP[k + 2, x]\nc = Table[Integrate[f[x] phi[k, x], {x, -1, 1}]/(4 k + 6), {k, 0, n}];\nuN[x_] = c . Table[phi[k, x], {k, 0, n}]',
+  ['Here ``uN[x_] = …`` with a single ``=`` evaluates the sum once and stores the polynomial, which is then fast to evaluate. For a general f use NIntegrate or Gauss quadrature for the right-hand side.','وهنا ``uN[x_] = …`` بـ ``=`` واحدة تحسب المجموع مرة وتخزن كثيرة الحدود فيكون حسابها سريعاً. ولـ f عامة استخدم NIntegrate أو تربيع جاوس للطرف الأيمن.'],
+],[
+  Q('With `f = 1`, compute `c_0`.','مع `f = 1` احسب `c_0`.','#f{1}{3}',['∫_{−1}^{1}(1 − P_2) dx = 2','#f{2}{6}'],['#f{2}{3}','1','#f{1}{6}']),
+  Q('Which function is `c_0 φ_0` for `f = 1`?','ما الدالة `c_0 φ_0` عند `f = 1`؟','#f{1 − x^2}{2}',['#f{1}{3}(1 − #f{3x^2 − 1}{2}) = #f{1}{3}·#f{3}{2}(1 − x^2)',['Exact: `−u″ = 1`.','مضبوط: `−u″ = 1`.']],['1 − x^2','#f{1 − x^2}{3}','#f{x^2}{2}']),
+  Q('Why is ``uN[x_] = …`` written with ``=`` here?','لماذا كُتب ``uN[x_] = …`` بـ ``=`` هنا؟',['To compute the polynomial once instead of at every call','لحساب كثيرة الحدود مرة واحدة بدل حسابها عند كل استدعاء'],[['With ``:=`` the Table and dot product would be redone each time.','مع ``:=`` يُعاد Table والضرب النقطي كل مرة.']],[['It is a typo','خطأ مطبعي'],['To make it exact','لجعلها مضبوطة']]),
+  Q('What is the stiffness entry for k = 2?','ما عنصر الجساءة عند k = 2؟','14',['4·2 + 6'],['10','6','8']),
+]);
+
+lesson('504',79,[
+  ['The tau method for `u′ + u = 0`, `u(0) = 1` on [0, 1] in shifted Legendre polynomials, written directly with Integrate and Solve:','طريقة تاو لـ `u′ + u = 0` مع `u(0) = 1` على [0, 1] بكثيرات ليجندر المزاحة، مكتوبة مباشرة بـ Integrate و Solve:'],
+  '$ n = 2;  ps[k_, t_] := LegendreP[k, 2 t - 1];\nu[t_] = Sum[c[k] ps[k, t], {k, 0, n}];\neqs = Append[Table[Integrate[(u\'[t] + u[t]) ps[k, t], {t, 0, 1}] == 0, {k, 0, n - 1}], u[0] == 1];\nsol = Solve[eqs, Table[c[k], {k, 0, n}]];\nu[1] /. First[sol]          (* 7/19 *)',
+  ['Exact arithmetic gives the rational answer 7/19 ≈ 0.36842; the error against `e^{−1}` is about `5 × 10^{−4}`. For large n replace Solve by CoefficientArrays and LinearSolve (Lesson 60).','والحساب المضبوط يعطي الجواب الكسري 7/19 ≈ 0.36842، وخطؤه مقابل `e^{−1}` نحو `5 × 10^{−4}`. ولـ n كبير استبدل Solve بـ CoefficientArrays و LinearSolve (الدرس 60).'],
+],[
+  Q('How many equations does ``eqs`` contain for n = 2?','كم معادلة في ``eqs`` عند n = 2؟','3',[['n residual equations and one condition.','n معادلة باقٍ وشرط واحد.']],['2','4','1']),
+  Q('With n = 1 the same code gives ``u[1]`` equal to what?','مع n = 1 يعطي الكود نفسه ``u[1]`` مساوياً لماذا؟','$ 1/3',['c_0 = #f{2}{3},   c_1 = −#f{1}{3}'],['$ 7/19','$ 1/2','$ 0']),
+  Q('What does ``Append[…, u[0] == 1]`` add?','ماذا تضيف ``Append[…, u[0] == 1]``؟',['The initial condition as the last equation','الشرط الابتدائي معادلةً أخيرة'],[['The tau method drops the last residual equation and uses the condition instead.','طريقة تاو تحذف آخر معادلة باقٍ وتستخدم الشرط بدلها.']],[['Another residual equation','معادلة باقٍ أخرى'],['Nothing','لا شيء']]),
+  Q('Why does the code use ``c[k]`` instead of ``ck``?','لماذا يستخدم الكود ``c[k]`` بدل ``ck``؟',['Indexed unknowns can be built with Table for any n','المجاهيل المفهرسة تُبنى بـ Table لأي n'],['$ Table[c[k], {k, 0, n}]'],[['``ck`` is reserved','``ck`` محجوز'],['It is faster','أسرع']]),
+]);
+
+lesson('504',80,[
+  ['Precision is a property of each number. ``N[x, k]`` asks for k digits of an exact x, while ``SetPrecision[x, k]`` forces a number to have k digits, padding a machine number with the binary digits it really has:','الدقة خاصية لكل عدد. ``N[x, k]`` تطلب k رقماً لعدد مضبوط x، بينما ``SetPrecision[x, k]`` تجبر العدد على k رقماً، فتكمل عدد الآلة بالأرقام الثنائية التي يحملها فعلاً:'],
+  '$ N[1/10, 30]               (* 0.100000000000000000000000000000 *)\nN[0.1, 30]                 (* 0.1  (still machine precision) *)\nSetPrecision[0.1, 30]      (* 0.100000000000000005551115123126 *)\nNIntegrate[f, {x, 0, 1}, WorkingPrecision -> 30]',
+  ['Start high-precision computations from exact input. ``WorkingPrecision`` is available in NIntegrate, NDSolve, FindRoot and NSolve.','ابدأ حسابات الدقة العالية من مدخل مضبوط. و ``WorkingPrecision`` متاحة في NIntegrate و NDSolve و FindRoot و NSolve.'],
+],[
+  Q('What is ``Precision[N[0.1, 30]]``?','ما ``Precision[N[0.1, 30]]``؟','$ MachinePrecision',[['N cannot add digits to a machine number.','N لا تستطيع إضافة أرقام لعدد آلي.']],['$ 30.','$ Infinity','$ 16.']),
+  Q('Why does ``SetPrecision[0.1, 30]`` show digits ``…5551…``?','لماذا تُظهر ``SetPrecision[0.1, 30]`` الأرقام ``…5551…``؟',['0.1 has no exact binary representation; these are the digits of the stored binary number','العدد 0.1 لا تمثيل ثنائياً مضبوطاً له، وهذه أرقام العدد الثنائي المخزن'],[['Use exact ``1/10`` to get zeros.','استخدم ``1/10`` المضبوط للحصول على أصفار.']],[['A bug','خلل'],['Rounding by SetPrecision','تقريب من SetPrecision']]),
+  Q('How do you compute `#r{2}` to 50 digits?','كيف تحسب `#r{2}` بـ 50 رقماً؟','$ N[Sqrt[2], 50]',[['Exact input, then N with 50 digits.','مدخل مضبوط ثم N بـ 50 رقماً.']],['$ N[Sqrt[2.], 50]','$ SetPrecision[Sqrt[2.], 50]','$ Sqrt[N[2], 50]']),
+  Q('Which option makes FindRoot work with 40 digits?','أي خيار يجعل FindRoot تعمل بـ 40 رقماً؟','$ WorkingPrecision -> 40',[['Give the starting value exactly too, for example 9/10.','وأعطِ القيمة الابتدائية مضبوطة أيضاً، مثل 9/10.']],['$ Precision -> 40','$ Digits -> 40','$ N -> 40']),
+]);
+
 export const MS504 = true;
